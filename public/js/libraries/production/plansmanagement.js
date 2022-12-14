@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+$(function(){
+	plans_module.DisplayListProductionPlans();
+	$("#PS_PLAN_STATUS").on("change",plans_module.DisplayListProductionPlans);
+	$(".LstProdPlan").on('click',"a[id*=EDIT_PLAN_]",plans_module.EditProductionPlan);
+	$(".LstProdPlan").on('click',"a[id*=DELETE_PLAN_]",plans_module.DeleteProductionPlan);
+})

@@ -1,0 +1,10 @@
+/**
+ * 
+ */
+$(function(){
+	$('select').select2();
+	quotations_module.displayListQuotations();
+	$("#BIDDING_ID").on('change',quotations_module.displayListQuotations)
+	$('select[name=quotation_warehouse]').on('change',quotations_module.displayListQuotations);
+	$('select[name=quotation_supplier]').on('change',quotations_module.displayListQuotations);
+})

@@ -1,0 +1,10 @@
+/**
+ * 
+ */
+$(function(){
+	myprofile_module.DisplayProfileTab();
+	$("#MY_PROFILE").on('click',myprofile_module.DisplayProfileTab);
+	$("#PROFILE_PAGE").on('click',"#BTN_SAVE_INFO",myprofile_module.SaveMyProfileInfo);
+	$("#PROFILE_PAGE").on('click',"#BTN_UPLOAD_IMAGE",myprofile_module.UploadImageInfo);
+	$("#PROFILE_PAGE").on('click',"#BTN_CHANGE_PASSWORD",myprofile_module.ChangePassword);
+})

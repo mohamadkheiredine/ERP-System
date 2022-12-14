@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+$(function(){
+	products_module.DisplayListProducts();
+	$('input[name=general_search]').on('keyup',function(){
+		$('input[name=page_number]').val(1);
+		$.pagination.twbsPagination('destroy');
+		products_module.DisplayListProducts();
+	});
+	$('select[name=product_category]').on('change',function(){
+		$('input[name=page_number]').val(1);
+		$.pagination.twbsPagination('destroy');
+		products_module.DisplayListProducts();
+	});
+	$('select[name=product_currency]').on('change',function(){
+		$('input[name=page_number]').val(1);
+		$.pagination.twbsPagination('destroy');
+		products_module.DisplayListProducts();
+	});
+	$('#DUPLICATE_PRODUCT').on('click',products_module.DuplicateProduct);
+	$('select').select2();
+})

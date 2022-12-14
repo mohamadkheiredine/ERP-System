@@ -1,0 +1,60 @@
+    <?php
+
+use Illuminate\Http\Request;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+
+Route::group(['middleware' => ['cors']], function() {
+    Route::post('/request/api/login','Api\UsersController@LoginPOS');
+    Route::post('/request/api/logout','Api\UsersController@LogoutPOS');
+    Route::post('/request/api/getprofileinfo','Api\UsersController@GetUserInfo');
+    Route::post('/request/api/saveprofileinfo','Api\UsersController@SetmyprofileInfo');
+    Route::post('/request/api/changeprofilepassword','Api\UsersController@ChangeprofilePassword');
+    Route::post('/request/api/products/getlistcategories','Api\ProductsController@GetListCategories');
+    
+    Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
+    Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts');
+    Route::post('/request/api/getdefaultaccounts','Api\GeneralController@GetDefaultAccounts');
+    
+    Route::post('/request/api/getlistproducts','Api\ProductsController@GetListProducts');
+    Route::post('/request/api/getproductsstock','Api\ProductsController@GetProductsStock');
+    Route::post('/request/api/getproductinfo','Api\ProductsController@GetProductInfo');
+    Route::post('/request/api/searchproductbyuid','Api\ProductsController@SearchProductByUID');
+    Route::post('/request/api/saveproductinfo','Api\ProductsController@SaveProductInfo');
+    Route::post('/request/api/generatebarcode','Api\ProductsController@GenerateBarCode');
+    Route::post('/request/api/searchproductbyid','Api\ProductsController@SearchProductById');
+    Route::post('/request/api/getproductcategories','Api\ProductsController@GetProductCategories');
+    Route::post('/request/api/getproductstockinfo','Api\ProductsController@GetProductStockinfo');
+    
+    Route::post('/request/api/order/addproduct','Api\OrdersController@AddProductToOrder');
+    
+    
+    Route::post('/request/api/getnumbers','Api\PhoneLinesController@GetListofNumbers');
+    Route::post('/request/api/getunitpackages','Api\PhoneLinesController@Getunitpackages');
+    
+    
+    Route::post('/request/api/listcustomers','Api\CustomersController@GetListCustomers');
+    Route::post('/request/api/getcustomerinfo','Api\CustomersController@GetCustomerInfo');
+    Route::post('/request/api/savecustomer','Api\CustomersController@SaveCustomerInfo');
+    Route::post('/request/api/deletecustomers','Api\CustomersController@DeleteCustomer');
+    
+    
+    Route::post('/request/api/listvendors','Api\VendorsController@GetListVendors');
+    Route::post('/request/api/getvendorinfo','Api\VendorsController@GetVendorInfo');
+    Route::post('/request/api/savevendorinfo','Api\VendorsController@SaveVendorInfo');
+    Route::post('/request/api/deletevendors','Api\VendorsController@DeleteVendorInfo');
+    
+    Route::post('/request/api/createposorder','Api\OrdersController@CreatePOSOrder');
+    Route::post('/request/api/pos/splitorderpayment','Api\OrdersController@SplitOrderPayment');
+    Route::post('/request/api/searchorderinfo','Api\OrdersController@SearchOrderInfo');
+    
+});

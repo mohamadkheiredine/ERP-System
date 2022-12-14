@@ -1,0 +1,46 @@
+<?php
+/***********************************************************
+Orders.php
+Product :
+Version : 1.0
+Release : 1
+Date Created : Dec 8, 2019
+Developed By  : Mohamad Mantach   PHP Department itm Solutions
+All Rights Reserved ,   itm Solutions COPYRIGHT 2019
+
+Page Description :
+
+***********************************************************/
+
+
+
+namespace App\models\Sales;
+
+use DB;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
+
+class Orders extends Model
+{
+    protected   $table          = 'sales_orders';
+    public      $timestamps     = false;
+    protected   $primaryKey     = "so_id"; 
+    
+    public function Users()
+    {
+        return $this->hasOne('App\Models\Users\Users', 'id','so_assign_to');
+    }
+    
+    public function Currency()
+    {
+        return $this->hasOne('App\Models\System\Currency', 'cc_id','so_order_currency');
+    }
+    
+    public function Status()
+    {
+        return $this->hasOne('App\Models\Sales\OrderStatus', 'os_id','so_order_status');
+    }
+    
+}

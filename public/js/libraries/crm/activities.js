@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+$(function(){
+	$('select').select2();
+	activities_module.DisplayListActivities();
+	$('select[name=activities_lead]').on('change',activities_module.DisplayListActivities);
+	$('select[name=activities_user]').on('change',activities_module.DisplayListActivities);
+})

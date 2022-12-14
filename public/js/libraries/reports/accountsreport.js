@@ -1,0 +1,24 @@
+/**
+ * 
+ */
+$(function(){
+	$('#ACCOUNT_DATE_FROM').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: {
+			leftArrow: '<i class="la la-angle-left"></i>',
+			rightArrow: '<i class="la la-angle-right"></i>'
+		}
+	});
+	 $('#ACCOUNT_DATE_TO').datepicker({
+         todayHighlight: true,
+         orientation: "bottom left",
+         templates: {
+             leftArrow: '<i class="la la-angle-left"></i>',
+             rightArrow: '<i class="la la-angle-right"></i>'
+         }
+     });
+	 $('.m_selectpicker').selectpicker();
+	 $("#BTN_REPORT").on("click",reports_module.DisplayAccountsReport);
+	 reports_module.DisplayAccountsReport();
+})

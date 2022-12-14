@@ -1,0 +1,11 @@
+/**
+ * 
+ */
+$(function(){
+	customers_module.DisplayListCustomers();
+	$('input[name=search_query]').on('keyup',function(){
+		 $('input[page_number]').val(1);
+		 $('#CustomersPagination').twbsPagination('destroy');
+		customers_module.DisplayListCustomers();
+	})
+})

@@ -1,0 +1,909 @@
+<?php
+/***********************************************************
+OrdersController.php
+Product :
+Version : 1.0
+Release : 1
+Date Created : Apr 20, 2020
+Developed By  : Mohamad Mantach   PHP Department itm Solutions
+All Rights Reserved ,   itm Solutions COPYRIGHT 2020
+
+Page Description :
+
+***********************************************************/
+
+
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Validator;
+use Input;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Session;
+use Redirect;
+use Auth;
+use Config;
+use DB;
+use Illuminate\Support\Facades\Hash;
+use App\models\Inventory\Products;
+use App\models\Inventory\ProductCategories;
+use Milon\Barcode\DNS1D;
+use Models\Product;
+use App\models\Inventory\Stocks;
+use App\models\Inventory\StockMovements;
+use App\models\Inventory\ProductLots;
+use App\Library\ProductManager;
+use App\models\Inventory\WareHouses;
+use App\models\Accounting\ChartAccounts;
+use App\models\Accounting\VatAccounts;
+use App\models\System\Currency;
+use Swap\Swap;
+use App\models\System\Units;
+use App\models\Users\Users;
+use App\models\Accounting\DefaultAccounts;
+use App\models\Sales\Orders;
+use App\Library\OrdersManager;
+use App\models\Sales\OrderProducts;
+use App\Library\AccountingManager;
+use App\models\Billing\Invoices;
+use App\models\Inventory\Customers;
+use App\models\Billing\InvoiceProducts;
+use App\models\Accounting\Transactions;
+use App\models\Accounting\TransactionMovements;
+use App\models\Billing\PaymentTypes;
+use App\models\System\Companies;
+use App\models\System\CurrencyExchangeRates;
+use App\models\Billing\InvoicePayments;
+use App\models\Inventory\StockIds;
+use App\models\Inventory\Vendors;
+use App\models\Phones\PhoneLines;
+
+class OrdersController extends Controller
+{
+    
+    
+    /**
+     * Create POS Order and generate all accounting information
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function CreatePOSOrder(Request $request)
+    {
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        $order_id           = $request->input('order_id');
+        $warehouse_id       = $request->input('warehouse_id');
+        $company_currency   = $request->input('company_currency');
+        $customer_id        = $request->input('customer_id');
+        $order_items        = $request->input('order_items');
+        $order_items        = json_decode( $order_items , true );
+        $pos_sub_total      = $request->input('pos_sub_total');
+        $pos_discount       = $request->input('pos_discount');
+        $pos_total          = $request->input('pos_total');
+        $vendor_id          = $request->input('vendor_id');
+        
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+         
+        // get default customer id 
+        $vendor_account_id = 0;
+        $vendor_info = new Vendors();
+        if($customer_id == 0)
+        {
+            // check if we select a vendor we get info of it
+            if($vendor_id != 0)
+            {
+                $vendor_info = Vendors::find($vendor_id);
+                $vendor_account_id = $vendor_info->iv_vendor_account_id;
+            }
+            else 
+            {
+                $customer_info = Customers::whereIcDefaultCustomer(0)->get();
+                if(count($customer_info) == 0)
+                {
+                    $result_array['is_error']       = 1;
+                    $result_array['error_message']  = 'Please Select A Customer Or Create a Default Custromer to Save all order there';
+                    
+                    return Response()->json($result_array);
+                }
+                
+                $customer_info = $customer_info[0];
+                $customer_id = $customer_info->ic_id;
+            }
+            
+
+        }
+        else
+        {
+            $customer_info = Customers::find($customer_id);
+        }
+        
+        
+        $order_manager = new OrdersManager();
+        
+        $company_id = $user_info->fk_company_id;
+        
+        $company_info   = Companies::find($company_id); 
+        
+        $params_array = array(
+            'company_id' => $user_info->fk_company_id
+        );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_label     = "";
+        
+        $so_order_barcode = rand(100000000,999999999);
+        
+        $creation_date    = date("Y-m-d");
+        $so_vat_id = 0;
+        
+        // create a new order
+        $order_info = new Orders();
+        
+        if($order_id != 0)
+            $order_info = Orders::find($order_id);
+        
+        if($order_id == 0)
+        {
+            $order_info->so_order_code       = $so_order_code;
+            $order_info->so_order_barcode    = $so_order_barcode;
+            $order_info->fk_user_id          = $user_id;
+            $order_info->so_assign_to        = $user_id;
+            $order_info->fk_warehouse_id     = $warehouse_id;
+            $order_info->so_order_status     = 1;
+            $order_info->so_order_customer   = $customer_id;
+            $order_info->so_vendor_id        = $vendor_id;
+            $order_info->so_creation_date    = $creation_date;
+            $order_info->so_product_type     = 1;
+            $order_info->so_payment_type     = 1;
+            $order_info->so_order_label      = $so_order_label;
+            $order_info->so_order_note       = "";
+            $order_info->so_order_date       = $creation_date;
+            $order_info->so_delivery_date    = $creation_date;
+            $order_info->so_vat_id           = $so_vat_id;
+            $order_info->so_pos_order        = 1;
+        } 
+        
+        $order_info->so_sub_total        = $pos_sub_total;
+        $order_info->so_total_discount   = $pos_discount;
+        $order_info->so_total_cost       = $pos_total;
+        $order_info->so_order_currency   = $company_currency; 
+        $order_info->so_order_customer   = $customer_id;
+
+        $order_info->save();
+        
+        $so_id = $order_info->so_id;
+        
+        
+        // save order rproducts 
+        foreach ( $order_items as $key => $item_order ) 
+        { 
+           if($item_order['is_id'] == 'UNITS')
+           {
+               $orderitem = new OrderProducts();
+               $orderitem->fk_order_id          = $so_id;
+               $orderitem->fk_product_id        = -1;
+               $orderitem->so_stock_id          = -1;
+               $orderitem->so_product_cost      = $item_order['product_cost'];
+               $orderitem->so_product_price     = $item_order['product_cost'];
+               $orderitem->so_product_quantity  = $item_order['product_quantity'];
+               $orderitem->so_unit_number       = $item_order['number_id'];
+               $orderitem->so_unit_label        = $item_order['product_name'];
+               $orderitem->save();
+               
+               // change the amount of numbers in the number stock
+               
+               $number_info = PhoneLines::find($item_order['number_id']);
+               $units_amount = intval($item_order['units_amount']) + 0.45;
+               $pl_total_units = $number_info->pl_total_units - $units_amount;
+               $number_info->pl_total_units = $pl_total_units;
+               
+           }
+           else 
+           {
+               $orderitem = new OrderProducts();
+               $orderitem->fk_order_id          = $so_id;
+               $orderitem->fk_product_id        = $item_order['p_id'];
+               $orderitem->so_stock_id          = $item_order['is_id'];
+               $orderitem->so_product_cost      = $item_order['product_cost'];
+               $orderitem->so_product_price     = $item_order['product_cost'];
+               $orderitem->so_product_quantity  = $item_order['product_quantity'];
+               $orderitem->so_product_currency  = $company_currency;
+               $orderitem->save();
+               
+               // change stock id if exist to sold
+               DB::statement("UPDATE `inventory_stock_ids` SET si_stock_sold=1 WHERE si_stock_uid='" . $item_order['uid'] . "'");
+           }
+            
+
+           
+           
+        
+        }
+        
+        $company_id = $user_info->fk_company_id;
+        
+        // save invoice information 
+        $AccountingManager = new AccountingManager();
+        $params_array = array(
+            'company_id' => $company_id
+        );
+        $invoice_code = $AccountingManager->GenerateInvoiceCode($params_array); 
+        $invoice_info = new Invoices();
+        $invoice_info->bi_invoice_ref       = $invoice_code;
+        $invoice_info->bi_invoice_code      = $invoice_code;
+        $invoice_info->fk_account_id        = $customer_info->ic_account_number;
+        $invoice_info->fk_customer_id       = $customer_id;
+        $invoice_info->bi_invoice_date      = $creation_date;
+        $invoice_info->bi_due_date          = $creation_date;
+        $invoice_info->bi_payment_terms     = 1;
+        $invoice_info->bi_payment_type      = 2;
+        $invoice_info->bi_invoice_note      = $order_info->so_order_note;
+        $invoice_info->bi_total_cost        = $order_info->so_sub_total;
+        $invoice_info->bi_vat_id            = 1;
+        $invoice_info->bi_discount          = $pos_discount;
+        $invoice_info->bi_total_price       = $order_info->so_total_cost;
+        $invoice_info->bi_invoice_currency  = $order_info->so_order_currency;
+        $invoice_info->bi_invoice_note      = "New Invoice For Order #" . $so_order_code;
+        $invoice_info->bi_invoice_paid      = 1;
+        $invoice_info->bi_number_payments   = 1;
+        $invoice_info->save();
+        $bi_id = $invoice_info->bi_id;
+        
+        $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
+        foreach ($lst_order_items as $key => $oi_info ) 
+        {
+            $invoice_items = new InvoiceProducts();
+           
+            if($item_order['is_id'] == 'UNITS')
+            { 
+                $invoice_items->fk_invoice_id        = $bi_id;
+                $invoice_items->ii_item_id           = -1;
+                $invoice_items->ii_stock_id          = -1;
+                $invoice_items->ii_item_type         = $order_info->so_product_type;
+                $invoice_items->ii_item_label        = $oi_info->so_unit_label;
+                $invoice_items->ii_item_price        = $oi_info->so_product_price;
+                $invoice_items->ii_item_qyt          = 1;
+                $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
+                $invoice_items->save();
+            }
+            else 
+            {
+                $stock_id           = $oi_info->so_stock_id;
+                $stock_info         = Stocks::find($stock_id);
+                $invoice_items->fk_invoice_id        = $bi_id;
+                $invoice_items->ii_item_id           = $oi_info->fk_product_id;
+                $invoice_items->ii_stock_id          = $stock_id;
+                $invoice_items->ii_item_type         = $order_info->so_product_type;
+                $invoice_items->ii_item_label        = $stock_info->products->p_product_name;
+                $invoice_items->ii_item_price        = $oi_info->so_product_price;
+                $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
+                $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
+                $invoice_items->save();
+                
+                $product_id = $oi_info->fk_product_id;
+                $stock_id   = $oi_info->so_stock_id;
+                
+                $stock_info = Stocks::find($stock_id);
+                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+                $stock_info->is_quanity = $is_quanity;
+                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+                $stock_info->save();
+            }
+        }
+        
+        
+        // save transaction and movement to the accounting table 
+        $payment_type_info      = PaymentTypes::find(2);
+        $pt_payment_account     = $payment_type_info->pt_payment_account;
+        
+        $transaction_info = new Transactions();
+        $transaction_info->at_transaction_date    = $invoice_info->bi_invoice_date;
+        $transaction_info->at_creation_date       = date("Y-m-d");
+        $transaction_info->at_accounting_doc      = $invoice_info->bi_invoice_code;
+        $transaction_info->fk_acc_journal_id      = 3;
+        $transaction_info->save();
+        $at_id = $transaction_info->at_id;
+        
+        $movement_info = new TransactionMovements();
+        $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
+        $movement_info->tm_sub_ledger_account = $pt_payment_account;
+        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $movement_info->tm_debit              = $invoice_info->bi_total_price;
+        $movement_info->tm_credit             = 0;
+        $movement_info->tm_creation_date      = date("Y-m-d");
+        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->save();
+        
+        
+        $movement_info                        = new TransactionMovements();
+        $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
+        $movement_info->tm_sub_ledger_account = $pt_payment_account;
+        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $movement_info->tm_debit              = 0;
+        $movement_info->tm_credit             = $invoice_info->bi_total_price;
+        $movement_info->tm_creation_date      = date("Y-m-d");
+        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->save();
+        
+        $tax_info = VatAccounts::find(1);
+        
+        $tax_total =  ( $tax_info->av_vat_rate / 100 ) * $pos_total;
+        $total = ( $pos_total + $tax_total );
+        // generate the POS Receipt
+        $data = array(
+            "company_info"      => $company_info,
+            "lst_order_items"   => $lst_order_items,
+            "order_info"        => $order_info,
+            "user_info"         => $user_info,
+            "cost_total"        => $total,
+            "tax_total"         => $tax_total
+        );
+        $pos_receipt = view('templates.posinvoices',$data)->render();
+        
+        $result_array['receipt_link']           = url('/order/posreceipt/' . $so_id . "?company_id=" . $company_id . "&user_id=" . $user_id . "&cost_total=" . $total);
+        $result_array['is_error']           = 0;
+        $result_array['error_msg']          = "Order Saved";
+        $result_array['pos_receipt']        = $pos_receipt;
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * Create POS Order and pay downpayment and split the payments by pay multiple payments
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return Response Json $result_array
+     */
+    public function SplitOrderPayment(Request $request)
+    {
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        $order_id           = $request->input('order_id');
+        $warehouse_id       = $request->input('warehouse_id');
+        $company_currency   = $request->input('company_currency');
+        $customer_id        = $request->input('customer_id');
+        $order_items        = $request->input('order_items');
+        $order_items        = json_decode( $order_items , true );
+        $pos_sub_total      = $request->input('pos_sub_total');
+        $pos_discount       = $request->input('pos_discount');
+        $pos_total          = $request->input('pos_total');
+        $pos_payment_amount = $request->input('pos_payment_amount');
+        $pos_remaining_amount   = $request->input('pos_remaining_amount');
+        
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        // if customer id is 0 we  will link the order to the default customer id
+        if($customer_id == 0)
+        {
+            $customer_default = Customers::where('ic_customer_name' , 'LIKE' , '%POS%')->whereIcIsDeleted(0)->get();
+            if(count($customer_default) > 0)
+            {
+                $customer_id = $customer_default[0]['ic_id'];
+            }
+            else
+            {
+                $customer_id = 1;
+            }
+        }
+        
+  
+        
+        $order_manager  = new OrdersManager();
+        $company_id     = $user_info->fk_company_id;
+        $company_info   = Companies::find($company_id);
+        $params_array = array(
+            'company_id' => $user_info->fk_company_id
+        );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_label     = "";
+        $so_order_barcode = rand(100000000,999999999);
+        $creation_date    = date("Y-m-d");
+        $so_vat_id = 0;
+        
+        // create a new order
+        $order_info = new Orders();
+        
+        if($order_id != 0)
+            $order_info = Orders::find($order_id);
+            
+        if($order_id == 0)
+        {
+            $order_info->so_order_code       = $so_order_code;
+            $order_info->so_order_barcode    = $so_order_barcode;
+            $order_info->fk_user_id          = $user_id;
+            $order_info->so_assign_to        = $user_id;
+            $order_info->fk_warehouse_id     = $warehouse_id;
+            $order_info->so_order_status     = 1;
+            $order_info->so_order_customer   = $customer_id;
+            $order_info->so_creation_date    = $creation_date;
+            $order_info->so_product_type     = 1;
+            $order_info->so_payment_type     = 1;
+            $order_info->so_order_label      = $so_order_label;
+            $order_info->so_order_note       = "";
+            $order_info->so_order_date       = $creation_date;
+            $order_info->so_delivery_date    = $creation_date;
+            $order_info->so_vat_id           = $so_vat_id;
+            $order_info->so_pos_order        = 1;
+        }
+        
+        $order_info->so_sub_total        = $pos_sub_total;
+        $order_info->so_total_discount   = $pos_discount;
+        $order_info->so_total_cost       = $pos_total;
+        $order_info->so_order_currency   = $company_currency;
+        $order_info->so_order_customer   = $customer_id;
+        
+        $order_info->save();
+        
+        
+        $so_id = $order_info->so_id;
+        
+        
+        // save order rproducts
+        foreach ( $order_items as $key => $item_order )
+        {
+            $orderitem = new OrderProducts();
+            $orderitem->fk_order_id          = $so_id;
+            $orderitem->fk_product_id        = $item_order['p_id'];
+            $orderitem->so_stock_id          = $item_order['is_id'];
+            $orderitem->so_product_cost      = $item_order['product_cost'];
+            $orderitem->so_product_price     = $item_order['product_cost'];
+            $orderitem->so_product_quantity  = $item_order['product_quantity'];
+            $orderitem->so_product_currency  = $company_currency;
+            $orderitem->save();
+            
+            
+            // change stock id if exist to sold
+            DB::statement("UPDATE `inventory_stock_ids` SET si_stock_sold=1 WHERE si_stock_uid='" . $item_order['uid'] . "'");
+        }
+        
+        $customer_info = Customers::find($customer_id);
+        
+        $company_id = $user_info->fk_company_id;
+        
+        $customer_account_id = 0;
+        
+        if($customer_id == 0)
+        {
+            $customer_account_id = 41;
+        }
+        else
+        {
+            $customer_account_id = $customer_info->ic_account_number;
+        }
+        
+        // save invoice information
+        $AccountingManager = new AccountingManager();
+        $params_array = array(
+            'company_id' => $company_id
+        );
+        $invoice_code = $AccountingManager->GenerateInvoiceCode($params_array);
+        
+        $invoice_info = new Invoices();
+        $invoice_info->bi_invoice_ref       = $invoice_code;
+        $invoice_info->bi_invoice_code      = $invoice_code;
+        $invoice_info->fk_account_id        = $customer_account_id;
+        $invoice_info->fk_customer_id       = $customer_id;
+        $invoice_info->bi_invoice_date      = $creation_date;
+        $invoice_info->bi_due_date          = $creation_date;
+        $invoice_info->bi_payment_terms     = 1;
+        $invoice_info->bi_payment_type      = 2;
+        $invoice_info->bi_invoice_note      = $order_info->so_order_note;
+        $invoice_info->bi_total_cost        = $order_info->so_sub_total;
+        $invoice_info->bi_vat_id            = 1;
+        $invoice_info->bi_discount          = $pos_discount;
+        $invoice_info->bi_total_price       = $order_info->so_total_cost;
+        $invoice_info->bi_invoice_currency  = $order_info->so_order_currency;
+        $invoice_info->bi_invoice_note      = "New Invoice For Order #" . $so_order_code;
+        $invoice_info->bi_invoice_paid      = 0;
+        $invoice_info->bi_number_payments   = 1;
+        $invoice_info->save();
+        
+        $bi_id = $invoice_info->bi_id;
+        
+        $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
+        foreach ($lst_order_items as $key => $oi_info )
+        {
+            $invoice_items = new InvoiceProducts();
+            $stock_id           = $oi_info->so_stock_id;
+            $stock_info         = Stocks::find($stock_id);
+            $invoice_items->fk_invoice_id        = $bi_id;
+            $invoice_items->ii_item_id           = $oi_info->fk_product_id;
+            $invoice_items->ii_stock_id          = $stock_id;
+            $invoice_items->ii_item_type         = $order_info->so_product_type;
+            $invoice_items->ii_item_label        = $stock_info->products->p_product_name;
+            $invoice_items->ii_item_price        = $oi_info->so_product_price;
+            $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
+            $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
+            $invoice_items->save();
+            
+            $product_id = $oi_info->fk_product_id;
+            $stock_id   = $oi_info->so_stock_id;
+            
+            $stock_info = Stocks::find($stock_id);
+            $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+            $stock_info->is_quanity = $is_quanity;
+            $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+            $stock_info->save();
+            
+        }
+        
+        // add payment receipt  for paied payment        
+        $payment_percentage =  ( 100 * $pos_payment_amount/$pos_total );
+        $Paidinvoiceayment = new InvoicePayments();
+        $Paidinvoiceayment->fk_invoice_id          = $bi_id;
+        $Paidinvoiceayment->ip_payment_percentage  = $payment_percentage;
+        $Paidinvoiceayment->ip_payment_label       = "";
+        $Paidinvoiceayment->save();
+        
+        $remaining_percentage =  ( 100 * $pos_remaining_amount/$pos_total );
+        $reminvoiceayment = new InvoicePayments();
+        $reminvoiceayment->fk_invoice_id          = $bi_id;
+        $reminvoiceayment->ip_payment_percentage  = $payment_percentage;
+        $reminvoiceayment->ip_payment_label       = "";
+        $reminvoiceayment->save();
+        
+
+        
+        
+        // save transaction and movement to the accounting table
+        $payment_type_info      = PaymentTypes::find(2);
+        $pt_payment_account     = $payment_type_info->pt_payment_account;
+        
+        $product_account = DefaultAccounts::whereDaAccountCode("ACCOUNT_BOUGHT_PRODUCT")->get();
+        
+        $transaction_info = new Transactions();
+        $transaction_info->at_transaction_date    = $invoice_info->bi_invoice_date;
+        $transaction_info->at_creation_date       = date("Y-m-d");
+        $transaction_info->at_accounting_doc      = $invoice_info->bi_invoice_code;
+        $transaction_info->fk_acc_journal_id      = 3;
+        $transaction_info->save();
+        $at_id = $transaction_info->at_id;
+        
+        $movement_info = new TransactionMovements();
+        $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
+        $movement_info->tm_sub_ledger_account = $pt_payment_account;
+        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $movement_info->tm_debit              = $invoice_info->bi_total_price;
+        $movement_info->tm_credit             = 0;
+        $movement_info->tm_creation_date      = date("Y-m-d");
+        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->save();
+        
+        
+        $movement_info                        = new TransactionMovements();
+        $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
+        $movement_info->tm_sub_ledger_account = $pt_payment_account;
+        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $movement_info->tm_debit              = 0;
+        $movement_info->tm_credit             = $pos_payment_amount;
+        $movement_info->tm_creation_date      = date("Y-m-d");
+        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->save();
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Payment has been completed";
+        
+        return Response()->json($result_array);
+    }
+    
+    /**
+     * Search Order and return information for the order and order items
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function SearchOrderInfo(Request $request)
+    {
+        $order_barcode      = $request->input('order_barcode');
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        $order_info = Orders::whereSoOrderBarcode($order_barcode)->get();
+        
+        if(count($order_info) == 0)
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'Invalid Code Please Try again !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        $so_id = $order_info[0]['so_id'];
+        
+        $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
+        
+        $items_order = array();
+        $index = 0;
+        foreach ( $lst_order_items as $key => $item_info ) 
+        {
+            $items_order[$index]['p_id'] = $item_info->fk_product_id;
+            $items_order[$index]['is_id'] = $item_info->so_stock_id;
+            $items_order[$index]['product_name'] = $item_info->Products->p_product_name; 
+            $items_order[$index]['uid'] = $item_info->stock->is_stock_uid; 
+            $items_order[$index]['product_cost'] = $item_info->so_product_cost; 
+            $items_order[$index]['product_quantity'] = $item_info->so_product_quantity; 
+            $items_order[$index]['product_currency'] = $item_info->so_product_currency; 
+            
+            $product_info = $item_info->Products;
+            
+            $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
+            $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
+            if(strlen($product_info->p_product_profile_base_src) > 0 ){
+                $img_src = $image_src_url;
+            }else{
+                $img_src = url('images/NoImageAvailable.jpg');
+            }
+            $items_order[$index]['image_url'] = $img_src;
+            
+            $index++;
+            
+        } 
+        
+        
+        $result_array['is_error']               = 0;
+        $result_array['items_order']            = $items_order;
+        $result_array['customer_id']            = $order_info[0]['so_order_customer'];
+        $result_array['order_id']               = $so_id;
+        $result_array['sub_total']              = $order_info[0]['so_sub_total'];
+        $result_array['total_discount']         = $order_info[0]['so_total_discount'];
+        $result_array['total_cost']             = $order_info[0]['so_total_cost'];
+        $result_array['order_currency']         = $order_info[0]['so_order_currency'];
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * add product to order array 
+     * @param Request $request
+     */
+    public function AddProductToOrder( Request $request )
+    {
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        $product_id         = $request->input('product_id');
+        $product_uid        = $request->input('product_uid');
+        $warehouse_id       = $request->input('warehouse_id');
+        $company_currency   = $request->input('company_currency');
+        $pos_quantity       = $request->input('pos_quantity');
+        $sec_company_currency= $request->input('sec_company_currency');
+        $pos_quantity = floatval($pos_quantity);
+        if($pos_quantity == 0)
+            $pos_quantity = 1;
+        $user_info          = Users::find($user_id);
+        
+        $c_hash             = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash             =  hash('sha256',$c_hash);
+        $result_array       = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        $stock_ids = StockIds::whereSiStockUid($product_uid)->get();
+        $stock_uid = "";
+        
+        if( count($stock_ids) > 0 )
+        {
+            
+            if($stock_ids[0]->si_stock_sold == 0)
+            {
+                $stock_id   = $stock_ids[0]->si_stock_id;
+                $stock_uid  = $stock_ids[0]->si_stock_uid;
+                
+            }
+            else
+            {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'This item is Already Sold Please Get Information about it from GET INFO Section';
+                
+                return Response()->json($result_array);
+            }
+            
+            
+        }
+        else
+        {
+            $stock_info         = Stocks::whereFkProductId($product_id)->whereFkWarehouseId($warehouse_id)->get();
+            
+            if( count($stock_info) == 0 )
+            {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'We dont have any stock now from this item !!';
+                
+                return Response()->json($result_array);
+            } 
+            
+            if( count($stock_info) > 1 )
+            {
+                for ($i = 0; $i < count($stock_info); $i++)
+                {
+                    $stock_id = $stock_info[$i]->is_id;
+                    
+                    if($stock_id > 0)
+                        continue;
+                        $stock_info_tmp = $stock_info[$i];
+                        if($pos_quantity > $stock_info_tmp->is_quanity)
+                        {
+                            $result_array['is_error']       = 1;
+                            $result_array['quantity']       = $stock_info_tmp->is_quanity;
+                            $result_array['error_message']  = 'Quantity Not enough For this Product !!';
+                            
+                            return Response()->json($result_array);
+                        }
+                        else if( $pos_quantity <= $stock_info_tmp->is_quanity)
+                        {
+                            $stock_id = $stock_info_tmp->is_id;
+                            $stock_uid  = $stock_info_tmp->is_stock_uid;
+                        }
+                }
+            }
+            else if(count($stock_info) == 1)
+            {
+                $stock_info = $stock_info[0];
+                if($pos_quantity > $stock_info->is_quanity)
+                {
+                    $result_array['is_error']       = 1;
+                    $result_array['quantity']       = $stock_info->is_quanity;
+                    $result_array['error_message']  = 'Quantity Not enough For this Product !!';
+                    
+                    return Response()->json($result_array);
+                }
+                
+                $stock_id = $stock_info->is_id;
+                $stock_uid  = $stock_info->is_stock_uid;
+            }
+            else
+            {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'We dont have any stock now from this item !!';
+                
+                return Response()->json($result_array);
+            }
+        }
+        
+        
+        $stock_info = Stocks::find($stock_id);
+        
+        
+        
+        
+        $row_array['p_id']          = $stock_info->products->p_id;
+        $row_array['is_id']         = $stock_info->is_id;
+        $row_array['uid']           = $stock_info->is_stock_uid;
+        $row_array['product_name']  = $stock_info->products->p_product_name;
+        
+        $image_src_url              = url('/')."/".Config::get('constants.PRODUCTS_PATH').$stock_info->products->p_product_profile_base_src.$stock_info->products->p_product_profile_file_name.".".$stock_info->products->p_product_profile_extention;
+        $image_src_path             = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$stock_info->products->p_product_profile_base_src.$stock_info->products->p_product_profile_file_name.".".$stock_info->products->p_product_profile_extention;
+        if(strlen($stock_info->products->p_product_profile_base_src) > 0 )
+        {
+            $img_src = $image_src_url;
+        }
+        else
+        {
+            $img_src = url('images/NoImageAvailable.jpg');
+        }
+        $row_array['image_url'] = $img_src;
+        
+        $price_item         = $stock_info->is_price_item;
+        $stock_currency     = $stock_info->is_stock_currency;
+        $exchange_rate      = 0;
+        $op_product_cost    = 0;
+        
+        // if currrency id are differant
+        if( $stock_currency != $company_currency )
+        {
+            $today_date = date("Y-m-d");
+            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($company_currency)->where('er_date_exchange','=',$today_date)->get();
+            $op_product_cost = 0;
+            if(count($currency_exchange) == 0)
+            {
+                $sc_currency        = Currency::find($stock_currency);
+                $cc_currency        = Currency::find($company_currency);
+                $op_product_cost    = convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
+            }
+            else
+            {
+                $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
+                $op_product_cost    = $price_item * $exchange_rate;
+            }
+            
+               
+            
+        }
+        else
+        {
+            $op_product_cost = $price_item;
+        }
+        
+        
+        // get the second currency rate
+        $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($sec_company_currency)->orderBy('er_id','desc')->get();
+        $sec_cur_product_cost = 0;
+        if(count($currency_exchange) == 0)
+        {
+            $sc_currency        = Currency::find($stock_currency);
+            $cc_currency        = Currency::find($sec_company_currency);
+            $sec_cur_product_cost= convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
+        }
+        else
+        {
+            $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
+            $sec_cur_product_cost= $price_item * $exchange_rate;
+        }
+        $row_array['product_cost']      = $op_product_cost;
+        $row_array['sec_cur_product_cost']      = $sec_cur_product_cost;
+        $row_array['product_quantity']  = $pos_quantity;
+        
+        
+        $total_cost_row = $op_product_cost * $pos_quantity;
+        
+        $result_array['is_error']        = 0;
+        $result_array['row_array']       = $row_array;
+        $result_array['total_cost_row']  = $total_cost_row;
+        return Response()->json($result_array);
+    }
+}

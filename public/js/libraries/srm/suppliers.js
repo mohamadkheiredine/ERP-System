@@ -1,0 +1,16 @@
+/**
+ * 
+ */
+$(function(){
+	suppliers_module.DisplayListSuppliers();
+	$("#SUPPLIER_CATEGORIES").on("change",function(){
+		$.suppliers_datatable.destroy();
+		suppliers_module.DisplayListSuppliers();
+	});
+	$("#SUPPLIER_STATUS").on("change",function(){
+		  $.suppliers_datatable.destroy();
+    	  suppliers_module.DisplayListSuppliers();
+	});
+	$("select").select2();
+	$("select").on('change',suppliers_module.DisplayListSuppliers);
+})

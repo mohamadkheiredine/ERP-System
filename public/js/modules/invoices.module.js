@@ -1,0 +1,793 @@
+/**
+ * 
+ */
+
+invoices_module = {
+		DisplayListInvoices : function(){ 
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 				= $('input[name=_token]').val();
+			var invoice_customer 	= $('#INVOICE_CUSTOMER').val();
+			var invoice_bank 		= $('#INVOICE_BANK').val();
+			var start_date 			= $('input[name=start_date]').val();
+			var end_date 			= $('input[name=end_date]').val();
+			var page_number 			= $('input[name=page_number]').val();
+			var general_search 			= $('input[name=general_search]').val();
+			var fisical_year 			= $('input[name=fisical_year]').val();
+			$.ajax
+			({
+				url : base_url + "/request/billing/displaylistinvoices",
+				data : { _token : _token , general_search : general_search , fisical_year : fisical_year , invoice_customer : invoice_customer , start_date : start_date , end_date : end_date , invoice_bank : invoice_bank , page_number : page_number },
+				method : 'post',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+					$('#LstInvoices').html(response.display);
+					  $('.group-checkable').change(function() {
+                          var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                          var checked = $(this).prop("checked");
+                          $(set).each(function() {
+                              $(this).prop("checked", checked);
+                          });
+                          $.uniform.update(set);
+                      }); 
+                     $.pagination = $('#InvoicesPagination').twbsPagination({
+                           totalPages: response.total_pages,
+                           visiblePages: 7,
+                           onPageClick: function (event, page) {
+                                $('input[name=page_number]').val(page);
+                                invoices_module.DisplayListInvoices();
+                           }
+                       });
+					
+					$("a[id*=EDIT_INVOICE_]").on('click',invoices_module.EditInvoiceInfo);
+					$("a[id*=DELETE_INVOICE_]").on('click',invoices_module.DeleteInvoiceData);
+				}
+			});
+		},
+		ShowPaymentType : function() {
+			var selected = $(this).val();
+			var statusvalidate = $(this).find('option:selected').data('validatept');
+			if(statusvalidate == 1)
+			{
+				$('.PaymentType').css({display : 'block'});
+			}
+			else
+			{
+				$('.PaymentType').css({display : 'none'});
+			}
+		},
+		DeleteItemFromInvoice : function(){
+			var _token 		= $("input[name=_token]").val();
+			 var bi_id 		= $("input[name=bi_id]").val();
+			 var base_url 	= $('input[name=base_url]').val();
+			 var item_id 	= $(this).data('item_id');
+			 
+			Swal.fire({
+				  title: 'Are you sure you want to delete ?',
+				  text: "You won't be able to revert this!",
+				  icon: '',
+				  showCancelButton: true,
+				  confirmButtonColor: '#3085d6',
+				  cancelButtonColor: '#d33',
+				  confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+				  if (result.isConfirmed) {
+					  	$.ajax
+						({
+							url : base_url + "/request/billing/deleteinvoiceitems",
+							data : { _token : _token , item_id : item_id , bi_id : bi_id },
+							method : 'post',
+							dataType : "json",
+							beforeSend : function(){
+							},
+							success : function(response){
+								invoices_module.DisplayListInvoiceProducts();
+							}
+						});
+				  }
+				})
+			 
+		},
+		GenerateInvoiceCode : function(selected_date){
+			var _token 		= $("input[name=_token]").val();
+			var base_url 	= $('input[name=base_url]').val();
+			 var pi_id 	= $('input[name=pi_id]').val();
+			 
+			 if(pi_id != undefined)
+				 return false;
+			$.ajax
+			({
+				url : base_url + "/request/billing/generatecode",
+				data : { _token : _token , selected_date : selected_date , type : "invoices" },
+				method : 'post',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+					$("#BI_INVOICE_REF").val(response.code);
+					$("#BI_INVOICE_CODE").val(response.code);
+				}
+			});
+			
+		},
+		GetItemInvoiceInfo : function(){
+			var _token 		= $("input[name=_token]").val();
+			 var bi_id 		= $("input[name=bi_id]").val();
+			 var base_url 	= $('input[name=base_url]').val();
+			 var item_id 	= $(this).data('item_id');
+			 
+			 $.ajax
+				({
+					url : base_url + "/request/billing/getinvoiceitem",
+					data : { _token : _token , item_id : item_id , bi_id : bi_id },
+					method : 'post',
+					dataType : "json",
+					beforeSend : function(){
+					},
+					success : function(response){
+						 var item_type = $('select[name=bi_invoice_items_type]').val();
+						 console.log(response.item_array);
+						 if( item_type == 1 )
+						 {
+							 $("#InserItems").modal('toggle');
+						 }
+						 else
+						{ 
+							 
+							 $("input[name=item_id]").val(response.item_array.id);
+							 $("#BI_SERVICE_ID").val(response.item_array.ii_item_id);
+							 $("#BI_SERVICE_ID").trigger('change');
+							 $("#II_SUPPLIER_ID").val(response.item_array.item_supplier);
+							 $("#II_SUPPLIER_ID").trigger('change');
+							 $("#InsertServices").find("input[name=item_id]").val(response.item_array.id);
+							 $("#II_COST_PRICE").val(response.item_array.item_cost);
+							 $("#PI_SERVICE_PRICE").val(response.item_array.item_price);
+							 $("#InsertServices").modal('toggle');
+						}
+					}
+				});
+			 
+		},
+		DisplayListInvoiceProducts : function(){
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 				= $('input[name=_token]').val(); 
+			var bi_id 				= $('input[name=bi_id]').val();
+			$('#LstProducts').html("<img src='" + base_url + "/images/loader.gif' style='height:75px' />");
+			$.ajax
+			({
+				url : base_url + "/request/billing/displaylistproductsinvoice",
+				data : { _token : _token , bi_id : bi_id},
+				method : 'post',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+					$('#LstProducts').html(response.display);
+				}
+			});
+		},
+		DisplayListInvoicePayments : function(){
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 				= $('input[name=_token]').val(); 
+			var bi_id 				= $('input[name=bi_id]').val(); 
+		    $.ajax
+		    ({
+		        url : base_url + "/request/billing/displaylistpaymentsinvoice",
+		        data : { _token : _token , bi_id : bi_id},
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){
+		        	$('#LstPaymentSplits').html(response.display);
+		        }
+		    });
+		},
+		CreateRemoveNumberofRows : function(){
+			var new_rows 		= $("#NUMBER_PAYMENT").val();
+			
+			var existing_rows 	= $('table#LstPayments tr.Invoices').length;
+
+			if(new_rows > existing_rows) // if new row value grater then the existing row we create the remaining number of rows
+			{
+				for (var i = existing_rows; i <= new_rows - 1; i++) {
+					var emptyRow = $('tr.EmptyRow').clone();
+					console.log(emptyRow);
+					emptyRow.attr('class',"Invoices");
+					emptyRow.attr('ID',"PAYMENT_" + i);
+					emptyRow.css({display : ""});
+					$('table#LstPayments tbody').append(emptyRow);
+				}
+			}
+			else if(new_rows < existing_rows) // if the existing rows is greater then the number added to the field of new row we remove the remaining rows
+			{
+				for (var i = new_rows; i <= existing_rows - 1; i++) {
+					$("#PAYMENT_" + i).remove();
+				}
+			}
+		},
+		RemoveCurrentRow : function(){
+			$(this).parents('tr').fadeOut('fast',function(){
+				$(this).remove();
+			})
+		},
+		SaveNewRowsInfo : function(){
+			var ip_payment_label = $("input[name='ip_payment_label[]']").map(function(){return $(this).val();}).get();
+			var ip_payment_percentage = $("input[name='ip_payment_percentage[]']").map(function(){return $(this).val();}).get();
+			var ip_payment_type = $("select[name='ip_payment_type[]']").map(function(){return $(this).val();}).get();
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 				= $('input[name=_token]').val(); 
+			var bi_id 				= $('input[name=bi_id]').val(); 
+		    $.ajax
+		    ({
+		        url : base_url + "/request/billing/savesplitpayments",
+		        data : { _token : _token , bi_id : bi_id , ip_payment_type : ip_payment_type , ip_payment_percentage : ip_payment_percentage , ip_payment_label : ip_payment_label },
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){
+		        	$('#LstPaymentSplits').html(response.display);
+		        }
+		    });
+			
+		},
+		QuickActions : function(){
+			var action_type = $(this).data('action_type');
+			switch(action_type)
+			{
+				case "CONVERT_TO_OFFICIAL" :
+				{
+					invoices_module.ConvertInvoiceToOfficial();
+				}
+				break;
+				case "REVERT_TO_DRAFT" :
+				{
+					invoices_module.RevertBacktodraft();
+				}
+				break;
+				case "PRINT_INVOICE" :
+				{
+					invoices_module.DownloadpdfInvoice();
+				}
+				break;
+				case "CREATE_RECEIPT" :
+				{
+					invoices_module.CreateNewReceipt();
+				}
+				break;
+			}
+		},
+		CreateNewReceipt : function(){
+			var bi_id = $('input[name=bi_id]').val();
+			var base_url 			= $('input[name=base_url]').val();
+			window.location.href = base_url + "/billing/receipts/add?invoice_id=" + bi_id;
+		},
+		ConvertInvoiceToOfficial : function(){
+			var bi_id = $('input[name=bi_id]').val();
+			bootbox.confirm("Are you sure you want to Convert this Invoice to Official ?", function(result){
+				//result
+				if(result == true)
+				{
+
+				      var base_url = $('#BASE_URL').val();
+				      var _token = $('input[name=_token]').val();
+				        var str_params ={bi_id : bi_id , _token : _token};
+				         $.ajax
+				        ({
+				            url : base_url + "/request/billing/convertinvoicetoofficial",
+				            data : str_params,
+				            dataType : "Json",
+				            type : "POST",
+				            success : function(response){
+				              if(response.is_error == 0)
+				              {
+				            	 window.location.reload();
+				              }
+				            }
+				        });
+				}
+			});
+		},
+		PayReceipt : function(){
+			var br_id = $(this).data('br_id');
+			bootbox.confirm("Are you sure this Payment is Paid ?", function(result){
+				//result
+				if(result == true)
+				{
+					var base_url = $('#BASE_URL').val();
+				    var _token = $('input[name=_token]').val();
+			        var str_params ={br_id : br_id , _token : _token};
+			         $.ajax
+			        ({
+			            url : base_url + "/request/billing/payreceipt",
+			            data : str_params,
+			            dataType : "Json",
+			            type : "POST",
+			            success : function(response){
+			              if(response.is_error == 0)
+			              {
+			            	  receipts_module.DisplayListInvoiceReceipts();
+			              }
+			            }
+			        });
+				}
+			});
+		},
+		EditIReceiptForm : function(){
+			var br_id = $(this).data('br_id');
+			var bi_id = $("input[name=bi_id]").val();
+			var base_url = $('#BASE_URL').val();
+			window.location.href = base_url + "/billing/receipts/editireceipt/" + bi_id + "/" + br_id;
+			
+		},
+		DownloadpdfInvoice : function(){
+			var bi_id = $('input[name=bi_id]').val();
+			 var base_url = $('#BASE_URL').val();
+			var url = base_url + "/billing/invoices/downloadinvoice/" +  bi_id;
+			window.open(url, '_blank');
+		},
+		GenerateReceiptsPayments : function(){
+			var bi_id = $('input[name=bi_id]').val();
+			 var base_url = $('#BASE_URL').val();
+		      var _token = $('input[name=_token]').val();
+		        var str_params ={bi_id : bi_id , _token : _token};
+		         $.ajax
+		        ({
+		            url : base_url + "/request/billing/generatereceipts",
+		            data : str_params,
+		            dataType : "Json",
+		            type : "POST",
+		            success : function(response){
+		              if(response.is_error == 0)
+		              {
+		          		receipts_module.DisplayListInvoiceReceipts();
+		              }
+		              else
+	            	  {
+		            	  bootbox.alert(response.error_msg);
+	            	  }
+		            }
+		        });
+		},
+		OpenInsertItemsPopup : function(){
+			$("#InserItems").modal('toggle');
+		},
+		OpenInsertServicesPopup : function(){
+			$("#InsertServices").modal('toggle');
+		},
+		EditInvoiceInfo : function(){
+			var bi_id = $(this).data('bi_id');
+		    var base_url = $("#BASE_URL").val();
+		    window.location.href = base_url + "/billing/invoices/editform/" + bi_id;
+		},
+		EditReceiptForm : function(){
+			var br_id = $(this).data('br_id');
+		    var base_url = $("#BASE_URL").val();
+		    window.location.href = base_url + "/billing/ireceipts/editform/" + br_id;
+		},
+		DeleteInvoiceData : function(){
+			 var bi_id = $(this).data('bi_id');
+				bootbox.confirm("Are you sure you want to delete Invoice ?", function(result){
+					//result
+					if(result == true)
+					{
+					      var base_url = $('#BASE_URL').val();
+					      var _token = $('input[name=_token]').val();
+					        var str_params ={bi_id : bi_id , _token : _token};
+					         $.ajax
+					        ({
+					            url : base_url + "/request/billing/deleteinvoiceinfo",
+					            data : str_params,
+					            dataType : "Json",
+					            type : "POST",
+					            success : function(response){
+					              if(response.is_error == 0)
+					              {
+					            	  $.bi_datatable.destroy();
+					            	  invoices_module.DisplayListInvoices();
+					              }
+					            }
+					        });
+					}
+				});
+		},
+		SaveServiceInfo : function(){
+			return invoices_module.SaveServiceSubmitHandler();
+		},
+		SaveServiceSubmitHandler : function(){
+			var InvoiceServicesForm = $('#FRM_INVOICE_SERVICES');
+	        
+			InvoiceServicesForm.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	            	 bi_service_id : {
+	                     required: true
+	                 },
+	                 ii_supplier_id : {
+	                     required: true
+	                 },
+	                 bi_service_price : {
+	                     required: true,
+	                     number : true
+	                 },
+	                 ii_cost_price : {
+	                	 required: true,
+	                     number : true
+	                 }
+	             },
+
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	               //  success3.hide();
+	                // error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                //success3.show();
+	                //error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       // var _token = $('input[name=_token]').val();
+	    	         
+	    	        var str_params = $("#FRM_INVOICE_SERVICES").serialize();
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/billing/insertinvoiceservice",
+	    	            data : str_params,
+	    	            method : 'post',
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              {
+	    	            	  invoices_module.DisplayListInvoiceProducts();
+	    	            	  $("#InsertServices").modal('toggle');
+	    	              }
+	    	            }
+	    	        });
+	             }
+
+	         });
+		},
+		RevertBacktodraft : function(){
+			 var bi_id = $("input[name=bi_id]").val();
+			 var base_url = $('#BASE_URL').val();
+  	       	 var _token = $('input[name=_token]').val();
+			var params = { _token : _token , bi_id : bi_id };
+ 
+			$.ajax
+	        ({
+	            url : base_url + "/request/billing/revertinvoicedraft",
+	            data : params,
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+	            success : function(response){
+	              if(response.is_error == 0)
+	              {
+	            	  window.location.reload();
+	              }
+	            }
+	        });
+			 
+		},
+		SaveItemsInfo : function(){
+			return invoices_module.SaveInsertItemsSubmitHandler();
+		},
+		SaveInsertItemsSubmitHandler : function(){
+			 var InvoiceItemsForm = $('#FRM_INVOICE_ITEMS');
+	         //var error3 = $('.alert-danger', InvoiceItemsForm);
+	         //var success3 = $('.alert-success', InvoiceItemsForm);
+	        
+	         InvoiceItemsForm.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	            	 bi_product : {
+	                     required: true
+	                 },
+	                 bi_quanity : {
+	                     required: true
+	                 }
+	             },
+
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	                 success3.hide();
+	                 error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                //success3.show();
+	                //error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       // var _token = $('input[name=_token]').val();
+	    	         
+	    	        var str_params = $("#FRM_INVOICE_ITEMS").serialize();
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/billing/insertinvoiceitems",
+	    	            data : str_params,
+	    	            method : 'post',
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              {
+	    	            	  invoices_module.DisplayListInvoiceProducts();
+	    	            	  $("#InserItems").modal('toggle');
+	    	              }
+	    	            }
+	    	        });
+	             }
+
+	         });
+		},
+		SavenNewInvoiceInfo(){
+			return invoices_module.SaveInvoicenNewInfoSubmitHandler();
+		},
+		SaveInvoiceInfo(){
+			return invoices_module.SaveInvoiceInfoSubmitHandler();
+		},
+		SaveInvoicenNewInfoSubmitHandler : function(){ 
+			var InvoiceForm = $('#FORM_SAVE_INVOICE');
+	         var error3 = $('.alert-danger', InvoiceForm);
+	         var success3 = $('.alert-success', InvoiceForm);
+
+	         InvoiceForm.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	            	 bi_invoice_ref : {
+	                     required: true
+	                 },
+	                 invoice_account : {
+	                     required: true
+	                 },
+	                 bi_invoice_date : {
+	                       required: true
+	                 },
+	                 bi_invoice_currency : {
+	                	required :true 
+	                 },
+                    bi_invoice_items_type : {
+                   	 required: true
+                    }
+	             },
+
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	                 success3.hide();
+	                 error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                success3.show();
+	                error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       // var _token = $('input[name=_token]').val();
+
+	                $("#BTN_SAVE_INVOICE").attr('disabled','disabled');
+	   	         $("#BTN_SAVE_NEW").attr('disabled','disabled');
+	 
+	    	        var str_params = $("#FORM_SAVE_INVOICE").serialize();
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/billing/saveinvoiceinfo",
+	    	            data : str_params,
+	    	            method : 'post',
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              { 
+	    	            	  window.location.href = base_url + "/billing/invoices/addform";
+	    	              }
+	    	            }
+	    	        });
+	             }
+
+	         });
+		},
+		SaveInvoiceInfoSubmitHandler : function(){
+			 var InvoiceForm = $('#FORM_SAVE_INVOICE');
+	         var error3 = $('.alert-danger', InvoiceForm);
+	         var success3 = $('.alert-success', InvoiceForm);
+	         InvoiceForm.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	            	 bi_invoice_ref : {
+	                     required: true
+	                 },
+	                 invoice_account : {
+	                     required: true
+	                 },
+	                 bi_invoice_date : {
+	                       required: true
+	                 },
+	                 bi_invoice_currency : {
+	                	required :true 
+	                 },
+                     bi_invoice_items_type : {
+                    	 required: true
+                     }
+	             },
+
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	                 success3.hide();
+	                 error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                success3.show();
+	                error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       // var _token = $('input[name=_token]').val();
+
+	                $("#BTN_SAVE_INVOICE").attr('disabled','disabled');
+		   	         $("#BTN_SAVE_NEW").attr('disabled','disabled');
+	 
+	    	        var str_params = $("#FORM_SAVE_INVOICE").serialize();
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/billing/saveinvoiceinfo",
+	    	            data : str_params,
+	    	            method : 'post',
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              { 
+	    	            	 if(response.action == "add")
+	    	            		 window.location.href = base_url + "/billing/invoices/editform/" + response.bi_id;
+	    	            	 else
+	    	            		 window.location.href = base_url + "/billing/invoices";
+	    	              }
+	    	            }
+	    	        });
+	             }
+
+	         });
+		}
+};

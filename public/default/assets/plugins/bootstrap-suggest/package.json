@@ -1,0 +1,55 @@
+{
+  "name": "bootstrap-suggest-plugin",
+  "version": "0.1.29",
+  "description": "这是一个基于 bootstrap 按钮式下拉菜单组件的搜索建议插件，必须使用于按钮式下拉菜单组件上。",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lzwme/bootstrap-suggest-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lzwme/bootstrap-suggest-plugin/issues"
+  },
+  "browser": "dist/bootstrap-suggest.min.js",
+  "main": "src/bootstrap-suggest.js",
+  "keywords": [
+    "bootstrap",
+    "suggest",
+    "dorpdown"
+  ],
+  "author": {
+    "name": "lzwme",
+    "url": "https://lzw.me"
+  },
+  "maintainers": [
+    {
+      "name": "renxia",
+      "url": "https://lzw.me"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://lzw.me/pages/demo/bootstrap-suggest-plugin",
+  "engines": {
+    "node": ">= 4.1.0"
+  },
+  "scripts": {
+    "bootstrap": "yarn || npm install",
+    "start": "npm run bootstrap && grunt",
+    "test": "node_modules/.bin/mocha-phantomjs test/index.html -v 1366x768",
+    "build": "grunt prod"
+  },
+  "peerDependencies": {
+    "jquery": ">=1.11.1",
+    "bootstrap": ">= 3.4.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "grunt": "^1.0.4",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-connect": "^2.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-eslint": "^0.0.5",
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-contrib-watch": "^1.1.0",
+    "mocha": "^7.0.0"
+  }
+}

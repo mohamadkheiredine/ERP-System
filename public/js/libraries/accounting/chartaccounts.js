@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+$(function(){
+	$(".quickactions").on("click",chartaccounts_module.QuickActionChartAccount);
+	$("#BTN_IMPORT_ACCOUNTS").on("click",chartaccounts_module.ImportChartAccount);
+	$("input[name=search_query]").on("keyup",function(){
+		 $('input[name=page_number]').val(1);
+		 $('#AccountsPagination').twbsPagination('destroy');
+		chartaccounts_module.displayListChartAccounts();
+	});
+	chartaccounts_module.displayListChartAccounts();
+})

@@ -1,0 +1,11 @@
+/**
+ * 
+ */
+$(function(){
+	$('select').select2();
+	clients_module.DisplayListClients();
+	$("#ACCOUNT_CATEGORIES").on("click",function(){
+		$.clients_datatable.destroy();
+   	  	clients_module.DisplayListClients();
+	});
+})

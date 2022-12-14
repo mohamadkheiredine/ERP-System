@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+$(function(){
+	prodcategory_module.displayListProductCategories();
+	$("#generalSearch").on('keyup',function(){
+		$('input[name=page_number]').val(1);
+		$.pagination.twbsPagination('destroy');
+		prodcategory_module.displayListProductCategories();
+	});
+	$(".LstCategoriesGrid").on('click',"a[id*=EDIT_PRODUCT_CATEGORY_]",prodcategory_module.DisplayEditProductCategoryForm);
+	$(".LstCategoriesGrid").on('click',"a[id*=DELETE_PRODUCT_CATEGORY_]",prodcategory_module.DeleteProductCategoryData);
+})

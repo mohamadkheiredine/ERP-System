@@ -1,0 +1,8 @@
+/**
+ * 
+ */
+$(function(){
+	  orders_module.DisplayListOrders();
+	  $('select').on('change',orders_module.DisplayListOrders);
+	  $('input[name=general_search]').on('keyup',orders_module.DisplayListOrders);
+})

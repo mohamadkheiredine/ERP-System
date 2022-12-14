@@ -1,0 +1,284 @@
+<?php
+/***********************************************************
+editbom.blade.php
+Product :
+Version : 1.0
+Release : 1
+Date Created : Dec 31, 2019
+Developed By  : Mohamad Mantach   PHP Department itm Solutions
+All Rights Reserved ,   itm Solutions COPYRIGHT 2019
+
+Page Description :
+
+***********************************************************/
+
+
+?>
+
+
+@extends('layouts.layout',['page_title' => "Bill of Materials Management"])
+
+@section('themes')
+<style>
+th{
+    cursor: pointer;
+}
+#ModelPopUp{
+	width:800px;
+}
+</style>
+@endsection
+@section('plugins')
+<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<script type="text/javascript" src="{{ url('js/modules/bom.module.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/mrp/savebom.js') }}"></script>
+@endsection
+
+@section('content')
+
+<div class="m-portlet m-portlet--mobile">
+	<div class="m-portlet__head">
+		<div class="m-portlet__head-caption">
+			<div class="m-portlet__head-title">
+				<h3 class="m-portlet__head-text">
+					Edit Existing BOM
+				</h3>
+			</div>
+		</div>
+		<div class="m-portlet__head-tools">
+			<ul class="m-portlet__nav">
+				<li class="m-portlet__nav-item">
+					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
+						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
+							<i class="la la-ellipsis-h m--font-brand"></i>
+						</a>
+						<div class="m-dropdown__wrapper">
+							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
+							<div class="m-dropdown__inner">
+								<div class="m-dropdown__body">
+									<div class="m-dropdown__content">
+										<ul class="m-nav">
+											<li class="m-nav__section m-nav__section--first">
+												<span class="m-nav__section-text">
+													Quick Actions
+												</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="m-portlet__body">
+             <form name="frm_save_bom" id="FORM_SAVE_BOM">
+                <div class="form-body">
+                     <span id="hidden_fields">
+                       {!! csrf_field() !!}
+                       <input type="hidden" name="bm_id" value="{{ $bom_info->bm_id }}" />  
+                    </span>
+                    <div class="alert alert-success" style="display:none">
+            				<strong>Success!</strong> Bill of Materials Information is saved successfully!
+            			</div>
+            			<div class="alert alert-danger" style="display:none">
+            				<strong>Error!</strong> You have some form errors. Please check below.
+            			</div>
+                    <div class="row">
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> BOM Code <span class="required"> * </span></label>
+                                    <input type="text" name="bm_code" id="BM_CODE" class="form-control" required="required" maxlength="50" readonly="readonly"  value="{{ $bom_info->bm_code }}" />
+                                </div>
+                        </div>
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> BOM Label <span class="required"> * </span></label>
+                                    <input type="text" name="bm_label" id="BM_LABEL" class="form-control" required="required" maxlength="255"  value="{{ $bom_info->bm_label }}" />
+                                </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Product</label><br/>
+                                 <select class="bs-select form-control" name="bm_product_id" id="BM_PRODUCT_ID" data-actions-box="true">
+                                        <option value=""> -- Products --</option>
+                                        @foreach ( $lst_products as $key => $product_info )
+                                                <option {{ $bom_info->bm_product_id == $product_info->p_id ? "selected" : "" }} value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Product Barecode </label><br/>
+                                <span style="font-weight: bold;" class="BareCode"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Product Label </label><br/>
+                                <span  style="font-weight: bold;" class="ProductLabel"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Product Fixed Cost </label><br/>
+                                <input type="number" name="bm_fixed_cost" id="BM_FIXED_COST" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="{{ $bom_info->bm_fixed_cost }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Product Variable Cost </label><br/>
+                                <input type="number" name="bm_variable_cost" id="BM_VARIABLE_COST" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="{{ $bom_info->bm_variable_cost }}" />
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Currency</label><br/>
+                                 <select class="bs-select form-control" name="bm_currency_id" id="BM_CURRENCY_ID" data-actions-box="true">
+                                        <option value=""> -- Currency --</option>
+                                        @foreach ( $lst_currency as $key => $curr_info )
+                                                <option {{ $bom_info->bm_currency_id ==  $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code }}&nbsp;-&nbsp;{{ $curr_info->cc_currency_name }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">BOM Type</label><br/>
+                                 <select class="bs-select form-control" name="bm_bom_type" id="BM_BOM_TYPE" data-actions-box="true">
+                                        <option value="">BOM Type</option> 
+                                        <option {{ $bom_info->bm_bom_type == 1 ? "selected" : "" }} value="1">EBOM - Engineering</option> 
+                                        <option {{ $bom_info->bm_bom_type == 2 ? "selected" : "" }} value="2">MBOM - Manufacturing</option> 
+                                        <option {{ $bom_info->bm_bom_type == 3 ? "selected" : "" }} value="3">SBOM - Sales</option> 
+                                </select>
+                            </div>
+                        </div>
+                         <div class="col-md-12">
+             				<ul class="nav nav-tabs  m-tabs-line" role="tablist">
+								<li class="nav-item m-tabs__item">
+									<a class="nav-link m-tabs__link active" data-toggle="tab" href="#mNotes" role="tab">
+										Notes
+									</a>
+								</li> 
+								<li class="nav-item m-tabs__item">
+									<a class="nav-link m-tabs__link" data-toggle="tab" href="#mProducts" role="tab">
+										Products
+									</a>
+								</li> 
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="mNotes" role="tabpanel">
+									<div class="form-group">
+                                        <label class="control-label">BOM  Note</label>
+        								<textarea name="bm_bom_notes" id="BM_BOM_NOTES" class="form-control" style="width:100%;height:250px;">{{ $bom_info->bm_bom_notes }}</textarea>
+                                    </div>
+								</div> 
+								<div class="tab-pane" id="mProducts" role="tabpanel">
+									<div class="row">
+										<div id="LstBOMProducts" class="col-md-12">
+											<table class="table m-table m-table--head-bg-brand">
+											<thead>
+												<tr>
+													<th> # </th>
+													<th>Product Label</th>
+													<th>Quantity</th>
+													<th>Price </th>
+													<th> </th>
+												</tr>
+											</thead>
+											<tbody id="TableBOMProducts">
+											</tbody>
+										</table>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12" align="right">
+											<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-primary" >Add Product</button>
+										</div>
+									</div>
+								</div> 
+							</div> 
+                        </div>
+                    </div>
+                   <div class="row" style="height:5px;"></div>
+                    <div class="row">
+                        <div class="col-md-9"></div>
+                        <div class="col-md-3" align="right">
+                             <button type="submit" name="btn_save_bom" id="BTN_SAVE_BOM"  class="btn btn-info">Save</button>
+                            <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+	</div>
+</div>
+<div class="modal fade" id="BOMItemsModel" tabindex="-1" role="dialog" aria-labelledby="BOMItemsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="BOMItemsModalLabel">BOM Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<form name="frm_bom_item" id="FRM_BOM_ITEMS">
+      		<div class="row">
+          		<div class="col-md-12">
+          			<div class="form-group">
+          				<label> Product </label><br/>
+          				<select name="bm_item_product" id="BM_ITEM_PRODUCT" style="width:100%;" class="form-control">
+          				         <option value="">-- Select product --</option>
+          					@foreach($lst_raw_materials as $index => $rm_info)
+          						<option value="{{ $rm_info->p_id }}" data-weight="{{ $rm_info->p_product_weight }}" data-unit="{{ $rm_info->p_product_weight_unit }}" >{{ $rm_info->p_product_name }}</option>
+          					@endforeach
+          				</select>
+          			</div>
+          		</div>
+          		<div class="col-md-12">
+          			<div class="form-group">
+          				<label> Quantity types </label><br/>
+          				<select name="bm_quantity_type" id="BM_QUANTITY_TYPE" style="width:100%;" class="form-control">
+          					<option value="">-- Select type --</option>
+          					<option value="qty">Quantity</option>
+          					<option value="weight">Weight</option>
+          					<option value="volume">Volume</option> 
+          				</select>
+          			</div>
+          		</div>
+          		<div class="col-md-12">
+          			<div class="form-group">
+          				<label> Quanity </label><br/>
+          				<input type="number" class="form-control" name="bm_item_quanity" id="BM_ITEM_QUANTITY" required="required" min="0.0000" max="999999999999.0000" />
+          			</div>
+          		</div>
+          		<div class="col-md-12">
+          			<div class="form-group">
+          				<label> Unit </label><br/>
+          				<div style="width:100%" class="UnitsDropDown"></div>
+          			</div>
+          		</div>
+          		<div class="col-md-12">
+          			<div class="form-group">
+          				<label> Products Price </label><br/>
+          				<input type="text" name="bm_item_price" id="BM_ITEM_PRICE" class="form-control" required="required" maxlength="255" readonly="readonly"  value="0" />
+          				<input type="hidden" name="ini_item_price" value="" />
+          			</div>
+          		</div>
+          		<div class="col-md-12" align="right">
+      	  			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        			<button type="submit" name="btn_insert_item" id="BTN_INSERT_ITEM" class="btn btn-primary">Save Item</button>
+          		</div>
+          	</div>
+      	</form> 
+      </div>
+      <div class="modal-footer">
+      
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
