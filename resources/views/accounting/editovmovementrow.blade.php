@@ -25,8 +25,8 @@ Edit Movement Row
 <td>
 	<input type="text" name="tm_ledger_label" class="form-control" value="{{ $movement_info->tm_ledger_label }}" />
 </td>
-<td><input type="number" step="0.1" min="0" max="10000000" name="tm_debit" class="form-control" value="{{ $movement_info->tm_debit }}" /></td>
-<td><input type="number" step="0.1" min="0" max="10000000" name="tm_credit" class="form-control" value="{{ $movement_info->tm_credit }}" /></td>
+<td><input type="number" step="0.1" min="0" max="100000000" name="tm_debit" class="form-control" value="{{ $movement_info->tm_debit }}" /></td>
+<td><input type="number" step="0.1" min="0" max="100000000" name="tm_credit" class="form-control" value="{{ $movement_info->tm_credit }}" /></td>
 <td>
 <select class="bs-select form-control" name="tm_currency_id" data-actions-box="true">
         <option value="0">Currency</option>

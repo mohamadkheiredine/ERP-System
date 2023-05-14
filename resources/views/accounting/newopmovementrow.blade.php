@@ -26,8 +26,8 @@ Page Description :
 	<td>
 		<input type="text" name="tm_ledger_label[]" class="form-control" value="" />
 	</td>
-	<td><input type="number" step="0.1" min="0" max="10000000" name="tm_debit[]" class="form-control" value="0.0" /></td> 
-	<td><input type="number" step="0.1" min="0" max="10000000" name="tm_credit[]" class="form-control" value="0.0" /></td> 
+	<td><input type="number" step="0.1" min="0" max="100000000" name="tm_debit[]" class="form-control" value="0.0" /></td> 
+	<td><input type="number" step="0.1" min="0" max="100000000" name="tm_credit[]" class="form-control" value="0.0" /></td> 
 	<td>
 	 <select class="bs-select form-control" name="tm_currency_id[]" data-actions-box="true">
                 <option value="0">Currency</option>

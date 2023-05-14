@@ -1,68 +1,84 @@
 {
-	"name" : "laravel/laravel",
-	"type" : "project",
-	"description" : "The Laravel Framework.",
-	"keywords" : [
-		"framework",
-		"laravel"
-	],
-	"license" : "MIT",
-	"require" : {
-		"php": "^7.2 || ^8.1",
-		"akaunting/money": "^1.0",
-		"barryvdh/laravel-dompdf": "^0.8.5",
-		"fideloper/proxy": "^4.0",
-		"fruitcake/laravel-cors": "^1.0",
-		"highideas/laravel-users-online": "^3.0",
-		"laravel/framework": "^6.0",
-		"laravel/tinker": "^1.0",
-		"milon/barcode": "^6.0", 
-        "laravel/passport": "7.5.1"
-	},
-	"require-dev" : {
-		"facade/ignition" : "^1.4",
-		"fzaninotto/faker" : "^1.4",
-		"mockery/mockery" : "^1.0",
-		"nunomaduro/collision" : "^3.0",
-		"phpunit/phpunit" : "^8.0"
-	},
-	"config" : {
-		"optimize-autoloader" : true,
-		"preferred-install" : "dist",
-		"sort-packages" : true
-	},
-	"extra" : {
-		"laravel" : {}
-	},
-	"autoload" : {
-		"psr-4" : {
-			"App\\" : "app/"
-		},
-		"classmap" : [
-			"database/seeds",
-			"database/factories"
-		],
-		"files" : [
-			"app/helpers/DateTimeHelper.php",
-			"app/helpers/EmailHelper.php",
-			"app/helpers/ArrayHelper.php",
-			"app/helpers/AccountingHelper.php",
-			"app/helpers/ImportHelper.php"
-		]
-	},
-	"autoload-dev" : {
-		"psr-4" : {
-			"Tests\\" : "tests/"
-		}
-	},
-	"minimum-stability" : "dev",
-	"prefer-stable" : true,
-	"scripts" : {
-		"post-autoload-dump" : [
-			"Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-			"@php artisan package:discover --ansi"
-		],
-		"post-root-package-install" : "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-		"post-create-project-cmd" : "@php artisan key:generate --ansi"
-	}
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The Laravel Framework.",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "akaunting/laravel-money": "*",
+        "aws/aws-sdk-php": "^3.263",
+        "barryvdh/laravel-cors": "^3.0",
+        "barryvdh/laravel-dompdf": "^2.0",
+        "fideloper/proxy": "^4.4",
+        "guzzlehttp/guzzle": "^7.2",
+        "highideas/laravel-users-online": "^3.0",
+        "laravel/fortify": "^1.13",
+        "laravel/framework": "^9.19",
+        "laravel/sanctum": "^3.0",
+        "laravel/tinker": "^2.7",
+        "laravel/ui": "^4.1",
+        "league/flysystem-aws-s3-v3": "^3.12",
+        "milon/barcode": "*",
+        "phpmailer/phpmailer": "^6.8",
+        "predis/predis": "^2.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.9.1",
+        "laravel/pint": "^1.0",
+        "laravel/sail": "^1.0.1",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^6.1",
+        "phpunit/phpunit": "^9.5.10",
+        "spatie/laravel-ignition": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "app/helpers/ArrayHelper.php",
+            "app/helpers/AccountingHelper.php",
+            "app/helpers/DateTimeHelper.php",
+            "app/helpers/EmailHelper.php",
+            "app/helpers/ImportHelper.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -799,7 +799,7 @@ class ProductsController extends Controller
 			$lst_categories = $lst_categories->where("pc_use_serial_number",0)->wherePcMaintenanceCategory(0)->get();
         $category_array = array();
         $items_array    = array();
-        dd($lst_categories);
+        
         $index = 0;
         foreach ($lst_categories as $key => $category_info) 
         {

@@ -177,6 +177,7 @@ class AccountingController extends Controller
         }
           
         $opening_voucher_trans = Transactions::whereFkAccJournalId(8)->whereYear("at_transaction_date",$fisical_year)->get(); 
+  
         $ov_info = new Transactions();
         $at_id = 0;
         if(count($opening_voucher_trans) >= 1)
@@ -188,13 +189,12 @@ class AccountingController extends Controller
             
             $ov_info = Transactions::find($at_id);
         }
-         
-        $lst_movements      = TransactionMovements::whereFkTranId($at_id)->whereYear("tm_transaction_date",$at_transaction_date)->get();
+     
+        $lst_movements      = TransactionMovements::whereFkTranId($at_id)->whereYear("tm_transaction_date",$fisical_year)->get();
+      
         $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $accounts_array     = CreateDatabaseArrayByIndex($lst_accounts, "aa_id");
-        
-       
-        
+
         $data = array(
             "lst_movements" => $lst_movements,
             "accounts_array" => $accounts_array,
@@ -241,13 +241,13 @@ class AccountingController extends Controller
         $query = $query . " group by tm_sub_ledger_account,tm_currency_id  order by accounts.aa_account_ref,tm_currency_id DESC;";
         $lst_accounts = DB::select($query);  
        
-        if(count($lst_accounts) == 0)
-        {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = "Number of records not exist";
+//         if(count($lst_accounts) == 0)
+//         {
+//             $result_array['is_error'] = 1;
+//             $result_array['error_msg'] = "Number of records not exist";
             
-            return Response()->json($result_array);
-        }
+//             return Response()->json($result_array);
+//         }
         
         $transaction_data = Transactions::whereFkAccJournalId(8)->whereAtTransactionDate($firstday)->get();
         
