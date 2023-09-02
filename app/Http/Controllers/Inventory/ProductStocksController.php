@@ -192,6 +192,7 @@ class ProductStocksController extends Controller
     public function AddForm()
     {
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
+ 
         $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
         //
@@ -563,17 +564,17 @@ class ProductStocksController extends Controller
             
             
             
-            $supplier_info = Suppliers::find($is_supplier_id);
+//             $supplier_info = Suppliers::find($is_supplier_id);
             
-            if($supplier_info->ss_sale_account_id > 0)
-                $payable_account = $supplier_info->ss_sale_account_id;
-            else
-                $payable_account = $product_info->p_sale_accounting_code;
+//             if($supplier_info->ss_sale_account_id > 0)
+//                 $payable_account = $supplier_info->ss_sale_account_id;
+//             else
+//                 $payable_account = $product_info->p_sale_accounting_code;
                 
-             if($supplier_info->ss_purchase_account_id> 0)
-                $receivable_account    = $supplier_info->ss_purchase_account_id;
-              else
-                $receivable_account    = $product_info->p_purchase_accounting_code;
+//              if($supplier_info->ss_purchase_account_id> 0)
+//                 $receivable_account    = $supplier_info->ss_purchase_account_id;
+//               else
+//                 $receivable_account    = $product_info->p_purchase_accounting_code;
             
             $movememnt_obj->fk_tran_id              = $at_id;
             $movememnt_obj->tm_ledger_account       = $product_info->p_sale_accounting_code;

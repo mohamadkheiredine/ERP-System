@@ -55,5 +55,21 @@ $(function(){
 	 $("#BTN_ADD_STOCK").on("click",products_module.AddProductStock);
 	 $("#BTN_TRANSFER_STOCK").on("click",products_module.ProductTransferStock);
 	 $("#P_PRODUCT_UNIT_TYPE").on("change",products_module.DisplayMetricProduct);
-	 $("#P_PRODUCT_CURRENCY").on("change",products_module.ChangeCurrencyLabel);
+	 $("#P_PRODUCT_CURRENCY").on("change",products_module.ChangeCurrencyLabel);	
+         $('#P_PRODUCT_PRODUCTION_DATE').datepicker({ 
+		 todayHighlight: true,
+		 orientation: "bottom left",
+		 templates: {
+			 leftArrow: '<i class="la la-angle-left"></i>',
+			 rightArrow: '<i class="la la-angle-right"></i>'
+		 }
+	 });
+         $('#P_PRODUCT_EXPIRY_DATE').datepicker({ 
+		 todayHighlight: true,
+		 orientation: "bottom left",
+		 templates: {
+			 leftArrow: '<i class="la la-angle-left"></i>',
+			 rightArrow: '<i class="la la-angle-right"></i>'
+		 }
+	 });
 })

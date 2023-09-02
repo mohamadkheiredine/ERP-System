@@ -245,7 +245,7 @@ class CustomersController extends Controller
         $customer_info->ic_customer_website = $ic_customer_website;
         
         
-        if(count($_FILES) > 0 )
+        if(isset($_FILES['ic_avatar_pic']))
         {
             $image_data =  $customer_manager->UploadCustomersAvatar($customer_id);
             $customer_info->ic_image_base_src      = $image_data['data']['ic_image_base_src'];

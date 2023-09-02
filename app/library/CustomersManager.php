@@ -53,6 +53,11 @@ class CustomersManager
     {
         $result_array = array();
         
+        if($_FILES['ic_avatar_pic'])
+        {
+            return $result_array;
+        }
+        
         
         if( $ic_id != null ){
             
@@ -61,6 +66,7 @@ class CustomersManager
         }
         
         $response  = array();
+        
         $file_name = $_FILES['ic_avatar_pic']['name'];
         $file_type = $_FILES['ic_avatar_pic']['type'];
         $file_tmp  = $_FILES['ic_avatar_pic']['tmp_name'];

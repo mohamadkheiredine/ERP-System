@@ -1,4 +1,4 @@
-.....<?php
+<?php
 /***********************************************************
 layout.blade.php
 Product : IM Solutions

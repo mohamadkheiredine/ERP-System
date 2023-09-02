@@ -790,13 +790,14 @@ class ProductsController extends Controller
             
             return Response()->json($result_array);
         } 
-        
+        DB::connection()->enableQueryLog();
         $lst_categories = ProductCategories::wherePcIsDeleted(0);
 		if(is_numeric($category_id) && $category_id != 0)
 			$lst_categories = $lst_categories->whereFkPcId($category_id);
 		else 
-			$lst_categories = $lst_categories->whereNull('fk_pc_id');
-			$lst_categories = $lst_categories->where("pc_use_serial_number",0)->wherePcMaintenanceCategory(0)->get();
+		    $lst_categories = $lst_categories->whereNull('fk_pc_id');
+		    $lst_categories = $lst_categories->get();
+		    $queries = DB::getQueryLog(); 
         $category_array = array();
         $items_array    = array();
         

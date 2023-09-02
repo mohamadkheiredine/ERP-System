@@ -49,4 +49,7 @@ Dimension of wwarehouse
 		<div class="col-md-12">
               <button type="button" name="btn_draw_image" id="BTN_DRAW_IMAGE" class="btn btn-info" > Draw Image </button>
         </div>
+        <div class="col-md-12" align="center">
+               <canvas id="myCanvas" width="400" height="400"></canvas>
+        </div>
 </div>

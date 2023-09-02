@@ -36,6 +36,7 @@ Route::group(['middleware' => ['cors']], function() {
     Route::post('/request/api/getproductstockinfo','Api\ProductsController@GetProductStockinfo');
     
     Route::post('/request/api/order/addproduct','Api\OrdersController@AddProductToOrder');
+    Route::get('/request/api/general/listpaymenttypes','Api\GeneralController@GetListPaymentTypes');
     
     
     Route::post('/request/api/getnumbers','Api\PhoneLinesController@GetListofNumbers');
