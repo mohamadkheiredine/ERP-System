@@ -63,8 +63,8 @@ CREATE TABLE `inventory_stock_ids` (
 
 
 
-
-CREATE TABLE `bom_bill_of_materials_header` (
+DROP TABLE mrp_bill_material;
+CREATE TABLE `mrp_bill_material` (
   `bm_id` MEDIUMINT NOT NULL AUTO_INCREMENT,
   `bm_bom_label` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
   `fk_finish_product_id` INT NULL DEFAULT 0,
@@ -116,6 +116,51 @@ CREATE TABLE`bom_line_items` (
   `bl_deleted_by` INT NULL DEFAULT 0,
   PRIMARY KEY (`bl_id`));
 
+
+  
+  CREATE TABLE `mrp_bom_routine` (
+  `br_id` INT NOT NULL AUTO_INCREMENT,
+  `br_routinelabel` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `br_bom_id` MEDIUMINT NULL DEFAULT 0,
+  `br_operation_sequence` MEDIUMINT NULL DEFAULT 0,
+  `br_work_center_id` TINYINT NULL DEFAULT 0,
+  `br_machine_id` SMALLINT NULL DEFAULT 0,
+  `br_setup_time` TIMESTAMP NULL DEFAULT NULL,
+  `br_run_time` TIMESTAMP NULL DEFAULT NULL,
+  `br_cycle_time` TIMESTAMP NULL DEFAULT NULL,
+  `br_operation_status` TINYINT NULL DEFAULT 0,
+  `br_effective_date` DATETIME NULL DEFAULT NULL,
+  `br_comments` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `br_work_instructions` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `br_tooling_fixtures` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `br_is_deleted` TINYINT NULL DEFAULT 0,
+  `br_deleted_by` INT NULL DEFAULT 0,
+  PRIMARY KEY (`br_id`),
+  INDEX `idx_br_bom_id` USING BTREE (`br_bom_id`) VISIBLE,
+  INDEX `idx_br_operation_sequence` USING BTREE (`br_operation_sequence`) VISIBLE,
+  CONSTRAINT `fk_br_bom_id`
+    FOREIGN KEY (`br_bom_id`)
+    REFERENCES `retailerp_db`.`mrp_bill_material` (`bm_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+
+
+CREATE TABLE `mrp_bom_status` (
+  `mb_id` TINYINT NOT NULL AUTO_INCREMENT,
+  `fk_dependancy_id` TINYINT NULL DEFAULT 0,
+  `mb_status_label` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `mb_status_description` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `mb_is_deleted` TINYINT NULL DEFAULT 0,
+  `mb_deleted_by` INT NULL DEFAULT 0,
+  PRIMARY KEY (`mb_id`),
+  INDEX `idx_fk_dependancy_id` (`fk_dependancy_id` ASC) INVISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
 
 
 
