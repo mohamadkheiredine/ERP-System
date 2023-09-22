@@ -155,6 +155,7 @@ class ProductCategoriesController extends Controller
         $pc_category                = $request->input('pc_category');
         $pc_cat_ref                 = strtolower($pc_category);
         $pc_cat_ref                 = str_replace(" ", "", $pc_cat_ref);
+        $pc_cat_ref                 = substr($pc_cat_ref, 0,3);
         $pc_description             = $request->input('pc_description');
         $pc_use_serial_number       = $request->input('pc_use_serial_number');
         $pc_maintenance_category    = $request->input('pc_maintenance_category');

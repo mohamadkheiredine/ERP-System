@@ -2,7 +2,7 @@
 Route::post('/request/license/savelicenseinfo','IndexController@GenerateLicenseFile');
 Route::post('/request/login','Auth\LoginController@Login');
 
-Route::post('ajaxsaveConfiguration', 'Configuration\ConfigurationController@SaveConfiguration'); 
+Route::post('ajaxsaveConfiguration', 'Utilities\ConfigurationController@SaveConfiguration'); 
 
 
 Route::post('/request/dashboard/getdailysales','Dashboard\DashboardController@GetDailySales');

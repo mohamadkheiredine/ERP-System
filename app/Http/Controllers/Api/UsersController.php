@@ -103,13 +103,13 @@ class UsersController extends Controller
                 $sec_currency_id    = $company_info->cd_secondary_currency;
                 $sec_currency_info  = Currency::find($sec_currency_id);
                 
-                $result_array['company_id']                     = $company_id; 
-                $result_array['company_country']                = $company_info->cd_company_country; 
-                $result_array['currency_symbol']                = $currency_info->cc_currency_code; 
-                $result_array['company_currency']               = $currency_id;
-                $result_array['sec_currency_symbol']            = $sec_currency_info->cc_currency_code;
-                $result_array['sec_currency_id']                = $sec_currency_id;
-                $result_array['company_logo']                   = $company_logo;
+                $auth_array['company_id']                     = $company_id; 
+                $auth_array['company_country']                = $company_info->cd_company_country; 
+                $auth_array['currency_symbol']                = $currency_info->cc_currency_code; 
+                $auth_array['company_currency']               = $currency_id;
+                $auth_array['sec_currency_symbol']            = $sec_currency_info->cc_currency_code;
+                $auth_array['sec_currency_id']                = $sec_currency_id;
+                $auth_array['company_logo']                   = $company_logo;
                 
                 // calculate exchange rate of primary and seconday 
                 $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)->whereErToCurrency($sec_currency_id)->orderBy('er_date_exchange','DESC')->get();

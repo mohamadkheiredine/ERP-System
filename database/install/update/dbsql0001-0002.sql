@@ -164,4 +164,30 @@ COLLATE = utf8_unicode_ci;
 
 
 
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('3', 'stock_expiry_date', 'Products has an expiry date', '0', '1', '1');
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('4', 'max_rows_per_page', 'Max Number of Rows per page', '20', '1', '1');
+
+ALTER TABLE `inventory_product_categories` ADD COLUMN `pc_use_serial_number` TINYINT NULL DEFAULT 0 AFTER `pc_avatar_extension`,ADD COLUMN `pc_maintenance_category` TINYINT NULL DEFAULT 0 AFTER `pc_use_serial_number`;
+
+
+
+CREATE TABLE `inventory_stock_ids` (
+  `si_stock_id` INT UNSIGNED NULL DEFAULT 0,
+  `si_stock_uid` VARCHAR(255) NULL DEFAULT NULL,
+  INDEX `fk_si_stock_id_idx` (`si_stock_id` ASC) VISIBLE,
+  INDEX `idx_si_stock_uid` USING BTREE (`si_stock_uid`) VISIBLE,
+  CONSTRAINT `fk_si_stock_id`
+    FOREIGN KEY (`si_stock_id`)
+    REFERENCES `inventory_stocks` (`is_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+ALTER TABLE `srm_suppliers` CHANGE COLUMN `ss_date_creation` `ss_date_creation` DATE NULL DEFAULT NULL ;
+ALTER TABLE `srm_suppliers` DROP FOREIGN KEY `ss_fk_category_id`;
+ALTER TABLE `srm_suppliers` DROP INDEX `idx_ss_category_id` ;
+
+
 
