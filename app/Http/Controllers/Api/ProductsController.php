@@ -142,6 +142,16 @@ class ProductsController extends Controller
         $user_id             = $request->input('user_id');
         $category_id         = $request->input('category_id');
         $g_hash              = $request->input('g_hash');
+        $current_page              = $request->input('current_page');
+        $has_pagination              = !$request->has('has_pagination') ? 1 : $request->input('has_pagination');
+        
+        
+        $nbr_rows_per_pages    = 10;
+        if($current_page > 1)
+            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
         $user_info           = Users::find($user_id);
         
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
@@ -161,13 +171,21 @@ class ProductsController extends Controller
         
         $products = array();
         
-        $lst_products = Products::wherePProductIsDeleted(0);
+        $products_cond = Products::wherePProductIsDeleted(0);
         if( $category_id != 0 )
         {
-            $lst_products = $lst_products->whereFkPcId($category_id);
+            $products_cond = $products_cond->whereFkPcId($category_id);
         }
-        $lst_products = $lst_products->get();
         
+        $products_count = $products_cond->count();
+        
+        $total_pages = ceil( $products_count/$nbr_rows_per_pages );
+        $total_pages = intval($total_pages);
+        
+        if($has_pagination == 1)
+            $lst_products = $products_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        else 
+            $lst_products = $products_cond->get();
         
         foreach ( $lst_products as $key => $product_info ) 
         {
@@ -194,6 +212,7 @@ class ProductsController extends Controller
         
         $result_array['is_error']       = 0;
         $result_array['products']       = $products;
+        $result_array['total_pages']       = $total_pages;
         
         
         return Response()->json($result_array);
