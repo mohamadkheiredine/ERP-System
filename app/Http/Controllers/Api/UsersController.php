@@ -83,12 +83,11 @@ class UsersController extends Controller
             $result_array['u_department_id']            = $user_info->u_department_id; 
             $result_array['company_id']                 = $company_id; 
             $result_array['warehouse_id']               = $user_info->fk_warehouse_id; 
-            
+          
             if($company_id > 0)
             {
                 
                 $company_info = Companies::find($company_id);
-                
                 $company_logo_src_url  = url('/')."/".Config::get('constants.COMPANY_PATH').$company_info->cd_logo_base_src.$company_info->cd_logo_file_name.".".$company_info->cd_logo_file_extension;
                 
                 if(strlen($company_info->cd_logo_base_src) > 0 ){
@@ -103,13 +102,13 @@ class UsersController extends Controller
                 $sec_currency_id    = $company_info->cd_secondary_currency;
                 $sec_currency_info  = Currency::find($sec_currency_id);
                 
-                $auth_array['company_id']                     = $company_id; 
-                $auth_array['company_country']                = $company_info->cd_company_country; 
-                $auth_array['currency_symbol']                = $currency_info->cc_currency_code; 
-                $auth_array['company_currency']               = $currency_id;
-                $auth_array['sec_currency_symbol']            = $sec_currency_info->cc_currency_code;
-                $auth_array['sec_currency_id']                = $sec_currency_id;
-                $auth_array['company_logo']                   = $company_logo;
+                $result_array['company_id']                     = $company_id; 
+                $result_array['company_country']                = $company_info->cd_company_country; 
+                $result_array['currency_symbol']                = $currency_info->cc_currency_code; 
+                $result_array['company_currency']               = $currency_id;
+                $result_array['sec_currency_symbol']            = $sec_currency_info->cc_currency_code;
+                $result_array['sec_currency_id']                = $sec_currency_id;
+                $result_array['company_logo']                   = $company_logo;
                 
                 // calculate exchange rate of primary and seconday 
                 $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)->whereErToCurrency($sec_currency_id)->orderBy('er_date_exchange','DESC')->get();

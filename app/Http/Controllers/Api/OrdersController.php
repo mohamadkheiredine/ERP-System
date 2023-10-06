@@ -369,6 +369,18 @@ class OrdersController extends Controller
     
     
     /**
+     * Create Order Restaurant
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function CreateOrderRestaurant(Request $request)
+    {
+        
+    }
+    
+    
+    /**
      * Create POS Order and pay downpayment and split the payments by pay multiple payments
      * 
      * @author Moe Mantach

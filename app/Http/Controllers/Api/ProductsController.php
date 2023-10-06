@@ -189,6 +189,7 @@ class ProductsController extends Controller
         
         foreach ( $lst_products as $key => $product_info ) 
         {
+            $products[ $product_info->p_id ]['p_id']                        = $product_info->p_id;
             $products[ $product_info->p_id ]['reference']                   = $product_info->p_product_ref;
             $products[ $product_info->p_id ]['p_barcode']                   = $product_info->p_barcode;
             $products[ $product_info->p_id ]['p_barcode_img']               = $product_info->p_barcode_img;

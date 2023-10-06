@@ -60,6 +60,7 @@ use Illuminate\Http\Request;
     Route::post('/request/api/deletevendors','Api\VendorsController@DeleteVendorInfo');
     
     Route::post('/request/api/createposorder','Api\OrdersController@CreatePOSOrder');
+    Route::post('/request/api/createorderrestaurant','Api\OrdersController@CreateOrderRestaurant');
     Route::post('/request/api/pos/splitorderpayment','Api\OrdersController@SplitOrderPayment');
     Route::get('/request/api/searchorderinfo','Api\OrdersController@SearchOrderInfo');
     
