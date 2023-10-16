@@ -227,32 +227,33 @@ $(function(){
         		}
             	else
         		{
+
+        			window.location.href= base_url + "/dashboard";
             		/**
             		if(response.company_homepage == 1)
-            			window.location.href= base_url + "/dashboard";
             		else
             			window.location.href= base_url + "/services/dashboard";
             			*/
             		
-            		switch(response.company_homepage)
-            		{
-            			case 1:
-        				{
-            				window.location.href= base_url + "/dashboard"; 
-        				}
-        				break;
-            			case 2:
-        				{
-            				window.location.href= base_url + "/accounting/dashboard"; 
-        				}
-        				break;
-            			case 3:
-        				{
-            				window.location.href= base_url + "/services/dashboard"; 
-        				}
-        				break;
-            		
-            		}
+//            		switch(response.company_homepage)
+//            		{
+//            			case 1:
+//        				{
+//            				window.location.href= base_url + "/dashboard"; 
+//        				}
+//        				break;
+//            			case 2:
+//        				{
+//            				window.location.href= base_url + "/accounting/dashboard"; 
+//        				}
+//        				break;
+//            			case 3:
+//        				{
+//            				window.location.href= base_url + "/services/dashboard"; 
+//        				}
+//        				break;
+//            		
+//            		}
         		}
              }
          });

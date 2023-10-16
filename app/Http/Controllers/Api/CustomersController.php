@@ -61,8 +61,8 @@ class CustomersController extends Controller
         
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
-        $customer_search     = $request->input('customer_search');
-        $user_info           = Users::find($user_id);
+        $customer_search     = $request->input('customer_search'); 
+        $user_info           = Users::find($user_id); 
         
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
@@ -188,6 +188,28 @@ class CustomersController extends Controller
     
     
     /**
+     * Search Customer Information By Mobile
+     * 
+     * @author Moe mantach
+     * @access public
+     * @param Request $request
+     */
+    public function SearchCustomer(Request $request)
+    {
+        $sc_customer_mobile = $request->input('sc_customer_mobile');
+        $customer_info = Customers::where('ic_customer_mobile','LIKE','%' . $sc_customer_mobile . '%')->get();
+        
+        $result_array = array();
+        $customer_name = "";
+        
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['customer_name'] = $customer_info->ic_customer_name;
+        return Response()->json($result_array);
+    }
+    
+    /**
      * Save Customer Info Saved In the Database
      * 
      * @author Moe Mantach
@@ -197,7 +219,7 @@ class CustomersController extends Controller
     public function SaveCustomerInfo( Request $request )
     {
         $user_id                = $request->input('user_id'); 
-        $customer_id            = $request->input('customer_id');
+        $customer_id            = $request->has('customer_id') ? $request->input('customer_id') : 0;
         $ic_customer_name       = $request->input('ic_customer_name');
         $ic_customer_address    = $request->input('ic_customer_address');
         $ic_customer_email      = $request->input('ic_customer_email');
@@ -243,15 +265,41 @@ class CustomersController extends Controller
         $customer_info->ic_customer_address = $ic_customer_address;
         $customer_info->ic_customer_email   = $ic_customer_email;
         $customer_info->ic_customer_website = $ic_customer_website;
+        $customer_info->ic_customer_phone = $ic_customer_phone;
+        $customer_info->ic_customer_mobile = $ic_customer_mobile;
         
         
-        if(count($_FILES) > 0 )
+        if(isset($_FILES['ic_avatar_pic']))
         {
             $image_data =  $customer_manager->UploadCustomersAvatar($customer_id);
             $customer_info->ic_image_base_src      = $image_data['data']['ic_image_base_src'];
             $customer_info->ic_image_file_name     = $image_data['data']['ic_file_name'];
             $customer_info->ic_image_extension     = $image_data['data']['ic_file_extension'];
             
+        }
+        
+        // if this add new customer we create a new account and save it as account info
+        if($customer_id == 0)
+        {
+            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info = $account_info[0];
+            
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+      
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+            
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $account_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_ref;
+            $AccAccounting->aa_account          = $aa_account_ref;
+            $AccAccounting->aa_sub_account      = $account_info->aa_id;
+            $AccAccounting->aa_account_label    = $ic_customer_name;
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save();
+            
+            $aa_id = $AccAccounting->aa_id;
+            $customer_info->ic_account_number = $aa_id;
         }
         
         $customer_info->save();

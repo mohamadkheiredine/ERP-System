@@ -42,6 +42,7 @@ use Swap\Swap;
 use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Accounting\DefaultAccounts;
+use App\models\Billing\PaymentTypes;
 
 class GeneralController extends Controller
 {
@@ -159,5 +160,33 @@ class GeneralController extends Controller
         $result_array['product_purchase_account']   = $product_purchase[0]->da_account_value;
         return Response()->json($result_array);
     }
+    
+    
+    /**
+     * Api Request to get list of payment types
+     * @param Request $request
+     * @return unknown
+     */
+    public function GetListPaymentTypes(Request $request)
+    {
+        
+        $result_array        = array();
+        
+        
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
+        $payment_types = array();
+        
+        foreach ($lst_payment_types as $key => $payment_type) {
+            $payment_types[] = array(
+                'id' => $payment_type->pt_id,
+                'title' => $payment_type->pt_payment_type
+            );
+        }
+        
+        $result_array['is_error'] = 0;
+        $result_array['payment_types'] = $payment_types;
+        return Response()->json($result_array);
+    }
+    
     
 }

@@ -82,7 +82,7 @@ class OrdersManager
         $index = $count_orders + 1;
         
         
-        $order_code = "POS-ORD-" .  strtoupper( $cd_company_name[0] )  . $year . date("m") . "-" . sprintf('%04d', $index);
+        $order_code = "" .  strtoupper( $cd_company_name[0] )  . $year . date("m") . "-" . sprintf('%04d', $index);
         
         return $order_code;
         

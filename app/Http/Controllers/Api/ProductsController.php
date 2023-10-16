@@ -129,6 +129,93 @@ class ProductsController extends Controller
     
     
     /**
+     * get category information
+     * @param Request $request
+     */
+    public function GetCategoryInfo(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $category_id         = $request->input('category_id');
+        $g_hash              = $request->input('g_hash');
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+       
+        $category_data = ProductCategories::find($category_id);
+        
+        
+        $category_info_array = array();
+        
+        $category_info_array['pc_id']               = $category_data->pc_id;
+        $category_info_array['title']               = $category_data->pc_category;
+        $category_info_array['description']         = $category_data->pc_description; 
+        
+        $result_array['is_error']       = 0;
+        $result_array['category_info_array']       = $category_info_array;
+        
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    
+    
+    /**
+     * Save Category Information in the database
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function SaveCategoryInfo(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        // save category  information
+        $pc_category    = $request->input("pc_category");
+        $fk_pc_id       = $request->input("fk_pc_id");
+        $pc_id          = $request->input("pc_id");
+        
+        if($pc_id != null)
+            $category_info = ProductCategories::find($pc_id);
+        else 
+            $category_info = new ProductCategories();
+        
+        $category_info->fk_pc_id = $fk_pc_id;
+        $category_info->pc_category = $pc_category;
+        $category_info->save();
+        
+        $result_array['is_error']        = 0;
+        $result_array['error_msg']       = "Operation Complete Successfully";
+        
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    
+    /**
      * Get Lst of all products based on parameters send to the function
      * Parameters maybe sent:
      * category_id : product category 
@@ -142,6 +229,16 @@ class ProductsController extends Controller
         $user_id             = $request->input('user_id');
         $category_id         = $request->input('category_id');
         $g_hash              = $request->input('g_hash');
+        $current_page              = $request->input('current_page');
+        $has_pagination              = !$request->has('has_pagination') ? 1 : $request->input('has_pagination');
+        
+        
+        $nbr_rows_per_pages    = 10;
+        if($current_page > 1)
+            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
         $user_info           = Users::find($user_id);
         
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
@@ -161,16 +258,25 @@ class ProductsController extends Controller
         
         $products = array();
         
-        $lst_products = Products::wherePProductIsDeleted(0);
+        $products_cond = Products::wherePProductIsDeleted(0);
         if( $category_id != 0 )
         {
-            $lst_products = $lst_products->whereFkPcId($category_id);
+            $products_cond = $products_cond->whereFkPcId($category_id);
         }
-        $lst_products = $lst_products->get();
         
+        $products_count = $products_cond->count();
+        
+        $total_pages = ceil( $products_count/$nbr_rows_per_pages );
+        $total_pages = intval($total_pages);
+        
+        if($has_pagination == 1)
+            $lst_products = $products_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        else 
+            $lst_products = $products_cond->get();
         
         foreach ( $lst_products as $key => $product_info ) 
         {
+            $products[ $product_info->p_id ]['p_id']                        = $product_info->p_id;
             $products[ $product_info->p_id ]['reference']                   = $product_info->p_product_ref;
             $products[ $product_info->p_id ]['p_barcode']                   = $product_info->p_barcode;
             $products[ $product_info->p_id ]['p_barcode_img']               = $product_info->p_barcode_img;
@@ -194,9 +300,82 @@ class ProductsController extends Controller
         
         $result_array['is_error']       = 0;
         $result_array['products']       = $products;
+        $result_array['total_pages']       = $total_pages;
         
         
         return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * Delete Category Info Saved in the database
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function DeleteCategoryInfo( Request $request )
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $category_id         = $request->input('category_id');
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        $category_res = ProductCategories::find($category_id)->delete();
+        
+        $result_array['is_error']       = 0;
+        $result_array['error_msg']       = "Delete Product Category Completed Successfully";
+        
+        
+        return Response()->json($result_array);
+        
+    }
+    
+    
+    
+    public function DeleteProductInfo( Request $request )
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $product_id         = $request->input('product_id');
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        $product_res = Products::find($product_id)->delete();
+        
+        $result_array['is_error']       = 0;
+        $result_array['error_msg']       = "Delete Product Completed Successfully";
+        
+        
+        return Response()->json($result_array);
+        
     }
     
     
@@ -243,6 +422,8 @@ class ProductsController extends Controller
         $product_array['p_barcode']                   = $product_info->p_barcode;
         $product_array['p_barcode_img']               = $product_info->p_barcode_img;
         $product_array['p_product_name']              = $product_info->p_product_name;
+        $product_array['category_id']                 = $product_info->fk_pc_id;
+        $product_array['category_name']               = $product_info->Category->pc_category;
         $product_array['p_product_selling_price']     = $product_info->p_product_selling_price;
         $product_array['p_product_tax_rate']          = $product_info->p_product_tax_rate;
         $product_array['currency_code']               = $product_info->Currency->cc_currency_code;
@@ -446,10 +627,15 @@ class ProductsController extends Controller
         $p_product_color            = $request->input('p_product_color');
         $product_sales_account      = $request->input('product_sales_account');
         $product_purchase_account   = $request->input('product_purchase_account');
+        $product_id                 = $request->input('product_id');
             
         
         // save Product information 
-        $product_data = new Products();
+        if($product_id == null)
+            $product_data = new Products();
+        else
+            $product_data = Products::find($product_id);
+        
         $product_data->fk_pc_id                     = $fk_pc_id;
         $product_data->p_barcode                    = $p_bar_code;
         $product_data->p_barcode_img                = DNS1D::getBarcodePNG($product_data->p_barcode, "C39+",150 , 50 );
@@ -459,8 +645,6 @@ class ProductsController extends Controller
         $product_data->p_product_stock_alert        = 1;
         $product_data->p_product_color              = $p_product_color;
         $product_data->p_product_selling_price      = $p_product_price;
-        $product_data->p_wholesale_price            = $p_product_price;
-        $product_data->p_vendor_price               = $p_product_price;
         $product_data->p_product_min_selling_price  = $p_product_price;
         $product_data->p_product_currency           = $company_currency;
         $product_data->p_sale_accounting_code       = $product_sales_account;
@@ -472,57 +656,57 @@ class ProductsController extends Controller
         $category_info = ProductCategories::find($fk_pc_id);
         
         $pc_use_serial_number = $category_info->pc_use_serial_number;
-        if($pc_use_serial_number == 0)
-        {
-            $stock = new Stocks();
-            $stock->fk_warehouse_id                 = $warehouse_id;
-            $stock->fk_product_id                   = $p_id;
-            $stock->is_stock_label                  = "Stock Entry For " . $p_product_name . " On " . $creation_date;
-            $stock->is_stock_lot_person_in_charge   = $user_id;
-            $stock->is_created_by                   = $user_id;
-            $stock->is_quanity                      = $p_product_quantity;
-            $stock->is_creation_date                = $creation_date;
-            $stock->is_price_stock                  = $p_product_price * $p_product_quantity;
-            $stock->is_selling_price                = $p_product_price;
-            $stock->is_wholesale_price              = $p_product_price;
-            $stock->is_vendor_price                 = $p_product_price;
-            $stock->is_price_item                   = $p_product_price;
-            $stock->is_price_currency               = $company_currency;
-            $stock->is_stock_currency               = $company_currency;
-            $stock->is_stock_exchange_rate          = 1;
-            $stock->is_stock_uid    = $p_bar_code;
-            $is_id = $stock->save();
+//         if($pc_use_serial_number == 0)
+//         {
+//             $stock = new Stocks();
+//             $stock->fk_warehouse_id                 = $warehouse_id;
+//             $stock->fk_product_id                   = $p_id;
+//             $stock->is_stock_label                  = "Stock Entry For " . $p_product_name . " On " . $creation_date;
+//             $stock->is_stock_lot_person_in_charge   = $user_id;
+//             $stock->is_created_by                   = $user_id;
+//             $stock->is_quanity                      = $p_product_quantity;
+//             $stock->is_creation_date                = $creation_date;
+//             $stock->is_price_stock                  = $p_product_price * $p_product_quantity;
+//             $stock->is_selling_price                = $p_product_price;
+//             $stock->is_wholesale_price              = $p_product_price;
+//             $stock->is_vendor_price                 = $p_product_price;
+//             $stock->is_price_item                   = $p_product_price;
+//             $stock->is_price_currency               = $company_currency;
+//             $stock->is_stock_currency               = $company_currency;
+//             $stock->is_stock_exchange_rate          = 1;
+//             $stock->is_stock_uid    = $p_bar_code;
+//             $is_id = $stock->save();
             
-            // save accounting records
-            $transaction = new Transactions();
-            $transaction->at_transaction_date   = $creation_date;
-            $transaction->at_creation_date      = $creation_date;
-            $transaction->fk_acc_journal_id     = 3;
-            $transaction->at_accounting_doc     = "Accounting Record Stock Entry For " . $p_product_name . " On " . $creation_date;
-            $transaction->at_currency_id        = $company_currency;
-            $transaction->save();
-            $at_id = $transaction->at_id;
-            
-            
-            $movement = new TransactionMovements();
-            $movement->fk_tran_id = $at_id;
-            $movement->tm_ledger_account    = $product_sales_account;
-            $movement->tm_sub_ledger_account= $product_purchase_account;
-            $movement->tm_ledger_label= "Accounting Record Stock Entry For " . $p_product_name . " On " . $creation_date;
-            $movement->tm_debit = $p_product_price;
-            $movement->tm_credit= 0;
-            $movement->tm_creation_date = $creation_date;
-            $movement->tm_currency_id   = $company_currency;
-            $movement->save();
-            $mov_id = $movement->tm_id;
-            
-            // save data into the stock info
-            $stock->is_trans_id = $at_id;
-            $stock->is_mov_id   = $mov_id;
-            $stock->save();
+//             // save accounting records
+//             $transaction = new Transactions();
+//             $transaction->at_transaction_date   = $creation_date;
+//             $transaction->at_creation_date      = $creation_date;
+//             $transaction->fk_acc_journal_id     = 3;
+//             $transaction->at_accounting_doc     = "Accounting Record Stock Entry For " . $p_product_name . " On " . $creation_date;
+//             $transaction->at_currency_id        = $company_currency;
+//             $transaction->save();
+//             $at_id = $transaction->at_id;
             
             
-        }
+//             $movement = new TransactionMovements();
+//             $movement->fk_tran_id = $at_id;
+//             $movement->tm_ledger_account    = $product_sales_account;
+//             $movement->tm_sub_ledger_account= $product_purchase_account;
+//             $movement->tm_ledger_label= "Accounting Record Stock Entry For " . $p_product_name . " On " . $creation_date;
+//             $movement->tm_debit = $p_product_price;
+//             $movement->tm_credit= 0;
+//             $movement->tm_creation_date = $creation_date;
+//             $movement->tm_currency_id   = $company_currency;
+//             $movement->save();
+//             $mov_id = $movement->tm_id;
+            
+//             // save data into the stock info
+//             $stock->is_trans_id = $at_id;
+//             $stock->is_mov_id   = $mov_id;
+//             $stock->save();
+            
+            
+//         }
 
         
         $result_array['is_error']       = 0;
@@ -790,13 +974,14 @@ class ProductsController extends Controller
             
             return Response()->json($result_array);
         } 
-        
+        DB::connection()->enableQueryLog();
         $lst_categories = ProductCategories::wherePcIsDeleted(0);
 		if(is_numeric($category_id) && $category_id != 0)
 			$lst_categories = $lst_categories->whereFkPcId($category_id);
 		else 
-			$lst_categories = $lst_categories->whereNull('fk_pc_id');
-			$lst_categories = $lst_categories->where("pc_use_serial_number",0)->wherePcMaintenanceCategory(0)->get();
+		    $lst_categories = $lst_categories->whereNull('fk_pc_id');
+		    $lst_categories = $lst_categories->get();
+		    $queries = DB::getQueryLog(); 
         $category_array = array();
         $items_array    = array();
         

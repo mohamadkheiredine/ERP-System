@@ -312,6 +312,8 @@ class ProductsController extends Controller
           $p_product_unit_type          = $request->input('p_product_unit_type');
           $p_product_color              = $request->input('p_product_color');
           $p_product_currency           = $request->input("p_product_currency");
+          $p_product_expiry_date        = $request->input("p_product_expiry_date");
+          $p_product_production_date    = $request->input("p_product_production_date");
           
           $ProductInfo  = new Products();
           $ProductManager_obj = new ProductManager();
@@ -366,6 +368,8 @@ class ProductsController extends Controller
           $ProductInfo->p_product_unit_type           = $p_product_unit_type;
           $ProductInfo->p_product_color               = $p_product_color;
           $ProductInfo->p_product_currency            = $p_product_currency;
+          $ProductInfo->p_product_expiry_date         = $p_product_expiry_date;
+          $ProductInfo->p_product_production_date     = $p_product_production_date;
           $ProductInfo->save();
           
           $p_id = $ProductInfo->p_id;

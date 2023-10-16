@@ -130,8 +130,8 @@ th{
                                                     <div class="form-group">
                                                         <label> Product</label>
                                                         <select class="bs-select form-control" name="p_id" id="P_ID" data-actions-box="true">
-                                                                @foreach( $lst_products as $key => $product_info )
-                                                                        <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                                                @foreach( $lst_products as $key => $prod_info )
+                                                                        <option value="{{ $prod_info->p_id }}">{{ $prod_info->p_product_name }}</option>
                                                                  @endforeach 
                                                         </select>
                                                     </div>
@@ -139,7 +139,7 @@ th{
                                             	 <div class="col-md-4 StockSerialNumber">
                                                     <div class="form-group">
                                                         <label> Stock barecode </label>
-                                                            <input type="text" maxlength="50" name="is_stock_uid" id="IS_STOCK_UID" class="form-control" required="required"   value="{{ $product_info->p_barcode }}" />
+                                                            <input type="text" maxlength="50" name="is_stock_uid" id="IS_STOCK_UID" class="form-control" required="required"   value="" />
                                                     </div>
                                                 </div>
                                             	 <div class="col-md-4">

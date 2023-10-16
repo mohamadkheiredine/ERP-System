@@ -42,16 +42,6 @@ Page Description :
 @endsection
 
 @section('content')
-<div class="row">
-	<div class="col-md-12">
-		@if($count_rates == 0 ) 
-		<div class="alert alert-danger" role="alert">
-			<strong>Warning !</strong>
-			Please Add the Daily Exchange Rate Before begin your operations
-		</div>
-		@endif
-	</div>
-</div>
  <div class="row">
  	<div class="col-md-12">
  		<div class="m-portlet">

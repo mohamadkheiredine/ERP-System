@@ -185,7 +185,18 @@ th{
                                             <input type="text" maxlength="255" name="p_product_color" id="P_PRODUCT_COLOR" maxlength="255"  class="form-control"  value="{{ $product_info->p_product_color }}" />
                                         </div>
                                 </div>
-                               	 
+                               	   <div class="col-md-4">
+                                  	<div class="form-group">
+                                        <label class="control-label"> Production Date</label>
+                                        <input type="text" name="p_product_production_date" id="P_PRODUCT_PRODUCTION_DATE" class="form-control"  maxlength="15" value="{{ $product_info->p_product_production_date }}" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                  	<div class="form-group">
+                                        <label class="control-label"> Expiry Date <span class="required"> * </span></label>
+                                        <input type="text" name="p_product_expiry_date" id="P_PRODUCT_EXPIRY_DATE" class="form-control"  maxlength="15" value="{{ $product_info->p_product_expiry_date }}" />
+                                    </div>
+                                </div>
                                 @if($license_array->PRODUCTION_MODULE == 1)
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -279,29 +290,7 @@ th{
                                                         @endforeach
                                                 </select>
                                             </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label> Sales Accounting</label>
-                                            <select class="bs-select form-control" name="p_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" data-actions-box="true">
-                                                    <option value="">-- Select Account --</option>
-                                                    @foreach ( $lst_accounts as $key => $acc_info )
-                                                            <option {{ $product_info->p_sale_accounting_code == $acc_info->aa_id ? "selected" : "" }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
-                                                    @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label> Purchase Accounting</label>
-                                            <select class="bs-select form-control" name="p_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" data-actions-box="true">
-                                                    <option value="">-- Select Account --</option>
-                                                    @foreach ( $lst_accounts as $key => $acc_info )
-                                                            <option {{ $product_info->p_purchase_accounting_code == $acc_info->aa_id ? "selected" : "" }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
-                                                    @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
+                                    </div> 
                             	</div>
 							</div>
 						</div>

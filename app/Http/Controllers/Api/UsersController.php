@@ -83,12 +83,11 @@ class UsersController extends Controller
             $result_array['u_department_id']            = $user_info->u_department_id; 
             $result_array['company_id']                 = $company_id; 
             $result_array['warehouse_id']               = $user_info->fk_warehouse_id; 
-            
+          
             if($company_id > 0)
             {
                 
                 $company_info = Companies::find($company_id);
-                
                 $company_logo_src_url  = url('/')."/".Config::get('constants.COMPANY_PATH').$company_info->cd_logo_base_src.$company_info->cd_logo_file_name.".".$company_info->cd_logo_file_extension;
                 
                 if(strlen($company_info->cd_logo_base_src) > 0 ){

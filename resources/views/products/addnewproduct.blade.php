@@ -171,6 +171,19 @@ th{
                                         <input type="text" maxlength="255" name="p_product_stock_alert" id="P_STOCK_ALERT" class="form-control" required="required" maxlength="15"  value="" />
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                  	<div class="form-group">
+                                        <label class="control-label"> Production Date</label>
+                                        <input type="text" name="p_product_production_date" id="P_PRODUCT_PRODUCTION_DATE" class="form-control"  maxlength="15" value="" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                  	<div class="form-group">
+                                        <label class="control-label"> Expiry Date <span class="required"> * </span></label>
+                                        <input type="text" name="p_product_expiry_date" id="P_PRODUCT_EXPIRY_DATE" class="form-control"  maxlength="15" value="" />
+                                    </div>
+                                </div>
+                                                                    
                                  @if($license_array->PRODUCTION_MODULE == 1)
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -253,7 +266,7 @@ th{
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" style="display: none">
                                         <div class="form-group">
                                             <label> Sales Accounting</label>
                                             <select class="bs-select form-control" name="p_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" data-actions-box="true">
@@ -264,7 +277,7 @@ th{
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" style="display: none">
                                                 <div class="form-group">
                                                     <label> Purchase Accounting</label>
                                                     <select class="bs-select form-control" name="p_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" data-actions-box="true">
