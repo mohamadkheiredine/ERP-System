@@ -191,3 +191,28 @@ ALTER TABLE `srm_suppliers` DROP INDEX `idx_ss_category_id` ;
 
 
 
+ALTER TABLE `sales_orders` 
+ADD COLUMN `so_vendor_id` SMALLINT NULL DEFAULT 0 AFTER `so_assign_to`,
+CHANGE COLUMN `so_creation_date` `so_creation_date` DATE NULL DEFAULT NULL ,
+CHANGE COLUMN `so_order_date` `so_order_date` DATE NULL DEFAULT NULL ,
+CHANGE COLUMN `so_delivery_date` `so_delivery_date` DATE NULL DEFAULT NULL ,
+CHANGE COLUMN `so_pay_date` `so_pay_date` DATE NULL DEFAULT NULL ;
+
+
+ALTER TABLE `sales_orders` 
+DROP FOREIGN KEY `so_fk_vat_id`;
+ALTER TABLE `sales_orders` 
+DROP INDEX `idx_so_vat_id` ;
+;
+
+
+ALTER TABLE `inventory_product_categories` 
+DROP FOREIGN KEY `fk_pc_id`;
+ALTER TABLE `inventory_product_categories` 
+DROP INDEX `fk_pc_id` ;
+;
+
+
+ALTER TABLE `sales_orders` 
+ADD COLUMN `so_extra_charges` FLOAT NULL DEFAULT 0 AFTER `so_pos_order`,
+ADD COLUMN `so_delivery_fees` FLOAT NULL DEFAULT 0 AFTER `so_extra_charges`;

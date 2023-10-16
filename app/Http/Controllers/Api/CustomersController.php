@@ -188,6 +188,28 @@ class CustomersController extends Controller
     
     
     /**
+     * Search Customer Information By Mobile
+     * 
+     * @author Moe mantach
+     * @access public
+     * @param Request $request
+     */
+    public function SearchCustomer(Request $request)
+    {
+        $sc_customer_mobile = $request->input('sc_customer_mobile');
+        $customer_info = Customers::where('ic_customer_mobile','LIKE','%' . $sc_customer_mobile . '%')->get();
+        
+        $result_array = array();
+        $customer_name = "";
+        
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['customer_name'] = $customer_info->ic_customer_name;
+        return Response()->json($result_array);
+    }
+    
+    /**
      * Save Customer Info Saved In the Database
      * 
      * @author Moe Mantach

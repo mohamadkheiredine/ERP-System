@@ -29,5 +29,9 @@ class Companies extends Model
     protected   $table          = 'company_details';
     public      $timestamps     = false;
     protected   $primaryKey     = "cd_id";
+    
+    
+    
+    
 }
 
