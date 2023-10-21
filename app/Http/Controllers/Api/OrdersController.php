@@ -425,7 +425,7 @@ class OrdersController extends Controller
         
         $so_order_barcode = rand(100000000,999999999);
         
-        $creation_date    = date("Y-m-d");
+        $creation_date    = date("Y-m-d H:i");
         $so_vat_id = 0;
         
         // create a new order
@@ -444,7 +444,7 @@ class OrdersController extends Controller
                 $order_info->so_order_status     = 1;
                 $order_info->so_order_customer   = 0;
                 $order_info->so_vendor_id        = 0;
-                $order_info->so_creation_date    = $creation_date;
+                $order_info->so_creation_date    = date("Y-m-d");
                 $order_info->so_product_type     = 1;
                 $order_info->so_payment_type     = 1;
                 $order_info->so_order_label      = $so_order_label;
@@ -644,6 +644,8 @@ class OrdersController extends Controller
                 return Response()->json($result_array);
             }
             
+            
+            
             // get from to date based on daterange
             
             switch($date_range)
@@ -683,15 +685,18 @@ class OrdersController extends Controller
             
             
             $orders = array();
-            
+            $where_cond = "Where so_is_deleted=0 AND so_order_date BETWEEN '$date_from' AND '$date_to'";
             $orders_cond = Orders::whereSoIsDeleted(0);
             $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
             
             if($payment_type != 0 && $payment_type != "")
             {
                 $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
-            }
-            
+                $where_cond .= " AND so_payment_type = " . $payment_type;
+            } 
+           $results = DB::select("SELECT SUM(so_total_cost) as total_amount FROM sales_orders " .$where_cond); 
+          
+           
             $orders_count = $orders_cond->count();
             
             $total_pages = ceil( $orders_count/$nbr_rows_per_pages );
@@ -714,6 +719,7 @@ class OrdersController extends Controller
             
             $result_array['is_error']       = 0;
             $result_array['orders']       = $orders;
+            $result_array['total_amount'] = $results[0]->total_amount;
             $result_array['total_pages']       = $total_pages;
             
             

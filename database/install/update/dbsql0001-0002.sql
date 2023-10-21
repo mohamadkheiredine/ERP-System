@@ -216,3 +216,8 @@ DROP INDEX `fk_pc_id` ;
 ALTER TABLE `sales_orders` 
 ADD COLUMN `so_extra_charges` FLOAT NULL DEFAULT 0 AFTER `so_pos_order`,
 ADD COLUMN `so_delivery_fees` FLOAT NULL DEFAULT 0 AFTER `so_extra_charges`;
+
+
+ALTER TABLE `sales_orders` 
+CHANGE COLUMN `so_order_date` `so_order_date` DATETIME NULL DEFAULT NULL ,
+CHANGE COLUMN `so_delivery_date` `so_delivery_date` DATETIME NULL DEFAULT NULL ;
