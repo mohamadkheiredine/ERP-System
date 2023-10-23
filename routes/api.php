@@ -75,4 +75,7 @@ use Illuminate\Http\Request;
     Route::get('/request/api/getlistorders','Api\OrdersController@GetlistOrders');
     Route::get('/request/api/getorderinfo','Api\OrdersController@GetOrderInfo');
     
+    Route::post('/request/api/exportorderstoexcel','Api\OrdersController@ExportListOrdersToExcel');
+    
+    
 //});

@@ -368,6 +368,9 @@ class OrdersController extends Controller
     }
     
     
+    
+
+    
     /**
      * Create Order Restaurant
      * @author Moe Mantach
@@ -724,6 +727,110 @@ class OrdersController extends Controller
             
             
             return Response()->json($result_array);
+    }
+    
+    
+    public function ExportListOrdersToExcel(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $date_from           = $request->input('from_date');
+        $date_to             = $request->input('to_date');
+        $date_range          = $request->input('date_range');
+        $payment_type          = $request->input('payment_type');
+       
+                
+                $user_info           = Users::find($user_id);
+                
+                $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+                $c_hash              =  hash('sha256',$c_hash);
+                $result_array        = array();
+                
+                
+                // validate hash sequence for loggedin user
+                if( $c_hash != $g_hash )
+                {
+                    $result_array['is_error']       = 1;
+                    $result_array['error_message']  = 'hash sequence is not valid !!';
+                    
+                    return Response()->json($result_array);
+                }
+                
+                
+                
+                // get from to date based on daterange
+                
+                switch($date_range)
+                {
+                    case 1 ://today's order
+                        {
+                            $date_from = date("Y-m-d");
+                            $date_to = date("Y-m-d");
+                        }
+                        break;
+                    case 2 ://yesterday's order
+                        {
+                            $date_from = date("Y-m-d",strtotime('yesterday'));
+                            $date_to = date("Y-m-d",strtotime('yesterday'));
+                        }
+                        break;
+                    case 3 ://last week's order
+                        {
+                            $date_from = date("Y-m-d",strtotime('-7 day'));
+                            $date_to = date("Y-m-d",strtotime('Today'));
+                        }
+                        break;
+                    case 4 ://last week's order
+                        {
+                            $date_from = date("Y-m-d",strtotime('-30 day'));
+                            $date_to = date("Y-m-d",strtotime('Today'));
+                        }
+                        break;
+                    case 5 : // custom date range
+                        {
+                            $date_from = date("Y-m-d",strtotime($date_from));
+                            $date_to = date("Y-m-d",strtotime($date_to));
+                        }
+                        break;
+                        
+                }
+                
+                
+                $orders = array();
+                $orders_cond = Orders::whereSoIsDeleted(0);
+                $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
+                
+                if($payment_type != 0 && $payment_type != "")
+                {
+                    $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
+                }
+                
+                
+                $orders_count = $orders_cond->count();
+                $lst_orders = $orders_cond->get();
+                
+                $pathname=public_path('tmp');
+                mkdir($pathname);
+                $csvFileName = public_path('tmp\orders-' . time() . '.csv'); // Set the file name
+                $csvFilePath = storage_path($csvFileName);
+                
+                $file = fopen($csvFilePath, 'ab+');
+                
+                fputcsv($file, ['Order Code', 'Order Date','Delivery Date','total Amount','Extra Charge','Delivery Fees','Currency']); // Write the header row
+                
+                foreach ($lst_orders as $order_info) {
+                    fputcsv($file, [$order_info->so_order_code, $order_info->so_order_date, $order_info->so_delivery_date, $order_info->so_total_cost,$order_info->so_extra_charges,$order_info->so_delivery_fees, $order_info->Currency->cc_currency_code]);
+                }
+                
+                fclose($file);
+                
+                
+                
+                
+                return response()->download($csvFilePath, 'users.csv', [
+                    'Content-Type' => 'text/csv',
+                ]);
+                
     }
     
     
