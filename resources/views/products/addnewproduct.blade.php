@@ -179,7 +179,7 @@ th{
                                 </div>
                                 <div class="col-md-4">
                                   	<div class="form-group">
-                                        <label class="control-label"> Expiry Date <span class="required"> * </span></label>
+                                        <label class="control-label"> Expiry Date</label>
                                         <input type="text" name="p_product_expiry_date" id="P_PRODUCT_EXPIRY_DATE" class="form-control"  maxlength="15" value="" />
                                     </div>
                                 </div>
@@ -231,6 +231,7 @@ th{
                             </div>
                         </div>  
 						<div class="row" style="height:25px">&nbsp;</div>
+						@if(config('appconfig.price_by_supplier') == 1)
                 		<div class="m-portlet m-portlet--mobile">
 							<div class="m-portlet__head">
 								<div class="m-portlet__head-caption">
@@ -302,6 +303,7 @@ th{
         								</div>
         							</div>
         						</div>
+        						@endif
         						<div class="row" style="height:25px">&nbsp;</div>	
         						<div class="row">
         							<div class="col-md-12">

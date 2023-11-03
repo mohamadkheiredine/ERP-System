@@ -158,14 +158,14 @@ CREATE TABLE `mrp_bom_status` (
   `mb_deleted_by` INT NULL DEFAULT 0,
   PRIMARY KEY (`mb_id`),
   INDEX `idx_fk_dependancy_id` (`fk_dependancy_id` ASC) INVISIBLE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci;
+ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 
 
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('3', 'stock_expiry_date', 'Products has an expiry date', '0', '1', '1');
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('4', 'max_rows_per_page', 'Max Number of Rows per page', '20', '1', '1');
+INSERT INTO `sys_appconfig` (`sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('enable_tax_rate', 'Enable Tax Rate Field', '1', '1', '1');
+INSERT INTO `sys_appconfig` (`sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('price_by_supplier', 'get main prices by supplier', '0', '1', '1');
 
 ALTER TABLE `inventory_product_categories` ADD COLUMN `pc_use_serial_number` TINYINT NULL DEFAULT 0 AFTER `pc_avatar_extension`,ADD COLUMN `pc_maintenance_category` TINYINT NULL DEFAULT 0 AFTER `pc_use_serial_number`;
 
@@ -221,3 +221,8 @@ ADD COLUMN `so_delivery_fees` FLOAT NULL DEFAULT 0 AFTER `so_extra_charges`;
 ALTER TABLE `sales_orders` 
 CHANGE COLUMN `so_order_date` `so_order_date` DATETIME NULL DEFAULT NULL ,
 CHANGE COLUMN `so_delivery_date` `so_delivery_date` DATETIME NULL DEFAULT NULL ;
+
+
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_selling_price` DECIMAL NULL DEFAULT 0 AFTER `is_price_item`;
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_discount` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_vendor_price` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;

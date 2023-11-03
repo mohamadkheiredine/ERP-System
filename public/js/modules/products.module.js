@@ -255,7 +255,7 @@ products_module = {
             beforeSend : function(){
             },
 	        success : function(response){
-	        	$('.WarehouseZone').html(response.html);
+	        	$('.WarehouseZonesDropDown').html(response.html);
 	            $('select').select2();
 	        }
 	    });

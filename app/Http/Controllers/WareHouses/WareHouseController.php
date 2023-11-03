@@ -547,68 +547,7 @@ class WareHouseController extends Controller
         $fk_warehouse_id        = $request->input("w_id");
         $wz_zone_label          = $request->input("wz_zone_label");
         $wz_zone_color          = $request->input("wz_zone_color");
-        $wz_zone_length         = $request->input("wz_zone_length");
-        $wz_zone_length_unit    = $request->input("wz_zone_length_unit");
-        $wz_zone_width          = $request->input("wz_zone_width");
-        $wz_zone_width_unit     = $request->input("wz_zone_width_unit");
-        $wz_zone_height         = $request->input("wz_zone_height");
-        $wz_zone_height_unit    = $request->input("wz_zone_height_unit");
-        $wz_zone_volume         = $request->input("wz_zone_volume");
-        $wz_zone_volume_unit    = $request->input("wz_zone_volume_unit");
         $result_array = array();
-        
-        // check the size of all zones exist for the warehouse and
-        // if we reach the limit we return with error message
-        $lst_warehouse_zones    = WareHouseZones::whereFkWarehouseId($fk_warehouse_id)->get();
-        $warehouse_info         = WareHouses::find($fk_warehouse_id);
-        $validation_array       = array();
-        
-        if($warehouse_info->w_warehouse_size_type == WareHouses::WT_SIZE_SIZE_TYPE)
-        {
-            
-            $warehouse_size = $warehouse_info->w_warehouse_width * $warehouse_info->w_warehouse_length * $warehouse_info->w_warehouse_height;
-            $zone_size = $wz_zone_length * $wz_zone_width * $wz_zone_height;
-            //get all zones size
-            $all_zone_sizes = 0.0;
-            foreach ( $lst_warehouse_zones as $key => $zone_info ) 
-            {
-                $all_zone_sizes = $all_zone_sizes + floatval($zone_info->wz_zone_length) * floatval($zone_info->wz_zone_width) * floatval($zone_info->wz_zone_height);
-            }
-            $all_zone_sizes = $all_zone_sizes + floatval($wz_zone_length) * floatval($wz_zone_width) * floatval($wz_zone_height);
-            
-            $remaining_zone_size = $zone_size - $all_zone_sizes;
-            if($remaining_zone_size <= 0)
-            {
-                $result_array['is_error'] = 1;
-                $result_array['error_msg'] = "there's not enough space to Create this zone";
-                return Response()->json($result_array);
-            }
-            
-        }
-        else 
-        {
-            $warehouse_volume   = $warehouse_info->w_warehouse_volume;
-            $all_zone_volume = 0.0;
-            foreach ( $lst_warehouse_zones as $key => $zone_info )
-            {
-                
-                $all_zone_volume= $all_zone_volume + floatval($zone_info->wz_zone_volume);
-            }
-            $all_zone_volume = $all_zone_volume + $wz_zone_volume;
- 
-            $remaining_zone = $warehouse_volume - $all_zone_volume;
-            
-            if($remaining_zone <= 0)
-            {
-                $result_array['is_error'] = 1;
-                $result_array['error_msg'] = "there's not enough space to Create this zone";
-                return Response()->json($result_array);
-            }
-             
-        }
-        
-        
-        
         
         $WarehouseZone = new WareHouseZones();
         
@@ -622,15 +561,6 @@ class WareHouseController extends Controller
         $WarehouseZone->fk_warehouse_id     = $fk_warehouse_id;
         $WarehouseZone->wz_zone_label       = $wz_zone_label;
         $WarehouseZone->wz_zone_color       = $wz_zone_color;
-        $WarehouseZone->wz_zone_length      = $wz_zone_length;
-        $WarehouseZone->wz_zone_length_unit = $wz_zone_length_unit;
-        $WarehouseZone->wz_zone_width_unit  = $wz_zone_width_unit;
-        $WarehouseZone->wz_zone_height_unit = $wz_zone_height_unit;
-        $WarehouseZone->wz_zone_volume_unit = $wz_zone_volume_unit;
-        $WarehouseZone->wz_zone_height      = $wz_zone_height;
-        $WarehouseZone->wz_zone_width       = $wz_zone_width;
-        $WarehouseZone->wz_zone_length      = $wz_zone_length;
-        $WarehouseZone->wz_zone_volume      = $wz_zone_volume;
         $WarehouseZone->save();
         
         

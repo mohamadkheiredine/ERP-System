@@ -59,6 +59,7 @@ use App\models\Billing\InvoicePayments;
 use App\models\Inventory\StockIds;
 use App\models\Inventory\Vendors;
 use App\models\Phones\PhoneLines;
+use League\Csv\Writer;
 
 class OrdersController extends Controller
 {
@@ -740,97 +741,89 @@ class OrdersController extends Controller
         $payment_type          = $request->input('payment_type');
        
                 
-                $user_info           = Users::find($user_id);
-                
-                $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-                $c_hash              =  hash('sha256',$c_hash);
-                $result_array        = array();
-                
-                
-                // validate hash sequence for loggedin user
-                if( $c_hash != $g_hash )
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        
+        // get from to date based on daterange
+        
+        switch($date_range)
+        {
+            case 1 ://today's order
                 {
-                    $result_array['is_error']       = 1;
-                    $result_array['error_message']  = 'hash sequence is not valid !!';
-                    
-                    return Response()->json($result_array);
+                    $date_from = date("Y-m-d");
+                    $date_to = date("Y-m-d");
                 }
-                
-                
-                
-                // get from to date based on daterange
-                
-                switch($date_range)
+                break;
+            case 2 ://yesterday's order
                 {
-                    case 1 ://today's order
-                        {
-                            $date_from = date("Y-m-d");
-                            $date_to = date("Y-m-d");
-                        }
-                        break;
-                    case 2 ://yesterday's order
-                        {
-                            $date_from = date("Y-m-d",strtotime('yesterday'));
-                            $date_to = date("Y-m-d",strtotime('yesterday'));
-                        }
-                        break;
-                    case 3 ://last week's order
-                        {
-                            $date_from = date("Y-m-d",strtotime('-7 day'));
-                            $date_to = date("Y-m-d",strtotime('Today'));
-                        }
-                        break;
-                    case 4 ://last week's order
-                        {
-                            $date_from = date("Y-m-d",strtotime('-30 day'));
-                            $date_to = date("Y-m-d",strtotime('Today'));
-                        }
-                        break;
-                    case 5 : // custom date range
-                        {
-                            $date_from = date("Y-m-d",strtotime($date_from));
-                            $date_to = date("Y-m-d",strtotime($date_to));
-                        }
-                        break;
-                        
+                    $date_from = date("Y-m-d",strtotime('yesterday'));
+                    $date_to = date("Y-m-d",strtotime('yesterday'));
                 }
-                
-                
-                $orders = array();
-                $orders_cond = Orders::whereSoIsDeleted(0);
-                $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
-                
-                if($payment_type != 0 && $payment_type != "")
+                break;
+            case 3 ://last week's order
                 {
-                    $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
+                    $date_from = date("Y-m-d",strtotime('-7 day'));
+                    $date_to = date("Y-m-d",strtotime('Today'));
                 }
-                
-                
-                $orders_count = $orders_cond->count();
-                $lst_orders = $orders_cond->get();
-                
-                $pathname=public_path('tmp');
-                mkdir($pathname);
-                $csvFileName = public_path('tmp\orders-' . time() . '.csv'); // Set the file name
-                $csvFilePath = storage_path($csvFileName);
-                
-                $file = fopen($csvFilePath, 'ab+');
-                
-                fputcsv($file, ['Order Code', 'Order Date','Delivery Date','total Amount','Extra Charge','Delivery Fees','Currency']); // Write the header row
-                
-                foreach ($lst_orders as $order_info) {
-                    fputcsv($file, [$order_info->so_order_code, $order_info->so_order_date, $order_info->so_delivery_date, $order_info->so_total_cost,$order_info->so_extra_charges,$order_info->so_delivery_fees, $order_info->Currency->cc_currency_code]);
+                break;
+            case 4 ://last week's order
+                {
+                    $date_from = date("Y-m-d",strtotime('-30 day'));
+                    $date_to = date("Y-m-d",strtotime('Today'));
                 }
+                break;
+            case 5 : // custom date range
+                {
+                    $date_from = date("Y-m-d",strtotime($date_from));
+                    $date_to = date("Y-m-d",strtotime($date_to));
+                }
+                break;
                 
-                fclose($file);
-                
-                
-                
-                
-                return response()->download($csvFilePath, 'users.csv', [
-                    'Content-Type' => 'text/csv',
-                ]);
-                
+        }
+        
+        
+        $orders = array();
+        $orders_cond = Orders::whereSoIsDeleted(0);
+        if($date_from != null && $date_to != null)
+            $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
+        
+        if($payment_type != 0 && $payment_type != "")
+        {
+            $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
+        }
+        
+        
+        $orders_count = $orders_cond->count();
+        $lst_orders = $orders_cond->get();
+       
+            
+            $data = array();
+            $data[] = ['Order Code', 'Order Date','Delivery Date','total Amount','Extra Charge','Delivery Fees','Currency'];
+            
+            foreach ($lst_orders as $order_info) {
+                $data[] =  [$order_info->so_order_code, $order_info->so_order_date, $order_info->so_delivery_date, $order_info->so_total_cost,$order_info->so_extra_charges,$order_info->so_delivery_fees, ( $order_info->Currency != null ? $order_info->Currency->cc_currency_code : "" ) ];
+            }
+            
+            $csv = Writer::createFromFileObject(new \SplTempFileObject());
+            
+            $csv->insertAll($data);
+            
+            $csv->output('data.csv');
     }
     
     

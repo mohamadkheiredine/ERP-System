@@ -138,6 +138,16 @@ th{
                                                         </select>
                                                     </div>
                                                 </div>
+                                                 <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Warehoue Zones</label>
+                                                        <div class="WarehouseZonesDropDown">
+                                                        <select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        <option value="-1">Select Zone</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label>&nbsp;</label><br/>

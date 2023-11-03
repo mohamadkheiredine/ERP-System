@@ -193,7 +193,7 @@ th{
                                 </div>
                                 <div class="col-md-4">
                                   	<div class="form-group">
-                                        <label class="control-label"> Expiry Date <span class="required"> * </span></label>
+                                        <label class="control-label"> Expiry Date </label>
                                         <input type="text" name="p_product_expiry_date" id="P_PRODUCT_EXPIRY_DATE" class="form-control"  maxlength="15" value="{{ $product_info->p_product_expiry_date }}" />
                                     </div>
                                 </div>
