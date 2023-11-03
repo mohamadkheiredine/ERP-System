@@ -11,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 Page Description :
 
 ***********************************************************/
- 
+
 ?>
 @extends('layouts.layout',['page_title' => "Leads Management"])
 

@@ -104,15 +104,6 @@ $(function(){
                                         <input type="color" name="wz_zone_color" id="WZ_ZONE_COLOR" class="form-control" required="required" maxlength="10"  value="" />
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                	<div class="row" id="ZoneSize">
-                                	@if ($warehouseInfo->w_warehouse_size_type === 2)
-                                        @include('warehouses.zones.zonesize',[ 'warehouseInfo' => $warehouseInfo ])
-                                    @else
-                                        @include('warehouses.zones.zonevolume',[ 'warehouseInfo' => $warehouseInfo ])
-                                    @endif
-                                	</div>
-                                </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                     <div class="row">

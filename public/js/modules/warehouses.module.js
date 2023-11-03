@@ -275,15 +275,6 @@ var warehouses_module = {
 		            	 },
 		            	 wz_zone_color: { 
 		            		 required: true
-		            	 },
-		            	 wz_zone_length: { 
-		            		 required: true
-		            	 },
-		            	 wz_zone_width: { 
-		            		 required: true
-		            	 },
-		            	 wz_zone_height: { 
-		            		 required: true
 		            	 }
 		             },
 

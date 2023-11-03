@@ -121,6 +121,7 @@ th{
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
                                                         <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true"> 
+                                                        		<option value="-1">Select Warehouse</option> 
                                                                 @foreach( $lst_warehouse as $key => $warehouse_info )
                                                                         <option {{ $InventoryStock->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                                                 @endforeach  

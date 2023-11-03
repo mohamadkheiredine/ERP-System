@@ -109,20 +109,21 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
-                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true"> 
+                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true">
+                                                        		<option value="-1">Select Warehouse</option> 
                                                                 @foreach( $lst_warehouse as $key => $warehouse_info )
                                                                         <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                                                 @endforeach  
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4" style="display:none">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label> Warehouse Zone </label>
-                                                        <div class="WarehouseZone">
-                                                        	<select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true"> 
-                                                                    <option value="0">Select Zone</option>
-                                                            </select>
+                                                        <label> Warehoue Zones</label>
+                                                        <div class="WarehouseZonesDropDown">
+                                                        <select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        <option value="-1">Select Zone</option>
+                                                        </select>
                                                         </div>
                                                     </div>
                                                 </div>
