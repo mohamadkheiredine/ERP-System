@@ -15,29 +15,7 @@ journals_module = {
 	            beforeSend : function(){
 	            },
 		        success : function(response){
-		        	$('#LstAccountJournals').html(response.display);
-					$.aa_datatable = $('.m_datatable').mDatatable({
-						
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						}
-					});
-					
-					$(".ActualSwitch").on('click',journals_module.ChangeIsActivejournals);
+		        	$('#LstAccountJournals').html(response.display); 
 		        }
 		    });
 	},

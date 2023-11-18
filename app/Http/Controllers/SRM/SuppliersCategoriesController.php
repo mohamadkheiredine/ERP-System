@@ -105,8 +105,7 @@ class SuppliersCategoriesController extends Controller
     public function SaveSupplierCategoryInfo(Request $request)
     {
         $sc_id                      = $request->input('sc_id');
-        $fk_category_id             = $request->input('fk_category_id');
-        $sc_category_ref            = $request->input('sc_category_ref');
+        $fk_category_id             = $request->input('fk_category_id'); 
         $sc_category_title          = $request->input('sc_category_title');
         $sc_category_description    = $request->input('sc_category_description');
         
@@ -118,6 +117,8 @@ class SuppliersCategoriesController extends Controller
         {
             $SupplierCategories= SupplierCategories::find($sc_id);
         }
+        
+        $sc_category_ref = substr($sc_category_title,0,3) . "-" . rand(9,9999);
          
         $SupplierCategories->fk_category_id           = $fk_category_id;
         $SupplierCategories->sc_category_ref          = $sc_category_ref;

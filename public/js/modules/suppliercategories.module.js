@@ -15,31 +15,6 @@ suppliercategories_module = {
             },
 	        success : function(response){
 	        	$('#LstSupplierCategories').html(response.display);
-				$.sc_datatable = $('.m_datatable').mDatatable({
-					// layout definition
-					layout: {
-						theme: 'default', // datatable theme
-						class: '', // custom wrapper class
-						scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-						// height: 450, // datatable's body's fixed height
-						footer: false // display/hide footer
-					},
-					
-					// column sorting
-					sortable: true,
-					
-					pagination: true,
-					
-					search: {
-						input: $('#generalSearch')
-					},
-					
-					// inline and bactch editing(cooming soon)
-					// editable: false,
-				});
-				
-				$("a[id*=EDIT_CATEGORY_]").on('click',suppliercategories_module.EditCategoryInfo);
-				$("a[id*=DELETE_CATEGORY_]").on('click',suppliercategories_module.DeleteCategoriesData);
 	        }
 	    });
 	},
@@ -57,16 +32,9 @@ suppliercategories_module = {
              focusInvalid: false, // do not focus the last invalid input
              ignore: "", // validate all fields including form hidden input
              rules: {
-            	 sc_category_ref : {
-            		 required: true
-            	 },
             	 sc_category_title : {
                      required: true
-                   },
-                   sc_category_description : {
-                     required: true,
-                     minlength: 5
-                   }
+                   }, 
              },
 
              messages: { // custom messages for radio buttons and checkboxes

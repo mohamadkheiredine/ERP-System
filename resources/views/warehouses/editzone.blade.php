@@ -38,52 +38,26 @@ $(function(){
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_warehouse_zone" id="FORM_SAVE_WAREHOUSE_ZONE">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add Warehouse Zone</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_warehouse_zone" id="FORM_SAVE_WAREHOUSE_ZONE">
                 <div class="form-body">
                      <span id="hidden_fields">
                       <div class="form-group">
                         {!! csrf_field() !!}
-                        <input type="hidden" name="w_id" id="W_ID" value="{{ $warehouseZoneInfo->fk_warehouse_id }}" > 
-                        <input type="hidden" name="wz_id" id="WZ_ID" value="{{ $warehouseInfo->wz_id }}" > 
+                        <input type="hidden" name="w_id" id="W_ID" value="{{ $warehouseInfo->w_id }}" > 
                          </div>
                     </span>
                     <div class="alert alert-success" style="display:none">
@@ -96,24 +70,15 @@ $(function(){
                          	<div class="col-md-6">
                                      <div class="form-group">
                                         <label class="control-label">Zone Label <span class="required"> * </span></label>
-                                        <input type="text" name="wz_zone_label" id="WZ_ZONE_LABEL" class="form-control" required="required" maxlength="255"  value="{{ $warehouseZoneInfo->wz_zone_label }}" />
+                                        <input type="text" name="wz_zone_label" id="WZ_ZONE_LABEL" class="form-control" required="required" maxlength="255"  value="" />
                                     </div>
                                 </div>
                          	<div class="col-md-6">
-                                 <div class="form-group">
-                                    <label class="control-label">Zone Color <span class="required"> * </span></label>
-                                    <input type="color" name="wz_zone_color" id="WZ_ZONE_COLOR" class="form-control" required="required" maxlength="10"  value="{{ $warehouseZoneInfo->wz_zone_color }}" />
+                                     <div class="form-group">
+                                        <label class="control-label">Zone Color <span class="required"> * </span></label>
+                                        <input type="color" name="wz_zone_color" id="WZ_ZONE_COLOR" class="form-control" required="required" maxlength="10"  value="" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-12">
-                            	<div class="row" id="ZoneSize">
-                            	@if ($warehouseInfo->w_warehouse_size_type === 2)
-                                    @include('warehouses.zones.zonesize', [ "warehouseZoneInfo" => $warehouseZoneInfo , 'warehouseInfo' => $warehouseInfo ])
-                                @else
-                                    @include('warehouses.zones.zonevolume', [ "warehouseZoneInfo" => $warehouseZoneInfo , 'warehouseInfo' => $warehouseInfo ])
-                                @endif
-                            	</div>
-                            </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                     <div class="row">
@@ -125,7 +90,8 @@ $(function(){
                     </div>
                 </div>
             </form>
-	</div>
+    </div>
 </div>
+ 
 
 @endsection

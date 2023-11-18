@@ -21,7 +21,7 @@ Page Description :
 		<td>{{ ( $account_info->aa_sub_account != null && $account_info->aa_sub_account != 0 && isset($chart_accounts_array[$account_info->aa_sub_account]) ) ? $chart_accounts_array[$account_info->aa_sub_account]['aa_account'] : "" }}</td>
 		<td>{{ $account_info->aa_account_label }}</td>
 		<td>{{ $account_info->aa_account_information }}</td>
-		 <td style="width:2px;"><a  data-aa_id="{{ $account_info->aa_id }}"  href="#"  id="EDIT_ACCOUNT_{{ $account_info->aa_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
+		 <td style="width:2px;"><a  data-aa_id="{{ $account_info->aa_id }}"  href="#"  id="EDIT_ACCOUNT_{{ $account_info->aa_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
            <td style="width:2px;">
             <a  data-aa_id="{{ $account_info->aa_id }}"  href="#"  id="DELETE_ACCOUNT_{{ $account_info->aa_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a>
           </td>

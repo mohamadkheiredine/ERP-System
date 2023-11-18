@@ -15,72 +15,8 @@ servicecategories_module = {
 	            beforeSend : function(){
 	            },
 		        success : function(response){
-		        	$('#LstServiceCategories').html(response.display);
-					$.cc_datatable = $('.m_datatable').mDatatable({
-						
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						},
-						columns : [
-	        				{
-	        					field: "#",
-	        			        title: "#", 
-	        			        sortable: false,
-	        			        width: 40,
-	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-	        				},
-	        				{
-	        					field: 'ID',
-	        					type: 'number',  
-        				        sortable: true,
-        				        width: 40, 
-	        				},
-	        				{
-	        					field: 'ref',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 100,
-	        				},
-	        				{
-	        					field: 'Name',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 250,
-	        				},
-	        				{
-	        					field: "edit",
-	        			        title: "edit", 
-	        			        sortable: false,
-	        			        width: 40
-	        				},
-	        				{
-	        					field: "delete",
-	        			        title: "delete", 
-	        			        sortable: false,
-	        			        width: 40
-	        				}
-	        				]
-						
-						// inline and bactch editing(cooming soon)
-						// editable: false,
-					});
-					
-					$("a[id*=EDIT_CATEGORY_]").on('click',servicecategories_module.EditCategoryInfo);
-					$("a[id*=DELETE_CATEGORY_]").on('click',servicecategories_module.DeleteServiceCategoriesData);
+		        	$('#LstServiceCategories').html(response.display); 
+				
 		        }
 		    });
 	},

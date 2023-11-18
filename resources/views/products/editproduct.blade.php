@@ -29,63 +29,29 @@ Page Description :
 
 @extends('layouts.layout',['page_title' => "Product Management"])
 
-@section('themes')
-<style>
-th{
-    cursor: pointer;
-}
-#ModelPopUp{
-	width:800px;
-}
-</style>
-@endsection
+
 @section('plugins')
-<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/products.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/products/saveproducts.js') }}"></script>
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Edit Product
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_product" id="FORM_SAVE_PRODUCT">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Product {{ $product_info->p_product_name }}</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_product" id="FORM_SAVE_PRODUCT">
                 <div class="form-body">
                      <span id="hidden_fields">
                       {!! csrf_field() !!}
@@ -124,20 +90,20 @@ th{
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12" style="height:10px;">&nbsp;</div>
                 <div class="col-md-12">
-                	<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Product Information
-											<small></small>
-										</h3>
-									</div>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<div class="row">
+                
+                <div class="card card-bordered">
+                <div class="card-header bg-light">
+                    <h3 class="card-title">Product Information</h3>
+                    <div class="card-toolbar">
+                        <button type="button" class="btn btn-sm btn-light">
+                            Action
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                   <div class="row">
     							 <div class="col-md-4">
                                     <div class="form-group">
                                          <img id="BARCODE_IMG" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150"   /><br/>
@@ -234,30 +200,34 @@ th{
                               			</div>
                               		</div>
 								</div>
-							</div>
-						</div>
+								<div class="row" style="height:25px">&nbsp;</div>
+        				        <div class="row">
+                                    <div class="col-md-9"></div>
+                                    <div class="col-md-3" align="right">
+                                         <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_TOP"  class="btn btn-info">Save</button>
+                                        <button type="button" id="BACK_FORM_TOP" name="back_form" class="btn default">Back</button>
+                                    </div>
+                                </div>  
+                </div>
+            </div> 
+
 						<div class="row" style="height:25px">&nbsp;</div>
-				        <div class="row">
-                            <div class="col-md-9"></div>
-                            <div class="col-md-3" align="right">
-                                 <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_TOP"  class="btn btn-info">Save</button>
-                                <button type="button" id="BACK_FORM_TOP" name="back_form" class="btn default">Back</button>
-                            </div>
-                        </div>  
-						<div class="row" style="height:25px">&nbsp;</div>
-                		<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Product Financial Information
-											<small></small>
-										</h3>
-									</div>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<div class="row">
+						@if(config('appconfig.price_by_supplier') == 0)
+						
+						
+						<div class="row">
+							<div class="col-md-12">
+							 <div class="card card-bordered">
+                                <div class="card-header bg-light">
+                                    <h3 class="card-title">Product Financial Information</h3>
+                                    <div class="card-toolbar">
+                                        <button type="button" class="btn btn-sm btn-light">
+                                            Action
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                <div class="row">
                             		<div class="col-md-4">
                                           <div class="form-group">
                                                 <label class="control-label"> Product Selling Price&nbsp;<b class="CurrencyCode">{{  $product_info->p_product_currency == null  ? session('currency_symbol') : $currency_array[ $product_info->p_product_currency ]['cc_currency_code'] }}</b> <span class="required"> * </span></label>
@@ -292,8 +262,11 @@ th{
                                             </div>
                                     </div> 
                             	</div>
+                                </div>
+                              </div>
 							</div>
-						</div>
+						</div> 
+						@endif
 						<div class="row" style="height:25px">&nbsp;</div>	
 						<div class="row">
 							<div class="col-md-12">
@@ -313,27 +286,29 @@ th{
                         </div>    	
 						<div class="row" style="height:25px">&nbsp;</div>	
 						<div class="row">&nbsp;</div>
-						<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Product Size & Weight Information
-											<small>
-												We use this information in order to validate the warehouse size and 
-											</small>
-										</h3>
-									</div>
-								</div>
+						
+						<div class="row">
+							<div class="col-md-12">
+							<div class="card card-bordered">
+                                <div class="card-header bg-light">
+                                    <h3 class="card-title">Product Size & Weight Information&nbsp;&nbsp;<small> We use this information in order to validate the warehouse size and  </small></h3>
+                                    <div class="card-toolbar">
+                                        <button type="button" class="btn btn-sm btn-light">
+                                            Action
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                	<div class="row">
+                                		<div class="col-md-12"  id="ProductSizeInfo">
+                                			
+                                		</div>
+                                	</div>
+                                </div>
+                                </div>
+							
 							</div>
-							<div class="m-portlet__body">
-								<div class="row">
-                            		<div class="col-md-12"  id="ProductSizeInfo">
-                            			
-                            		</div>
-                            	</div>
-							</div>
-						</div>
+						</div> 
                 	  
                 	
                 </div>
@@ -349,50 +324,45 @@ th{
                    <div class="row" style="height:5px;"></div>
                    <div class="row">
                    		<div class="col-md-12 col-lg-12">
-                   				<ul class="nav nav-tabs" role="tablist">
-											<li class="nav-item">
-												<a class="nav-link active" data-toggle="tab" href="#tabStock">
-													Stock
-												</a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" data-toggle="tab" href="#tabStockMovement">
-													Stock Movement
-												</a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" data-toggle="tab" href="#tabLogs">
-													Logs
-												</a>
-											</li>
-										</ul>
-										<div class="tab-content">
-											<div class="tab-pane active" id="tabStock" role="tabpanel">
-												<table class="table">
-													<thead>
-														<tr>
-															<th> # </th>
-															<th> ID </th>
-															<th> Label </th>
-															<th> User </th>
-															<th> Warehouse </th>
-															<th> Quanity </th>
-															<th> Price </th>
-														</tr>
-													</thead>
-													<tbody class="LstStocks"> 
-														 
-													</tbody>
-												</table>
-												<div class="row">
-                                                    <div class="col-md-9"></div>
-                                                    <div class="col-md-3" align="right">
-                                                         <button type="button" name="btn_add_stock" id="BTN_ADD_STOCK"  class="btn btn-info">Add Stock</button>
-                                                    </div>
-                                                </div>
-											</div> 
-											<div class="tab-pane" id="tabStockMovement" role="tabpanel">
-												<table class="table">
+                   		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tabStock">Stock</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabStockMovement">Stock Movement</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabLogs">Logs</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="tabStock" role="tabpanel">
+                               <table class="table">
+									<thead>
+										<tr>
+											<th> # </th>
+											<th> ID </th>
+											<th> Label </th>
+											<th> User </th>
+											<th> Warehouse </th>
+											<th> Quanity </th>
+											<th> Price </th>
+										</tr>
+									</thead>
+									<tbody class="LstStocks"> 
+										 
+									</tbody>
+								</table>
+								<div class="row">
+                                    <div class="col-md-9"></div>
+                                    <div class="col-md-3" align="right">
+                                         <button type="button" name="btn_add_stock" id="BTN_ADD_STOCK"  class="btn btn-info">Add Stock</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tabStockMovement" role="tabpanel">
+                               <table class="table">
 													<thead>
 														<tr>
 															<th> # </th>
@@ -415,17 +385,15 @@ th{
                                                          <button type="button" name="btn_transfer_stock" id="BTN_TRANSFER_STOCK"  class="btn btn-info">Transfer Stock</button>
                                                     </div>
                                                 </div>
-											</div> 
-											<div class="tab-pane" id="tabLogs" role="tabpanel">
-												 
-											</div> 
-										</div>
-										
+                            </div>
+                            <div class="tab-pane fade" id="tabLogs" role="tabpanel">
+                         
+                            </div>
+                        </div>	
                    		</div>
                    </div> 
                 </div>
             </form>
-	</div>
+    </div>
 </div>
-
 @endsection

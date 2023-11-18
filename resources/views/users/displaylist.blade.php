@@ -35,7 +35,7 @@ $session_user_id = session()->get('user_id');
 		<img src="{{ url('images/offline-status.png') }}" height="24" />
 		@endif
 		</td>
-		 <td data-user_id="{{ $user_info->id }}"><a href="#"  data-user_id="{{ $user_info->id }}" id="EDIT_USER_{{ $user_info->id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
+		 <td data-user_id="{{ $user_info->id }}"><a href="#"  data-user_id="{{ $user_info->id }}" id="EDIT_USER_{{ $user_info->id }}" ><i class="fa-solid fa-pen-to-square"></i></a></td>
            <?php $display = ($session_user_id == $user_info->id) ? "display:none;" : ""; ?>
            <td><a  data-user_id="{{ $user_info->id }}" href="#" style="{{ $display }}"  id="DELETE_USER_{{ $user_info->id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 	</tr>

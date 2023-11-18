@@ -16,8 +16,8 @@ Page to control warehouse zones Add/Edit and delete zones
 ?>
 <div class="row">
 	<div class="col-md-2 col-xs-2"></div>
-	<div class="col-md-8 col-xs-8">
-			<table class="table m-table m-table--head-bg-success">
+	<div class="col-md-8 col-xs-8 table-responsive">
+			<table class="table">
 				<thead>
 					<tr>
 						<th>

@@ -16,78 +16,7 @@ contacts_module = {
 	            type : "POST",
 	            success : function(response){
 	            	$('#LstContacts').html(response.display);
-	            	$.contacts_datatable = $('.m_datatable').mDatatable({
-	        			// layout definition
-	        			layout: {
-	        				theme: 'default', // datatable theme
-	        				class: '', // custom wrapper class
-	        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-	        				// height: 450, // datatable's body's fixed height
-	        				footer: false // display/hide footer
-	        			},
-
-	        			// column sorting
-	        			sortable: true,
-
-	        			pagination: true,
-
-	        			search: {
-	        				input: $('#generalSearch')
-	        			},
-	        			columns : [
-	        				{
-	        					field: "#",
-	        			        title: "#", 
-	        			        sortable: false,
-	        			        width: 40,
-	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-	        				},
-	        				{
-	        					field: 'Id',
-	        					type: 'number',
-	        				    sortable: false,
-		        			    width: 40
-	        				},
-	        				{
-	        					field: 'Contact Name',
-	        					type: 'text',
-	        				    sortable: true,
-		        			    width: 150
-	        				},
-	        				{
-	        					field: 'Email',
-	        					type: 'text',
-	        				    sortable: true
-	        				},
-	        				{
-	        					field: 'Phone',
-	        					type: 'text',
-	        				    sortable: true
-	        				},
-	        				{
-	        					field: 'Mobile',
-	        					type: 'text',
-	        				    sortable: true
-	        				},
-	        				{
-	        					field: 'Fax',
-	        					type: 'text',
-	        				    sortable: true
-	        				},
-	        				{
-	        					field: "Edit",
-	        			        sortable: false,
-	        			        width: 40
-	        				},{
-	        					field: "Delete",
-	        			        sortable: false,
-	        			        width: 40
-	        				}
-	        			]
-
-	        			// inline and bactch editing(cooming soon)
-	        			// editable: false,
-	        		});
+	            	 
 	            	 $('.group-checkable').change(function() {
 	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
 	                        var checked = $(this).prop("checked");
@@ -96,11 +25,7 @@ contacts_module = {
 	                        });
 	                        $.uniform.update(set);
 	                    });
-	            	$("a[id*=EDIT_CONTACT_]").on("click",contacts_module.EditContactInfo);
-	            	$("a[id*=DELETE_CONTACT_]").on("click",function(){
-	            		$.contacts_datatable.destroy();
-	            		contacts_module.DeleteContactInfo();
-	            	});
+	            	
 	            }
 	        });
 		},

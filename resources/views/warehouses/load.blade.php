@@ -16,10 +16,10 @@ Display list of all stocks in this current warehouse
 <div class="row">
 	<div class="col-md-1"></div>
 	<div class="col-md-10">
-    	<div class="m_datatable" id="LstStockWarehouse">
-        <table class="m-datatable" id="StockWarehouseDatatables" width="100%">
+    	<div class="table-responsive">
+        <table class="table" width="100%">
             		<thead>
-            			<tr>
+            			<tr class="fw-bold fs-6 text-gray-800">
             				<th title="#">#</th>
             				<th title="Id"> ID </th>
             				<th title="Zone Name"> Zone Name </th>

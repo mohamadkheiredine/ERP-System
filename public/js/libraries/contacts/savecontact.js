@@ -28,14 +28,27 @@ $(function(){
 	        }
 	    });
 	 $('select').select2();
-	 $('#CC_CONTACT_DOB').datepicker({
-		 endDate :'-18y',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	 
+	 
+	 new tempusDominus.TempusDominus(document.getElementById('CC_CONTACT_DOB'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
+	});
 	$("#BTN_SAVE_CONTACT").on("click",contacts_module.SaveContactInfo);
 })

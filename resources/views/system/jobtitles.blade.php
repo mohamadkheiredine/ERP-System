@@ -1,174 +1,104 @@
 <?php
 /***********************************************************
-jobtitles.blade.php
-Product :
-Version : 1.0
-Release : 1
-Date Created : Jul 2, 2019
-Developed By  : Mohamad Mantach   PHP Department itm Solutions
-All Rights Reserved ,   itm Solutions COPYRIGHT 2019
-
-Page Description :
-
-***********************************************************/
-
+ jobtitles.blade.php
+ Product :
+ Version : 1.0
+ Release : 1
+ Date Created : Jul 2, 2019
+ Developed By  : Mohamad Mantach   PHP Department itm Solutions
+ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
+ 
+ Page Description :
+ 
+ ***********************************************************/
 ?>
 
 
 @extends('layouts.layout',['page_title' => "Job Titles Management"])
 
-@section('themes')
-<style>
-th{
-    cursor: pointer;
-}
-#ModelPopUp{
-	width:800px;
-}
-</style>
-@endsection
 @section('plugins')
-<script type="text/javascript" src="{{ url('js/modules/jobtitles.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/system/jobtitles.js') }}"></script>
-@endsection
+<script type="text/javascript"
+	src="{{ url('js/modules/jobtitles.module.js') }}"></script>
+<script type="text/javascript"
+	src="{{ url('js/libraries/system/jobtitles.js') }}"></script>
+@endsection @section('content')
 
-@section('content')
-<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Job Titles
-										</h3>
-									</div>
+<div class="card shadow-sm">
+	<div class="card-header">
+		<h3 class="card-title">Job Titles</h3>
+		<div class="card-toolbar">
+			<div class="btn-group">
+				<button type="button" class="btn btn-danger dropdown-toggle"
+					data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+				<ul class="dropdown-menu">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="card-body">
+		<!--begin: Search Form -->
+		<div class="col-md-12">
+			<div class="row align-items-center">
+				<div class="col-xl-8 order-2 order-xl-1">
+					<div class="form-group m-form__group row align-items-center">
+						<div class="col-md-4">
+							<div class="d-flex align-items-center">
+								<!--begin::Input group-->
+								<div class="position-relative w-md-400px me-md-2">
+									<i
+										class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+										<span class="path1"></span> <span class="path2"></span>
+									</i> <input type="text"
+										class="form-control form-control-solid ps-10"
+										id="generalSearch" name="general_search" value=""
+										placeholder="Search" />
 								</div>
-								<div class="m-portlet__head-tools">
-									<ul class="m-portlet__nav">
-										<li class="m-portlet__nav-item">
-											<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-												<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-													<i class="la la-ellipsis-h m--font-brand"></i>
-												</a>
-												<div class="m-dropdown__wrapper">
-													<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-													<div class="m-dropdown__inner">
-														<div class="m-dropdown__body">
-															<div class="m-dropdown__content">
-																<ul class="m-nav">
-																	<li class="m-nav__section m-nav__section--first">
-																		<span class="m-nav__section-text">
-																			Quick Actions
-																		</span>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-share"></i>
-																			<span class="m-nav__link-text">
-																				Print
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-chat-1"></i>
-																			<span class="m-nav__link-text">
-																				Export As CSV
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-																			<span class="m-nav__link-text">
-																				Import
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-																			<span class="m-nav__link-text">
-																				Download Import Template
-																			</span>
-																		</a>
-																	</li>
-
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<!--begin: Search Form -->
-								<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
-									<div class="row align-items-center">
-										<div class="col-xl-8 order-2 order-xl-1">
-											<div class="form-group m-form__group row align-items-center">
-												<div class="col-md-4">
-												<div class="m-input-icon m-input-icon--left">
-														<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." id="generalSearch">
-														<span class="m-input-icon__icon m-input-icon__icon--left">
-															<span>
-																<i class="la la-search"></i>
-															</span>
-														</span>
-													</div>
-
-												</div>
-												<div class="col-md-4">
-                                                    <div class="d-md-none m--margin-bottom-10"></div>
-												</div>
-												<div class="col-md-4">
-                                                    <div class="d-md-none m--margin-bottom-10"></div>
-												</div>
-											</div>
-										</div>
-										<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-											<a href="{{ url('system/jobtitles/addform') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
-												<span>
-													<i class="fas fa-user"></i>
-													<span>
-														New JobTitle
-													</span>
-												</span>
-											</a>
-											<div class="m-separator m-separator--dashed d-xl-none"></div>
-										</div>
-									</div>
-								</div>
-								<!--end: Search Form -->
-		                          <!--begin: Datatable -->
-								<div class="m_datatable">
-									<table class="table">
-                						<thead>
-                							<tr>
-                								<th>#</th>
-                								<th>ID</th> 
-                								<th>Job Title</th>
-                								<th>edit</th>
-                								<th>Delete</th>
-                							</tr>
-                						</thead>
-                						<tbody  class="LstJobTitlesGrid"></tbody>
-                					</table>
-								</div>
-								<!--end: Datatable -->
-								<div class="col-xl-12 order-1 order-xl-12 m--align-right">
-											<a href="{{ url('system/jobtitles/addform') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
-												<span>
-													<i class="fas fa-user"></i>
-													<span>
-														New JobTitle
-													</span>
-												</span>
-											</a>
-											<div class="m-separator m-separator--dashed d-xl-none"></div>
-										</div>
+								<!--end::Input group-->
 							</div>
 						</div>
+						<div class="col-md-4">
+							<div class="d-md-none m--margin-bottom-10"></div>
+						</div>
+						<div class="col-md-4">
+							<div class="d-md-none m--margin-bottom-10"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-4 order-1 order-xl-2 align-right">
+					<a href="{{ url('system/jobtitles/addform') }}"
+						class="btn btn-info"> <span> <i class="fas fa-user"></i> <span>
+								New JobTitle </span>
+					</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<!--end: Search Form -->
+		<!--begin: Datatable -->
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr class="fw-bold fs-6 text-gray-800">
+						<th>#</th>
+						<th>ID</th>
+						<th>Job Title</th>
+						<th>edit</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+				<tbody class="LstJobTitlesGrid"></tbody>
+			</table>
+		</div>
+		<!--end: Datatable -->
+		<div class="col-xl-12 order-1 order-xl-12 align-right">
+			<a href="{{ url('system/jobtitles/addform') }}" class="btn btn-info">
+				<span> <i class="fas fa-user"></i> <span> New JobTitle </span>
+			</span>
+			</a>
+			<div class="m-separator m-separator--dashed d-xl-none"></div>
+		</div>
+	</div>
+</div>
+
+
 @endsection

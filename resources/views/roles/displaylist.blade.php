@@ -13,8 +13,8 @@ Page Description :
 ************************************************************/
 
 ?>
-<div class="portlet-body flip-scroll">
-    <table class="m-datatable" id="html_table" width="100%">
+<div class="table-responsive">
+    <table class="table table-bordered" id="html_table" width="100%">
         <thead class="flip-content">
         <tr>
             <th style="width:2px"><input type="checkbox" name="ck_all_roles" id="CK_ALL_ROLES" value="1" /></th>
@@ -35,7 +35,7 @@ Page Description :
                    <td><?php echo $role_info->role_id; ?></td>
                    <td><?php echo $role_info->role_name; ?></td>
                    <td><?php echo ( strlen($role_info->role_description) > 20 ) ?  substr($role_info->role_description, 20) : $role_info->role_description ; ?></td>
-    			   <td style="width:2px;"><a  data-role_id="{{ $role_info->role_id }}"  href="#"  id="EDIT_ROLE_{{ $role_info->role_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
+    			   <td style="width:2px;"><a  data-role_id="{{ $role_info->role_id }}"  href="#"  id="EDIT_ROLE_{{ $role_info->role_id }}" ><i class="fa-solid fa-pen-to-square" aria-hidden="true" height="16" ></i></a></td>
                    <td style="width:2px;"><a  data-role_id="{{ $role_info->role_id }}"  href="#"  id="DELETE_ROLE_{{ $role_info->role_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
                </tr>
             <?php

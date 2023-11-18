@@ -33,54 +33,25 @@ th{
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text"> Add Stock </h3>
-									</div>
-								</div>
-								<div class="m-portlet__head-tools">
-									<ul class="m-portlet__nav">
-										<li class="m-portlet__nav-item">
-											<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-												<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-													<i class="la la-ellipsis-h m--font-brand"></i>
-												</a>
-												<div class="m-dropdown__wrapper">
-													<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-													<div class="m-dropdown__inner">
-														<div class="m-dropdown__body">
-															<div class="m-dropdown__content">
-																<ul class="m-nav">
-																	<li class="m-nav__section m-nav__section--first">
-																		<span class="m-nav__section-text">
-																			Quick Actions
-																		</span>
-																	</li>
-																	@if($product_info->Category->pc_use_serial_number == 1)
-																	<li class="m-nav__item">
-                        												<a href="#" id="AddUnit" class="m-nav__link">
-                        													<i class="m-nav__link-icon flaticon-chat-1"></i>
-                        													<span class="m-nav__link-text">
-                        														Add Unit Ids Stock
-                        													</span>
-                        												</a>
-                        											</li>
-                        											@endif
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-                                     <form name="frm_save_socket" id="FORM_SAVE_SOCKET">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add New Stock Data</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              @if($product_info->Category->pc_use_serial_number == 1)
+              <li><a href="#" id="AddUnit" class="dropdown-item"> <i class=flaticon-chat-1"></i> Add Unit Ids Stock </a></li>
+              @endif
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    
+    <form name="frm_save_socket" id="FORM_SAVE_SOCKET">
                                         <div class="form-body">
                                              <span id="hidden_fields">
                                                {!! csrf_field() !!}
@@ -217,7 +188,7 @@ th{
                                             </div>
                                         </div>
                                     </form>
-							</div>
-					   </div>
+    </div>
+ </div>
 
 @endsection

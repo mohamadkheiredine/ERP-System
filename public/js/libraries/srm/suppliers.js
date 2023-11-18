@@ -13,4 +13,6 @@ $(function(){
 	});
 	$("select").select2();
 	$("select").on('change',suppliers_module.DisplayListSuppliers);
+	$('#LstSuppliers').on("click","a[id*=EDIT_SUPPLIER_]",suppliers_module.EditSupplierInfo);
+	$('#LstSuppliers').on("click","a[id*=DELETE_SUPPLIER_]",suppliers_module.DeleteSupplierInfo);
 })

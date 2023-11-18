@@ -21,28 +21,66 @@ $(function(){
          console.error( error );
      });
 	 $('select').select2();
-	 $('#CA_APPOINTMENT_DATE').datepicker({
-		 startDate :'+1d',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
-		 }
-	 });
-	 $('input[name=ca_appointment_start_time]').timepicker({
-		 minuteStep: 1,
-		 defaultTime: '',
-		 showSeconds: true,
-		 showMeridian: false,
-		 snapToStep: true
-	 });
-	 $('input[name=ca_appointment_end_time]').timepicker({
-         minuteStep: 1,
-         defaultTime: '',
-         showSeconds: true,
-         showMeridian: false,
-         snapToStep: true
-     });
+		new tempusDominus.TempusDominus(document.getElementById('CA_APPOINTMENT_DATE'),{
+			 display: {
+				  components: {
+				      calendar: true,
+				      date: true,
+				      month: true,
+				      year: true,
+				      decades: true, 
+				      clock: false,
+				      hours: false,
+				      minutes: false,
+				      seconds: false,
+				      useTwentyfourHour: undefined
+				    }
+			 },
+			 localization: {
+				 format : "L"
+				 
+			 }
+		});
+
+		new tempusDominus.TempusDominus(document.getElementById('ca_appointment_start_time'),{
+			 display: {
+				  components: {
+				      calendar: false,
+				      date: false,
+				      month: false,
+				      year: false,
+				      decades: false, 
+				      clock: true,
+				      hours: true,
+				      minutes: true,
+				      seconds: true,
+				      useTwentyfourHour: true
+				    }
+			 },
+			 localization: {
+				 format : "LT"
+				 
+			 }
+		});
+		new tempusDominus.TempusDominus(document.getElementById('ca_appointment_end_time'),{
+			 display: {
+				  components: {
+				      calendar: false,
+				      date: false,
+				      month: false,
+				      year: false,
+				      decades: false, 
+				      clock: true,
+				      hours: true,
+				      minutes: true,
+				      seconds: true,
+				      useTwentyfourHour: true
+				    }
+			 },
+			 localization: {
+				 format : "LT"
+				 
+			 }
+		});
 	 $("#BTN_SAVE_APPOINTMENT").on("click",leads_module.SaveAppointmentInfo);
 });

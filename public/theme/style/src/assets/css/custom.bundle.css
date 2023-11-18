@@ -1,0 +1,60 @@
+.aside .aside-menu .menu > .menu-item > .menu-link .menu-icon
+{
+	width:30px !important;
+	height:30px !important;
+}
+
+.LstRoles{
+	list-style-type: none;
+}
+.align-right{
+	text-align: right;
+}
+.help-block-error{
+	color: var(--bs-danger);
+}
+.has-error input{
+	border:solid 1px var(--bs-danger);
+}
+th{
+    cursor: pointer;
+}
+#ModelPopUp{
+	width:800px;
+}
+.form{
+	width:100%;
+}
+.CommentsImg{
+	width: 100%;
+}
+
+.ActivityDetails{
+	position: relative;
+  width: 100%;
+  list-style-type: none;
+}
+
+
+.ActivityDetails li{
+	width:33%;
+	float:left;
+	
+}
+
+
+.bootbox-close-button.close {
+  background: transparent;
+  border: solid 0px;
+  float: right;
+}
+
+.RadioShip {
+  width: 100%;
+  list-style-type: none;
+}
+
+.RadioShip li{
+	width: 50%;
+  float: left;
+}

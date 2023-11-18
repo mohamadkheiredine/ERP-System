@@ -962,6 +962,7 @@ class ProductsController extends Controller
         $warehouse_id        = $request->input('warehouse_id'); 
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
+         
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();

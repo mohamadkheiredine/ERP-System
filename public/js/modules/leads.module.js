@@ -18,80 +18,6 @@ leads_module = {
 	            type : "POST",
 	            success : function(response){
 	            	$('#LstLeads').html(response.display);
-	            	$.lead_datatable = $('.m_datatable').mDatatable({
-
-	        			// layout definition
-	        			layout: {
-	        				theme: 'default', // datatable theme
-	        				class: '', // custom wrapper class
-	        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-	        				// height: 450, // datatable's body's fixed height
-	        				footer: false // display/hide footer
-	        			},
-
-	        			// column sorting
-	        			sortable: true,
-
-	        			pagination: true,
-
-	        			search: {
-	        				input: $('#generalSearch')
-	        			},
-	        			columns : [
-	        				{
-	        					field: "#",
-	        			        title: "#", 
-	        			        sortable: false,
-	        			        width: 40,
-	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-	        				},
-	        				{
-	        					field: 'ID',
-	        					type: 'number',  
-        				        sortable: true,
-        				        width: 40, 
-	        				},
-	        				{
-	        					field: 'Lead name',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 200,
-	        				},
-	        				{
-	        					field: 'Company',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 150
-	        				},
-	        				{
-	        					field: 'Mobile',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 150
-	        				},
-	        				{
-	        					field: 'Email',
-	        					type: 'text',
-	        					sortable: true,
-	        					width: 250
-	        				},
-	        				{
-	        					field: "edit",
-	        			        title: "edit", 
-	        			        sortable: false,
-	        			        width: 40
-	        				},
-	        				{
-	        					field: "delete",
-	        			        title: "delete", 
-	        			        sortable: false,
-	        			        width: 40
-	        				}
-	        			]
-
-	        			// inline and bactch editing(cooming soon)
-	        			// editable: false,
-	        		});
 	            	 $('.group-checkable').change(function() {
 	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
 	                        var checked = $(this).prop("checked");
@@ -100,8 +26,6 @@ leads_module = {
 	                        });
 	                        $.uniform.update(set);
 	                    });
-	            	$("a[id*=EDIT_LEAD_]").on("click",leads_module.EditLeadInfo);
-	            	$("a[id*=DELETE_LEAD_]").on("click",leads_module.DeleteLeadInfo);
 	            }
 	        });
 		},
@@ -424,50 +348,7 @@ leads_module = {
 	            	  var display_type = $('input[name=display_type]').val();
 	            	  if(display_type == 'list')
             		  {
-	            		  var datatable = $('#LstLeadAppointments').mDatatable({
-			        			// layout definition
-			        			layout: {
-			        				theme: 'default', // datatable theme
-			        				class: '', // custom wrapper class
-			        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-			        				// height: 450, // datatable's body's fixed height
-			        				footer: false // display/hide footer
-			        			},
-
-			        			// column sorting
-			        			sortable: true,
-
-			        			pagination: true,
-
-			        			search: {
-			        				input: $('#AppointmentsSearch')
-			        			},
-			        			columns : [
-			        				{
-			        					field: 'Id',
-			        					type: 'number'
-			        				},
-			        				{
-			        					field: 'subject',
-			        					type: 'text'
-			        				},
-			        				{
-			        					field: 'date',
-			        					type: 'text'
-			        				},
-			        				{
-			        					field: 'starttime',
-			        					type: 'text'
-			        				},
-			        				{
-			        					field: 'endtime',
-			        					type: 'text'
-			        				}
-			        			]
-
-			        			// inline and bactch editing(cooming soon)
-			        			// editable: false,
-			        		});
+	            		 
 		            	  
 		              	$("a[id*=EDIT_APPT_]").on("click",leads_module.EditAppointmentInfo);
 		            	$("a[id*=DELETE_APPT_]").on("click",leads_module.DeleteAppointmentInfo);
@@ -500,80 +381,6 @@ leads_module = {
 					if(response.is_error == 0)
 					{
 						$("#ActivitiesManagement").html(response.display); 
-						var datatable = $('#LstLeadActivities').mDatatable({
-							// layout definition
-							layout: {
-								theme: 'default', // datatable theme
-								class: '', // custom wrapper class
-								scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-								// height: 450, // datatable's body's fixed height
-								footer: false // display/hide footer
-							},
-							
-							// column sorting
-							sortable: true,
-							
-							pagination: true,
-							
-							search: {
-								input: $('#generalSearch')
-							},
-							columns : [
-								{
-		        					field: "#",
-		        			        title: "#", 
-		        			        sortable: false,
-		        			        width: 40,
-		        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-		        				},
-		        				{
-		        					field: 'ID',
-		        					type: 'number',  
-	        				        sortable: true,
-	        				        width: 40, 
-		        				},
-		        				{
-		        					field: 'Lead name',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 200,
-		        				},
-		        				{
-		        					field: 'Company',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 150
-		        				},
-		        				{
-		        					field: 'Mobile',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 150
-		        				},
-		        				{
-		        					field: 'Email',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 250
-		        				},
-		        				{
-		        					field: "edit",
-		        			        title: "edit", 
-		        			        sortable: false,
-		        			        width: 40
-		        				},
-		        				{
-		        					field: "delete",
-		        			        title: "delete", 
-		        			        sortable: false,
-		        			        width: 40
-		        				}
-							]
-							
-							// inline and bactch editing(cooming soon)
-							// editable: false,
-						});
-						
 						$("a[id*=EDIT_ACTIVITY_]").on("click",leads_module.EditActivityInfo);
 						$("a[id*=DELETE_ACTIVITY_]").on("click",leads_module.DeleteActivityInfo);
 					}
@@ -595,50 +402,7 @@ leads_module = {
 	              if(response.is_error == 0)
 	              {
 	            	  $("#LogsManagement").html(response.display); 
-	            	  var datatable = $('#LstLeadLogs').mDatatable({
-		        			// layout definition
-		        			layout: {
-		        				theme: 'default', // datatable theme
-		        				class: '', // custom wrapper class
-		        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-		        				// height: 450, // datatable's body's fixed height
-		        				footer: false // display/hide footer
-		        			},
-
-		        			// column sorting
-		        			sortable: true,
-
-		        			pagination: true,
-
-		        			search: {
-		        				input: $('#LeadLogs')
-		        			},
-		        			columns : [
-		        				{
-		        					field: 'Id',
-		        					type: 'number',
-		        					width:4
-		        				},
-		        				{
-		        					field: 'Log Type',
-		        					type: 'text',
-		        					width:50
-		        				},
-		        				{
-		        					field: 'Log Description',
-		        					type: 'text',
-		        					width:400
-		        				},
-		        				{
-		        					field: 'Log Date',
-		        					type: 'text',
-		        					width:100
-		        				}
-		        			]
-
-		        			// inline and bactch editing(cooming soon)
-		        			// editable: false,
-		        		}); 
+	            	  
 	              }
 	            }
 	        });
@@ -677,52 +441,7 @@ leads_module = {
 	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#ContactsManagement").html(response.display);
-	            	  var datatable = $('#LstLeadContacts').mDatatable({
-		        			// layout definition
-		        			layout: {
-		        				theme: 'default', // datatable theme
-		        				class: '', // custom wrapper class
-		        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-		        				// height: 450, // datatable's body's fixed height
-		        				footer: false // display/hide footer
-		        			},
-
-		        			// column sorting
-		        			sortable: true,
-
-		        			pagination: true,
-
-		        			search: {
-		        				input: $('#generalSearch')
-		        			},
-		        			columns : [
-		        				{
-		        					field: 'Id',
-		        					type: 'number'
-		        				},
-		        				{
-		        					field: 'Lead name',
-		        					type: 'text'
-		        				},
-		        				{
-		        					field: 'Company',
-		        					type: 'text'
-		        				},
-		        				{
-		        					field: 'Mobile',
-		        					type: 'text'
-		        				},
-		        				{
-		        					field: 'Email',
-		        					type: 'text'
-		        				}
-		        			]
-
-		        			// inline and bactch editing(cooming soon)
-		        			// editable: false,
-		        		});
-	            	  
+	            	  $("#ContactsManagement").html(response.display); 
 		            	$("a[id*=EDIT_CONTACT_]").on("click",contacts_module.EditContactInfo);
 		            	$("a[id*=DELETE_CONTACT_]").on("click",contacts_module.DeleteLeadContactInfo);
 	              }
@@ -1288,52 +1007,7 @@ leads_module = {
 	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#ItemsManagement").html(response.display);
-	            	  var datatable = $('#LstLeadServices').mDatatable({
-		        			// layout definition
-		        			layout: {
-		        				theme: 'default', // datatable theme
-		        				class: '', // custom wrapper class
-		        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-		        				// height: 450, // datatable's body's fixed height
-		        				footer: false // display/hide footer
-		        			},
-
-		        			// column sorting
-		        			sortable: true,
-
-		        			pagination: true,
-
-		        			search: {
-		        				input: $('#ItemsSearch')
-		        			},
-		        			columns : [
-		        				{
-		        					field: 'Id',
-		        					type: 'number'
-		        				},
-		        				{
-		        					field: 'Service Name',
-		        					type: 'text'
-		        				},
-		        				{
-		        					field: 'Nbr of Hours',
-		        					type: 'number'
-		        				},
-		        				{
-		        					field: 'Cost',
-		        					type: 'number'
-		        				},
-		        				{
-		        					field: 'Price',
-		        					type: 'text'
-		        				}
-		        			]
-
-		        			// inline and bactch editing(cooming soon)
-		        			// editable: false,
-		        		});
-	            	  
+	            	  $("#ItemsManagement").html(response.display); 
 		            	$("a[id*=EDIT_LITEM_]").on("click",leads_module.EditLeadItemInfo);
 		            	$("a[id*=DELETE_LITEM_]").on("click",leads_module.DeleteLeadItemInfo);
 	              }

@@ -1,6 +1,6 @@
-/**
- * 
- */
+
+
+
 $(function(){
 	$('#U_ROLE').select2({ placeholder: "Select a user role" });
 	$('#U_USER_TYPE').select2({  placeholder: "Select a user type" });
@@ -11,23 +11,42 @@ $(function(){
 	$('#FK_COMPANY_ID').select2({  placeholder: "Select a Company" });
 	$('#FK_WAREHOUSE_ID').select2({  placeholder: "Select a Warehouse" });
 	$('select').select2();
-	 $('#U_DATE_BIRTH').datepicker({
-		 endDate :'-18y',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	
+	new tempusDominus.TempusDominus(document.getElementById('U_DATE_BIRTH'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
 		 }
-	 });
-	 $('#U_EMPLOYMENT_DATE').datepicker({
-         todayHighlight: true,
-         orientation: "bottom left",
-         templates: {
-             leftArrow: '<i class="la la-angle-left"></i>',
-             rightArrow: '<i class="la la-angle-right"></i>'
-         }
-     });
+	});
+	new tempusDominus.TempusDominus(document.getElementById('U_EMPLOYMENT_DATE'),{ });
+	
+//	 $('#U_DATE_BIRTH').datepicker({
+//		 endDate :'-18y',
+//		 todayHighlight: true,
+//		 orientation: "bottom left",
+//		 templates: {
+//			 leftArrow: '<i class="la la-angle-left"></i>',
+//			 rightArrow: '<i class="la la-angle-right"></i>'
+//		 }
+//	 });
+//	 $('#U_EMPLOYMENT_DATE').datepicker({
+//         todayHighlight: true,
+//         orientation: "bottom left",
+//         templates: {
+//             leftArrow: '<i class="la la-angle-left"></i>',
+//             rightArrow: '<i class="la la-angle-right"></i>'
+//         }
+//     });
 	 $('#U_PROFILE_PIC').on('change', function () {
 	        var countFiles   = $(this)[0].files.length;
 	        var imgPath      = $(this)[0].value;

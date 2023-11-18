@@ -154,8 +154,6 @@ class SuppliersController extends Controller
         $ss_street_name             = $request->input("ss_street_name");
         $ss_date_creation           = date("Y-m-d");
         $ss_industry                = $request->input("fk_industry_id");
-        $ss_sale_account_id         = $request->input("ss_sale_account_id");
-        $ss_purchase_account_id     = $request->input("ss_purchase_account_id");
 
         $ss_logo_base_src       = "";
         $ss_logo_file_name      = "";
@@ -167,6 +165,17 @@ class SuppliersController extends Controller
         {
             $SupplierInfo = Suppliers::find($ss_id);
         }
+        else
+        {
+            //GenerateNewSupplierAcc
+            $params_array = array(
+                "account_label" => $ss_supplier_name
+            );
+            $account_id = $supplierManager->GenerateNewSupplierAcc($params_array);
+            $SupplierInfo->ss_sale_account_id       = $account_id;
+            $SupplierInfo->ss_purchase_account_id   = $account_id;
+        }
+        
         
         
         
@@ -200,8 +209,6 @@ class SuppliersController extends Controller
         $SupplierInfo->ss_street_name           = $ss_street_name;
         $SupplierInfo->ss_date_creation         = $ss_date_creation;
         $SupplierInfo->ss_industry              = $ss_industry;
-        $SupplierInfo->ss_sale_account_id       = $ss_sale_account_id;
-        $SupplierInfo->ss_purchase_account_id   = $ss_purchase_account_id;
         $SupplierInfo->save();
         
         

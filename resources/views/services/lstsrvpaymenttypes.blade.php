@@ -21,7 +21,7 @@ Page Description :
 		<td>{{ $spt_info->PaymentType->pt_payment_type }}</td> 
 		<td>{{ $spt_info->IncomeAccount->aa_account }} - {{ $spt_info->IncomeAccount->aa_account_label }}</td> 
 		<td>{{ $spt_info->PurchaseAccount->aa_account }} - {{ $spt_info->PurchaseAccount->aa_account_label }}</td> 
-		<td style="width:2px;"><a  data-st_id="{{ $spt_info->st_id }}"  href="#"  id="EDIT_SPT_{{ $spt_info->st_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
+		<td style="width:2px;"><a  data-st_id="{{ $spt_info->st_id }}"  href="#"  id="EDIT_SPT_{{ $spt_info->st_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
         <td style="width:2px;"><a  data-st_id="{{ $spt_info->st_id }}"  href="#"  id="DELETE_SPT_{{ $spt_info->st_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 	</tr>
  @endforeach

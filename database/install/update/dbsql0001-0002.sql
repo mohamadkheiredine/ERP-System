@@ -226,3 +226,6 @@ CHANGE COLUMN `so_delivery_date` `so_delivery_date` DATETIME NULL DEFAULT NULL ;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_selling_price` DECIMAL NULL DEFAULT 0 AFTER `is_price_item`;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_discount` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_vendor_price` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;
+
+
+ALTER TABLE `inventory_stock_ids` ADD COLUMN `si_stock_sold` TINYINT NULL DEFAULT 0 AFTER `si_stock_uid`;
