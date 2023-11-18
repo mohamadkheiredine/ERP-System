@@ -14,9 +14,9 @@ List of default accounts
 
 ?>
 
-<table class="m-datatable" id="html_table" width="100%">
+<table class="table table-rounded table-striped border gy-7 gs-7">
 		<thead>
-			<tr>
+			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
 				<th title="Id" style="width:50px;white-space: nowrap;">ID</th>
 				<th title="label">Label</th>
 				<th title="Account">Account</th>

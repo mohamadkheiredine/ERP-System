@@ -55,20 +55,22 @@ th{
         </div>
     </div>
     <div class="card-body">
-    <div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
+    <div class="col-md-12">
 									<div class="row align-items-center">
 										<div class="col-xl-8 order-2 order-xl-1">
-											<div class="form-group m-form__group row align-items-center">
+											<div class="form-group row align-items-center">
 												<div class="col-md-4">
-												<div class="m-input-icon m-input-icon--left">
-														<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." id="generalSearch">
-														<span class="m-input-icon__icon m-input-icon__icon--right">
-															<span>
-																<i class="la la-search"></i>
-															</span>
-														</span>
-													</div>
-
+														<div class="d-flex align-items-center">
+                										<!--begin::Input group-->
+                										<div class="position-relative w-md-400px me-md-2">
+                											<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                												<span class="path1"></span>
+                												<span class="path2"></span>
+                											</i>
+                											<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                										</div>
+                										<!--end::Input group-->
+                									</div>
 												</div>
 												<div class="col-md-4">
                                                     <div class="m-input-icon m-input-icon--left">
