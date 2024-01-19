@@ -398,8 +398,10 @@ class OrdersController extends Controller
         $so_payment_type            = $request->input('so_payment_type'); 
         $so_order_label             = $request->input('so_order_label'); 
         $so_order_note              = $request->input('so_order_note'); 
-        $so_order_date              = $request->input('so_order_date'); 
+        $so_order_date              = $request->input('so_order_date');
+        $so_order_date              = date("Y-m-d",strtotime($so_order_date));
         $so_delivery_date           = $request->input('so_delivery_date'); 
+        $so_delivery_date           = date("Y-m-d",strtotime($so_delivery_date));
         $so_vat_id                  = $request->input('so_vat_id'); 
         $so_total_cost              = $request->input('so_total_cost'); 
         $so_order_currency          = $request->input('so_order_currency'); 

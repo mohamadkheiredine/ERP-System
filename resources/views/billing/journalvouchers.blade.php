@@ -34,78 +34,20 @@ th{
 @endsection
 
 @section('content')
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Journal Vouchers Management
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-											<li class="m-nav__item">
-												<a href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-share"></i>
-													<span class="m-nav__link-text">
-														Print
-													</span>
-												</a>
-											</li>
-											<li class="m-nav__item">
-												<a href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-chat-1"></i>
-													<span class="m-nav__link-text">
-														Export As CSV
-													</span>
-												</a>
-											</li>
-											<li class="m-nav__item">
-												<a href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-													<span class="m-nav__link-text">
-														Import
-													</span>
-												</a>
-											</li>
-											<li class="m-nav__item">
-												<a href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-													<span class="m-nav__link-text">
-														Download Import Template
-													</span>
-												</a>
-											</li>
-
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-		<span id="hidden_fields">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Journal Vouchers Management</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu"> </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <span id="hidden_fields">
 			<input type="hidden" name="page_number" value="1" />
 		<input type="hidden" name="fisical_year" value="{{ date('Y') }}" />
 		</span>
@@ -115,18 +57,21 @@ th{
 				<div class="col-xl-12 order-2 order-xl-1">
 					<div class="form-group m-form__group row align-items-center">
 						<div class="col-md-4">
-						<div class="m-input-icon m-input-icon--left">
-								<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." id="generalSearch" name="general_search" />
-								<span class="m-input-icon__icon m-input-icon__icon--right">
-									<span>
-										<i class="la la-search"></i>
-									</span>
-								</span>
-							</div>
+						<div class="d-flex align-items-center">
+    							<!--begin::Input group-->
+    							<div class="position-relative w-md-400px me-md-2">
+    								<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+    									<span class="path1"></span>
+    									<span class="path2"></span>
+    								</i>
+    								<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+    							</div>
+    							<!--end::Input group-->
+    						</div>
 						</div>
 						<div class="col-md-4">
 							 <div class="form-group">
-                                <label> Account Debit : </label>
+                                <label class="form-label"> Account Debit : </label>
                                 <select class="bs-select form-control" name="jv_account_id" id="JV_ACCOUNT_ID" data-actions-box="true">
                                         <option value="0"> --Select Account--</option>
                                         @foreach ( $lst_chart_accounts as $key => $account_info )
@@ -134,11 +79,10 @@ th{
                                         @endforeach
                                 </select>
                             </div>
-                            <div class="d-md-none m--margin-bottom-10"></div>
 						</div>
 						<div class="col-md-4">
 							 <div class="form-group">
-                                <label> Account Credit : </label>
+                                <label class="form-label"> Account Credit : </label>
                                 <select class="bs-select form-control" name="jv_account_id" id="JV_ACCOUNT_ID" data-actions-box="true">
                                         <option value="0"> --Select Account--</option>
                                         @foreach ( $lst_chart_accounts as $key => $account_info )
@@ -146,35 +90,32 @@ th{
                                         @endforeach
                                 </select>
                             </div>
-                            <div class="d-md-none m--margin-bottom-10"></div>
 						</div>  
 						<div class="col-md-4">
 							 <div class="form-group">
-                                <label> From Date </label><br/>
+                                <label class="form-label"> From Date </label><br/>
                                 <input type="text" name="jv_start_date" id="JV_START_DATE" value="" class="form-control" />
                             </div>
-                            <div class="d-md-none m--margin-bottom-10"></div>
 						</div>
 						<div class="col-md-4">
 							 <div class="form-group">
-                                <label> To Date </label><br/>
+                                <label class="form-label"> To Date </label><br/>
                                 <input type="text" name="jv_end_date" id="JV_END_DATE" value="" class="form-control" />
                             </div>
-                            <div class="d-md-none m--margin-bottom-10"></div>
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-4 order-1 order-xl-2 m--align-right">
+				<div class="col-xl-4">
 					
 				</div>
 			</div>
 		</div>
 		<!--end: Search Form -->
         <div class="row">
-    		<div class="col-md-12">
-    				<table class="table m-table m-table--head-bg-brand" id="html_table" width="100%">
+    		<div class="col-md-12 table-responsive">
+    			<table class="table table-striped gy-7 gs-7">
             		<thead>
-            			<tr>
+            			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
             				<th style="width:2px;white-space: nowrap;" title="#">#</th>
             				<th style="width:2px;white-space: nowrap;" title="Id"> ID </th>
             				<th title="Voucher Date"> Voucher Date </th>
@@ -200,7 +141,7 @@ th{
 		<!--end: Datatable --> 
 		<div class="row">
 			<div class="col-md-12" align="right">
-				<a href="{{ url('billing/journalvouchers/addform') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
+				<a href="{{ url('billing/journalvouchers/addform') }}" class="btn btn-info">
 						<span>
 							<i class="fa fa-money"></i>
 							<span>
@@ -208,9 +149,8 @@ th{
 							</span>
 						</span>
 					</a>
-					<div class="m-separator m-separator--dashed d-xl-none"></div>
 			</div>
 		</div>
-	</div>
+    </div>
 </div>
 @endsection

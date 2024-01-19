@@ -21,7 +21,7 @@ $session_user_id = session()->get('user_id');
 		<td>{{ $warehouse_info->w_id }}</td>
 		<td>{{ $warehouse_info->w_warehouse_name }}</td>
 		<td>{{ $warehouse_info->w_warehouse_city }}</td>
-		<td>{!! $warehouse_info->w_warehouse_status == 1 ? "<span class='m--font-success'>Active</span>" :  "<span class='m--font-danger'>Inactive</span>" !!}</td>
+		<td>{!! $warehouse_info->w_warehouse_status == 1 ? "<span class='text-success'>Active</span>" :  "<span class='text-danger'>Inactive</span>" !!}</td>
 		 <td><a  data-w_id="{{ $warehouse_info->w_id }}"  href="#"  id="EDIT_WAREHOUSE_{{ $warehouse_info->w_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
          <td><a  data-w_id="{{ $warehouse_info->w_id }}"  href="#"  id="SETTINGS_WAREHOUSE_{{ $warehouse_info->w_id }}" ><i class="fas fa-cog" aria-hidden="true" height="16" ></i></a></td>
          <td><a  data-w_id="{{ $warehouse_info->w_id }}"  href="#"  id="DELETE_WAREHOUSE_{{ $warehouse_info->w_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>

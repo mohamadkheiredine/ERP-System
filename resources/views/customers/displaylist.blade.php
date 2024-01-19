@@ -18,9 +18,9 @@ Page Description :
 <tr  class="odd gradeX" data-ic_id="{{ $customer_info->ic_id }}">
 	<td><input type="checkbox" name="ck_ic_{{ $customer_info->ic_id }}" id="CK_IC_{{ $customer_info->ic_id }}" class="checkboxes" value="{{ $customer_info->ic_id }}" /></td>
    <td>{{ $customer_info->ic_id }}</td>
-   <td>{{ $customer_info->ic_customer_code }}</td> 
-   <td>{{ $customer_info->Account->aa_account_ref }}</td> 
-   <td>{{ $customer_info->ic_customer_name }}</td>
+   <td>{{ $customer_info->ic_customer_code }}</td>
+   <td>{{ $customer_info->ic_customer_name }}</td> 
+   <td>{{ $customer_info->ic_customer_email }}</td> 
    <td>{{ $customer_info->ic_customer_phone }}</td>
     <td><a href="#" data-ic_id="{{ $customer_info->ic_id }}" id="EDIT_CUSTOMER_{{ $customer_info->ic_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td> 
     <td><a href="#" data-ic_id="{{ $customer_info->ic_id }}"   id="DELETE_CUSTOMER_{{ $customer_info->ic_id }}" ><i class="fa-solid fa-trash"></i></a></td> 

@@ -83,6 +83,104 @@ products_module = {
 		    })
 			
 		},
+		GetZonesDropdown : function() {
+			let  base_url 			= $('input[name=base_url]').val();
+			let _token 				= $('input[name=_token]').val();
+			let warehouse_id 		= $("#FK_WWAREHOUSE_ID").val();
+			let params = { _token : _token , warehouse_id : warehouse_id };
+			
+			
+			$.ajax
+		    ({
+		        url : base_url + "/request/products/getzonesdropdown",
+		        data : params,
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){
+		        	if(response.is_error == 1)
+	        		{
+		        		bootbox.alert(response.error_msg);
+		        		return false;
+	        		}
+		        	
+		        	$('.DefaultZone').html(response.dropdown)
+		        	
+		        }
+		    });
+			
+		},
+		GetFloorDropDown : function(){
+			let  base_url 			= $('input[name=base_url]').val();
+			let _token 				= $('input[name=_token]').val();
+			let zone_id 			= $(this).val();
+			let params = { _token : _token , zone_id : zone_id };
+			
+			$.ajax
+		    ({
+		        url : base_url + "/request/products/getfloorsdropdown",
+		        data : params,
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){
+		        	if(response.is_error == 1)
+	        		{
+		        		bootbox.alert(response.error_msg);
+		        		return false;
+	        		}
+		        	
+		        	$('.DefaultFloor').html(response.dropdown)
+		        	
+		        }
+		    });
+			
+		},
+		QuickActions : function(){
+			let  base_url 			= $('input[name=base_url]').val();
+			let _token 				= $('input[name=_token]').val();
+			let action 				= $(this).data('action');
+			alert(action);
+			switch(action)
+			{
+				case "EXPORT_CSV":
+				{
+				
+				}
+				break;
+				case "DOWNLOAD_TEMPLATE":
+				{
+					$.ajax({
+			            url: base_url + "/request/products/downloadtemplate?_token=" + _token,
+			            method: "GET", 
+			            success: function(data) {
+
+			            	const blob = new Blob([data]);
+			                // Create a Blob URL for the binary data
+			                var blobUrl = window.URL.createObjectURL(blob);
+			                // Create a temporary anchor element
+			                var a = document.createElement('a');
+			                a.href = blobUrl;
+			                a.download = 'products-template.csv'; // Set the desired file name
+
+			                // Programmatically trigger a click on the anchor to start the download
+			                document.body.appendChild(a);
+			                a.click();
+
+			                // Clean up resources
+			                window.URL.revokeObjectURL(blobUrl);
+			                document.body.removeChild(a);
+			            },
+			            error: function(xhr, status, error) {
+			                console.error("Error downloading file:", error);
+			            }
+			        });
+				}
+				break;
+			}
+		},
 		GenerateBarCode : function(){
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
@@ -154,9 +252,6 @@ products_module = {
 	            beforeSend : function(){
 	            },
 		        success : function(response){
-		        	$("#PRODUCT_PROFILE").attr('src',response.product_profile);
-		        	$("#BARECODE_IMAGE").attr('src',response.barcode_img);
-		        	$(".BareCodeLabel").html(response.barcode);
 		        	let is_id = $('input[name=is_id]').val();
 		        	if(is_id == null)
 		        	{
@@ -817,6 +912,9 @@ products_module = {
 	           },
                fk_pc_id : {
                  required: true
+	           },
+	           p_product_quantity : {
+                 number:true
 	           },
                p_product_weight : {
                  required: true,

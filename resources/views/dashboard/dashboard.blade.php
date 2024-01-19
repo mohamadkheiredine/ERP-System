@@ -16,14 +16,17 @@ Page Description :
 @extends('layouts.layout',['page_title' => "Dashboard"])
 
 @section('plugins')
-    <script src="//www.amcharts.com/lib/3/amcharts.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/serial.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/radar.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/pie.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/plugins/tools/polarScatter/polarScatter.min.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/plugins/animate/animate.min.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/plugins/export/export.min.js" type="text/javascript"></script>
-    <script src="//www.amcharts.com/lib/3/themes/light.js" type="text/javascript"></script>
+	 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
     <script src="{{ url('admin/assets/pages/scripts/dashboard.js') }}" type="text/javascript"></script>
     <script src="{{ url('default/assets/app/js/service-dashboard.js') }}" type="text/javascript"></script> 
 @endsection
@@ -49,14 +52,10 @@ Page Description :
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
-						<a href="../../demo9/dist/account/overview.html" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
-							<i class="ki-duotone ki-gift fs-2tx mb-5 ms-n1">
-								<span class="path1"></span>
-								<span class="path2"></span>
-								<span class="path3"></span>
-								<span class="path4"></span>
-							</i>
-							<span class="fs-4 fw-bold">User Profile</span>
+						<a href="#" style="text-align: center" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
+							<i class="fa-solid fa-users fa-xl" style="font-size: 48px;margin-bottom: 3px;"></i>
+							<span class="fs-4 fw-bold">Customers</span><br/>
+							<span class="fs-4 fw-bold" id="CustomersCount"></span>
 						</a>
 						<!--end::Link-->
 					</div>
@@ -68,12 +67,10 @@ Page Description :
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
-						<a href="../../demo9/dist/account/statements.html" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
-							<i class="ki-duotone ki-technology-2 fs-2tx mb-5 ms-n1">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-							<span class="fs-4 fw-bold">Statements</span>
+						<a href="#" style="text-align: center" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
+							<i class="fa-solid fa-receipt fa-xl" style="font-size: 48px;margin-bottom: 3px;"></i>
+							<span class="fs-4 fw-bold">Orders</span><br/>
+							<span class="fs-4 fw-bold" id="OrdersCount"></span>
 						</a>
 						<!--end::Link-->
 					</div>
@@ -85,15 +82,10 @@ Page Description :
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
-						<a href="../../demo9/dist/account/referrals.html" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
-							<i class="ki-duotone ki-fingerprint-scanning fs-2tx mb-5 ms-n1">
-								<span class="path1"></span>
-								<span class="path2"></span>
-								<span class="path3"></span>
-								<span class="path4"></span>
-								<span class="path5"></span>
-							</i>
-							<span class="fs-4 fw-bold">Best Referrals</span>
+						<a href="#" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
+							<i class="fa-solid fa-truck-field fa-xl" style="font-size: 48px;margin-bottom: 3px;"></i>
+							<span class="fs-4 fw-bold">Suppliers</span><br/>
+							<span class="fs-4 fw-bold" id="SuppliersCount"></span>
 						</a>
 						<!--end::Link-->
 					</div>
@@ -101,11 +93,11 @@ Page Description :
 				</div>
 				<!--end::Col-->
 				<!--begin::Col-->
-				<div class="col-6">
+				<div class="col-6" style="display:none">
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
-						<a href="../../demo9/dist/apps/customers/view.html" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
+						<a href="#" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
 							<i class="ki-duotone ki-abstract-26 fs-2tx mb-5 ms-n1">
 								<span class="path1"></span>
 								<span class="path2"></span>
@@ -118,7 +110,7 @@ Page Description :
 				</div>
 				<!--end::Col-->
 				<!--begin::Col-->
-				<div class="col-6">
+				<div class="col-6" style="display:none">
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
@@ -137,7 +129,7 @@ Page Description :
 				</div>
 				<!--end::Col-->
 				<!--begin::Col-->
-				<div class="col-6">
+				<div class="col-6" style="display:none">
 					<!--begin::Card-->
 					<div class="card card-stretch">
 						<!--begin::Link-->
@@ -624,19 +616,7 @@ Page Description :
 		<div class="col-xl-8 ps-xl-12">
 			<!--begin::Engage widget 1-->
 			<div class="card bgi-position-y-bottom bgi-position-x-end bgi-no-repeat bgi-size-cover min-h-250px bg-primary mb-5 mb-xl-8" style="background-position: 100% 50px;background-size: 500px auto;background-image:url('assets/media/misc/city.png')" dir="ltr">
-				<!--begin::Body-->
-				<div class="card-body d-flex flex-column justify-content-center ps-lg-12">
-					<!--begin::Title-->
-					<h3 class="text-white fs-2qx fw-bold mb-7">We are working
-					<br />to boost lovely mood</h3>
-					<!--end::Title-->
-					<!--begin::Action-->
-					<div class="m-0">
-						<a href='#' class="btn btn-success fw-semibold px-6 py-3" data-bs-toggle="modal" data-bs-target="#kt_modal_create_app">Create a Store</a>
-					</div>
-					<!--begin::Action-->
-				</div>
-				<!--end::Body-->
+				 
 			</div>
 			<!--end::Engage widget 1-->
 			<!--begin::Row-->

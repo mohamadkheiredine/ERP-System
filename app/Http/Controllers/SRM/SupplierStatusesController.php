@@ -57,11 +57,17 @@ class SupplierStatusesController extends Controller
     * @return unknown
     */
     public function DisplayList(Request $request)
-    {        
-        $supplier_statuses = SupplierStatus::whereSsIsDeleted(0)->get();
+    {   
+        $general_search = $request->input('general_search');
         
-        $supplier_categories_array   = array();
-        $lst_supplier_status     = SupplierStatus::whereSsIsDeleted(0)->orderBy("ss_status_order","asc")->get();
+        $statuses_cond =  SupplierStatus::whereSsIsDeleted(0);
+        
+        if(strlen($general_search) > 0)
+        {
+            $statuses_cond = $statuses_cond->where("ss_status_title","LIKE","%" . $general_search . "%");
+        }
+        
+        $lst_supplier_status     = $statuses_cond->orderBy("ss_status_order","asc")->get();
         
         $data = array(
             "lst_supplier_status" => $lst_supplier_status

@@ -15,24 +15,20 @@ quotations_module = {
 	        data : { _token : _token , page_number : page_number , quotation_supplier : quotation_supplier , general_search : general_search , quotation_warehouse : quotation_warehouse},
             method : 'post',
             dataType : "json",
-            beforeSend : function(){
-            },
 	        success : function(response){
 	        	$('#LstQuotations').html(response.display);
 	        	
-	        	
-	        	$('#QuotationsPagination').twbsPagination({
-                    totalPages: response.total_pages,
-                    visiblePages: 7,
-                    onPageClick: function (event, page) {
-                         $('input[name=page_number]').val(page);
-                         quotations_module.displayListQuotations();
-                    }
-                });
-	        	
-				$("a[id*=EDIT_QUOTATION_]").on('click',quotations_module.EditQuotationInfo);
-				$("a[id*=DELETE_QUOTATION_]").on('click',quotations_module.DeleteQuotationData);
-				$("a[id*=VIEW_QUOTATION_]").on('click',quotations_module.ViewQuotationData);
+	        	if(response.total_pages > 0)
+        		{
+		        	$('#QuotationsPagination').twbsPagination({
+	                    totalPages: response.total_pages,
+	                    visiblePages: 7,
+	                    onPageClick: function (event, page) {
+	                         $('input[name=page_number]').val(page);
+	                         quotations_module.displayListQuotations();
+	                    }
+	                });
+        		}
 	        }
 	    });
 	},

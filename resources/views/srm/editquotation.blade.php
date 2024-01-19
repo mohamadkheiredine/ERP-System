@@ -90,7 +90,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Due Date <span class="required"> * </span></label>
-                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ $supplier_quotation->sq_due_date }}" />
+                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ date('d/m/Y',strtotime($supplier_quotation->sq_due_date)) }}" />
                             </div>
                         </div>
                          <div class="col-md-4">
@@ -116,35 +116,39 @@ th{
                                 </div>
                         </div>
                         @if( $supplier_quotation->sq_quotation_approve == 0 )
-                         <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Quotation Approved </label><br/>
-                                    <input data-switch="true" type="checkbox" {{ $supplier_quotation->sq_quotation_approve == 1 ? 'checked="checked"' : "" }}  id="SQ_APPROVE_QUOTATION" name="sq_approve_quotation" />
-                                </div>
+                         <div class="col-md-4"><br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_APPROVE_QUOTATION" name="sq_approve_quotation" {{ $supplier_quotation->sq_quotation_approve == 1 ? 'checked="checked"' : "" }}  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Quotation Approved
+                                </span>
+                            </label>
                         </div>
                         @else
                         	<input type="hidden" name="sq_approve_quotation" value="1" />
                         @endif
+                        <div class="col-md-12">&nbsp;</div>
+                        <div class="col-md-4">
+                        	<button type="button" name="btnAddProduct" id="btnAddProduct" class="btn btn-info"  data-bs-toggle="modal" data-bs-target="#AddNewProduct">Add Product</button>
+                        </div>
+                        
                          <div class="col-md-12">
-                        	<ul class="nav nav-tabs" role="tablist">
-								<li class="nav-item">
-									<a class="nav-link active" data-toggle="tab" href="#m_tab_notes">
-										Notes
-									</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#m_tab_products">
-										Products
-									</a>
-								</li> 
-							</ul>
-							<div class="tab-content">
-								<div class="tab-pane active" id="m_tab_notes" role="tabpanel">
-                                    <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
+                         		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#m_tab_notes">Notes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#m_tab_products">Products</a>
+                                </li> 
+                            </ul>
+                            
+                            <div class="tab-content" id="myTabContent">
+                            	 <div class="tab-pane fade show active" id="m_tab_notes" role="tabpanel">
+                            	  <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
                                     <textarea style="width:100%;height:250px;resize:none" id="SQ_QUOTATION_NOTES"  class="form-control" name="sq_quotation_notes"  cols="">{{ $supplier_quotation->sq_quotation_notes }}</textarea>
-								</div>
-								<div class="tab-pane" id="m_tab_products" role="tabpanel">
-									 <table class="table m-table m-table--head-separator-primary">
+                            	 </div>
+                            	 <div class="tab-pane fade" id="m_tab_products" role="tabpanel">
+                            	 <table class="table m-table m-table--head-separator-primary">
 										<thead>
 											<tr>
 												<th>#</th>
@@ -226,8 +230,9 @@ th{
 											<button name="add_product" type="button" id="ADD_PRODUCT" class="btn btn-info" >Add Stock</button>
 										</div>
 									</div>
-								</div> 
-							</div> 
+                            	 </div>
+                            </div>
+                         
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
@@ -245,5 +250,35 @@ th{
             </form>
     </div>
 </div>
-
+<div class="modal fade" id="AddNewProduct" tabindex="-1" role="dialog" aria-labelledby="AddNewProductModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="InserItemsModalLabel">
+					Add New Product
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">
+						&times;
+					</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form name="frm_save_quotation" id="FRM_SAVE_QUOTATION">
+					<div class="row">
+						<div class="col-md-6">
+							<label class="control-label"> Product Barcode  <span class="required"> * </span></label><br/>
+							<input type="text" class="form-control" name="p_barcode" id="P_BARCODE" value="" />
+						</div>
+						<div class="col-md-4">
+							<label class="control-label"> Product Name  <span class="required"> * </span></label><br/>
+							<input type="text" class="form-control" name="p_product_name" id="P_PRODUCT_NAME" value="" />
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 @endsection

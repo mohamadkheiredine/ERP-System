@@ -42,6 +42,8 @@ th{
                 Action
               </button>
               <ul class="dropdown-menu">
+                    <li><a data-action="EXPORT_CSV" class="dropdown-item" href="#">Export as CSV</a></li>
+                	<li><a data-action="DOWNLOAD_TEMPLATE" class="dropdown-item" href="#">Download Import Template</a></li>
               </ul>
             </div>
         </div>
@@ -80,7 +82,7 @@ th{
 												</div>
 												<div class="col-md-4">
 													<select class="bs-select form-control" name="product_currency" id="PRODUCT_CURRENCY" data-actions-box="true">
-                                                            <option value="">Select Curremcy</option>
+                                                            <option value="">Select Currency</option>
                                                             <?php foreach ( $lst_currencies as $key => $currency_info ) { ?>
                                                                     <option value="<?php echo $currency_info->cc_id;  ?>"><?php echo $currency_info->cc_currency_code;  ?>&nbsp;-&nbsp;<?php echo $currency_info->cc_currency_name;  ?></option>
                                                             <?php  } ?>

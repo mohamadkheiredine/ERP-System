@@ -47,7 +47,6 @@ th{
         </div>
     </div>
     <div class="card-body">
-    
     					 <span id="hidden_fields">
                                 <input type="hidden" name="page_number" value="1" />
                             </span>

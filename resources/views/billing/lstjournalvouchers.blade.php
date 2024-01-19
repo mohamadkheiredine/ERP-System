@@ -24,7 +24,7 @@ Page Description :
    <td>{{ $voucher_info->CreditAccount->aa_account_label }}</td>
    <td>{{ number_format( $voucher_info->pj_payment_amount, 2 ) }}</td> 
    <td><b>{{ $currency_array[ $voucher_info->pj_currency_id ]['cc_currency_code'] }}</b></td>
-    <td><a href="#" data-pj_id="{{ $voucher_info->pj_id }}" id="EDIT_PJ_{{ $voucher_info->pj_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+    <td><a href="#" data-pj_id="{{ $voucher_info->pj_id }}" id="EDIT_PJ_{{ $voucher_info->pj_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="#" data-pj_id="{{ $voucher_info->pj_id }}"  id="DELETE_PJ_{{ $voucher_info->pj_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>
 @endforeach

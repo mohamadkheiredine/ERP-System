@@ -22,7 +22,7 @@ Page Description :
                        <td>{{ $vendor_info->iv_vendor_code }}</td> 
                        <td>{{ $vendor_info->iv_vendor_name }}</td>
                        <td>{{ $vendor_info->iv_vendor_phone }}</td>
-                        <td><a href="#" data-iv_id="{{ $vendor_info->iv_id }}" id="EDIT_VENDOR_{{ $vendor_info->iv_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td> 
+                        <td><a href="#" data-iv_id="{{ $vendor_info->iv_id }}" id="EDIT_VENDOR_{{ $vendor_info->iv_id }}" ><i class="fas fa-edit" height="16"></i></a></td> 
                         <td><a href="#" data-iv_id="{{ $vendor_info->iv_id }}"   id="DELETE_VENDOR_{{ $vendor_info->iv_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td> 
                     </tr>
                     @endforeach

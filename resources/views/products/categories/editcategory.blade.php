@@ -137,18 +137,28 @@ th{
                                 <input type="text" name="pc_category" id="PC_CATEGORY" class="form-control" required="required" maxlength="100"  value="{{ $product_categories->pc_category }}" />
                             </div>
                         </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <br/>
+                                  <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" name="w_warehouse_status" type="checkbox" name="pc_use_serial_number" id="PC_USE_SERIAL_NUMBER"  value="1"  {{ $product_categories->pc_use_serial_number == 1 ? 'checked="checked"' : "" }} />
+                                        <span class="form-check-label fw-semibold text-muted">
+                                           Products use Serialnumber
+                                        </span>
+                                    </label>  
+                            </div>
+                        </div>
                         <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Products use Serialnumber</label><br/>
-								<input data-switch="true" type="checkbox"  name="pc_use_serial_number" id="PC_USE_SERIAL_NUMBER"  value="1"  {{ $product_categories->pc_use_serial_number == 1 ? 'checked="checked"' : "" }} data-on-text="Yes" data-handle-width="50" data-off-text="No" data-on-color="success" />
+                             <br/>
+                             	  <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" name="w_warehouse_status" type="checkbox" name="pc_maintenance_category" id="PC_MAINTENANCE_CATEGORY" {{ $product_categories->pc_maintenance_category == 1 ? 'checked="checked"' : "" }}   value="1"  />
+                                        <span class="form-check-label fw-semibold text-muted">
+                                          Products Maintenance
+                                        </span>
+                                    </label> 
                             </div>
-                        </div>
-                                                <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Products Maintenance</label><br/>
-                               	 <input data-switch="true" type="checkbox"  name="pc_maintenance_category" id="PC_MAINTENANCE_CATEGORY"  value="1"  {{ $product_categories->pc_maintenance_category == 1 ? 'checked="checked"' : "" }} data-on-text="Yes" data-handle-width="50" data-off-text="No" data-on-color="brand" />
-                            </div>
-                        </div>
+                        </div> 
                         <div class="col-md-12">
                              <div class="form-group">
                                 <label class="control-label"> Category Description</label><br/>

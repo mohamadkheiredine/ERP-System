@@ -26,19 +26,22 @@ use Auth;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
+use App\models\Inventory\WareHouses;
 use App\models\Inventory\ProductCategories;
 use Milon\Barcode\DNS1D;
-use Models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
 use App\Library\ProductManager;
-use App\models\Inventory\WareHouses;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\VatAccounts;
 use App\models\System\Currency;
 use Swap\Swap;
 use App\models\System\Units;
+use App\models\Inventory\WareHouseZones;
+use App\models\Inventory\WareHouseFloors;
+use League\Csv\Writer;
+use App\models\SRM\Suppliers;
 
 
 
@@ -81,14 +84,19 @@ class ProductsController extends Controller
           $lst_accounts                 = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
           $lst_taxes                    = VatAccounts::whereAvIsDeleted(0)->get();
           $lst_currencies               = Currency::all();
+          $lst_suppliers               = Suppliers::whereSsIsDeleted(0)->get();
+          
+          $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
           
           $data = array(
               "lst_product_categories_array" => $lst_product_categories_array,
               "rand_barcode" => $rand_barcode,
               "lst_taxes" => $lst_taxes,
+              "lst_warehouses" => $lst_warehouses,
               "lst_accounts" => $lst_accounts,
               "lst_currencies" => $lst_currencies,
               "lst_lot" => $lst_lot,
+              "lst_suppliers" => $lst_suppliers,
               "bar_code_png" => $bar_code_png
           );
           return Response()->view('products.addnewproduct',$data);
@@ -115,6 +123,8 @@ class ProductsController extends Controller
           $rand_barcode                 = $product_info->p_barcode;
           $bar_code_png                 = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
           $lst_currencies               = Currency::all();
+          $lst_suppliers               = Suppliers::whereSsIsDeleted(0)->get();
+          $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
           
           $data = array(
               "lst_product_categories_array" => $lst_product_categories_array,
@@ -125,6 +135,8 @@ class ProductsController extends Controller
               "lst_currencies" => $lst_currencies,
               "rand_barcode" => $rand_barcode,
               "bar_code_png" => $bar_code_png,
+              "lst_suppliers" => $lst_suppliers,
+              "lst_warehouses" => $lst_warehouses,
               "lst_lot" => $lst_lot
           );
           return Response()->view('products.editproduct',$data);
@@ -178,6 +190,58 @@ class ProductsController extends Controller
         $result_array['is_error'] = 0;
         
         return Response()->json($result_array);
+      }
+      
+      
+      /**
+       * get zones by selected warehouse
+       * 
+       * @author Moe Mantach
+       * @access public
+       * @param Request $request
+       */
+      public function GetZonesDropdown(Request $request)
+      {
+          $result_array = array();
+          $warehouse_id = $request->input("warehouse_id");
+          
+          $lst_zones = WareHouseZones::whereWzIsDeleted(0)->whereFkWarehouseId($warehouse_id)->get();
+          
+          $data = array(
+              'lst_zones' => $lst_zones
+          );
+          
+          $result_array['is_error'] = 0;
+          $result_array['dropdown'] = view('warehouses.zonesdropdown',$data)->render();
+          
+          
+          return Response()->json($result_array);
+      }
+      
+      
+      /**
+       * get Floors by selected zone
+       * 
+       * @author Moe Mantach
+       * @access public
+       * @param Request $request
+       */
+      public function GetFloorsDropdown(Request $request)
+      {
+          $result_array = array();
+          $zone_id = $request->input("zone_id");
+          
+          $lst_floors = WareHouseFloors::whereWfIsDeleted(0)->whereFkZoneId($zone_id)->get();
+          
+          $data = array(
+              'lst_floors' => $lst_floors
+          );
+          
+          $result_array['is_error'] = 0;
+          $result_array['dropdown'] = view('warehouses.floorsdropdown',$data)->render();
+          
+          
+          return Response()->json($result_array);
       }
       
       
@@ -315,6 +379,10 @@ class ProductsController extends Controller
           $p_product_expiry_date        = $request->input("p_product_expiry_date");
           $p_product_production_date    = $request->input("p_product_production_date");
           
+          $fk_warehouse_id              = $request->input("fk_warehouse_id");
+          $fk_zone_id                   = $request->input("fk_zone_id");
+          $fk_floor_id                  = $request->input("fk_floor_id");
+          
           $ProductInfo  = new Products();
           $ProductManager_obj = new ProductManager();
           if($p_id > 0)
@@ -370,6 +438,9 @@ class ProductsController extends Controller
           $ProductInfo->p_product_currency            = $p_product_currency;
           $ProductInfo->p_product_expiry_date         = $p_product_expiry_date;
           $ProductInfo->p_product_production_date     = $p_product_production_date;
+          $ProductInfo->fk_warehouse_id               = $fk_warehouse_id;
+          $ProductInfo->fk_zone_id                    = $fk_zone_id;
+          $ProductInfo->fk_floor_id                   = $fk_floor_id;
           $ProductInfo->save();
           
           $p_id = $ProductInfo->p_id;
@@ -393,6 +464,29 @@ class ProductsController extends Controller
           $result_array['is_error'] = 0;
           $result_array['error_msg'] = "Operation Complete Successfully";
           return Response()->json($result_array);
+      }
+      
+      
+      /**
+       * Download CSV Template
+       * 
+       * @author Moe Mantach
+       * @access public
+       * @param Request $request
+       */
+      public function DownloadTemplate(Request $request)
+      {
+         
+          $data = array();
+          $data[] = ['Product Ref','category','warehouse','zoon','floor', 'Product Name','Product Description','width','height','length','Selling Price','Currency'];
+          
+  
+          
+          $csv = Writer::createFromFileObject(new \SplTempFileObject());
+          
+          $csv->insertAll($data);
+          
+          $csv->output('products-template.csv');
       }
       
       

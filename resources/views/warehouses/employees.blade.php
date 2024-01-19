@@ -18,24 +18,14 @@ $employees_info
 <div class="row">
 	<div class="col-md-2 col-xs-2"></div>
 	<div class="col-md-8 col-xs-8 table-responsive" >
-			<table class="table">
+			<table class="table table-row-dashed table-row-gray-300 gy-7">
 				<thead>
 					<tr class="fw-bold fs-6 text-gray-800">
-						<th>
-							#
-						</th>
-						<th>
-							Username
-						</th>
-						<th>
-							FullName
-						</th>
-						<th>
-							Job Title
-						</th>
-						<th>
-							
-						</th>
+						<th> # </th>
+						<th> Username </th>
+						<th> FullName </th>
+						<th> Job Title </th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody class="LstWarehouseZones">
@@ -51,7 +41,7 @@ $employees_info
 				</tbody>
 			</table>
 			<div class="col-md-12" align="right">
-				<button type="button" name="btn_add_employee" id="BTN_ADD_EMPLOYEE" data-toggle="modal" data-target="#EmployeeModel" class="btn m-btn m-btn--gradient-from-primary m-btn--gradient-to-info"> Add Employee </button>
+				<button type="button" name="btn_add_employee" id="BTN_ADD_EMPLOYEE"  data-bs-toggle="modal" data-bs-target="#EmployeeModel" class="btn btn-success"> Add Employee </button>
 			</div>
 	</div>
 	<div class="col-md-2 col-xs-2"></div>

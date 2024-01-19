@@ -109,18 +109,6 @@ th{
                                 </select>
                             </div>
                         </div>
-                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label> Customer Account <a href="#" id="ADD_NEW_ACCOUNT" data-toggle="modal" data-target="#AccountAccounting"><i class="flaticon-add-circular-button"></i></a></label>
-                                <select class="bs-select form-control" name="ic_account_number" required="required" id="IC_ACCOUNT_NUMBER" data-actions-box="true">
-                                        <option value="">Customer Account</option>
-                                        @foreach ( $lst_accounts as $key => $acc_info )
-                                                <option {{ $customer_account_id == $acc_info->aa_id ? "selected" : ""  }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label  }}</option>
-                                        @endforeach
-                                </select>
-                            </div>
-                        </div> 
-                       
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer Email</label>
@@ -155,10 +143,15 @@ th{
                                 </select>
                             </div>
                         </div>
-                          <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Default POS Customer</label><br/>
-                               	 <input data-switch="true" type="checkbox"  name="ic_default_customer" id="IC_DEFAULT_CUSTOMER"  value="1" data-on-text="Yes" data-handle-width="50" data-off-text="No" data-on-color="success" />
+                          <div class="col-md-4"> 
+                             <div class="form-group"> 
+                             <br/>
+                         		<label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox"  name="ic_default_customer" id="IC_DEFAULT_CUSTOMER"  value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                       Default POS Customer
+                                    </span>
+                                </label> 
                             </div>
                         </div>
                         <div class="col-md-8">

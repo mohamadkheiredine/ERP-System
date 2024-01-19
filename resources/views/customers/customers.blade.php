@@ -100,8 +100,8 @@ th{
                                     				<th title="#">#</th>
                                     				<th title="Id"> ID </th>
                                     				<th title="Customer Code"> Customer Code </th>
-                                    				<th title="Customer Account"> Customer Account </th>
                                     				<th title="Customer Name"> Customer Name </th>
+                                    				<th title="Customer Account"> Customer Email </th>
                                     				<th title="Customer Phone"> Customer Phone </th>
                                     				<th title="Edit"> Edit </th> 
                                     				<th title="Delete"> Delete </th> 

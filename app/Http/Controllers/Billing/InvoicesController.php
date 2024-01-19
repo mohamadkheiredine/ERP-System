@@ -702,6 +702,7 @@ class InvoicesController extends Controller
         $bi_invoice_code        = $request->input("bi_invoice_code");
         $invoice_account        = $request->input("invoice_account");
         $bi_invoice_date        = $request->input("bi_invoice_date");
+        $bi_invoice_date        = date("Y-m-d",strtotime($bi_invoice_date));
         $cyear                  = date('Y', strtotime($bi_invoice_date));
   
         
@@ -774,7 +775,7 @@ class InvoicesController extends Controller
         // delete all invoice steps and create the new one
         InvoicePayments::whereFkInvoiceId($bi_id)->delete();
         
-        if($ip_payment_label[0] != null)
+        if($ip_payment_label != null)
         {
             for ($i = 0; $i < count($ip_payment_label); $i++)
             {
@@ -850,8 +851,6 @@ class InvoicesController extends Controller
                  
                 if(is_numeric($total_price))
                 {
-                   // dd($total_price);
-                    
                     //get information of the customer
                     $customer_info = Customers::find( $invoice_info->fk_customer_id );
                     

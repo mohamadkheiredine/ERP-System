@@ -61,19 +61,19 @@ th{
 											<div class="form-group row align-items-center">
 												<div class="col-md-4">
 														<div class="d-flex align-items-center">
-                										<!--begin::Input group-->
-                										<div class="position-relative w-md-400px me-md-2">
-                											<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
-                												<span class="path1"></span>
-                												<span class="path2"></span>
-                											</i>
-                											<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                											<!--begin::Input group-->
+                											<div class="position-relative w-md-400px me-md-2">
+                												<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                													<span class="path1"></span>
+                													<span class="path2"></span>
+                												</i>
+                												<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                											</div>
+                											<!--end::Input group-->
                 										</div>
-                										<!--end::Input group-->
-                									</div>
 												</div>
 												<div class="col-md-4">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_CATEGORY" name="lead_category">
                                                     			<option value="0">-- Select Category --</option>
                                                                 @foreach($lead_categories as $index => $cat_info)
@@ -83,7 +83,7 @@ th{
                                                     </div>
 												</div>
 												<div class="col-md-4">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_STATUS" name="lead_status">
                                                     			<option value="0">-- Select Status --</option>
                                                                 @foreach($lead_statuses as $index => $status_info)
@@ -93,7 +93,7 @@ th{
                                                     </div>
 												</div>
 												<div class="col-md-4" style="margin-top:10px;">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_USER" name="lead_user">
                                                     			<option value="0">--All Users--</option>
                                                                 @foreach($lst_users as $index => $user_info)
@@ -120,9 +120,9 @@ th{
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
 								<div class="table-responsive">
-									<table class="table" width="100%">
+									<table class="table table-rounded table-striped border gy-7 gs-7">
                             		<thead>
-                						<tr class="fw-bold fs-6 text-gray-800">
+                						<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                             				<th title="#">#</th>
                             				<th title="Id"> ID </th>
                             				<th title="Lead name"> Lead Name </th>

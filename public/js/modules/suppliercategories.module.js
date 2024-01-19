@@ -5,10 +5,11 @@ suppliercategories_module = {
 	displayListSupplierCategories : function(){
 		var base_url 	= $('input[name=base_url]').val();
 	    var _token 		= $('input[name=_token]').val();
+	    let general_search = $("#generalSearch").val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/srm/displaylistcategory",
-	        data : { _token : _token },
+	        data : { _token : _token , general_search : general_search },
             method : 'post',
             dataType : "json",
             beforeSend : function(){

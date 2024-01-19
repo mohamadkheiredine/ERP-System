@@ -345,5 +345,46 @@ class UsersController extends Controller
    }
    
    
+   /**
+    * get list of users
+    * @param Request $request
+    */
+   public function GetListUsers(Request $request)
+   {
+       $user_id             = $request->input('user_id');
+       $g_hash              = $request->input('g_hash');
+
+       $user_info           = Users::find($user_id);
+       
+       $c_hash              = "POS567" . $user_info-> u_username . $user_info-> u_fullname . $user_info->u_email . "POS567";
+       $c_hash              =  hash('sha256',$c_hash);
+       $result_array        = array();
+       $users_array         = array();
+       
+       
+       if( $c_hash != $g_hash )
+       {
+           $result_array['is_error']       = 1;
+           $result_array['error_message']  = 'hash sequence is not valid !!';
+           
+           return Response()->json($result_array);
+       }
+       
+       $lst_users = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+      
+       foreach ($lst_users as $key => $user_info) {
+           $users_array[] = array(
+               'id' => $user_info->id,
+               'username' => $user_info->u_username,
+               'fullname' => $user_info->u_fullname
+           );
+       }
+       
+       $result_array['is_error']        = 0;
+       $result_array['error_message']   = 'Operation Completed Successfully';
+       $result_array['lst_users']       = $users_array;
+       return Response()->json($result_array);
+   }
+   
    
 }

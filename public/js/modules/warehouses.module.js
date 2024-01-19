@@ -6,7 +6,8 @@ var warehouses_module = {
 			DisplayListWareHouses : function(){
 				var base_url 			= $('input[name=base_url]').val();
 			    var _token	 			= $('input[name=_token]').val();
-			    var params = { _token : _token };
+			    var general_search	 			= $('input[name=general_search]').val();
+			    var params = { _token : _token , general_search : general_search };
 			    $.ajax
 		        ({
 		            url : base_url + "/request/displaywarehousemanagement",
@@ -15,81 +16,6 @@ var warehouses_module = {
 		            type : "POST",
 		            success : function(response){
 		            	$('#LstWarehouses').html(response.display);
-
-		            	var datatable = $('.m_datatable').mDatatable({
-
-		        			// layout definition
-		        			layout: {
-		        				theme: 'default', // datatable theme
-		        				class: '', // custom wrapper class
-		        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-		        				// height: 450, // datatable's body's fixed height
-		        				footer: false // display/hide footer
-		        			},
-
-		        			// column sorting
-		        			sortable: true,
-
-		        			pagination: true,
-
-		        			search: {
-		        				input: $('#generalSearch')
-		        			},
-		        			columns : [
-		        				{
-		        					field: "#",
-		        			        title: "#", 
-		        			        sortable: false,
-		        			        width: 40,
-		        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-		        				},
-		        				{
-		        					field: 'ID',
-		        					type: 'number',  
-	        				        sortable: true,
-	        				        width: 40, 
-		        				},
-		        				{
-		        					field: 'Name',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 250,
-		        				},
-		        				{
-		        					field: 'City',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 200,
-		        				},
-		        				{
-		        					field: 'Status',
-		        					type: 'text',
-		        					sortable: true,
-		        					width: 100,
-		        				},
-		        				{
-		        					field: "edit",
-		        			        title: "edit", 
-		        			        sortable: false,
-		        			        width: 40
-		        				},
-		        				{
-		        					field: "settings",
-		        			        title: "settings", 
-		        			        sortable: false,
-		        			        width: 60
-		        				},
-		        				{
-		        					field: "delete",
-		        			        title: "delete", 
-		        			        sortable: false,
-		        			        width: 40
-		        				}
-		        			]
-		        			// inline and bactch editing(cooming soon)
-		        			// editable: false,
-		        		});
-
 		            }
 		        });
 			},
@@ -149,65 +75,248 @@ var warehouses_module = {
 		            		case "warehouse_load":
 		            		{
 		            			$('#m_wizard_warehouse_load').html(response.display);
-		            			$.lead_datatable = $('.m_datatable').mDatatable({
+		            			// display quantity by zone
+		            			am5.ready(function() {
 
-		    	        			// layout definition
-		    	        			layout: {
-		    	        				theme: 'default', // datatable theme
-		    	        				class: '', // custom wrapper class
-		    	        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-		    	        				// height: 450, // datatable's body's fixed height
-		    	        				footer: false // display/hide footer
-		    	        			},
+		            				// Create root element
+		            				// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+		            				var root = am5.Root.new("m_warehouseloadzonechart");
 
-		    	        			// column sorting
-		    	        			sortable: true,
+		            				// Set themes
+		            				// https://www.amcharts.com/docs/v5/concepts/themes/
+		            				root.setThemes([
+		            				  am5themes_Animated.new(root)
+		            				]);
 
-		    	        			pagination: true,
+		            				// Create chart
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/
+		            				var chart = root.container.children.push(am5xy.XYChart.new(root, {
+		            				  panX: true,
+		            				  panY: true,
+		            				  wheelX: "panX",
+		            				  wheelY: "zoomX",
+		            				  pinchZoomX: true,
+		            				  paddingLeft:0,
+		            				  paddingRight:1
+		            				}));
 
-		    	        			search: {
-		    	        				//input: $('#generalSearch')
-		    	        			},
+		            				// Add cursor
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+		            				var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+		            				cursor.lineY.set("visible", false);
 
-		    	        			// inline and bactch editing(cooming soon)
-		    	        			// editable: false,
-		    	        		});
+
+		            				// Create axes
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+		            				var xRenderer = am5xy.AxisRendererX.new(root, { 
+		            				  minGridDistance: 30, 
+		            				  minorGridEnabled: true
+		            				});
+
+		            				xRenderer.labels.template.setAll({
+		            				  rotation: -90,
+		            				  centerY: am5.p50,
+		            				  centerX: am5.p100,
+		            				  paddingRight: 15
+		            				});
+
+		            				xRenderer.grid.template.setAll({
+		            				  location: 1
+		            				})
+
+		            				var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+		            				  maxDeviation: 0.3,
+		            				  categoryField: "zone",
+		            				  renderer: xRenderer,
+		            				  tooltip: am5.Tooltip.new(root, {})
+		            				}));
+
+		            				var yRenderer = am5xy.AxisRendererY.new(root, {
+		            				  strokeOpacity: 0.1
+		            				})
+
+		            				var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+		            				  maxDeviation: 0.3,
+		            				  renderer: yRenderer
+		            				}));
+
+		            				// Create series
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+		            				var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+		            				  name: "Series 1",
+		            				  xAxis: xAxis,
+		            				  yAxis: yAxis,
+		            				  valueYField: "quantity",
+		            				  sequencedInterpolation: true,
+		            				  categoryXField: "zone",
+		            				  tooltip: am5.Tooltip.new(root, {
+		            				    labelText: "{valueY}"
+		            				  })
+		            				}));
+
+		            				series.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+		            				series.columns.template.adapters.add("fill", function (fill, target) {
+		            				  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		            				});
+
+		            				series.columns.template.adapters.add("stroke", function (stroke, target) {
+		            				  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		            				});
+
+
+		            				// Set data
+		            				var data = JSON.parse(response.zonesstock);
+
+		            				xAxis.data.setAll(data);
+		            				series.data.setAll(data);
+
+
+		            				// Make stuff animate on load
+		            				// https://www.amcharts.com/docs/v5/concepts/animations/
+		            				series.appear(1000);
+		            				chart.appear(1000, 100);
+
+		            				}); // end am5.ready()
 		            			
-		            			 var chart = AmCharts.makeChart("m_warehouseloadzonechart", {
-		            		            "type": "serial",
-		            		            "theme": "light",
-		            		            "dataProvider": JSON.parse(response.zonesstock),
-		            		            "valueAxes": [{
-		            		                "gridColor": "#FFFFFF",
-		            		                "gridAlpha": 0.2,
-		            		                "dashLength": 0
-		            		            }],
-		            		            "gridAboveGraphs": true,
-		            		            "startDuration": 1,
-		            		            "graphs": [{
-		            		                "balloonText": "[[category]]: <b>[[value]]</b>",
-		            		                "fillAlphas": 0.8,
-		            		                "lineAlpha": 0.2,
-		            		                "type": "column",
-		            		                "valueField": "quantity"
-		            		            }],
-		            		            "chartCursor": {
-		            		                "categoryBalloonEnabled": false,
-		            		                "cursorAlpha": 0,
-		            		                "zoomable": false
-		            		            },
-		            		            "categoryField": "zone",
-		            		            "categoryAxis": {
-		            		                "gridPosition": "start",
-		            		                "gridAlpha": 0,
-		            		                "tickPosition": "start",
-		            		                "tickLength": 500
-		            		            },
-		            		            "export": {
-		            		                "enabled": true
-		            		            }
+		            			am5.ready(function() {
 
-		            		        });
+		            				// Create root element
+		            				// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+		            				var root = am5.Root.new("warehousebyproductschart");
+
+		            				// Set themes
+		            				// https://www.amcharts.com/docs/v5/concepts/themes/
+		            				root.setThemes([
+		            				  am5themes_Animated.new(root)
+		            				]);
+
+		            				// Create chart
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/
+		            				var chart = root.container.children.push(am5xy.XYChart.new(root, {
+		            				  panX: true,
+		            				  panY: true,
+		            				  wheelX: "panX",
+		            				  wheelY: "zoomX",
+		            				  pinchZoomX: true,
+		            				  paddingLeft:0,
+		            				  paddingRight:1
+		            				}));
+
+		            				// Add cursor
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+		            				var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+		            				cursor.lineY.set("visible", false);
+
+
+		            				// Create axes
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+		            				var xRenderer = am5xy.AxisRendererX.new(root, { 
+		            				  minGridDistance: 30, 
+		            				  minorGridEnabled: true
+		            				});
+
+		            				xRenderer.labels.template.setAll({
+		            				  rotation: -90,
+		            				  centerY: am5.p50,
+		            				  centerX: am5.p100,
+		            				  paddingRight: 15
+		            				});
+
+		            				xRenderer.grid.template.setAll({
+		            				  location: 1
+		            				})
+
+		            				var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+		            				  maxDeviation: 0.3,
+		            				  categoryField: "product",
+		            				  renderer: xRenderer,
+		            				  tooltip: am5.Tooltip.new(root, {})
+		            				}));
+
+		            				var yRenderer = am5xy.AxisRendererY.new(root, {
+		            				  strokeOpacity: 0.1
+		            				})
+
+		            				var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+		            				  maxDeviation: 0.3,
+		            				  renderer: yRenderer
+		            				}));
+
+		            				// Create series
+		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+		            				var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+		            				  name: "Series 1",
+		            				  xAxis: xAxis,
+		            				  yAxis: yAxis,
+		            				  valueYField: "quantity",
+		            				  sequencedInterpolation: true,
+		            				  categoryXField: "product",
+		            				  tooltip: am5.Tooltip.new(root, {
+		            				    labelText: "{valueY} Stock"
+		            				  })
+		            				}));
+
+		            				series.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+		            				series.columns.template.adapters.add("fill", function (fill, target) {
+		            				  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		            				});
+
+		            				series.columns.template.adapters.add("stroke", function (stroke, target) {
+		            				  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		            				});
+
+
+		            				// Set data
+		            				var data = JSON.parse(response.productstock);
+
+		            				xAxis.data.setAll(data);
+		            				series.data.setAll(data);
+
+
+		            				// Make stuff animate on load
+		            				// https://www.amcharts.com/docs/v5/concepts/animations/
+		            				series.appear(1000);
+		            				chart.appear(1000, 100);
+
+		            				}); // end am5.ready()
+		            			
+		            			
+		            			
+//		            			 var chart = AmCharts.makeChart("m_warehouseloadzonechart", {
+//		            		            "type": "serial",
+//		            		            "theme": "light",
+//		            		            "dataProvider": JSON.parse(response.zonesstock),
+//		            		            "valueAxes": [{
+//		            		                "gridColor": "#FFFFFF",
+//		            		                "gridAlpha": 0.2,
+//		            		                "dashLength": 0
+//		            		            }],
+//		            		            "gridAboveGraphs": true,
+//		            		            "startDuration": 1,
+//		            		            "graphs": [{
+//		            		                "balloonText": "[[category]]: <b>[[value]]</b>",
+//		            		                "fillAlphas": 0.8,
+//		            		                "lineAlpha": 0.2,
+//		            		                "type": "column",
+//		            		                "valueField": "quantity"
+//		            		            }],
+//		            		            "chartCursor": {
+//		            		                "categoryBalloonEnabled": false,
+//		            		                "cursorAlpha": 0,
+//		            		                "zoomable": false
+//		            		            },
+//		            		            "categoryField": "zone",
+//		            		            "categoryAxis": {
+//		            		                "gridPosition": "start",
+//		            		                "gridAlpha": 0,
+//		            		                "tickPosition": "start",
+//		            		                "tickLength": 500
+//		            		            },
+//		            		            "export": {
+//		            		                "enabled": true
+//		            		            }
+//
+//		            		        });
 		            		}
 		            		break;
 		            			

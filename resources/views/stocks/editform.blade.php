@@ -44,8 +44,8 @@ th{
               </button>
               <ul class="dropdown-menu">
               @if($product_info->Category->pc_use_serial_number == 1)
-              <li><a href="#" id="AddUnit" class="dropdown-item"> <i class=flaticon-chat-1"></i> Add Unit Ids Stock </a></li>
-              <li><a href="#" id="PRINT_LABELS" class="dropdown-item"> <i class=flaticon-chat-1"></i> Print Labels </a></li>
+              <li><a href="#" id="AddUnit" class="dropdown-item"> <i class="fa-solid fa-plus fa-lg"></i> Add Unit Ids Stock </a></li>
+              <li><a href="#" id="PRINT_LABELS" class="dropdown-item"> <i class="fa-solid fa-print fa-lg"></i> Print Labels </a></li>
               @endif
               </ul>
             </div>

@@ -29,24 +29,7 @@ $(function(){
 		 }
 	});
 	new tempusDominus.TempusDominus(document.getElementById('U_EMPLOYMENT_DATE'),{ });
-	
-//	 $('#U_DATE_BIRTH').datepicker({
-//		 endDate :'-18y',
-//		 todayHighlight: true,
-//		 orientation: "bottom left",
-//		 templates: {
-//			 leftArrow: '<i class="la la-angle-left"></i>',
-//			 rightArrow: '<i class="la la-angle-right"></i>'
-//		 }
-//	 });
-//	 $('#U_EMPLOYMENT_DATE').datepicker({
-//         todayHighlight: true,
-//         orientation: "bottom left",
-//         templates: {
-//             leftArrow: '<i class="la la-angle-left"></i>',
-//             rightArrow: '<i class="la la-angle-right"></i>'
-//         }
-//     });
+
 	 $('#U_PROFILE_PIC').on('change', function () {
 	        var countFiles   = $(this)[0].files.length;
 	        var imgPath      = $(this)[0].value;

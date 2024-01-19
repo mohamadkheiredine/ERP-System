@@ -9,14 +9,25 @@ $(function(){
          console.error( error );
      } );
 	 $('select').select2();
-	$("#PV_CREATION_DATE").datepicker({ 
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
+	 new tempusDominus.TempusDominus(document.getElementById('PV_CREATION_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
 	});
 	$('#PV_CREATION_DATE').on('changeDate', function() {
 	   var current_date = $('#PV_CREATION_DATE').val();

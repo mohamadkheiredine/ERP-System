@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
     Route::post('/request/api/getprofileinfo','Api\UsersController@GetUserInfo');
     Route::post('/request/api/saveprofileinfo','Api\UsersController@SetmyprofileInfo');
     Route::post('/request/api/changeprofilepassword','Api\UsersController@ChangeprofilePassword');
+    Route::get('/request/api/getlistusers','Api\UsersController@GetListUsers');
     
     Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
     Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts');
@@ -76,6 +77,9 @@ use Illuminate\Http\Request;
     Route::get('/request/api/getorderinfo','Api\OrdersController@GetOrderInfo');
     
     Route::post('/request/api/exportorderstoexcel','Api\OrdersController@ExportListOrdersToExcel');
+    
+    Route::post('/request/api/gettodaystotalordersamount','Api\DashboardController@GetTodaysTotalOrders');
+    Route::post('/request/api/gettotalordersbydate','Api\DashboardController@GetListOfOrdersByDate');
     
     
 //});

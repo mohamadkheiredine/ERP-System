@@ -54,6 +54,7 @@ Page Description :
             											</div>
             											<!--end::Input group-->
             										</div>
+													<br/>
 												</div>
 												<div class="col-md-4">
                                                      <br/>
@@ -72,24 +73,25 @@ Page Description :
 													</span>
 												</span>
 											</a>
-											<div class="m-separator m-separator--dashed d-xl-none"></div>
+											<br/>
 										</div>
 									</div>
 								</div>
+									
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
 								<div class="table-responsive">
-										<table class="table" width="100%">
+										<table class="table table-rounded table-striped border gy-7 gs-7" width="100%">
                                         		<thead>
-                                        			<tr class="fw-bold fs-6 text-gray-800">
+                                        			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                         				<th title="#">#</th>
                                         				<th title="Id">ID</th>
                                         				<th title="Name">Warehouse Name</th>
                                         				<th title="City">warehouse City</th>
                                         				<th title="Status">Status</th>
-                                        				<th title="edit">edit</th>
-                                        				<th title="settings">settings</th>
-                                        				<th title="delete">Delete</th>
+                                        				<th style="width:3px;white-space: nowrap;" title="edit">edit</th>
+                                        				<th style="width:3px;white-space: nowrap;" title="settings">settings</th>
+                                        				<th style="width:3px;white-space: nowrap;" title="delete">Delete</th>
                                         			</tr>
                                         		</thead>
                                         		<tbody id="LstWarehouses">

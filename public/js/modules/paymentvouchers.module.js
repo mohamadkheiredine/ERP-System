@@ -30,17 +30,21 @@ vouchers_module = {
                       });
                       $.uniform.update(set);
                   }); 
-                 $.pagination = $('#VouchersPagination').twbsPagination({
-                       totalPages: response.total_pages,
-                       visiblePages: 7,
-                       onPageClick: function (event, page) {
-                            $('input[name=page_number]').val(page);
-                            vouchers_module.displayListPayments();
-                       }
-                   });
+	        	  if(response.total_pages > 0)
+        		  {
+	        		  $.pagination = $('#VouchersPagination').twbsPagination({
+	                       totalPages: response.total_pages,
+	                       visiblePages: 7,
+	                       onPageClick: function (event, page) {
+	                            $('input[name=page_number]').val(page);
+	                            vouchers_module.displayListPayments();
+	                       }
+	                   });
+        		  }
+                
                  
-				$("a[id*=EDIT_PV_]").on('click',vouchers_module.EditPaymentVoucherInfo);
-				$("a[id*=DELETE_PV_]").on('click',vouchers_module.DeletePaymentVoucherData);
+				$('#LstPaymentVouchers').on('click',"a[id*=EDIT_PV_]",vouchers_module.EditPaymentVoucherInfo);
+				$('#LstPaymentVouchers').on('click',"a[id*=DELETE_PV_]",vouchers_module.DeletePaymentVoucherData);
 	        }
 	    });
 	},

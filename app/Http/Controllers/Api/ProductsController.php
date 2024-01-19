@@ -230,7 +230,7 @@ class ProductsController extends Controller
         $category_id         = $request->input('category_id');
         $g_hash              = $request->input('g_hash');
         $current_page              = $request->input('current_page');
-        $has_pagination              = !$request->has('has_pagination') ? 1 : $request->input('has_pagination');
+        $has_pagination              = $request->has('has_pagination') ? $request->input('has_pagination') : 1;
         
         
         $nbr_rows_per_pages    = 10;
@@ -578,16 +578,41 @@ class ProductsController extends Controller
         
         
         $stock_info = Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->get();
-         
         
-        $product_info = $stock_info->products;
+        $count_stock =  Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->count();
         
-        $stock_data['product_name']                 = $product_info->p_product_name;
-        $stock_data['barecode']                     = $product_info->p_barcode;
+        if($count_stock == 0)
+        {
+            $count_product = Products::wherePProductIsDeleted(0)->where("p_barcode",$product_uid)->count();
+            $product_info = Products::wherePProductIsDeleted(0)->where("p_barcode",$product_uid)->count();
+            
+            if($count_product == 0)
+            {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'Product Not Exist in Our Stock';
+                
+                return Response()->json($result_array);
+            } 
+            
+        }
+        else 
+        {
+            $product_info = $stock_info->products;
+            
+            $uid_bar_code_png                           = DNS1D::getBarcodePNG($stock_info->is_stock_uid, "C39+",150 , 50 );
+            $stock_data['uid_bar_code_png']             = $uid_bar_code_png;
+            $stock_data['uid_bar_code_png']             = $stock_info->is_selling_price;
+        }
+        
+        
        
         
-        $uid_bar_code_png                           = DNS1D::getBarcodePNG($stock_info->is_stock_uid, "C39+",150 , 50 );
-        $stock_data['uid_bar_code_png']             = $uid_bar_code_png;
+        $stock_data['product_id']                   = $product_info->p_id;
+        $stock_data['product_name']                 = $product_info->p_product_name;
+        $stock_data['barecode']                     = $product_info->p_barcode;
+        $stock_data['selling_price']                = $product_info->p_product_selling_price;
+        $stock_data['product_currency']             = $product_info->p_product_currency;
+       
         
         $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
         $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
@@ -790,13 +815,15 @@ class ProductsController extends Controller
         
         // first check we check if the barcode exist in the stock_ids table
         $stock_ids = StockIds::whereSiStockUid($product_barcode)->get();
+        
+      
         $stock_uid = ""; 
         if( count($stock_ids) > 0 )
         {
             
             if($stock_ids[0]->si_stock_sold == 0)
             {
-                $stock_id   = $stock_ids[0]->si_stock_id;
+                $stock_id   = $stock_ids[0]->fk_stock_id;
                 $stock_uid  = $stock_ids[0]->si_stock_uid;
                 
             }
@@ -808,7 +835,8 @@ class ProductsController extends Controller
                 return Response()->json($result_array);
             }
             
-          
+            
+           
         }
         else 
         {
@@ -868,9 +896,10 @@ class ProductsController extends Controller
             }
         }
         
+      
         $stock_info = Stocks::find($stock_id);
         
- 
+        
         
         $row_array['p_id'] = $stock_info->products->p_id;
         $row_array['is_id'] = $stock_info->is_id;
@@ -918,21 +947,21 @@ class ProductsController extends Controller
         // get the second currency rate
         $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($sec_company_currency)->orderBy('er_id','desc')->get();
         $sec_cur_product_cost = 0;
-        if(count($currency_exchange) == 0)
-        {
-            $sc_currency        = Currency::find($stock_currency);
-            $cc_currency        = Currency::find($sec_company_currency);
-            $sec_cur_product_cost= convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
-        }
-        else
-        {
-            $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
-            $sec_cur_product_cost= $price_item * $exchange_rate;
-        }
+//         if(count($currency_exchange) == 0)
+//         {
+//             $sc_currency        = Currency::find($stock_currency);
+//             $sec_currency        = Currency::find($sec_company_currency);
+//             $sec_cur_product_cost= convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
+//         }
+//         else
+//         {
+//             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
+//             $sec_cur_product_cost= $price_item * $exchange_rate;
+//         }
         
         
         $row_array['product_cost']          = $op_product_cost;
-        $row_array['sec_cur_product_cost']  = $sec_cur_product_cost;
+      //  $row_array['sec_cur_product_cost']  = $sec_cur_product_cost;
         $row_array['product_quantity']      = $pos_quantity;
         
         
@@ -941,6 +970,7 @@ class ProductsController extends Controller
         $result_array['is_error']        = 0;
         $result_array['row_array']       = $row_array;
         $result_array['total_cost_row']  = $total_cost_row;
+        
         return Response()->json($result_array);
     }
    

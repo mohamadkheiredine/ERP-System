@@ -42,8 +42,8 @@ th{
                 Action
               </button>
               <ul class="dropdown-menu">
-              @if($product_info->Category->pc_use_serial_number == 1)
-              <li><a href="#" id="AddUnit" class="dropdown-item"> <i class=flaticon-chat-1"></i> Add Unit Ids Stock </a></li>
+              @if($product_info->Category->pc_use_serial_number == 1) 
+               <li><a href="#" id="AddUnit" class="dropdown-item"> <i class="fa-solid fa-plus fa-lg"></i> Add Unit Ids Stock </a></li>
               @endif
               </ul>
             </div>
@@ -57,6 +57,7 @@ th{
                                                {!! csrf_field() !!}
                                                 <input type="hidden" name="p_id" id="P_ID" value="{{ $p_id }}" />
                                                 <input type="hidden" name="serial_ids" value="" />
+                                                <input type="hidden" name="stock_barecode" value="{{ $rand_barcode }}" />
                                                <input type="hidden" name="company_currency" value="{{ session('company_currency') }}" />
                                             </span>
                                             <div class="alert alert-success" style="display:none">
@@ -67,28 +68,26 @@ th{
                                     			</div>
                                             <div class="row">
                                             	<div class="col-md-12">
-                                            		<div class="row">
+                                            		<div class="row"> 
                                             			<div class="col-md-4">
-                                            				 <img id="BARECODE_IMAGE" src="" alt="barcode" height="50" width="150"   /><br/>
-                                                 			<label class="BareCodeLabel"></label>
-                                            			</div>
+                                            				 <img id="BARECODE_IMAGE" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150"   /><br/>
+                                                 			<label class="BareCodeLabel">{{ $rand_barcode }}</label>
+                                            			</div> 
                                             			<div class="col-md-4">
-                                            				 <img id="PRODUCT_PROFILE" src=""  style="max-width: 200px; height: 150px;width:auto;"  /><br/>
+                                            				
                                             			</div>
                                             			<div class="col-md-4">
                                             				 <label>Initial Currency : </label><br/>
                                             				 <span class="IntialCurrency">{{ $currency_array[ $company_currency ]['cc_currency_code'] . " - " . $currency_array[ $company_currency ]['cc_currency_name'] }}</span>
                                             			</div>
                                             		</div>
-                                            	</div>
-                                            	@if($product_info->Category->pc_use_serial_number == 1)
+                                            	</div> 
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock barecode </label>
-                                                            <input type="text" maxlength="50" name="is_stock_uid" id="IS_STOCK_UID" class="form-control" required="required"   value="{{ $product_info->p_barcode }}" />
+                                                            <input type="text" maxlength="50" name="is_stock_barcode" id="IS_STOCK_BARCODE" class="form-control" required="required"   value="{{ $rand_barcode }}" />
                                                     </div>
-                                                </div>
-                                                @endif
+                                                </div> 
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Supplier </label>

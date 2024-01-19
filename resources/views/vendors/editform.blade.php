@@ -171,17 +171,6 @@ th{
                                 <textarea style="width:100%;height:250px;resize:none" id="IV_VENDOR_ADDRESS"  class="form-control" name="iv_vendor_address"  cols="">{{ $vendor_info->iv_vendor_address }}</textarea>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Accounting&nbsp; <a href="#" id="ADD_ACCOUNT" data-toggle="modal" data-target="#AccountAccounting" ><i class="flaticon-add-circular-button"></i></a></label>
-                                <select class="bs-select form-control" name="iv_vendor_account_id" id="IV_VENDOR_ACCOUNT_ID" data-actions-box="true">
-                                        <option value="">-- Select Account --</option>
-                                        @foreach ( $lst_accounts as $key => $acc_info )
-                                                <option {{ $vendor_info->iv_vendor_account_id == $acc_info->aa_id ? "selected" : "" }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
-                                        @endforeach
-                                </select>
-                            </div>
-                        </div>
                         <div class="col-md-12">
                              <div class="form-group">
                                 <label class="control-label"> Vendor Description <span class="required"> * </span></label><br/>

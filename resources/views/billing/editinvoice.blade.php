@@ -27,88 +27,35 @@ th{
 </style>
 @endsection
 @section('plugins')
-<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/invoices.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/receipts.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/billing/saveinvoices.js') }}"></script>
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-						Edit Invoice Settings&nbsp;-&nbsp;{{ $invoice_info->bi_invoice_code }}&nbsp;-&nbsp;{!! $invoice_info->bi_invoice_status == 0 ? "<span class='m--font-info'>Draft</span>" : "<span class='m--font-primary'>Official</span>" !!}
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-											@if( $invoice_info->bi_invoice_status == 0 )
-											<li class="m-nav__item">
-												<a data-action_type="CONVERT_TO_OFFICIAL"  href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon fa  fa-barcode"></i>
-													<span class="m-nav__link-text">
-														Convert to official Invoice
-													</span>
-												</a>
-											</li>
-											@else
-											<li class="m-nav__item">
-												<a data-action_type="REVERT_TO_DRAFT"  href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon fa  fa-barcode"></i>
-													<span class="m-nav__link-text">
-														Refert Back to draft Invoice
-													</span>
-												</a>
-											</li>
-											@endif
-											<li class="m-nav__item">
-												<a data-action_type="CREATE_RECEIPT"  href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon fa  fa-barcode"></i>
-													<span class="m-nav__link-text">
-														Create Receipt
-													</span>
-												</a>
-											</li>
-											<li class="m-nav__item">
-												<a data-action_type="PRINT_INVOICE"  href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon fa  fa-print"></i>
-													<span class="m-nav__link-text">
-														Print Invoice
-													</span>
-												</a>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_invoice" id="FORM_SAVE_INVOICE">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Invoice Settings&nbsp;-&nbsp;{{ $invoice_info->bi_invoice_code }}&nbsp;-&nbsp;{!! $invoice_info->bi_invoice_status == 0 ? "<span class='m--font-info'>Draft</span>" : "<span class='m--font-primary'>Official</span>" !!}</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              		@if( $invoice_info->bi_invoice_status == 0 )			
+					<li><a class="dropdown-item quickactions" data-action_type="CONVERT_TO_OFFICIAL" href="#">Convert to official Invoice</a></li>
+					@else
+					<li><a class="dropdown-item quickactions" data-action_type="REVERT_TO_DRAFT" href="#">Refert Back to draft Invoice</a></li>
+					@endif
+					<li><a class="dropdown-item quickactions" data-action_type="CREATE_RECEIPT" href="#">Create Receipt</a></li>
+					<li><a class="dropdown-item quickactions" data-action_type="PRINT_INVOICE" href="#">Print Invoice</a></li>
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+     <form name="frm_save_invoice" id="FORM_SAVE_INVOICE">
                 <div class="form-body">
                      <span id="hidden_fields">
                       <div class="form-group">
@@ -155,7 +102,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Invoice Date </label><br/>
-                                    <input type="text"  autocomplete="off" name="bi_invoice_date" id="BI_INVOICE_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ $invoice_info->bi_invoice_date }}" />
+                                    <input type="text"  autocomplete="off" name="bi_invoice_date" id="BI_INVOICE_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('m/d/Y',strtotime($invoice_info->bi_invoice_date)) }}" />
                                 </div>
                         </div>
                         <div class="col-md-4">
@@ -257,27 +204,21 @@ th{
                    <div class="row" style="height:15px;"></div>
                    <div class="row">
                    		<div class="col-md-12">
-                   			 <ul class="nav nav-tabs" role="tablist">
-									<li class="nav-item">
-										<a class="nav-link active" data-toggle="tab" href="#tabProducts">
-											{{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }}
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" data-toggle="tab" href="#tabPayments">
-											Payments
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" data-toggle="tab" href="#tabReceipts">
-											Receipts
-										</a>
-									</li>
-									 
-								</ul>
-								<div class="tab-content">
-									<div class="tab-pane active" id="tabProducts" role="tabpanel">
-										<div class="row">
+                   			<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">{{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tabPayments">Payments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tabReceipts">Receipts</a>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="tabProducts" role="tabpanel">
+                                   <div class="row">
 											<div class="col-md-12" id="LstProducts" align="center"></div>
 										</div>
 										<div class="row">
@@ -291,31 +232,31 @@ th{
 												@endif
 											</div>
 										</div>
+                                </div>
+                                <div class="tab-pane fade" id="tabPayments" role="tabpanel">
+                                   <div class="row">
+										<div class="col-md-12" id="LstPaymentSplits"></div>
 									</div>
-									<div class="tab-pane" id="tabPayments" role="tabpanel">
-										<div class="row">
-											<div class="col-md-12" id="LstPaymentSplits"></div>
+									@if($invoice_info->bi_invoice_status == 0)
+									<div class="row">
+										<div class="col-md-11" align="right">
+											 <button type="button" name="btn_create_rows" id="BTN_CREATE_ROWS" class="btn btn-info">Create Rows</button>
+											
 										</div>
-										@if($invoice_info->bi_invoice_status == 0)
-										<div class="row">
-											<div class="col-md-11" align="right">
-												 <button type="button" name="btn_create_rows" id="BTN_CREATE_ROWS" class="btn btn-info">Create Rows</button>
-												
-											</div>
-											<div class="col-md-1" align="right">
-												<input type="number" name="number_payments" id="NUMBER_PAYMENT" min="0" max="50" value="0" step="1" class="form-control" />
-											</div>
+										<div class="col-md-1" align="right">
+											<input type="number" name="number_payments" id="NUMBER_PAYMENT" min="0" max="50" value="0" step="1" class="form-control" />
 										</div>
-										<div class="row" style="padding-top:10px;">
-											<div class="col-md-12" align="right">
-												 <button type="button" name="btn_save_rows" id="BTN_SAVE_ROWS" class="btn btn-focus">Save Rows</button>
-												
-											</div>
-										</div>
-										@endif
 									</div>
-									<div class="tab-pane" id="tabReceipts" role="tabpanel">
-										<div class="row">
+									<div class="row" style="padding-top:10px;">
+										<div class="col-md-12" align="right">
+											 <button type="button" name="btn_save_rows" id="BTN_SAVE_ROWS" class="btn btn-focus">Save Rows</button>
+											
+										</div>
+									</div>
+									@endif
+                                </div>
+                                <div class="tab-pane fade" id="tabReceipts" role="tabpanel">
+                                   <div class="row">
 											<div class="col-md-12" id="LstReceipts"></div>
 										</div>
 										@if($invoice_info->bi_invoice_status == 0)
@@ -326,8 +267,8 @@ th{
 											</div>
 										</div>
 										@endif
-									</div>
-								</div>
+                                </div>
+                            </div> 
                    		</div>
                    </div>
                    <div class="row" style="height:15px;"></div>
@@ -482,6 +423,8 @@ th{
 			</div>
 		</div>
 	</div>
-</div>
+    </div>
+
+ 
 <!-- End Insert Service -->
 @endsection

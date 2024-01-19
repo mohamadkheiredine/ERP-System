@@ -103,10 +103,10 @@ th{
 								<div class="row">
 									<div class="col-md-12" style="height: 9px"></div>
 								</div>
-								<div class="tablre-responsive">
-									<table class="table" id="html_table" width="100%">
-                                		<thead>
-                                			<tr>
+								<div class="table-responsive" >
+                                    	<table class="table table-row-dashed table-row-gray-300 gy-7">
+                                    		<thead>
+                                    			<tr class="fw-bold fs-6 text-gray-800">
                                 				<th title="#">#</th>
                                 				<th title="Supplier Name"> Supplier Name </th> 
                                 				<th title="Supplier Phone"> Supplier Phone </th>

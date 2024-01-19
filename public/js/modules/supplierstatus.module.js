@@ -4,11 +4,12 @@
 supplierstatus_module = {
 	displayListSupplierStatus : function(){
 		var base_url 	= $('input[name=base_url]').val();
-	    var _token 		= $('input[name=_token]').val();
+		var _token 		= $('input[name=_token]').val();
+	    var general_search 		= $('input[name=general_search]').val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/srm/displayliststatus",
-	        data : { _token : _token },
+	        data : { _token : _token , general_search : general_search },
             method : 'post',
             dataType : "json",
             beforeSend : function(){

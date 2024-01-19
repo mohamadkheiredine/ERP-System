@@ -116,9 +116,9 @@ Page Description :
                                             <input type="text"  name="p_bar_code" id="P_BAR_CODE" class="form-control" maxlength="50" required="required"  value="{{ $product_info->p_barcode }}" />
                                         </div>
                                 </div>
-                                <div class="col-md-4" style="display:none">
+                                <div class="col-md-4">
                                       <div class="form-group">
-                                            <label class="control-label"> Product Code</label>
+                                            <label class="control-label"> Product Ref</label>
                                             <input type="text"  name="p_product_ref" id="P_PRODUCT_REF" class="form-control" maxlength="50" value="{{ $product_info->p_product_ref }}" />
                                         </div>
                                 </div>
@@ -150,6 +150,12 @@ Page Description :
                                             <label class="control-label"> Product Color</label>
                                             <input type="text" maxlength="255" name="p_product_color" id="P_PRODUCT_COLOR" maxlength="255"  class="form-control"  value="{{ $product_info->p_product_color }}" />
                                         </div>
+                                </div>
+                                <div class="col-md-4">
+                                  	<div class="form-group">
+                                        <label class="control-label"> Product Quantity</label>
+                                        <input type="text"  name="p_product_quantity" id="P_PRODUCT_QUANTITY" class="form-control" maxlength="15" value="{{ $product_info->p_product_quantity }}" />
+                                    </div>
                                 </div>
                                	   <div class="col-md-4">
                                   	<div class="form-group">
@@ -278,6 +284,56 @@ Page Description :
 						</div>	
 						<div class="row" style="height:25px">&nbsp;</div>
 						<div class="row">
+					        	<div class="col-md-12">
+					        	<div class="card card-bordered">
+                            <div class="card-header bg-light">
+                                <h3 class="card-title">Default Storage</h3>
+                                <div class="card-toolbar">
+                                    <button type="button" class="btn btn-sm btn-light">
+                                        Action
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                            	<div class="row">
+                            		 <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Warehouse</label>
+                                                 <select   data-control="select2" data-placeholder="Select a warehouse" class="form-select" name="fk_warehouse_id" id="FK_WWAREHOUSE_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option>
+                                                        @foreach ( $lst_warehouses as $key => $warehouse_info )
+                                                                <option {{ $product_info->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                                        @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Zone</label>
+                                                <div class="DefaultZone form-group">
+                                                 <select data-control="select2" data-placeholder="Select a zone" class="form-select"  name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Floor</label>
+                                                <div class="DefaultFloor form-group">
+                                                 <select data-control="select2" data-placeholder="Select a Floor" class="form-select" name="fk_floor_id" id="FK_FLOOR_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                            	</div>
+                            </div>
+                            </div>
+					        	</div>
+					        </div>
+						<div class="row" style="height:25px">&nbsp;</div>
+						<div class="row">
                             <div class="col-md-9"></div>
                             <div class="col-md-3" align="right">
                                  <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_MIDDLE"  class="btn btn-info">Save</button>
@@ -338,22 +394,26 @@ Page Description :
                         
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="tabStock" role="tabpanel">
-                               <table class="table">
-									<thead>
-										<tr>
-											<th> # </th>
-											<th> ID </th>
-											<th> Label </th>
-											<th> User </th>
-											<th> Warehouse </th>
-											<th> Quanity </th>
-											<th> Price </th>
-										</tr>
-									</thead>
-									<tbody class="LstStocks"> 
-										 
-									</tbody>
-								</table>
+                              	<div class="row">
+                              		<div class="col-md-12 table-responsive">
+                              			<table class="table table-row-dashed table-row-gray-300 gy-7">
+        									<thead>
+        										<tr class="fw-bold fs-6 text-gray-800">
+        											<th> # </th>
+        											<th> ID </th>
+        											<th> Label </th>
+        											<th> User </th>
+        											<th> Warehouse </th>
+        											<th> Quanity </th>
+        											<th> Price </th>
+        										</tr>
+        									</thead>
+        									<tbody class="LstStocks"> 
+        										 
+        									</tbody>
+        								</table>
+                              		</div>
+                              	</div>
 								<div class="row">
                                     <div class="col-md-9"></div>
                                     <div class="col-md-3" align="right">
@@ -362,23 +422,28 @@ Page Description :
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="tabStockMovement" role="tabpanel">
-                               <table class="table">
-													<thead>
-														<tr>
-															<th> # </th>
-															<th> ID </th>
-															<th> User </th>
-															<th> Label </th>
-															<th> Warehouse Source </th>
-															<th> Warehouse Destination </th>
-															<th> Quanity </th>
-															<th> Price </th>
-														</tr>
-													</thead>
-													<tbody class="LstStockMovement"> 
-														 
-													</tbody>
-												</table>
+                            	<div class="row">
+                              		<div class="col-md-12 table-responsive">
+                                  		<table class="table table-row-dashed table-row-gray-300 gy-7">
+            									<thead>
+            										<tr class="fw-bold fs-6 text-gray-800">
+													<th> # </th>
+													<th> ID </th>
+													<th> User </th>
+													<th> Label </th>
+													<th> Warehouse Source </th>
+													<th> Warehouse Destination </th>
+													<th> Quanity </th>
+													<th> Price </th>
+												</tr>
+											</thead>
+											<tbody class="LstStockMovement"> 
+												 
+											</tbody>
+										</table>
+                              		</div>
+                              	</div>
+                               
 												<div class="row">
                                                     <div class="col-md-9"></div>
                                                     <div class="col-md-3" align="right">

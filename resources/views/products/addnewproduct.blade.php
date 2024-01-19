@@ -120,7 +120,7 @@ th{
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4" style="display:none">
+                                <div class="col-md-4">
                                   	<div class="form-group">
                                         <label class="control-label"> Product Ref <span class="required"> * </span></label>
                                         <input type="text" name="p_product_ref" id="P_PRODUCT_REF" class="form-control" maxlength="15" value="{{ $rand_barcode }}" />
@@ -140,8 +140,25 @@ th{
                                 </div>
                                 <div class="col-md-4">
                                   	<div class="form-group">
+                                        <label class="control-label"> Product Quantity</label>
+                                        <input type="text"  name="p_product_quantity" id="P_PRODUCT_QUANTITY" class="form-control" maxlength="15" value="0" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                  	<div class="form-group">
                                         <label class="control-label"> Product Stock Alert <span class="required"> * </span></label>
                                         <input type="text" maxlength="255" name="p_product_stock_alert" id="P_STOCK_ALERT" class="form-control" required="required" maxlength="15"  value="" />
+                                    </div>
+                                </div>
+                                 <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label> Product Supplier</label>
+                                        <select class="bs-select form-control" name="fk_psupplier_id" id="FK_PSUPPLIER_ID" data-actions-box="true">
+                                                <option value="">-- Select Supplier --</option>
+                                                <?php foreach ( $lst_suppliers as $key => $supplier_info ) { ?>
+                                                        <option value="{{ $supplier_info->ss_id }}">{{  $supplier_info->ss_supplier_name }}</option>
+                                                <?php  } ?>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -299,7 +316,7 @@ th{
                                     <div class="card-header bg-light">
                                         <h3 class="card-title">Product Size & Weight Information
 													<small>
-														We use this information in order to validate the warehouse size and 
+														&nbsp;&nbsp;We use this information in order to validate the warehouse size and 
 													</small></h3>
                                         <div class="card-toolbar">
                                             <button type="button" class="btn btn-sm btn-light">
@@ -317,6 +334,56 @@ th{
                                    </div>  
                    			</div>
 					        <div class="row" style="height:5px;"></div> 
+					        <div class="row">
+					        	<div class="col-md-12">
+					        	<div class="card card-bordered">
+                            <div class="card-header bg-light">
+                                <h3 class="card-title">Default Storage</h3>
+                                <div class="card-toolbar">
+                                    <button type="button" class="btn btn-sm btn-light">
+                                        Action
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                            	<div class="row">
+                            		 <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Warehouse</label>
+                                                 <select   data-control="select2" data-placeholder="Select a warehouse" class="form-select" name="fk_warehouse_id" id="FK_WWAREHOUSE_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option>
+                                                        @foreach ( $lst_warehouses as $key => $warehouse_info )
+                                                                <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                                        @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Zone</label>
+                                                <div class="DefaultZone form-group">
+                                                 <select data-control="select2" data-placeholder="Select a zone" class="form-select"  name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="col-md-4">
+                                          	<div class="form-group">
+                                                <label class="control-label">Floor</label>
+                                                <div class="DefaultFloor form-group">
+                                                 <select data-control="select2" data-placeholder="Select a Floor" class="form-select" name="fk_floor_id" id="FK_FLOOR_ID" data-actions-box="true">
+                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                            	</div>
+                            </div>
+                            </div>
+					        	</div>
+					        </div>
+					        
 					        <div class="row">
                                 <div class="col-md-9"></div>
                                 <div class="col-md-3" align="right">

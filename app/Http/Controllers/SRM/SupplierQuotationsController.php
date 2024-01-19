@@ -328,6 +328,7 @@ class SupplierQuotationsController extends Controller
         $sq_user_id                 = $request->input('sq_user_id');
         $sq_date_submit             = date("Y-m-d");
         $sq_due_date                = $request->input('sq_due_date');
+        $sq_due_date                = date("Y-m-d",strtotime($sq_due_date));
         $sq_quotation_notes         = $request->input('sq_quotation_notes');
         $sq_total_price             = $request->input('sq_total_price');
         $sq_currency_id             = $request->input('sq_currency_id');
@@ -431,62 +432,68 @@ class SupplierQuotationsController extends Controller
             $quotation_product->save(); 
             $is_id = $quotation_product->sp_stock_id;
             
-            if($is_id != 0)
-                $stock_info = Stocks::find($is_id);
-            else 
-                $stock_info = new Stocks();
-            
-            if($stock_info->fk_warehouse_id == null) 
-                $stock_info = new Stocks();
-                
-            $stock_info->fk_warehouse_id                = $sq_warehouse_id;
-            $stock_info->fk_product_id                  = $p_id;
-            $stock_info->is_supplier_id                 = $fk_supplier_id;
-            $stock_info->is_stock_label                 = $pr_description[$i];
-            $stock_info->is_stock_lot_person_in_charge  = session('user_id');
-            $stock_info->is_created_by                  = session('user_id');
-            $stock_info->is_quanity                     = $pr_quantity[$i];
-            $stock_info->is_creation_date               = $todays_date;
-            $stock_info->is_price_stock                 = $pr_pruchase_price[$i];
-            $stock_info->is_selling_price               = $pr_selling_price[$i];
-            $stock_info->is_wholesale_price             = $pr_wholesale_price[$i];
-            $stock_info->is_vendor_price                = $pr_vendor_price[$i];
-            $stock_info->is_price_item                  = $pr_selling_price[$i];
-            $stock_info->is_discount                    = $pr_discount[$i];
-            $stock_info->is_price_currency              = $sq_currency_id;
-            $stock_info->is_stock_currency              = $sq_currency_id;
-            $stock_info->is_stock_exchange_rate         = $exchange_rate;
-            $stock_info->save();
-            $is_id = $stock_info->is_id;
-            
-            $quotation_product->sp_stock_id = $is_id;
-            $quotation_product->save();
-             
-            
-            $stockids_delete =  StockIds::whereSiStockId($is_id)->delete();
-            
-            $serial_number_array = array();
-            if(strlen(trim($serial_numbers[$i])) > 0 || $serial_numbers[$i] != null)
-                $serial_number_array = explode( ",", $serial_numbers[$i] );
-            
-            // get list of existing records related to this stock ids
-            $lst_existing_sn = StockIds::whereIn('si_stock_uid',$serial_number_array);
-            $existing_sn_array = array();
-            
-            foreach ( $lst_existing_sn as $key => $sn_info ) 
+            if($sq_approve_quotation == 1)
             {
-                $existing_sn_array[ $sn_info->si_stock_uid ] =  $sn_info->si_stock_id;
+                if($is_id != 0)
+                    $stock_info = Stocks::find($is_id);
+                    else
+                        $stock_info = new Stocks();
+                        
+                        if($stock_info->fk_warehouse_id == null)
+                            $stock_info = new Stocks();
+                            
+                            $stock_info->fk_warehouse_id                = $sq_warehouse_id;
+                            $stock_info->fk_product_id                  = $p_id;
+                            $stock_info->is_supplier_id                 = $fk_supplier_id;
+                            $stock_info->is_stock_label                 = $pr_description[$i];
+                            $stock_info->is_stock_lot_person_in_charge  = session('user_id');
+                            $stock_info->is_created_by                  = session('user_id');
+                            $stock_info->is_quanity                     = $pr_quantity[$i];
+                            $stock_info->is_creation_date               = $todays_date;
+                            $stock_info->is_price_stock                 = $pr_pruchase_price[$i];
+                            $stock_info->is_selling_price               = $pr_selling_price[$i];
+                            $stock_info->is_wholesale_price             = $pr_wholesale_price[$i];
+                            $stock_info->is_vendor_price                = $pr_vendor_price[$i];
+                            $stock_info->is_price_item                  = $pr_selling_price[$i];
+                            $stock_info->is_discount                    = $pr_discount[$i];
+                            $stock_info->is_price_currency              = $sq_currency_id;
+                            $stock_info->is_stock_currency              = $sq_currency_id;
+                            $stock_info->is_stock_exchange_rate         = $exchange_rate;
+                            $stock_info->save();
+                            $is_id = $stock_info->is_id;
+                            
+                            $quotation_product->sp_stock_id = $is_id;
+                            $quotation_product->save();
+                            
+                            
+                            $stockids_delete =  StockIds::whereFkStockId($is_id)->delete();
+                            
+                            $serial_number_array = array();
+                            if(strlen(trim($serial_numbers[$i])) > 0 || $serial_numbers[$i] != null)
+                                $serial_number_array = explode( ",", $serial_numbers[$i] );
+                                
+                            // get list of existing records related to this stock ids
+                            $lst_existing_sn = StockIds::whereIn('si_stock_uid',$serial_number_array);
+                            $existing_sn_array = array();
+                            
+                            foreach ( $lst_existing_sn as $key => $sn_info )
+                            {
+                                $existing_sn_array[ $sn_info->si_stock_uid ] =  $sn_info->fk_stock_id;
+                            }
+                            
+                            for ($j = 0; $j < count($serial_number_array); $j++)
+                            {
+                                if($serial_number_array[$j] == '' || $serial_number_array[$j] == null || strlen(trim($serial_number_array[$j])) == 0 || isset($existing_sn_array[ $serial_number_array[$j] ] ))
+                                    continue;
+                                    $stockids_info                  = new StockIds();
+                                    $stockids_info->fk_product_id     = $p_id;
+                                    $stockids_info->fk_stock_id     = $is_id;
+                                    $stockids_info->si_stock_uid    = $serial_number_array[$j];
+                                    $stockids_info->save();
+                            }
             }
-                
-            for ($j = 0; $j < count($serial_number_array); $j++) 
-            {
-                if($serial_number_array[$j] == '' || $serial_number_array[$j] == null || strlen(trim($serial_number_array[$j])) == 0 || isset($existing_sn_array[ $serial_number_array[$j] ] ))
-                    continue;
-                $stockids_info                  = new StockIds();
-                $stockids_info->si_stock_id     = $is_id;
-                $stockids_info->si_stock_uid    = $serial_number_array[$j];
-                $stockids_info->save();
-            }
+            
+            
         }
         
          
@@ -532,11 +539,13 @@ class SupplierQuotationsController extends Controller
             $trans_mov->save();
             
             $mov_id = $trans_mov->tm_id;
+            
+            $supplier_quotation->sq_trans_id = $at_id;
+            $supplier_quotation->sq_mov_id   = $mov_id;
+            $supplier_quotation->save();
         }
         
-        $supplier_quotation->sq_trans_id = $at_id;
-        $supplier_quotation->sq_mov_id   = $mov_id;
-        $supplier_quotation->save();
+       
         
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Supplier Quotation Information Has been saved';

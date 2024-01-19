@@ -61,6 +61,9 @@ Route::post('/request/products/stocktransfer','Inventory\ProductStocksController
 Route::post('/request/products/displaymetricsection','Inventory\ProductsController@DisplayMetricSection');
 Route::post('/request/products/generatebarcode','Inventory\ProductsController@GenerateBarCode');
 Route::post('/request/products/duplicateproducts','Inventory\ProductsController@Duplicateproducts');
+Route::post('/request/products/getzonesdropdown','Inventory\ProductsController@GetZonesDropdown');
+Route::post('/request/products/getfloorsdropdown','Inventory\ProductsController@GetFloorsDropdown');
+Route::get('/request/products/downloadtemplate','Inventory\ProductsController@DownloadTemplate');
 
 Route::post('/request/productcategories/displaylistitems','Inventory\ProductCategoriesController@DisplayListItems');
 

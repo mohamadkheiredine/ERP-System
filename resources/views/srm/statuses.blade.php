@@ -89,9 +89,9 @@ th{
 			<!--end: Search Form -->
               <!--begin: Datatable -->
 			<div class="table-responsive" >
-                <table class="table" id="html_table" width="50%">
+                	<table class="table table-row-dashed table-row-gray-300 gy-7">
                 		<thead>
-                			<tr>
+                			<tr class="fw-bold fs-6 text-gray-800">
                 				<th title="#">#</th>
                 				<th title="Id"> ID </th>
                 				<th title="Status Name"> Status Name </th>

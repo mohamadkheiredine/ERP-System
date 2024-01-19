@@ -58,3 +58,7 @@ th{
 	width: 50%;
   float: left;
 }
+.close{
+	background: transparent;
+  border: solid 0px;
+}

@@ -107,23 +107,28 @@ th{
                                                         </select>
                                                     </div>
                                                 </div>
-                                                 <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Active </label><br/>
-                                                       <span class="m-switch">
-    														<label>
-    															<input name="w_warehouse_status" {{ $wareHouseInfo->w_warehouse_status == 1 ? "checked" : "" }}  type="checkbox" value="1" />
-    															<span></span>
-    														</label>
-    													</span>
-                                                    </div>
-                                                </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label> Raw Material Warehouse </label><br/>
-                                                       <input data-switch="true" type="checkbox" {{ $wareHouseInfo->w_material_warehouse == 1 ? " checked='checked'" : "" }} name="w_material_warehouse" value="1" id="W_MATERIAL_WAREHOUSE" data-on-text="Yes" data-handle-width="50" data-off-text="No" data-on-color="success" />
+                                                    <br/>
+                                                      <label class="form-check form-switch form-check-custom form-check-solid">
+                                                            <input class="form-check-input" name="w_warehouse_status" type="checkbox" value="1" {{ $wareHouseInfo->w_warehouse_status == 1 ? "checked" : "" }}  />
+                                                            <span class="form-check-label fw-semibold text-muted">
+                                                               Active
+                                                            </span>
+                                                        </label>  
                                                     </div>
                                                 </div>
+                                                 <div class="col-md-4">
+                                                    <div class="form-group"> 
+                                                	   <br/>
+                                                      <label class="form-check form-switch form-check-custom form-check-solid">
+                                                            <input class="form-check-input" type="checkbox" name="w_material_warehouse" id="W_MATERIAL_WAREHOUSE" value="1" {{ $wareHouseInfo->w_material_warehouse == 1 ? " checked='checked'" : "" }} />
+                                                            <span class="form-check-label fw-semibold text-muted">
+                                                               Raw Material Warehouse
+                                                            </span>
+                                                        </label> 
+                                                    </div>
+                                                </div> 
                                                 <div class="col-md-12">
                                                      <div class="form-group">
                                                         <label class="control-label"> Warehouse Description <span class="required"> * </span></label><br/>
@@ -166,7 +171,7 @@ th{
                                                 <div class="col-md-9"></div>
                                                 <div class="col-md-3" align="right">
                                                      <button type="submit" name="btn_add_warehouse" id="BTN_ADD_WAREHOUSE"  class="btn btn-info">Save</button>
-                                                    <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                                                    <button type="button" id="BACK_FORM" name="back_form" class="btn btn-dark">Back</button>
                                                 </div>
                                             </div>
                                         </div>

@@ -12,10 +12,6 @@ Page Description :
 
 ***********************************************************/
 
-
-
-
-
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
@@ -253,7 +249,7 @@ class CustomersController extends Controller
         $ic_customer_tax_id       = $request->input('ic_customer_tax_id');
         $ic_vendor_id               = $request->input('ic_vendor_id');
         $ic_vendor_id               = ($ic_vendor_id == "null") ? 0 : $ic_vendor_id;
-        $ic_account_number          = $request->input('ic_account_number');
+        
         $ic_default_customer        = $request->input('ic_default_customer'); 
         $CustomerInfo = new Customers();
         $CustomerManager = new CustomersManager(); 
@@ -264,6 +260,26 @@ class CustomersController extends Controller
         else 
         {
             $CustomerInfo->ic_date_creation = date("Y-m-d");
+            
+            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info = $account_info[0];
+         
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+            
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+           
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $account_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_ref;
+            $AccAccounting->aa_account          = $aa_account_ref;
+            $AccAccounting->aa_sub_account      = $account_info->aa_id;
+            $AccAccounting->aa_account_label    = $ic_customer_name;
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save(); 
+            $aa_id = $AccAccounting->aa_id;
+            $CustomerInfo->ic_account_number = $aa_id;
+            
         }
         
         // upload file to the CRM photo
@@ -288,7 +304,6 @@ class CustomersController extends Controller
         $CustomerInfo->ic_customer_mobile       = $ic_customer_mobile; 
         $CustomerInfo->ic_customer_sales_tax    = $ic_customer_sales_tax;  
         $CustomerInfo->ic_vendor_id             = $ic_vendor_id;  
-        $CustomerInfo->ic_account_number        = $ic_account_number;  
         $CustomerInfo->ic_default_customer      = $ic_default_customer;  
         $CustomerInfo->ic_created_by            = session('user_id');  
 

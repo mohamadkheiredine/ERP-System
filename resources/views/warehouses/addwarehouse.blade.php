@@ -34,7 +34,7 @@ th{
 @section('content')
 <div class="card shadow-sm">
     <div class="card-header">
-        <h3 class="card-title">Add New Lead</h3>
+        <h3 class="card-title">Add New Warehouse</h3>
         <div class="card-toolbar">
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -108,19 +108,24 @@ th{
                         </div>
                          <div class="col-md-4">
                             <div class="form-group">
-                                <label> Active </label><br/>
-                               <span class="m-switch">
-									<label>
-										<input name="w_warehouse_status" type="checkbox" value="1" />
-										<span></span>
-									</label>
-								</span>
+                            <br/>
+                              <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" name="w_warehouse_status" type="checkbox" value="1" checked="checked" />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                       Active
+                                    </span>
+                                </label>  
                             </div>
                         </div>
                          <div class="col-md-4">
-                            <div class="form-group">
-                                <label> Raw Material Warehouse </label><br/>
-                               <input data-switch="true" type="checkbox" name="w_material_warehouse" id="W_MATERIAL_WAREHOUSE" value="1" checked="checked" data-on-text="Yes" data-handle-width="50" data-off-text="No" data-on-color="success" />
+                            <div class="form-group"> 
+                        	   <br/>
+                              <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="w_material_warehouse" id="W_MATERIAL_WAREHOUSE" value="1" checked="checked" />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                       Raw Material Warehouse
+                                    </span>
+                                </label> 
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -134,7 +139,7 @@ th{
                             <div class="row">
                             	<div class="col-md-1"></div>
                             	<div class="col-md-4">
-                            		 <div class="form-group">
+                            		 <div class="form-group"> 
                            					 <select multiple="multiple" class="multi-select form-control" style="height:220px;" id="VEHICULES" name="vehicules[]">
                                                 @foreach($lst_vehicules as $index => $veh_info)
                                                   <option value="{{ $veh_info->lv_id }}">{{ $veh_info->lv_vehicule_name }}</option>
@@ -162,7 +167,7 @@ th{
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">
                              <button type="submit" name="btn_add_warehouse" id="BTN_ADD_WAREHOUSE"  class="btn btn-info">Save</button>
-                            <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                            <button type="button" id="BACK_FORM" name="back_form" class="btn btn-dark">Back</button>
                         </div>
                     </div>
                 </div>

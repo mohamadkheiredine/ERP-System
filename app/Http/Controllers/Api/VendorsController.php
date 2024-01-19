@@ -225,6 +225,27 @@ class VendorsController extends Controller
         else 
         {
             $vendor_info= new Vendors();
+            
+            
+            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info = $account_info[0];
+            
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+            
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+            
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $account_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_ref;
+            $AccAccounting->aa_account          = $aa_account_ref;
+            $AccAccounting->aa_sub_account      = $account_info->aa_id;
+            $AccAccounting->aa_account_label    = $iv_vendor_name;
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save();
+            $aa_id = $AccAccounting->aa_id;
+            $vendor_info->iv_vendor_account_id = $aa_id;
+            
         }
         
         
@@ -234,6 +255,8 @@ class VendorsController extends Controller
         $vendor_info->iv_vendor_address = $iv_vendor_address;
         $vendor_info->iv_vendor_email   = $iv_vendor_email;
         $vendor_info->iv_vendor_website = $iv_vendor_website;
+        $vendor_info->iv_vendor_phone = $iv_vendor_phone;
+        $vendor_info->iv_vendor_mobile = $iv_vendor_mobile;
         
         
         if(count($_FILES) > 0 )
