@@ -14,17 +14,28 @@ $(function(){
 	 $("#BTN_SAVE_QUOTATION").on('click',quotations_module.SaveSupplierQuotationInfo);
 	$("#BTN_APPROVE_QUOTATION").on('click',quotations_module.ApproveSupplierQuotation);
 	$('select').select2();
-	$("#SQ_DUE_DATE").datepicker({
-		 format : "yyyy-mm-dd",
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+
+	 new tempusDominus.TempusDominus(document.getElementById('SQ_DUE_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
-	
-	 $('[data-switch=true]').bootstrapSwitch();
+	});
+	 
 	
 	var base_url 	= $('input[name=base_url]').val();
 	var _token 		= $('input[name=_token]').val();

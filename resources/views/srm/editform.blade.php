@@ -40,52 +40,27 @@ th{
 </style>
 @endsection
 @section('plugins')
-<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/suppliers.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/srm/savesuppliers.js') }}"></script>
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Edit Existing Supplier
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_supplier" id="FORM_SAVE_SUPPLIER">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Existing Supplier</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_supplier" id="FORM_SAVE_SUPPLIER">
                 <div class="form-body">
                      <span id="hidden_fields">
                       {!! csrf_field() !!}
@@ -101,18 +76,17 @@ th{
             			
             		<div class="row">
                      		<div class="col-md-12">
-                     			<div class="m-portlet m-portlet--mobile">
-        							<div class="m-portlet__head">
-        								<div class="m-portlet__head-caption">
-        									<div class="m-portlet__head-title">
-        										<h3 class="m-portlet__head-text">
-        											Basic Information
-        										</h3>
-        									</div>
-        								</div>
-        							</div>
-        							<div class="m-portlet__body">
-        								<div class="row">
+                     			<div class="card shadow-sm">
+                                    <div class="card-header bg-primary">
+                                        <h3 class="card-title">Basic Information</h3>
+                                        <div class="card-toolbar">
+                                            <button type="button" class="btn btn-sm btn-light">
+                                                Action
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
         									<div class="col-md-12" align="left">
                                     		<label>Supplier Logo </label>
                                             	</div>
@@ -159,32 +133,13 @@ th{
                                                         <label class="control-label">Supplier Phone</label>
                                                         <input type="text" name="ss_supplier_phone" id="SS_SUPPLIER_PHONE" class="form-control" maxlength="255"  value="{{ $supplier_info->ss_supplier_phone }}" />
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                  <div class="form-group">
-                                                        <label> Sales Account &nbsp;<a href="#" id="ADD_SALES_ACCOUNT" style="text-decoration: none;"  data-dropdown_name="ss_sale_account_id" ><i class="flaticon-add-circular-button"></i></a>&nbsp;  <span class="required"> * </span></label>
-                                                        <select class="bs-select form-control SrmAccount" name="ss_sale_account_id" id="SS_SALE_ACCOUNT_ID" data-actions-box="true">
-                                                                <option value="">-- Select Account --</option>
-                                                                @foreach ( $lst_accounts as $key => $acc_info )
-                                                                        <option {{ $supplier_info->ss_sale_account_id == $acc_info->aa_id ? "selected" : "" }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Purchase Account  &nbsp;<a href="#" id="ADD_PURCHASE_ACCOUNT" style="text-decoration: none;"  data-dropdown_name="ss_purchase_account_id" ><i class="flaticon-add-circular-button"></i></a>&nbsp;  <span class="required"> * </span></label>
-                                                        <select class="bs-select form-control SrmAccount" name="ss_purchase_account_id" id="SS_PURCHASE_ACCOUNT_ID" data-actions-box="true">
-                                                                <option value="">-- Select Account --</option>
-                                                                @foreach ( $lst_accounts as $key => $acc_info )
-                                                                        <option {{ $supplier_info->ss_purchase_account_id == $acc_info->aa_id ? "selected" : "" }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                                </div> 
         								</div>
-        							</div>
-        						</div>
+                                    </div> 
+                                </div>
+                     		
+                     		
+                     			
         						 <div class="row" style="height:50px;"></div>
                                  <div class="row">
                                 	<div class="col-md-12" align="left">  
@@ -205,18 +160,17 @@ th{
                                     </div>
                                 </div>  
                                 <div class="row" style="height:50px;"></div>
-        						<div class="m-portlet m-portlet--mobile">
-        							<div class="m-portlet__head">
-        								<div class="m-portlet__head-caption">
-        									<div class="m-portlet__head-title">
-        										<h3 class="m-portlet__head-text">
-        											Extra Information
-        										</h3>
-        									</div>
-        								</div>
-        							</div>
-        							<div class="m-portlet__body">
-        								<div class="row">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-primary">
+                                        <h3 class="card-title">Extra Information</h3>
+                                        <div class="card-toolbar">
+                                            <button type="button" class="btn btn-sm btn-light">
+                                                Action
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                    <div class="row">
         									<div class="col-md-4">
                                                  <div class="form-group">
                                                     <label class="control-label">Company Name</label>
@@ -306,10 +260,11 @@ th{
                                                 </div>
                                             </div>
         								</div>
-        							</div>
-        						</div>
+                                    </div>
+                                </div> 
                      		</div>
                      	</div>
+                     	 <div class="row" style="height:50px;"></div>
                     <div class="row">
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">
@@ -319,60 +274,7 @@ th{
                     </div>
                 </div>
             </form>
-	</div>
-</div>
-<!--begin:: Account Modal-->
-<div class="modal fade" id="AccountAccounting" tabindex="-1" role="dialog" aria-labelledby="AcctAccountingModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="AcctAccountingModalLabel">
-					Account Accounting
-				</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">
-						&times;
-					</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form name="frm_acc_account" id="FRM_ACC_ACCOUNT" action="#" > 
-				   <span id="hidden_fields">
-				   {!! csrf_field() !!}
-				   <input type="hidden" name="dropdown_name" value="" />
-				   </span>
-				   
-				 	<div class="row">
-				 		<div class="col-md-12">
-				 			<div class="form-group">
-                                <label class="control-label"> Parent Account </label><br/>
-                                 <select class="bs-select form-control" name="aa_parent_account" style="width:100%" id="AA_PARENT_ACCOUNT" data-actions-box="true">
-                                        <option value="">Customer Account</option>
-                                        @foreach ( $lst_accounts as $key => $acc_info )
-                                                <option data-account_id="{{ $acc_info->aa_account }}" value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label  }}</option>
-                                        @endforeach
-                                </select>
-                            </div>
-				 		</div>
-				 		 <div class="col-md-12">
-                             <div class="form-group">
-                                <label class="control-label">Account Label <span class="required"> * </span></label><br/>
-                                <input type="text" name="aa_account_label" style="width:100%" id="AA_ACCOUNT_LABEL" class="form-control" maxlength="255"  value="" />
-                            </div>
-                        </div>
-				 	</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
-					Close
-				</button>
-				<button type="button" name="btn_add_account" id="BTN_ADD_ACCOUNT" class="btn btn-primary">
-					Add Account
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-<!--end:: Accounting Modal-->
+    
+    </div>
+ </div> 
 @endsection

@@ -165,7 +165,7 @@ class VendorsController extends Controller
         $iv_image_extension     = $request->input('iv_image_extension');
         $iv_vendor_sales_tax    = $request->input('iv_vendor_sales_tax');
         $iv_vendor_tax_id       = $request->input('iv_vendor_tax_id');
-        $iv_vendor_account_id   = $request->input('iv_vendor_account_id');
+      //  $iv_vendor_account_id   = $request->input('iv_vendor_account_id');
  
         $VendorInfo = new Vendors();
         $VendorManager = new VendorsManager(); 
@@ -176,6 +176,26 @@ class VendorsController extends Controller
         else 
         {
             $VendorInfo->iv_date_creation = date("Y-m-d");
+            
+            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info = $account_info[0];
+            
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+            
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+            
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $account_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_ref;
+            $AccAccounting->aa_account          = $aa_account_ref;
+            $AccAccounting->aa_sub_account      = $account_info->aa_id;
+            $AccAccounting->aa_account_label    = $iv_vendor_name;
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save();
+            $aa_id = $AccAccounting->aa_id;
+            $VendorInfo->iv_vendor_account_id = $aa_id;
+            
         }
         
         // upload file to the CRM photo
@@ -201,7 +221,6 @@ class VendorsController extends Controller
         $VendorInfo->iv_vendor_mobile       = $iv_vendor_mobile; 
         $VendorInfo->iv_vendor_sales_tax    = $iv_vendor_sales_tax; 
         $VendorInfo->iv_vendor_tax_id       = $iv_vendor_tax_id; 
-        $VendorInfo->iv_vendor_account_id   = $iv_vendor_account_id; 
 
         
         

@@ -84,64 +84,7 @@ orders_module = {
             },
 	        success : function(response){
 	        	$('#LstProducts').html(response.display);
-				$.op_datatable = $('.m_datatable').mDatatable({
-					// layout definition
-					layout: {
-						theme: 'default', // datatable theme
-						class: '', // custom wrapper class
-						scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-						// height: 450, // datatable's body's fixed height
-						footer: false // display/hide footer
-					},
-					columns : [
-        				{
-        					field: "#",
-        			        title: "#", 
-        			        sortable: false,
-        			        width: 40,
-        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-        				},
-        				{
-        					field : "ID",
-        					title : "Id", 
-        			        sortable: true,
-        			        width: 40
-        					
-        				},
-        				{
-        					field : "barcode",
-        					title : "barcode", 
-        			        sortable: true,
-        			        width: 100
-        					
-        				},
-        				{
-        					field : "Product Name",
-        					title : "Product Name", 
-        			        sortable: true,
-        			        width: 150
-        					
-        				},
-        				{
-        					field : "Products Item",
-        					title : "Products Item", 
-        			        sortable: true,
-        			        width: 75
-        					
-        				}
-        			],
-					// column sorting
-					sortable: true,
-					
-					pagination: true,
-					
-					search: {
-						input: $('#generalSearch')
-					},
-					
-					// inline and bactch editing(cooming soon)
-					// editable: false,
-				});
+				 
 	        }
 	    });
 	},

@@ -22,7 +22,7 @@ Page Description :
    <td>{{ $pp_info->p_product_ref }}</td>
    <td>{{ $pp_info->p_product_name }}</td>
    <td>{{ $pp_info->p_product_selling_price }}&nbsp;&nbsp;<b>{{  $pp_info->p_product_currency == null  ? session('currency_symbol') : $currency_array[ $pp_info->p_product_currency ]['cc_currency_code'] }}</b></td>
-  <td style="width:2px;">  <a href="#"  data-p_id="{{ $pp_info->p_id }}" id="EDIT_PRODUCT_{{ $pp_info->p_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-p_id="{{ $pp_info->p_id }}" id="EDIT_PRODUCT_{{ $pp_info->p_id }}" ><i class="fa-regular fa-pen-to-square"></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-p_id="{{ $pp_info->p_id }}"  id="DELETE_PRODUCT_{{ $pp_info->p_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

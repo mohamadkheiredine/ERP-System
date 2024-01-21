@@ -24,8 +24,6 @@ var users_module = {
 	                                users_module.DisplayListUsers();
 	                           }
 	                       });
-		            	$("a[id*=EDIT_USER_]").on("click",users_module.EditUserInfo);
-		            	$("a[id*=DELETE_USER_]").on("click",users_module.DeleteUserInfo);
 		            }
 		        });
 			},

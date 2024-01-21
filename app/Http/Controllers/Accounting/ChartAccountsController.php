@@ -246,7 +246,7 @@ class ChartAccountsController extends Controller
         $account_id = $request->input('account_id');
         $id = $request->input('id');
         
-        
+      
         if( $request->has('account_id'))
         {
             
@@ -259,9 +259,15 @@ class ChartAccountsController extends Controller
             $account_id = $account_info->aa_account_ref;
             $account_info   = ChartAccounts::where("aa_account_ref","LIKE",$account_id. "%")->whereRaw('LENGTH(aa_account_ref) >= 10')->orderBy('aa_account_ref','ASC')->get();
         }
+        
+      
        
         $account_count = strlen($account_id); 
-        $aa_account_ref = $account_info[count($account_info) - 1]->aa_account_ref;
+        if(count($account_info) == 0)
+            $aa_account_ref = $account_id . $account_count;
+        else
+            $aa_account_ref = $account_info[count($account_info) - 1]->aa_account_ref;
+        
         $aa_account_ref = intval($aa_account_ref); 
         $aa_account_ref++;
        

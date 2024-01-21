@@ -16,10 +16,10 @@ Display list of all stocks in this current warehouse
 <div class="row">
 	<div class="col-md-1"></div>
 	<div class="col-md-10">
-    	<div class="m_datatable" id="LstStockWarehouse">
-        <table class="m-datatable" id="StockWarehouseDatatables" width="100%">
+    	<div class="table-responsive">
+        <table class="table table-row-dashed table-row-gray-300 gy-7" width="100%">
             		<thead>
-            			<tr>
+            			<tr class="fw-bold fs-6 text-gray-800">
             				<th title="#">#</th>
             				<th title="Id"> ID </th>
             				<th title="Zone Name"> Zone Name </th>
@@ -30,7 +30,7 @@ Display list of all stocks in this current warehouse
             		</thead>
             		<tbody>
             			  	@foreach( $lst_stock as $index => $si_info )
-                            <tr  class="odd gradeX" data-is_id="{{ $si_info->is_id }}">
+                            <tr class="odd gradeX" data-is_id="{{ $si_info->is_id }}">
                             	<td><input type="checkbox" name="ck_is_{{ $si_info->is_id }}" id="CK_IS_{{ $si_info->is_id }}" class="checkboxes" value="{{ $si_info->ci_id }}" /></td>
                                <td>{{ $si_info->is_id }}</td>
                                <td>{{ ( $si_info->fk_zone_id != 0 ) ? $si_info->Zones->wz_zone_label : "N/A" }}</td>
@@ -62,10 +62,32 @@ Display list of all stocks in this current warehouse
 				</div>
 			</div>
 			<div class="m-portlet__body">
-				<div id="m_warehouseloadzonechart" style="height: 500px;"></div>
+				<div class="row">
+					<div class="col-md-12"><div id="m_warehouseloadzonechart" style="height: 500px;"></div></div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-5"></div>
+	<div class="col-md-5">
+		<div class="m-portlet m-portlet--tab">
+			<div class="m-portlet__head">
+				<div class="m-portlet__head-caption">
+					<div class="m-portlet__head-title">
+						<span class="m-portlet__head-icon m--hide">
+							<i class="la la-gear"></i>
+						</span>
+						<h3 class="m-portlet__head-text">
+							Warehouse Load By Products
+						</h3>
+					</div>
+				</div>
+			</div>
+			<div class="m-portlet__body">
+				<div class="row">
+					<div class="col-md-12"><div id="warehousebyproductschart" style="height: 500px;"></div></div>
+				</div>
+			</div>
+		</div> 
+	</div>
 	<div class="col-md-1"></div>
 </div>

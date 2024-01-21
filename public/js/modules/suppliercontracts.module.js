@@ -16,54 +16,6 @@ suppliercontracts_module = {
             },
 	        success : function(response){
 	        	$('#LstSupplierContracts').html(response.display);
-				$.ba_datatable = $('.m_datatable').mDatatable({
-					// layout definition
-					layout: {
-						theme: 'default', // datatable theme
-						class: '', // custom wrapper class
-						scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-						// height: 450, // datatable's body's fixed height
-						footer: false // display/hide footer
-					},
-					
-					// column sorting
-					sortable: true,
-					
-					pagination: true,
-					
-					search: {
-						input: $('#generalSearch')
-					},
-        			columns : [
-        				{
-        					field: 'Id',
-        					type: 'number',
-        					width: 4
-        				},
-        				{
-        					field: 'Contract Title',
-        					type: 'text'
-        				},
-        				{
-        					field: 'Contract Date',
-        					type: 'text'
-        				},
-        				{
-        					field: 'Contract Price',
-        					type: 'number'
-        				},
-        				{
-        					field: 'Contract Currency',
-        					type: 'text'
-        				}
-        			]
-					
-					// inline and bactch editing(cooming soon)
-					// editable: false,
-				});
-				
-				$("a[id*=EDIT_CONTRACT_]").on('click',suppliercontracts_module.EditContractInfo);
-				$("a[id*=DELETE_CONTRACT_]").on('click',suppliercontracts_module.DeleteContractData);
 	        }
 	    });
 	},

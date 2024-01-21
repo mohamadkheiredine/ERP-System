@@ -19,7 +19,7 @@ Page Description :
 	<td><input type="checkbox" name="ck_jt_{{ $jt_info->jt_id }}" id="CK_JT_{{ $jt_info->jt_id }}" class="checkboxes" value="{{ $jt_info->jt_id }}" /></td>
    <td>{{ $jt_info->jt_id }}</td>
    <td>{{ $jt_info->jt_job_title }}</td>
-  <td style="width:2px;">  <a href="#"  data-jt_id="{{ $jt_info->jt_id }}" id="EDIT_JOB_TITLE_{{ $jt_info->jt_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-jt_id="{{ $jt_info->jt_id }}" id="EDIT_JOB_TITLE_{{ $jt_info->jt_id }}" ><i class="fa-solid fa-pen-to-square"></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-jt_id="{{ $jt_info->jt_id }}"  id="DELETE_JOB_TITLE_{{ $jt_info->jt_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

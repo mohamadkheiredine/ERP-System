@@ -38,6 +38,7 @@ use App\models\Inventory\ProductCategories;
 use App\models\CRM\CRMClientCategories;
 use App\models\CRM\CRMAccounts;
 use App\models\SRM\Suppliers;
+use App\models\Accounting\ChartAccounts;
 
 
 class SuppliersManager
@@ -119,6 +120,45 @@ class SuppliersManager
         if(file_exists($image_src_path) && strlen($ss_logo_base_src) > 0 && strlen($ss_logo_file_name) > 0 && strlen( $ss_logo_file_extension) > 0 ){/////Find the related image to the product
             unlink($image_src_path);
         }
+    }
+    
+    
+    public function GenerateNewSupplierAcc(Array $params_array )
+    { 
+        $account_label      = $params_array["account_label"];
+        $country_id         = session("company_country");
+        $result_array       = array();
+        $parent_account = 0;
+        
+        // get parent account info
+        $parent_account_info = ChartAccounts::whereAaAccount("401")->get();
+        
+        $parent_account  = $parent_account_info[0]->aa_id;
+  
+        
+        
+        $count_ref_account = ChartAccounts::whereAaAccountRef($parent_account)->count();
+        
+        
+        // check if this account exist
+        $account_info = ChartAccounts::whereAaParentAccount($parent_account)->get();
+        
+        $new_count = count($account_info) + 1;
+        
+        $aa_account_ref = "4011". (String)$new_count;
+        $AccAccounting = new ChartAccounts();
+        $AccAccounting->aa_parent_account   = $parent_account;
+        $AccAccounting->aa_account_ref      = $aa_account_ref;
+        $AccAccounting->aa_account          = $aa_account_ref;
+        $AccAccounting->aa_sub_account      = $parent_account;
+        $AccAccounting->aa_account_label    = $account_label;
+        $AccAccounting->fk_country_id       = $country_id;
+        $AccAccounting->save();
+        
+        $aa_id = $AccAccounting->aa_id;
+        
+        
+        return $aa_id;
     }
 
 }

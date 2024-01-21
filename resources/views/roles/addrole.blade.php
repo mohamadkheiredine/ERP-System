@@ -23,44 +23,21 @@ View for add new role form
 <script type="text/javascript" src="{{ url('js/libraries/roles/saverole.js') }}"></script>
 @endsection
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">Add Role</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="form_save_role" id="FORM_SAVE_ROLE">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add Role</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="form_save_role" id="FORM_SAVE_ROLE">
                 <div class="form-body">
                      <span id="hidden_fields"> 
                         {!! csrf_field() !!} 
@@ -95,49 +72,42 @@ View for add new role form
                     <div class="col-md-12 col-sm-12 col-xs-12" style="white-space: nowrap;">
                         <div class="portlet-body">
         					<h3>Privileges</h3>
-        					<div class="tabbable-line">
-        						<ul class="nav nav-tabs" role="tablist"> 
-											@foreach($pa_result_array as $tab_title => $value)
-											   
-                							<li class="nav-item <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>">
-												<a class="nav-link" data-toggle="tab" href="#m_{{ str_replace(' ', '', $tab_title) }}">
-													{{ $tab_title }}
-												</a>
-											</li>
-											@endforeach
-											 
-										</ul>
-										<div class="tab-content">
-    										@foreach($pa_result_array as $tab_title => $pa_info)
-    											<div class="tab-pane <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>" id="m_{{ str_replace(' ', '', $tab_title) }}">
-                                                <ul class="LstRoles">
-                                                   <?php
-                                                        foreach ($pa_info as $index => $pa_priv_info ) {
-                                                           ?>
-                                                            <li>
-                                                                <table cellspacing="0" cellpadding="0" style="width:100%">
-                                                                      <tr>
-                                                                           <td style="width:3%;">
-                                                                               <input type="checkbox" name="<?php echo $pa_priv_info['code']; ?>" id="<?php echo strtoupper($pa_priv_info['code']); ?>" value="1" />
-                                                                           </td>
-                                                                           <td style="width:97%;"><?php echo $pa_priv_info['description']; ?></td>
-                                                                      </tr>
-                                                                </table>
-                                                            </li>
-                                                           <?php
-                                                        }
-                                                   ?>
-                                                </ul>
-                							</div>
-    										@endforeach
-										</div>
         					
-  
-        						<div class="tab-content">
-        						     
-
-        						</div>
-        					</div>
+        					<ul class="nav nav-tabs nav-line-tabs mb-12 fs-6">
+        					@foreach($pa_result_array as $tab_title => $value)
+                                <li class="nav-item <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tab_{{ str_replace(' ', '', $tab_title) }}">{{ $tab_title }}</a>
+                                </li>
+                                @endforeach
+                            </ul>
+                            
+                            <div class="tab-content" id="myTabContent">
+                            	@foreach($pa_result_array as $tab_title => $pa_info)
+                                <div class="tab-pane fade show <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>" id="tab_{{ str_replace(' ', '', $tab_title) }}" role="tabpanel">
+                                   <ul class="LstRoles">
+                                       <?php
+                                            foreach ($pa_info as $index => $pa_priv_info ) {
+                                               ?>
+                                                <li>
+                                                	<div class="table-responsive">
+                                                    	 <table cellspacing="0" cellpadding="0" class="table" style="width:100%">
+                                                              <tr>
+                                                                   <td style="width:3%;">
+                                                                       <input type="checkbox" name="<?php echo $pa_priv_info['code']; ?>" id="<?php echo strtoupper($pa_priv_info['code']); ?>" value="1" />
+                                                                   </td>
+                                                                   <td style="width:97%;"><?php echo $pa_priv_info['description']; ?></td>
+                                                              </tr>
+                                                        </table>
+                                                	</div> 
+                                                </li>
+                                               <?php
+                                            }
+                                       ?>
+                                    </ul>
+                                </div>
+                                @endforeach
+                            </div>
+        					 
         			     </div>
                     </div>
                 </div>
@@ -150,8 +120,9 @@ View for add new role form
                     </div>
                 </div>
             </form>
-	</div>
+    </div>
 </div>
+
 
  
 

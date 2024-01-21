@@ -27,7 +27,7 @@ Page Description :
    <td>{{ ($invoice_info->CreatedUser != null) ? $invoice_info->CreatedUser->u_fullname : "N/A" }}</td>
    <td>{{ ($invoice_info->UpdatedUser != null) ? $invoice_info->UpdatedUser->u_fullname : "N/A" }}</td>
     <td style="text-align: center"><a target="_blank" href="{{ url('billing/invoices/downloadinvoice/' . $invoice_info->bi_id ) }}"><i class='fa fa-download'></i></a></td>
-    <td><a href="#" data-bi_id="{{ $invoice_info->bi_id }}" id="EDIT_INVOICE_{{ $invoice_info->bi_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+    <td><a href="#" data-bi_id="{{ $invoice_info->bi_id }}" id="EDIT_INVOICE_{{ $invoice_info->bi_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="#" data-bi_id="{{ $invoice_info->bi_id }}"  id="DELETE_INVOICE_{{ $invoice_info->bi_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>
 @endforeach

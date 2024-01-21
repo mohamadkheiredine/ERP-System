@@ -48,15 +48,20 @@ receipts_module = {
                                     $(this).prop("checked", checked);
                                 });
                                 $.uniform.update(set);
-                            }); 
-                           $.pagination = $('#ReceiptsPagination').twbsPagination({
-                                 totalPages: response.total_pages,
-                                 visiblePages: 7,
-                                 onPageClick: function (event, page) {
-                                      $('input[name=page_number]').val(page);
-                                      receipts_module.displayListReceipts();
-                                 }
-                             });
+                            });
+                             
+                             if(response.total_pages > 0)
+                        	 {
+                                 $.pagination = $('#ReceiptsPagination').twbsPagination({
+                                     totalPages: response.total_pages,
+                                     visiblePages: 7,
+                                     onPageClick: function (event, page) {
+                                          $('input[name=page_number]').val(page);
+                                          receipts_module.displayListReceipts();
+                                     }
+                                 });
+                        	 }
+                      
 		        }
 		    });
 		},

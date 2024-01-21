@@ -22,7 +22,7 @@ Page Description :
 	<td>{{ $ve_info->ve_extension_amount }}</td>
 	<td>{{ $ve_info->currency->cc_currency_code }}</td>
 	<td>{{ $ve_info->ve_extension_notes }}</td>
-	<td style="width:4px;white-space: nowrap;text-align: center"><a href="#"  id="EDIT_VE_{{ $ve_info->ve_id }}" data-ve_id="{{ $ve_info->ve_id }}" class="EditExtRow" ><i class="fas fa-edit" height="16"></i></a></td>
+	<td style="width:4px;white-space: nowrap;text-align: center"><a href="#"  id="EDIT_VE_{{ $ve_info->ve_id }}" data-ve_id="{{ $ve_info->ve_id }}" class="EditExtRow" ><i class="fa-regular fa-pen-to-square"></i></a></td>
 	<td style="width:4px;white-space: nowrap;text-align: center"><a href="#" class="DeleteExtRow" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>
 @endforeach

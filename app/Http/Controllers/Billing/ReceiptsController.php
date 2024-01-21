@@ -89,7 +89,9 @@ class ReceiptsController extends Controller
         $receipt_customer       = $request->input('receipt_customer');
         $receipt_invoice        = $request->input('receipt_invoice');
         $start_date             = $request->input('start_date');
+        $start_date             = date("Y-m-d",strtotime($start_date));
         $end_date               = $request->input('end_date');
+        $end_date               = date("Y-m-d",strtotime($end_date));
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         
         $strfirstday = 'first day of January ' . $fisical_year;
@@ -288,6 +290,7 @@ class ReceiptsController extends Controller
         $br_customer_id             = $request->input("br_customer_id");
         $br_receipt_label           = $request->input("br_receipt_label");
         $br_receipt_date            = $request->input("br_receipt_date");
+        $br_receipt_date            = date("Y-m-d",strtotime($br_receipt_date));
         $fk_payment_type            = $request->input("fk_payment_type");
         $fk_invoice_id              = $request->input("fk_invoice_id");
         $br_payment_value           = $request->input("br_payment_value");

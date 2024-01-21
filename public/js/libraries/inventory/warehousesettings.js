@@ -1,4 +1,6 @@
 $(function(){
+	 $("#TAB").val("warehouse_dimension");
+	 warehouses_module.DisplayWarehouseSettingsTab();
 		const canvas = document.getElementById('WAREHOUSEDRAWING');
         const ctx = canvas.getContext('2d');
 
@@ -59,6 +61,28 @@ $(function(){
 	 var canvas_width = $('#CanvasPage').width();
 	 $('canvas').width(canvas_width);
 	 $('select').select2();
+	 
+	 
+	// Stepper lement
+	 var element = document.querySelector("#stepper_settings");
+
+	 // Initialize Stepper
+	 var stepper = new KTStepper(element);
+
+	 // Handle navigation click
+	 stepper.on("kt.stepper.click", function (stepper) {
+	     stepper.goTo(stepper.getClickedStepIndex()); // go to clicked step
+	 });
+
+	 // Handle next step
+	 stepper.on("kt.stepper.next", function (stepper) {
+	     stepper.goNext(); // go next step
+	 });
+
+	 // Handle previous step
+	 stepper.on("kt.stepper.previous", function (stepper) {
+	     stepper.goPrevious(); // go previous step
+	 });
  })
  
  

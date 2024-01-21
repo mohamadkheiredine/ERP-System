@@ -33,43 +33,15 @@ th{
 @endsection
 
 @section('content')
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">Add New User</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-            <form name="form_save_users" id="FORM_SAVE_USERS">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add New User</h3>
+        <div class="card-toolbar">
+             
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="form_save_users" id="FORM_SAVE_USERS">
             <div  class="form-body">
              <span id="hidden_fields">
                 {!! csrf_field() !!}
@@ -109,16 +81,7 @@ th{
                 	<div class="col-md-12">
                 		<div class="m-portlet m-portlet--tab">
 							<div class="m-portlet__head bg-success">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<span class="m-portlet__head-icon m--hide">
-											<i class="la la-gear"></i>
-										</span>
-										<h3 class="m-portlet__head-text" style="color:white">
-											User Information
-										</h3>
-									</div>
-								</div>
+                				<div class="bg-light">User Information</div>
 							</div>
 							<div class="m-portlet__body">
 								<div class="row">
@@ -213,21 +176,15 @@ th{
                <div class="row" style="height:5px;"></div>
                 <div class="row">
                		<div class="col-md-12">
-               			<div class="m-portlet m-portlet--tab">
-							<div class="m-portlet__head bg-info">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<span class="m-portlet__head-icon m--hide">
-											<i class="la la-gear"></i>
-										</span>
-										<h3 class="m-portlet__head-text" style="color:white">
-											Personal Information
-										</h3>
-									</div>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<div class="row">
+               			<div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">Personal Information</h3>
+                            <div class="card-toolbar">
+                                
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Gender</label><br/>
@@ -305,27 +262,21 @@ th{
                                         </div>
                                     </div>
 								</div>
-							</div>
-						</div>
+                        </div> 
+                    </div> 
 					</div>
 				</div>
                 <div class="row">
                		<div class="col-md-12">
-               			<div class="m-portlet m-portlet--tab">
-							<div class="m-portlet__head bg-primary">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<span class="m-portlet__head-icon m--hide">
-											<i class="la la-gear"></i>
-										</span>
-										<h3 class="m-portlet__head-text" style="color:white">
-											Employment Information
-										</h3>
-									</div>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<div class="row">
+               			<div class="card bg-light shadow-sm">
+                            <div class="card-header">
+                                <h3 class="card-title">Employment Information</h3>
+                                <div class="card-toolbar">
+                                   
+                                </div>
+                            </div>
+                            <div class="card-body card-scroll h-200px">
+                               <div class="row">
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Company</label>
@@ -442,8 +393,8 @@ th{
                                         </div>
                                     </div>
 								</div>
-							</div>
-						</div>
+                            </div> 
+                        </div> 
 					</div>
 				</div>
                
@@ -456,7 +407,7 @@ th{
                 </div>
             </div>
         </form>
-	</div>
+    </div>
 </div>
 
 @endsection

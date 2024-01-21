@@ -20,7 +20,7 @@ Page Description :
    <td>{{ $cmp_info->cd_id }}</td>
    <td>{{ $cmp_info->cd_company_name }}</td>
    <td>{{ $cmp_info->cd_company_owner }}</td>
-  <td style="width:2px;">  <a href="#"  data-cd_id="{{ $cmp_info->cd_id }}" id="EDIT_COMPANY_{{ $cmp_info->cd_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-cd_id="{{ $cmp_info->cd_id }}" id="EDIT_COMPANY_{{ $cmp_info->cd_id }}" ><i class="fa-solid fa-pen-to-square"></i></a> </td>
   <td style="width:2px;">
   	@if($cmp_info->cd_primary_company == 0) 
   	<a href="#"  data-cd_id="{{ $cmp_info->cd_id }}"  id="DELETE_COMPANY_{{ $cmp_info->cd_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a>

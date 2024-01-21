@@ -15,71 +15,7 @@ services_module = {
 	            },
 		        success : function(response){
 		        	$('#LstServices').html(response.display);
-					$.cs_datatable = $('.m_datatable').mDatatable({
-						
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						},
-						columns : [
-							{
-	        					field: "#",
-	        			        title: "#", 
-	        			        sortable: false,
-	        			        width: 40,
-	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-	        				},
-	        				{
-	        					field: 'Id',
-	        					title: 'ID',
-	        					type: 'number',
-	        					width: 4
-	        				},
-	        				{
-	        					field: 'code',
-	        					type: 'text',
-	        					width: 100,
-	        					sortable: true
-	        				},
-	        				{
-	        					field: 'Name',
-	        					type: 'text',
-	        					width: 250,
-	        					sortable: true
-	        				},
-	        				{
-	        					field: "edit",
-	        			        title: "edit", 
-	        			        sortable: false,
-	        			        width: 40
-	        				},
-	        				{
-	        					field: "delete",
-	        			        title: "delete", 
-	        			        sortable: false,
-	        			        width: 40
-	        				}
-	        			]
-						
-						// inline and bactch editing(cooming soon)
-						// editable: false,
-					});
-					
-					$("a[id*=EDIT_SERVICE_]").on('click',services_module.EditServiceInfo);
-					$("a[id*=DELETE_SERVICE_]").on('click',services_module.DeleteServiceData);
+	
 		        }
 		    });
 	},

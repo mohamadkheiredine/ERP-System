@@ -20,14 +20,26 @@ $(function(){
          console.error( error );
      });
 	 $('select').select2();
-	 $('#CA_ACTIVITY_DATE').datepicker({
-		 startDate :'+1d',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	 
+	 new tempusDominus.TempusDominus(document.getElementById('CA_ACTIVITY_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
+	});
 	 $("#BTN_SAVE_ACTIVITY").on("click",leads_module.SaveLeadActivityInfo);
 })

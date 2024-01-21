@@ -12,31 +12,13 @@ Page Description :
 
 ***********************************************************/
 ?>
-
-
-<table class="m-datatable" id="html_table" width="100%">
-		<thead>
-			<tr>
-			<th title="#">#</th>
-				<th title="Id" >ID</th>
-				<th title="code">Service Code</th>
-				<th title="Name">Service Name</th> 
-				<th title="edit">edit</th>
-				<th title="delete">Delete</th>
-			</tr>
-		</thead>
-		<tbody>
-
-		     @foreach ( $lst_services as $key => $service_info )
-                <tr>
-                    <td><input type="checkbox" name="ck_cs_{{ $service_info->cs_id }}" id="CK_CS_{{ $service_info->cs_id }}" class="checkboxes" value="{{ $service_info->cs_id }}" /></td>
-    				<td>{{ $service_info->cs_id }}</td>
-    				<td>{{ $service_info->cs_service_code }}</td>
-    				<td>{{ $service_info->cs_service_title }}</td> 
-    				 <td style="width:2px;"><a  data-cs_id="{{ $service_info->cs_id }}"  href="#"  id="EDIT_SERVICE_{{ $service_info->cs_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
-                       <td style="width:2px;"><a  data-cs_id="{{ $service_info->cs_id }}"  href="#"  id="DELETE_SERVICE_{{ $service_info->cs_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
-    			</tr>
-		     @endforeach
-
-			</tbody>
-</table>
+ @foreach ( $lst_services as $key => $service_info )
+    <tr>
+        <td><input type="checkbox" name="ck_cs_{{ $service_info->cs_id }}" id="CK_CS_{{ $service_info->cs_id }}" class="checkboxes" value="{{ $service_info->cs_id }}" /></td>
+		<td>{{ $service_info->cs_id }}</td>
+		<td>{{ $service_info->cs_service_code }}</td>
+		<td>{{ $service_info->cs_service_title }}</td> 
+		 <td style="width:2px;"><a  data-cs_id="{{ $service_info->cs_id }}"  href="#"  id="EDIT_SERVICE_{{ $service_info->cs_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+           <td style="width:2px;"><a  data-cs_id="{{ $service_info->cs_id }}"  href="#"  id="DELETE_SERVICE_{{ $service_info->cs_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
+	</tr>
+ @endforeach

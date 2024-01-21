@@ -25,6 +25,46 @@ $(function(){
 		$("#ReceiptsPagination").twbsPagination('destroy');
 		receipts_module.displayListReceipts();
 	});
+	new tempusDominus.TempusDominus(document.getElementById('START_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
+	});
+	new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
+	});
 	$(".LstReceiptsGrid").on('click',"a[id*=EDIT_RECEIPT_]",receipts_module.EditReceiptForm)
 	$(".LstReceiptsGrid").on('click',"a[id*=DELETE_RECEIPT_]",receipts_module.DeleteReceiptForm)
 })

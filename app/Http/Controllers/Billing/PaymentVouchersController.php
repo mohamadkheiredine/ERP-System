@@ -292,6 +292,8 @@ class PaymentVouchersController extends Controller
         $pv_account_payable         = $request->input('pv_account_payable');
         $pv_account_receivable      = $request->input('pv_account_receivable');
         $pv_creation_date           = $request->input('pv_creation_date');
+        $pv_creation_date           = date("Y-m-d",strtotime($pv_creation_date));
+        
         $pv_payment_amount          = $request->input('pv_payment_amount');
         $pv_currency_id             = $request->input('pv_currency_id');
         $pv_sec_currency_id         = $request->input('pv_sec_currency_id');

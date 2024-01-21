@@ -24,7 +24,7 @@ Page Description :
     <td>{{ $in_info->in_transfert_label }}</td>  
     <td>{{ $in_info->in_credit_value }}   <b>{{ $in_info->Currency->cc_currency_code }}</b></td>  
     <td>{{ $in_info->in_debit_value }}   <b>{{ $in_info->Currency->cc_currency_code }}</b></td>  
-    <td><a href="#" data-in_id="{{ $in_info->in_id }}" id="EDIT_IN_{{ $in_info->in_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+    <td><a href="#" data-in_id="{{ $in_info->in_id }}" id="EDIT_IN_{{ $in_info->in_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="#" data-in_id="{{ $in_info->in_id }}"  id="DELETE_IN_{{ $in_info->in_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>
 @endforeach

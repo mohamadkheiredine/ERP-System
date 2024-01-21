@@ -1203,14 +1203,17 @@ class OrdersController extends Controller
         }
         
         $stock_ids = StockIds::whereSiStockUid($product_uid)->get();
-        $stock_uid = "";
+        $stock_count = StockIds::whereSiStockUid($product_uid)->count();
+        $stock_uid  = "";
+        $stock_id   = 0;
+        $stock_data = array();
         
-        if( count($stock_ids) > 0 )
+        if( $stock_count > 0 )
         {
             
             if($stock_ids[0]->si_stock_sold == 0)
             {
-                $stock_id   = $stock_ids[0]->si_stock_id;
+                $stock_id   = $stock_ids[0]->fk_stock_id;
                 $stock_uid  = $stock_ids[0]->si_stock_uid;
                 
             }
@@ -1223,81 +1226,62 @@ class OrdersController extends Controller
             }
             
             
+            // get stock info to get product data
+            
+            $stock_info = Stocks::find($stock_id);
+            if($pos_quantity > $stock_info->is_quanity)
+            {
+                $result_array['is_error']       = 1;
+                $result_array['quantity']       = $stock_info->is_quanity;
+                $result_array['error_message']  = 'Quantity Not enough For this Product !!';
+                
+                return Response()->json($result_array);
+            }
+            
+            $product_id = $stock_info->fk_product_id;
+            $product_info = Products::find($product_id);
+           
+            $stock_data['p_id']                         = $product_info->p_id;
+            $stock_data['product_name']                 = $product_info->p_product_name;
+            $stock_data['barecode']                     = $product_info->p_barcode;
+            if($stock_uid != null)
+                $stock_data['uid']                          = $stock_uid;
+            else 
+                $stock_data['uid']                      = $product_info->p_barcode;
+            $stock_data['product_cost']                = $stock_info->is_selling_price;
+            $stock_data['product_currency']             = $stock_info->is_price_currency;
+            $stock_data['is_id']                        = $stock_id;
+            
         }
         else
         {
-            $stock_info         = Stocks::whereFkProductId($product_id)->whereFkWarehouseId($warehouse_id)->get();
+            $product_info = Products::wherePBarcode($product_uid)->get();
+            $product_count = Products::wherePBarcode($product_uid)->count();
             
-            if( count($stock_info) == 0 )
+             
+            if($product_count == 0)
             {
                 $result_array['is_error']       = 1;
-                $result_array['error_message']  = 'We dont have any stock now from this item !!';
-                
-                return Response()->json($result_array);
-            } 
-            
-            if( count($stock_info) > 1 )
-            {
-                for ($i = 0; $i < count($stock_info); $i++)
-                {
-                    $stock_id = $stock_info[$i]->is_id;
-                    
-                    if($stock_id > 0)
-                        continue;
-                        $stock_info_tmp = $stock_info[$i];
-                        if($pos_quantity > $stock_info_tmp->is_quanity)
-                        {
-                            $result_array['is_error']       = 1;
-                            $result_array['quantity']       = $stock_info_tmp->is_quanity;
-                            $result_array['error_message']  = 'Quantity Not enough For this Product !!';
-                            
-                            return Response()->json($result_array);
-                        }
-                        else if( $pos_quantity <= $stock_info_tmp->is_quanity)
-                        {
-                            $stock_id = $stock_info_tmp->is_id;
-                            $stock_uid  = $stock_info_tmp->is_stock_uid;
-                        }
-                }
-            }
-            else if(count($stock_info) == 1)
-            {
-                $stock_info = $stock_info[0];
-                if($pos_quantity > $stock_info->is_quanity)
-                {
-                    $result_array['is_error']       = 1;
-                    $result_array['quantity']       = $stock_info->is_quanity;
-                    $result_array['error_message']  = 'Quantity Not enough For this Product !!';
-                    
-                    return Response()->json($result_array);
-                }
-                
-                $stock_id = $stock_info->is_id;
-                $stock_uid  = $stock_info->is_stock_uid;
-            }
-            else
-            {
-                $result_array['is_error']       = 1;
-                $result_array['error_message']  = 'We dont have any stock now from this item !!';
+                $result_array['error_message']  = 'This item is Not Exist ';
                 
                 return Response()->json($result_array);
             }
+            
+            $product_info = $product_info[0];
+            
+            $stock_data['p_id']                         = $product_info->p_id;
+            $stock_data['product_name']                 = $product_info->p_product_name;
+            $stock_data['barecode']                     = $product_info->p_barcode;
+            $stock_data['uid']                          = $product_info->p_barcode;
+            $stock_data['product_cost']                = $product_info->p_product_selling_price;
+            $stock_data['product_currency']             = $product_info->p_product_currency;
+            $stock_data['is_id']                     = $product_info->p_id;
+             
         }
         
-        
-        $stock_info = Stocks::find($stock_id);
-        
-        
-        
-        
-        $row_array['p_id']          = $stock_info->products->p_id;
-        $row_array['is_id']         = $stock_info->is_id;
-        $row_array['uid']           = $stock_info->is_stock_uid;
-        $row_array['product_name']  = $stock_info->products->p_product_name;
-        
-        $image_src_url              = url('/')."/".Config::get('constants.PRODUCTS_PATH').$stock_info->products->p_product_profile_base_src.$stock_info->products->p_product_profile_file_name.".".$stock_info->products->p_product_profile_extention;
-        $image_src_path             = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$stock_info->products->p_product_profile_base_src.$stock_info->products->p_product_profile_file_name.".".$stock_info->products->p_product_profile_extention;
-        if(strlen($stock_info->products->p_product_profile_base_src) > 0 )
+        $image_src_url              = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
+        $image_src_path             = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
+        if(strlen($product_info->p_product_profile_base_src) > 0 )
         {
             $img_src = $image_src_url;
         }
@@ -1305,10 +1289,10 @@ class OrdersController extends Controller
         {
             $img_src = url('images/NoImageAvailable.jpg');
         }
-        $row_array['image_url'] = $img_src;
+        $stock_data['image_url'] = $img_src;
         
-        $price_item         = $stock_info->is_price_item;
-        $stock_currency     = $stock_info->is_stock_currency;
+        $price_item         = $stock_data['product_cost'];
+        $stock_currency     = $stock_data['product_currency'];
         $exchange_rate      = 0;
         $op_product_cost    = 0;
         
@@ -1329,9 +1313,6 @@ class OrdersController extends Controller
                 $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
                 $op_product_cost    = $price_item * $exchange_rate;
             }
-            
-               
-            
         }
         else
         {
@@ -1353,16 +1334,16 @@ class OrdersController extends Controller
             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
             $sec_cur_product_cost= $price_item * $exchange_rate;
         }
-        $row_array['product_cost']      = $op_product_cost;
-        $row_array['sec_cur_product_cost']      = $sec_cur_product_cost;
-        $row_array['product_quantity']  = $pos_quantity;
+        $stock_data['product_cost']              = $op_product_cost;
+        $stock_data['sec_cur_product_cost']      = $sec_cur_product_cost;
+        $stock_data['product_quantity']          = $pos_quantity;
         
         
         $total_cost_row = $op_product_cost * $pos_quantity;
         
-        $result_array['is_error']        = 0;
-        $result_array['row_array']       = $row_array;
-        $result_array['total_cost_row']  = $total_cost_row;
+        $result_array['is_error']           = 0;
+        $result_array['row_data']           = $stock_data;
+        $result_array['total_cost_row']     = $total_cost_row;
         return Response()->json($result_array);
     }
 }

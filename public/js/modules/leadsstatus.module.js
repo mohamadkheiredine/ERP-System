@@ -15,73 +15,6 @@ leadstatus_module = {
             },
 	        success : function(response){
 	        	$('#LstLeadStatuses').html(response.display);
-				$.ls_datatable = $('.m_datatable').mDatatable({
-					// layout definition
-					layout: {
-						theme: 'default', // datatable theme
-						class: '', // custom wrapper class
-						scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-						// height: 450, // datatable's body's fixed height
-						footer: false // display/hide footer
-					},
-					
-					// column sorting
-					sortable: true,
-					
-					pagination: true,
-					
-					search: {
-						input: $('#generalSearch')
-					},
-					columns : [
-        				{
-        					field: "#",
-        			        title: "#", 
-        			        sortable: false,
-        			        width: 40,
-        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-        				},
-        				{
-        					field: 'ID',
-        					title: "id", 
-        					type: 'number',  
-    				        sortable: true,
-    				        width: 40, 
-        				},
-        				{
-        					field: 'Status Name',
-        					title: "Status Name", 
-        					type: 'text',  
-    				        sortable: true,
-    				        width: 250, 
-        				},
-        				{
-        					field: 'Depend Status',
-        					title: "Depend Status", 
-        					type: 'text',  
-    				        sortable: true,
-    				        width: 250, 
-        				},
-        				{
-        					field: "edit",
-        			        title: "edit", 
-        			        sortable: false,
-        			        width: 40
-        				},
-        				{
-        					field: "Delete",
-        			        title: "delete", 
-        			        sortable: false,
-        			        width: 40
-        				}
-        			]
-					
-					// inline and bactch editing(cooming soon)
-					// editable: false,
-				});
-				
-				$("a[id*=EDIT_STATUS_]").on('click',leadstatus_module.EditStatusInfo);
-				$("a[id*=DELETE_STATUS_]").on('click',leadstatus_module.DeleteStatusData);
 	        }
 	    });
 	},
@@ -185,8 +118,7 @@ leadstatus_module = {
 			            type : "POST",
 			            success : function(response){
 			              if(response.is_error == 0)
-			              {
-			            	  $.ls_datatable.destroy();
+			              { 
 			            	  leadstatus_module.DisplayListLeadStatus();
 			              }
 			            }

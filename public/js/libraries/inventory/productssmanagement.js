@@ -19,5 +19,6 @@ $(function(){
 		products_module.DisplayListProducts();
 	});
 	$('#DUPLICATE_PRODUCT').on('click',products_module.DuplicateProduct);
+	 $(".dropdown-item").on("click",products_module.QuickActions);
 	$('select').select2();
 })
