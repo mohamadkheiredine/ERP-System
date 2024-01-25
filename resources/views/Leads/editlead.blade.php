@@ -26,79 +26,34 @@ Page Description :
 @extends('layouts.layout',['page_title' => "Leads Management" ])
 
 @section('themes')
-<style>
-th{
-    cursor: pointer;
-}
-#ModelPopUp{
-	width:800px;
-}
-
-</style>
-<link rel="stylesheet" type="text/css" href="{{ url('default/assets/plugins/jquery-comments/css/jquery-comments.css') }}" />
-	<link rel="stylesheet" href="{{ url('default/assets/plugins/scheduler/codebase/dhtmlxscheduler_material.css?v=5.2.2') }}" type="text/css" charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="{{ url('default/assets/plugins/jquery-comments/css/jquery-comments.css') }}" />
+	<link rel="stylesheet" href="{{ url('default/assets/plugins/scheduler/codebase/dhtmlxscheduler_material.css?v=5.2.2') }}" type="text/css" charset="utf-8" />
 @endsection
 @section('plugins')
-
 	<script src="{{ url('default/assets/plugins/scheduler/codebase/dhtmlxscheduler.js?v=5.2.2') }}" type="text/javascript" charset="utf-8"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
-<script type="text/javascript" src="{{ url('default/assets/plugins/jquery-comments/js/jquery-comments.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/modules/contacts.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/crm/savelead.js') }}"></script>
-
-
-
-
+    <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
+    <script type="text/javascript" src="{{ url('default/assets/plugins/jquery-comments/js/jquery-comments.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/modules/contacts.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/libraries/crm/savelead.js') }}"></script>
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">{{ "Manage Lead " .  $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-											<li class="m-nav__item">
-												<a data-action_type="CONVERT_TO_ACCOUNT"  href="#" class="m-nav__link quickactions">
-													 <i class="m-nav__link-icon flaticon-business"></i>
-													<span class="m-nav__link-text">
-														Convert to Account
-													</span>
-												</a>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_lead" id="FORM_SAVE_LEAD">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">{{ "Manage Lead " .  $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_lead" id="FORM_SAVE_LEAD">
                 <div class="form-body">
                      <span id="hidden_fields">
                       {!! csrf_field() !!}
@@ -364,24 +319,23 @@ th{
                     </div>
                 </div>
             </form>
-	</div>
-</div>
-<!--begin:: Upload Files Modal-->
-<div class="modal fade" id="UploadFiles" tabindex="-1" role="dialog" aria-labelledby="UploadFilesModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="UploadFilesModalLabel">
-					Upload Lead Files
-				</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">
-						&times;
-					</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form name="frm_lead_dropzone" id="FRM_LEAD_DROPZONE" class="dropzone" action="{{ url('request/upload/lead_files') }}" method="post"  enctype="multipart/form-data"> 
+    </div>
+ </div> 
+ <div class="modal fade" tabindex="-1" id="UploadFiles">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload Lead Files</h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+              <form name="frm_lead_dropzone" id="FRM_LEAD_DROPZONE" class="dropzone" action="{{ url('request/upload/lead_files') }}" method="post"  enctype="multipart/form-data"> 
 				    {!! csrf_field() !!}
 				    <input type="hidden" name="lead_id" id="LEAD_ID" value="{{ $lead_info->cl_id }}" />
 				 	<div class="row">
@@ -391,35 +345,37 @@ th{
 				 		</div>
 				 	</div>
 				</form>
-			</div>
-			<div class="modal-footer">
-				<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
+
+            </div>
+
+            <div class="modal-footer">
+                <button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
 					Close
 				</button>
 				<button type="button" name="btn_upload_file" id="BTN_UPLOAD_FILE" class="btn btn-primary">
 					Upload File
 				</button>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
-<!--end:: Upload Files Modal-->
-<!--begin:: Insert Items Modal-->
-<div class="modal fade" id="InserItems" tabindex="-1" role="dialog" aria-labelledby="InserItemsModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="InserItemsModalLabel">
-					Insert Items
-				</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">
-						&times;
-					</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form name="frm_lead_insert_items" id="FRM_INSERT_ITEMS" method="post"  enctype="multipart/form-data"> 
+
+
+ <div class="modal fade" tabindex="-1" id="InserItems">
+    <div class="modal-dialog">
+        <div class="modal-content">
+           <div class="modal-header">
+                <h3 class="modal-title">Insert items</h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+            <form name="frm_lead_insert_items" id="FRM_INSERT_ITEMS" method="post"  enctype="multipart/form-data"> 
 				    {!! csrf_field() !!}
 				    <input type="hidden" name="lead_id" id="LEAD_ID" value="{{ $lead_info->cl_id }}" />
 				 	<div class="row">
@@ -446,17 +402,17 @@ th{
 				 		</div>
 				 	</div>
 				</form>
-			</div>
-			<div class="modal-footer">
-				<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
+            </div>
+
+            <div class="modal-footer">
+               	<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
 					Close
 				</button>
 				<button type="button" name="btn_insert_items" id="BTN_INSERT_ITEMS" class="btn btn-primary">
 					Insert Items
 				</button>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
-<!--end:: Insert Items Modal-->
 @endsection

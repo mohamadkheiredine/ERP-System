@@ -33,59 +33,31 @@ th{
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text"> Add Stock </h3>
-									</div>
-								</div>
-								<div class="m-portlet__head-tools">
-									<ul class="m-portlet__nav">
-										<li class="m-portlet__nav-item">
-											<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-												<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-													<i class="la la-ellipsis-h m--font-brand"></i>
-												</a>
-												<div class="m-dropdown__wrapper">
-													<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-													<div class="m-dropdown__inner">
-														<div class="m-dropdown__body">
-															<div class="m-dropdown__content">
-																<ul class="m-nav">
-																	<li class="m-nav__section m-nav__section--first">
-																		<span class="m-nav__section-text">
-																			Quick Actions
-																		</span>
-																	</li>
-																	@if($product_info->Category->pc_use_serial_number == 1)
-																	<li class="m-nav__item">
-                        												<a href="#" id="AddUnit" class="m-nav__link">
-                        													<i class="m-nav__link-icon flaticon-chat-1"></i>
-                        													<span class="m-nav__link-text">
-                        														Add Unit Ids Stock
-                        													</span>
-                        												</a>
-                        											</li>
-                        											@endif
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-                                     <form name="frm_save_socket" id="FORM_SAVE_SOCKET">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add New Stock Data</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              @if($product_info->Category->pc_use_serial_number == 1) 
+               <li><a href="#" id="AddUnit" class="dropdown-item"> <i class="fa-solid fa-plus fa-lg"></i> Add Unit Ids Stock </a></li>
+              @endif
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    
+    <form name="frm_save_socket" id="FORM_SAVE_SOCKET">
                                         <div class="form-body">
                                              <span id="hidden_fields">
                                                {!! csrf_field() !!}
                                                 <input type="hidden" name="p_id" id="P_ID" value="{{ $p_id }}" />
                                                 <input type="hidden" name="serial_ids" value="" />
+                                                <input type="hidden" name="stock_barecode" value="{{ $rand_barcode }}" />
                                                <input type="hidden" name="company_currency" value="{{ session('company_currency') }}" />
                                             </span>
                                             <div class="alert alert-success" style="display:none">
@@ -96,28 +68,26 @@ th{
                                     			</div>
                                             <div class="row">
                                             	<div class="col-md-12">
-                                            		<div class="row">
+                                            		<div class="row"> 
                                             			<div class="col-md-4">
-                                            				 <img id="BARECODE_IMAGE" src="" alt="barcode" height="50" width="150"   /><br/>
-                                                 			<label class="BareCodeLabel"></label>
-                                            			</div>
+                                            				 <img id="BARECODE_IMAGE" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150"   /><br/>
+                                                 			<label class="BareCodeLabel">{{ $rand_barcode }}</label>
+                                            			</div> 
                                             			<div class="col-md-4">
-                                            				 <img id="PRODUCT_PROFILE" src=""  style="max-width: 200px; height: 150px;width:auto;"  /><br/>
+                                            				
                                             			</div>
                                             			<div class="col-md-4">
                                             				 <label>Initial Currency : </label><br/>
                                             				 <span class="IntialCurrency">{{ $currency_array[ $company_currency ]['cc_currency_code'] . " - " . $currency_array[ $company_currency ]['cc_currency_name'] }}</span>
                                             			</div>
                                             		</div>
-                                            	</div>
-                                            	@if($product_info->Category->pc_use_serial_number == 1)
+                                            	</div> 
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock barecode </label>
-                                                            <input type="text" maxlength="50" name="is_stock_uid" id="IS_STOCK_UID" class="form-control" required="required"   value="{{ $product_info->p_barcode }}" />
+                                                            <input type="text" maxlength="50" name="is_stock_barcode" id="IS_STOCK_BARCODE" class="form-control" required="required"   value="{{ $rand_barcode }}" />
                                                     </div>
-                                                </div>
-                                                @endif
+                                                </div> 
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Supplier </label>
@@ -217,7 +187,7 @@ th{
                                             </div>
                                         </div>
                                     </form>
-							</div>
-					   </div>
+    </div>
+ </div>
 
 @endsection

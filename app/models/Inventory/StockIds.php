@@ -23,12 +23,20 @@ use Illuminate\Database\Eloquent\Model;
 class StockIds extends Model
 {
     protected   $table          = 'inventory_stock_ids';
-    public      $timestamps     = false; 
+    public      $timestamps     = false;
+    protected   $primaryKey     = "si_id";
 
     
     
     public function stock()
     { 
-        return $this->hasOne('App\Models\Inventory\Stocks', 'is_id','si_stock_id');
+        return $this->hasOne('App\Models\Inventory\Stocks', 'is_id','fk_stock_id');
+    }
+    
+    
+    
+    public function Product()
+    {
+        return $this->hasOne('App\Models\Inventory\Products', 'p_id','fk_product_id');
     }
 }

@@ -80,6 +80,8 @@ class ProductStocksController extends Controller
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $rand_barcode                 = rand(10000000,99999999999);
+        $bar_code_png                 = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
         
         $data = array(
             "lst_warehouse" => $lst_warehouse,
@@ -89,7 +91,9 @@ class ProductStocksController extends Controller
             "currency_array" => $currency_array,
             "company_currency" => $company_currency,
             "secondary_currency" => $secondary_currency,
-            "lst_suppliers" => $lst_suppliers
+            "lst_suppliers" => $lst_suppliers,
+            "bar_code_png" => $bar_code_png,
+            "rand_barcode" => $rand_barcode
         );
         return Response()->view("stocks.addstock",$data);
     }
@@ -510,14 +514,18 @@ class ProductStocksController extends Controller
         foreach ($serial_ids_array as $key => $serial_id) 
         {
             
-            $count_serial_number_rows = StockIds::whereSiStockId($is_id)->whereSiStockUid($serial_id)->count();
+            $count_serial_number_rows = StockIds::whereFkStockId($is_id)->whereSiStockUid($serial_id)->count();
             if($count_serial_number_rows > 0)
                 continue;
-            
-            $stock_ids = new StockIds();
-            $stock_ids->si_stock_id     = $is_id;
-            $stock_ids->si_stock_uid    = $serial_id;
-            $stock_ids->save();
+            if($serial_id != "")
+            {
+                $stock_ids = new StockIds();
+                $stock_ids->fk_product_id     = $p_id;
+                $stock_ids->fk_stock_id     = $is_id;
+                $stock_ids->si_stock_uid    = $serial_id;
+                $stock_ids->save();
+            }
+
         }
         
         $at_id  = $stock->is_trans_id;

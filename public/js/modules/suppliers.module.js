@@ -17,84 +17,14 @@ suppliers_module = {
 	            type : "POST",
 	            success : function(response){
 	            	$('#LstSuppliers').html(response.display);
-	            	$.suppliers_datatable = $('.m_datatable').mDatatable({
-
-	        			// layout definition
-	        			layout: {
-	        				theme: 'default', // datatable theme
-	        				class: '', // custom wrapper class
-	        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-	        				// height: 450, // datatable's body's fixed height
-	        				footer: false // display/hide footer
-	        			},
-
-	        			// column sorting
-	        			sortable: true,
-
-	        			pagination: true,
-
-	        			search: {
-	        				input: $('#generalSearch')
-	        			},
-	        			columns : [
-	        				{
-	        					field: "#",
-	        			        title: "#", 
-	        			        sortable: false,
-	        			        width: 40,
-	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
-	        				},
-	        				{
-	        					field : 'Pruchase Account',
-	        					type : 'text',
-	        					 sortable: true,
-		        			     width: 250,
-	        				},
-	        				{
-	        					field : 'Sales Account',
-	        					type : 'text',
-	        					 sortable: true,
-		        			     width: 250,
-	        				},
-	        				{
-	        					field: 'Supplier Name',
-	        					type: 'text',
-	        					 sortable: true,
-		        			     width: 250,
-	        				},
-	        				{
-	        					field: 'Supplier Phone',
-	        					type: 'text',
-	        					 sortable: true,
-		        			     width: 250,
-	        				},
-	        				{
-	        					field: "edit",
-	        			        title: "edit", 
-	        			        sortable: false,
-	        			        width: 40
-	        				},
-	        				{
-	        					field: "delete",
-	        			        title: "delete", 
-	        			        sortable: false,
-	        			        width: 40
-	        				}
-	        			]
-
-	        			// inline and bactch editing(cooming soon)
-	        			// editable: false,
-	        		});
 	            	 $('.group-checkable').change(function() {
-	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-	                        var checked = $(this).prop("checked");
-	                        $(set).each(function() {
-	                            $(this).prop("checked", checked);
-	                        });
-	                        $.uniform.update(set);
-	                    });
-	            	$("a[id*=EDIT_SUPPLIER_]").on("click",suppliers_module.EditSupplierInfo);
-	            	$("a[id*=DELETE_SUPPLIER_]").on("click",suppliers_module.DeleteSupplierInfo);
+                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                        var checked = $(this).prop("checked");
+                        $(set).each(function() {
+                            $(this).prop("checked", checked);
+                        });
+                        $.uniform.update(set);
+                    });
 	            }
 	        });
 		},

@@ -226,3 +226,73 @@ CHANGE COLUMN `so_delivery_date` `so_delivery_date` DATETIME NULL DEFAULT NULL ;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_selling_price` DECIMAL NULL DEFAULT 0 AFTER `is_price_item`;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_discount` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;
 ALTER TABLE `inventory_stocks` ADD COLUMN `is_vendor_price` DECIMAL(10,0) NULL DEFAULT 0 AFTER `is_selling_price`;
+
+
+ALTER TABLE `inventory_stock_ids` ADD COLUMN `si_stock_sold` TINYINT NULL DEFAULT 0 AFTER `si_stock_uid`;
+
+ALTER TABLE `acc_transaction_movements` ADD COLUMN `tm_transaction_date` DATE NULL DEFAULT NULL AFTER `tm_credit`, CHANGE COLUMN `tm_creation_date` `tm_creation_date` DATE NULL DEFAULT NULL ;
+
+ALTER TABLE `inventory_stock_ids` 
+DROP FOREIGN KEY `fk_si_stock_id`;
+ALTER TABLE `inventory_stock_ids` 
+ADD COLUMN `fk_product_id` INT NULL DEFAULT 0 AFTER `si_id`,
+ADD COLUMN `fk_stock_id` INT NULL DEFAULT 0 AFTER `fk_product_id`,
+CHANGE COLUMN `si_stock_id` `si_id` INT UNSIGNED NULL DEFAULT '0' ,
+ADD INDEX `idx_fk_product_id` USING BTREE (`fk_product_id`) INVISIBLE,
+ADD INDEX `idx_fk_stock_id` USING BTREE (`fk_stock_id`) VISIBLE;
+;
+ALTER TABLE `inventory_stock_ids` 
+ADD CONSTRAINT `fk_si_stock_id`
+  FOREIGN KEY (`si_id`)
+  REFERENCES `inventory_stocks` (`is_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+  
+  
+  
+  CREATE TABLE `inventory_warehouse_floors` (
+  `wf_id` MEDIUMINT NOT NULL AUTO_INCREMENT,
+  `fk_warehouse_id` SMALLINT NULL DEFAULT 0,
+  `fk_zone_id` SMALLINT NULL DEFAULT 0,
+  `wf_floor_title` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `wf_is_deleted` TINYINT NULL DEFAULT 0,
+  `wf_deleted_by` INT NULL DEFAULT 0,
+  PRIMARY KEY (`wf_id`),
+  INDEX `idx_wf_fk_warehouse_id` (`fk_warehouse_id` ASC) INVISIBLE,
+  INDEX `idx_wf_fk_zone_id` USING BTREE (`fk_zone_id`) VISIBLE,
+  CONSTRAINT `fk_wf_warehouse_id`
+    FOREIGN KEY (`fk_warehouse_id`)
+    REFERENCES =`inventory_warehouses` (`w_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_wf_zone_id`
+    FOREIGN KEY (`fk_zone_id`)
+    REFERENCES `inventory_warehouse_zones` (`wz_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+    
+    
+    ALTER TABLE `srm_supplier_quotations` CHANGE COLUMN `sq_date_submit` `sq_date_submit` DATE NULL DEFAULT NULL ,CHANGE COLUMN `sq_due_date` `sq_due_date` DATE NULL DEFAULT NULL ;
+    
+    ALTER TABLE `srm_supplier_quotations` DROP FOREIGN KEY `fk_bid_id`;
+	ALTER TABLE `srm_supplier_quotations` DROP COLUMN `fk_bid_id`,DROP INDEX `fk_bid_id_idx`;
+
+	
+	ALTER TABLE `srm_supplier_quotations` ADD COLUMN `sq_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `sq_user_id`;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_product_serial` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `sp_id`;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `fk_product_id` INT NULL DEFAULT 0 AFTER `sp_id`;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `fk_quotation_id` INT NULL DEFAULT 0 AFTER `fk_product_id`;
+	ALTER TABLE `inventory_stocks` ADD COLUMN `fk_floor_id` SMALLINT NULL DEFAULT 0 AFTER `is_supplier_id`;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_product_pruchase_price` DECIMAL NULL DEFAULT 0 AFTER `sp_product_price`,ADD COLUMN `sp_product_selling_price` DECIMAL NULL DEFAULT 0 AFTER `sp_product_pruchase_price`,ADD COLUMN `sp_product_wholesale_price` DECIMAL NULL DEFAULT 0 AFTER `sp_product_selling_price`,ADD COLUMN `sp_product_vendor_price` DECIMAL NULL DEFAULT 0 AFTER `sp_product_wholesale_price`,ADD COLUMN `sp_product_discount` DECIMAL NULL DEFAULT 0 AFTER `sp_product_vendor_price`;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_main_currency` SMALLINT NULL DEFAULT 0 AFTER `sp_product_currency`, CHANGE COLUMN `sp_product_serial` `sp_product_serial` VARCHAR(5000) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL ;
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_product_quantity` SMALLINT NULL DEFAULT 0 AFTER `sp_product_discount`;
+	
+	ALTER TABLE `inventory_stock_ids` DROP FOREIGN KEY `fk_si_stock_id`;
+	ALTER TABLE `inventory_stock_ids` CHANGE COLUMN `si_id` `si_id` INT NOT NULL AUTO_INCREMENT ,ADD PRIMARY KEY (`si_id`),DROP INDEX `fk_si_stock_id_idx` ;
+	ALTER TABLE `srm_supplier_quotations` ADD COLUMN `sq_invoice_number` VARCHAR(55) NULL DEFAULT NULL AFTER `sq_user_id`,ADD COLUMN `sq_container_number` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `sq_invoice_number`;
+	
+	
+	ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `sp_id`,ADD COLUMN `sp_zone_id` MEDIUMINT NULL DEFAULT 0 AFTER `sp_warehouse_id`,ADD COLUMN `sp_floor_id` MEDIUMINT NULL DEFAULT 0 AFTER `sp_zone_id`,ADD INDEX `idx_sp_warehouse_id` (`sp_warehouse_id` ASC) INVISIBLE,ADD INDEX `idx_sp_zone_id` (`sp_zone_id` ASC) INVISIBLE,ADD INDEX `idx_sp_floor_id` USING BTREE (`sp_floor_id`) VISIBLE;
+	ALTER TABLE `inventory_products` ADD COLUMN `fk_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `fk_pc_id`, ADD COLUMN `fk_zone_id` MEDIUMINT NULL DEFAULT '0' AFTER `fk_warehouse_id`, ADD COLUMN `fk_floor_id` MEDIUMINT NULL DEFAULT '0' AFTER `fk_zone_id`, ADD INDEX `idx_fk_zone_id` USING BTREE (`fk_zone_id`) VISIBLE, ADD INDEX `idx_fk_floor_id` USING BTREE (`fk_floor_id`) VISIBLE;
+	
+	ALTER TABLE `srm_supplier_quotations` ADD COLUMN `sq_trans_id` INT NULL DEFAULT 0 AFTER `sq_currency_id`,ADD COLUMN `sq_mov_id` INT NULL DEFAULT 0 AFTER `sq_trans_id`;

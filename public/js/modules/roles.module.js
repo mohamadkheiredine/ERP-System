@@ -16,32 +16,6 @@ roles_module = {
 	            },
 		        success : function(response){
 		            $('#ListRoleGirds').html(response.display);
-		            	$.roles_datatable = $('.m_datatable').mDatatable({
-						
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						},
-						
-						// inline and bactch editing(cooming soon)
-						// editable: false,
-					});
-		            	
-						$("a[id*=EDIT_ROLE_]").on('click',roles_module.EditRoleInfo);
-						$("a[id*=DELETE_ROLE_]").on('click',roles_module.DeleteRoleData);
 		        }
 		    });
 		},

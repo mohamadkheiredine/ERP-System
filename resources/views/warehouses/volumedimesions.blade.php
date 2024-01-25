@@ -30,7 +30,7 @@ Dimension of wwarehouse
                 </select>
             </div>
         </div>
-		<div class="col-md-12">
-              <button type="button" name="btn_draw_image" id="BTN_DRAW_IMAGE" class="btn btn-info" > Draw Image </button>
+		<div class="col-md-12"> 
+              <button type="button" name="btn_draw_image" id="BTN_DRAW_IMAGE" class="btn btn-info" > Draw Image </button> 
         </div>
 </div>

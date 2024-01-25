@@ -2,24 +2,46 @@ $(function(){
 	var fisical_year = getCookie('fisical_year');
 	$('input[name=fisical_year]').val(fisical_year);
 	transactions_module.DisplayListStatmentDetails();
-	$('input[name=start_date]').datepicker({ 
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
-	});
-	 $('input[name=end_date]').datepicker({ 
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	 new tempusDominus.TempusDominus(document.getElementById('START_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 }); 
+	});
+	 new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
+	}); 
 	 
 	 
 	 $("#LstAccountStatment").on('dblclick',".grouprow",function(){ 

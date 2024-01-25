@@ -58,9 +58,17 @@ class SuppliersCategoriesController extends Controller
     * @return unknown
     */
     public function DisplayList(Request $request)
-    {         
+    {   
+        $general_search = $request->input('general_search');
         $supplier_categories_array   = array();
-        $lst_supplier_categories     = SupplierCategories::whereScIsDeleted(0)->get();
+        $cat_obj = SupplierCategories::whereScIsDeleted(0);
+        
+        if(strlen($general_search) > 0)
+        {
+            $cat_obj = $cat_obj->where('sc_category_title','LIKE',"%" . $general_search . "%");
+        }
+        
+        $lst_supplier_categories     = $cat_obj->get();
         foreach ( $lst_supplier_categories as $key => $sc_info ) 
         {
             $supplier_categories_array[ $sc_info->sc_id ] =  $sc_info->sc_category_title;
@@ -105,8 +113,7 @@ class SuppliersCategoriesController extends Controller
     public function SaveSupplierCategoryInfo(Request $request)
     {
         $sc_id                      = $request->input('sc_id');
-        $fk_category_id             = $request->input('fk_category_id');
-        $sc_category_ref            = $request->input('sc_category_ref');
+        $fk_category_id             = $request->input('fk_category_id'); 
         $sc_category_title          = $request->input('sc_category_title');
         $sc_category_description    = $request->input('sc_category_description');
         
@@ -118,6 +125,8 @@ class SuppliersCategoriesController extends Controller
         {
             $SupplierCategories= SupplierCategories::find($sc_id);
         }
+        
+        $sc_category_ref = substr($sc_category_title,0,3) . "-" . rand(9,9999);
          
         $SupplierCategories->fk_category_id           = $fk_category_id;
         $SupplierCategories->sc_category_ref          = $sc_category_ref;

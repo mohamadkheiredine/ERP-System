@@ -13,2778 +13,6170 @@ Page Description :
 ***********************************************************/
 
 ?>
-<!DOCTYPE html>
-<html lang="en" >
-	<!-- begin::Head -->
-	<head>
+<html lang="en">
+	<!--begin::Head-->
+	<head><base href=""/>
+		<title>Enterprise Resource Planning - titan ERP</title>
 		<meta charset="utf-8" />
-		<title>
-			Enterprise Resource Planning
-		</title>
-		<meta name="description" content="Latest updates and statistic charts">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<!--begin::Web font -->
-		<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
-		<script>
-          WebFont.load({
-            google: {"families":["Poppins:300,400,500,600,700","Roboto:300,400,500,600,700"]},
-            active: function() {
-                sessionStorage.fonts = true;
-            }
-          });
-		</script>
-		<!--end::Web font -->
-        <!--begin::Base Styles -->
-        <!--begin::Page Vendors -->
-		<link href="{{ url('default/assets/vendors/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<link href="{{ url('css/app.css') }}" rel="stylesheet" type="text/css" />
-		<!--end::Page Vendors -->
-		<link href="{{ url('default/assets/vendors/base/vendors.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<link href="{{ url('default/assets/demo/default/base/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<!--end::Base Styles -->
-		<link rel="shortcut icon" href="{{ url('favicon.ico') }}" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-		
-		 @yield("themes")
+		<meta name="description" content="Enterprise Resource Planning" />
+		<meta name="keywords" content="ERP , CRM,Inventory, Products" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="Enterprise Resource Planning" />
+		<meta property="og:title" content="Enterprise Resource Planning - titan ERP" />
+		<meta property="og:url" content="" />
+		<meta property="og:site_name" content="titan ERP | " />
+		<link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<!--begin::Fonts(mandatory for all pages)-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<!--end::Fonts-->
+		<!--begin::Vendor Stylesheets(used for this page only)-->
+		<link href="{{ url('theme/style/src/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<link href="{{ url('theme/style/src/assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<!--end::Vendor Stylesheets-->
+		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+		<link href="{{ url('theme/style/src/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<link href="{{ url('theme/style/src/assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<link href="{{ url('theme/style/src/assets/css/custom.bundle.css') }}" rel="stylesheet" type="text/css" />
+			 @yield("themes")
+		<!--end::Global Stylesheets Bundle-->
+		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
 	</head>
-	<!-- end::Head -->
-    <!-- end::Body -->
-	<body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
-		 <span id="hidden_fields">
+	<!--end::Head-->
+	<!--begin::Body-->
+	<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-disabled">
+		<!--begin::Theme mode setup on page load-->
+		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
+		<!--end::Theme mode setup on page load-->
+		<!--begin::Main-->
+		<!--begin::Root-->
+		<div class="d-flex flex-column flex-root">
+			<!--begin::Page-->
+			<div class="page d-flex flex-row flex-column-fluid">
+				<!--begin::Aside-->
+				<div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="auto" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_toggle">
+					<!--begin::Logo-->
+					<div class="aside-logo flex-column-auto pt-10 pt-lg-20" id="kt_aside_logo">
+						<a href="{{ url('dashboard') }}">
+							<img alt="Logo" src="{{ session('company_logo') }}" class="h-20px" />
+						</a>
+					</div>
+					<!--end::Logo-->
+					<!--begin::Nav-->
+					<div class="aside-menu flex-column-fluid pt-0 pb-7 py-lg-10" id="kt_aside_menu">
+						<!--begin::Aside menu-->
+						<div id="kt_aside_menu_wrapper" class="w-100 hover-scroll-y scroll-ms d-flex" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer" data-kt-scroll-wrappers="#kt_aside, #kt_aside_menu" data-kt-scroll-offset="0">
+							<div id="kt_aside_menu" class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-400 menu-arrow-gray-400 fw-semibold fs-6 my-auto" data-kt-menu="true">
+								<!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item here show py-2">
+									<!--begin:Menu link-->
+									<a href="{{ url('dashboard') }}">
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="ki-duotone ki-home-2 fs-2x">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+										</span>
+									</span>
+									</a>
+									<!--end:Menu link-->
+									<!--begin:Menu sub--> 
+									<!--end:Menu sub-->
+								</div>
+								<!--end:Menu item-->
+								<!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-toolbox fa-lg" style="font-size: 20px"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Administration</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('administrator/users') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Users Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('administrator/usersteam') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">User Teams</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('administrator/roles') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Roles Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('system/companies') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Company Details</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('system/departments') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Departments</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('system/jobtitles') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Job Titles</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('system/jobroles') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Job Roles</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('system/employmenttype') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Employment type</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/daytypes') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Day types</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								<!--end:Menu item-->
+								<!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-sliders fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+        											<!--begin:Menu content-->
+        											<div class="menu-content">
+        												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Configuration</span>
+        											</div>
+        											<!--end:Menu content-->
+        										</div>
+        										<!--end:Menu item-->  
+        										 <div class="menu-item">
+        											<!--begin:Menu link-->
+        											<a class="menu-link" href="{{ url('administrator/config') }}">
+        												<span class="menu-bullet">
+        													<span class="bullet bullet-dot"></span>
+        												</span>
+        												<span class="menu-title">General Configuration</span>
+        											</a>
+        											<!--end:Menu link-->
+        										</div>
+        										
+        										<div class="menu-item">
+        											<!--begin:Menu link-->
+        											<a class="menu-link" href="#">
+        												<span class="menu-bullet">
+        													<span class="bullet bullet-dot"></span>
+        												</span>
+        												<span class="menu-title">Financial Configuration</span>
+        											</a>
+        											<!--end:Menu link-->
+        										</div>
+									 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+							@if($license_array->TIMESHEET_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-business-time fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1"> Timesheet Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/holidays') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title"> yearly holidays</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/holidayrequests') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Holiday Requests</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/generaltimesheetmanagement') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Manage Timesheet</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/onlineemployees') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Online Employees</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/transportationemployees') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Transportation Report</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+											<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('timesheet/holidayemployees') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Holidays Report</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+									@endif
+							@if($license_array->INVENTORY_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-boxes-stacked fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1"> Inventory & Stock Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/warehouses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title"> Warehouse Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/productcategories') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Products Categories</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/products') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Products</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/services') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Services</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/stocktransfer') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Stock Transfer Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+											<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/vendors') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Vendors Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+											<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('inventory/customers') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Customers Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+									@endif
+							@if($license_array->BANKING_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-building-columns fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1"> Banking Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('banking/financialaccount/addform') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">New Financial Account</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										   <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">List Bank Accounts</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('banking/entries/list') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">List Entries</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('banking/internaltransfer') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Internal Transfer</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if($license_array->PAYROLL_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-hryvnia-sign fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1"> PayRoll Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('payroll/employeespayroll') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Employees PayRoll</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if(isset($license_array->SRM_MODULE) && $license_array->SRM_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-end" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-truck-field fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1"> Supplier Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('srm/suppliercategories') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Supplier Categories</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('srm/supplierstatuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Supplier Statuses</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('srm/suppliers') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Suppliers Management</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('srm/bidding/quotations') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Supplier Purchase Invoice</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if($license_array->ACCOUNTING_MODULE == 1)
+								
+								<!--end:Menu item-->
+								<!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-money-bill fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Accounting Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+											<!--begin:Menu link-->
+											<span class="menu-link">
+												<span class="menu-icon">
+													<i class="fa-solid fa-share fa-lg"></i>
+												</span>
+												<span class="menu-title">Setup</span>
+												<span class="menu-arrow"></span>
+											</span>
+											<!--end:Menu link-->
+											<!--begin:Menu sub-->
+											<div class="menu-sub menu-sub-accordion">
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/chartofaccounts') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Chart of Account</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/accountingjournals') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Accounting journals</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/personalizedgroups') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Personalized groups</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/defaultaccounts') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Default Accounts</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/vataccounts') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">VAT & TAX Accounts</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/exchangerates') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Exchange Rates</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+												<!--begin:Menu item-->
+												<div class="menu-item">
+													<!--begin:Menu link-->
+													<a class="menu-link" href="{{ url('accounting/openingvoucher') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+														<span class="menu-title">Opening Voucher</span>
+													</a>
+													<!--end:Menu link-->
+												</div>
+												<!--end:Menu item-->
+											</div>
+											<!--end:Menu sub-->
+										</div>
+										
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('accounting/dashboard') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Dashboard</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('accounting/ledger') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Ledger</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('accounting/accountstatmentdetails') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Account Statment details</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+									</div>
+									<!--end:Menu sub-->
+								</div>
+							@endif
+							@if($license_array->BILLING_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-coins fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown px-2 py-4 w-200px w-lg-225px mh-75 overflow-auto">
+    										<div class="menu-item">
+    											<!--begin:Menu content-->
+    											<div class="menu-content">
+    												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Billing Management</span>
+    											</div>
+    											<!--end:Menu content-->
+    										</div>
+    										<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/paymenttypes') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Payment Types</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    										<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('sales/orders') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Orders</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    										<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/invoices') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Invoices</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    										<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/receipts') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Receipts</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/internaltransfers') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Internal Transfers</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/vouchers') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Vouchers</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('billing/journalvouchers') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Journal Vouchers</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div>  
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Bank Accounts</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div> 
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('crm/services') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Services</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div> 
+    											<div class="menu-item">
+    											<!--begin:Menu link-->
+    											<a class="menu-link" href="{{ url('inventory/customers') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+    												<span class="menu-title">Customers</span>
+    											</a>
+    											<!--end:Menu link-->
+    										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if($license_array->MANUFACTURING_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="ki-outline ki-wrench fs-2x"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">  MRP Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('mrp/billofmaterial') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">BILL of Material</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if($license_array->PRODUCTION_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-hands-holding-circle fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">  Production Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('production/machines') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Production Schedule</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('production/planstatus') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Plan Status</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('production/planning') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Production Plans</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Quality Control</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+
+							@endif
+							@if($license_array->PROJECTS_MODULE == 1)
+
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-diagram-project fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Project Management</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('pm/projects/types') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Project Types</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('projects/statuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Project Status</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Job Status</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+							@endif
+							@if($license_array->SALES_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-universal-access fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Sales</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('sales/orderstatus') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Order Status</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('sales/orders') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Orders</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+									</div>
+									<!--end:Menu sub-->
+								</div>
+									@endif
+							@if($license_array->CRM_MODULE == 1)
+								
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-headset fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">CRM Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Dashboard</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('leads/status') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Lead Statuses</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/leads') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Leads</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/activities') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Activities</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/clientcategories') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Client Categories</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/clients') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Clients</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/contacts') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Contacts</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/servicecategories') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Service Categories</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/services') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Services</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('crm/accounts/deals') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Deals</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								
+								@endif
+							@if($license_array->SHIPMENT_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-truck-fast fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Shipping Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('operation/statuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Operation Statuses</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('shipments/shipmentoperations') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Shipment Operations</span>
+											</a>
+											<!--end:Menu link-->
+										</div>  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('shipment/maptracker') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Map Trackers</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
+
+								@endif
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-paint-roller fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Maintenance Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('maintenance/jobstatus') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Job Status</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('maintenance/jobs') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Jobs</span>
+											</a>
+											<!--end:Menu link-->
+										</div>    
+									</div>
+									<!--end:Menu sub-->
+								</div>
+
+								
+								@if($license_array->LOGISTICS_MODULE == 1)
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-paint-roller fa-xl"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+        								 <div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">Logistics Module</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->  
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('logistics/vehicules') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Vehicules</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+										 <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('logistics/shipmentcompanies') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Shipment Companies</span>
+											</a>
+											<!--end:Menu link-->
+										</div>    
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								@endif
+								
+							</div>
+						</div>
+						<!--end::Aside menu-->
+					</div>
+					<!--end::Nav-->
+					<!--begin::Footer-->
+					<div class="aside-footer flex-column-auto pb-5 pb-lg-10" id="kt_aside_footer">
+						<!--begin::Menu-->
+						<div class="d-flex flex-center w-100 scroll-px" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-dismiss="click" title="Quick actions">
+							<button type="button" class="btn btn-custom" data-kt-menu-trigger="click" data-kt-menu-overflow="true" data-kt-menu-placement="top-start">
+								<i class="ki-duotone ki-entrance-left fs-2x">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</button>
+							<!--begin::Menu 2-->
+							<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<div class="menu-content fs-6 text-dark fw-bold px-3 py-4">Quick Actions</div>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu separator-->
+								<div class="separator mb-3 opacity-75"></div>
+								<!--end::Menu separator-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link px-3">New Ticket</a>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link px-3">New Customer</a>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+									<!--begin::Menu item-->
+									<a href="#" class="menu-link px-3">
+										<span class="menu-title">New Group</span>
+										<span class="menu-arrow"></span>
+									</a>
+									<!--end::Menu item-->
+									<!--begin::Menu sub-->
+									<div class="menu-sub menu-sub-dropdown w-175px py-4">
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3">Admin Group</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3">Staff Group</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3">Member Group</a>
+										</div>
+										<!--end::Menu item-->
+									</div>
+									<!--end::Menu sub-->
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link px-3">New Contact</a>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu separator-->
+								<div class="separator mt-3 opacity-75"></div>
+								<!--end::Menu separator-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<div class="menu-content px-3 py-3">
+										<a class="btn btn-primary btn-sm px-4" href="#">Generate Reports</a>
+									</div>
+								</div>
+								<!--end::Menu item-->
+							</div>
+							<!--end::Menu 2-->
+						</div>
+						<!--end::Menu-->
+					</div>
+					<!--end::Footer-->
+				</div>
+				<!--end::Aside-->
+				<!--begin::Wrapper-->
+				<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+					<!--begin::Header tablet and mobile-->
+					<div class="header-mobile py-3">
+						<!--begin::Container-->
+						<div class="container d-flex flex-stack">
+							<!--begin::Mobile logo-->
+							<div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
+								<a href="../../demo9/dist/index.html">
+									<img alt="Logo" src="assets/media/logos/demo9.svg" class="h-35px" />
+								</a>
+							</div>
+							<!--end::Mobile logo-->
+							<!--begin::Aside toggle-->
+							<button class="btn btn-icon btn-active-color-primary me-n4" id="kt_aside_toggle">
+								<i class="ki-duotone ki-abstract-14 fs-2x">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</button>
+							<!--end::Aside toggle-->
+						</div>
+						<!--end::Container-->
+					</div>
+					<!--end::Header tablet and mobile-->
+					<!--begin::Header-->
+					<div id="kt_header" class="header py-6 py-lg-0" data-kt-sticky="true" data-kt-sticky-name="header" data-kt-sticky-offset="{lg: '300px'}">
+						<!--begin::Container-->
+						<div class="header-container container-xxl">
+							<!--begin::Page title-->
+							<div class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-20 py-3 py-lg-0 me-3">
+								<!--begin::Heading-->
+								<h1 class="d-flex flex-column text-dark fw-bold my-1">
+									<span class="text-white fs-1">{{ $page_title }}</span>
+									<small class="text-gray-600 fs-6 fw-normal pt-2"></small>
+								</h1>
+								<!--end::Heading-->
+							</div>
+							<!--end::Page title=-->
+							<!--begin::Wrapper-->
+							<div class="d-flex align-items-center flex-wrap">
+							 <span id="hidden_fields">
             <input type="hidden" name="base_url" id="BASE_URL" value="{{ url('/') }}" />
             {!! csrf_field() !!}
         </span>
-		<!-- begin:: Page -->
-		<div class="m-grid m-grid--hor m-grid--root m-page">
-			<!-- BEGIN: Header -->
-			<header class="m-grid__item    m-header "  data-minimize-offset="200" data-minimize-mobile-offset="200" >
-				<div class="m-container m-container--fluid m-container--full-height">
-					<div class="m-stack m-stack--ver m-stack--desktop">
-						<!-- BEGIN: Brand -->
-						<div class="m-stack__item m-brand  m-brand--skin-dark ">
-							<div class="m-stack m-stack--ver m-stack--general">
-								<div class="m-stack__item m-stack__item--middle m-brand__logo">
-									<a href="{{ url('dashboard') }}" class="m-brand__logo-wrapper">
-										<img alt="" style="width:100px;" src="{{ session('company_logo') }}"/>
-									</a>
+								<!--begin::Search-->
+								<div class="header-search py-3 py-lg-0 me-3">
+									<!--begin::Search-->
+									<div id="kt_header_search" class="header-search d-flex align-items-center w-lg-250px" data-kt-search-keypress="true" data-kt-search-min-length="2" data-kt-search-enter="enter" data-kt-search-layout="menu" data-kt-search-responsive="false" data-kt-menu-trigger="auto" data-kt-menu-permanent="true" data-kt-menu-placement="bottom-end">
+										<!--begin::Tablet and mobile search toggle-->
+										<div data-kt-search-element="toggle" class="search-toggle-mobile d-flex d-lg-none align-items-center">
+											<div class="d-flex">
+												<i class="ki-duotone ki-magnifier fs-1">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+											</div>
+										</div>
+										<!--end::Tablet and mobile search toggle-->
+										<!--begin::Form-->
+										<form data-kt-search-element="form" class="w-100 position-relative" autocomplete="off">
+										
+											 
+											 
+										</form>
+										<!--end::Form-->
+										<!--begin::Menu-->
+										<div data-kt-search-element="content" class="menu menu-sub menu-sub-dropdown py-7 px-7 overflow-hidden w-300px w-md-350px">
+											<!--begin::Wrapper-->
+											<div data-kt-search-element="wrapper">
+												<!--begin::Recently viewed-->
+												<div data-kt-search-element="results" class="d-none">
+													<!--begin::Items-->
+													<div class="scroll-y mh-200px mh-lg-350px">
+														<!--begin::Category title-->
+														<h3 class="fs-5 text-muted m-0 pb-5" data-kt-search-element="category-title">Users</h3>
+														<!--end::Category title-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<img src="assets/media/avatars/300-6.jpg" alt="" />
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Karina Clark</span>
+																<span class="fs-7 fw-semibold text-muted">Marketing Manager</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<img src="assets/media/avatars/300-2.jpg" alt="" />
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Olivia Bold</span>
+																<span class="fs-7 fw-semibold text-muted">Software Engineer</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<img src="assets/media/avatars/300-9.jpg" alt="" />
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Ana Clark</span>
+																<span class="fs-7 fw-semibold text-muted">UI/UX Designer</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<img src="assets/media/avatars/300-14.jpg" alt="" />
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Nick Pitola</span>
+																<span class="fs-7 fw-semibold text-muted">Art Director</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<img src="assets/media/avatars/300-11.jpg" alt="" />
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Edward Kulnic</span>
+																<span class="fs-7 fw-semibold text-muted">System Administrator</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Category title-->
+														<h3 class="fs-5 text-muted m-0 pt-5 pb-5" data-kt-search-element="category-title">Customers</h3>
+														<!--end::Category title-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<img class="w-20px h-20px" src="assets/media/svg/brand-logos/volicity-9.svg" alt="" />
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Company Rbranding</span>
+																<span class="fs-7 fw-semibold text-muted">UI Design</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<img class="w-20px h-20px" src="assets/media/svg/brand-logos/tvit.svg" alt="" />
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Company Re-branding</span>
+																<span class="fs-7 fw-semibold text-muted">Web Development</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<img class="w-20px h-20px" src="assets/media/svg/misc/infography.svg" alt="" />
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Business Analytics App</span>
+																<span class="fs-7 fw-semibold text-muted">Administration</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<img class="w-20px h-20px" src="assets/media/svg/brand-logos/leaf.svg" alt="" />
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">EcoLeaf App Launch</span>
+																<span class="fs-7 fw-semibold text-muted">Marketing</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<img class="w-20px h-20px" src="assets/media/svg/brand-logos/tower.svg" alt="" />
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column justify-content-start fw-semibold">
+																<span class="fs-6 fw-semibold">Tower Group Website</span>
+																<span class="fs-7 fw-semibold text-muted">Google Adwords</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Category title-->
+														<h3 class="fs-5 text-muted m-0 pt-5 pb-5" data-kt-search-element="category-title">Projects</h3>
+														<!--end::Category title-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-notepad fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																		<span class="path4"></span>
+																		<span class="path5"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<span class="fs-6 fw-semibold">Si-Fi Project by AU Themes</span>
+																<span class="fs-7 fw-semibold text-muted">#45670</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-frame fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																		<span class="path4"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<span class="fs-6 fw-semibold">Shopix Mobile App Planning</span>
+																<span class="fs-7 fw-semibold text-muted">#45690</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-message-text-2 fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<span class="fs-6 fw-semibold">Finance Monitoring SAAS Discussion</span>
+																<span class="fs-7 fw-semibold text-muted">#21090</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<a href="#" class="d-flex text-dark text-hover-primary align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-profile-circle fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<span class="fs-6 fw-semibold">Dashboard Analitics Launch</span>
+																<span class="fs-7 fw-semibold text-muted">#34560</span>
+															</div>
+															<!--end::Title-->
+														</a>
+														<!--end::Item-->
+													</div>
+													<!--end::Items-->
+												</div>
+												<!--end::Recently viewed-->
+												<!--begin::Recently viewed-->
+												<div class="" data-kt-search-element="main">
+													<!--begin::Heading-->
+													<div class="d-flex flex-stack fw-semibold mb-4">
+														<!--begin::Label-->
+														<span class="text-muted fs-6 me-2">Recently Searched:</span>
+														<!--end::Label-->
+														<!--begin::Toolbar-->
+														<div class="d-flex" data-kt-search-element="toolbar">
+															<!--begin::Preferences toggle-->
+															<div data-kt-search-element="preferences-show" class="btn btn-icon w-20px btn-sm btn-active-color-primary me-2 data-bs-toggle=" title="Show search preferences">
+																<i class="ki-duotone ki-setting-2 fs-2">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</div>
+															<!--end::Preferences toggle-->
+															<!--begin::Advanced search toggle-->
+															<div data-kt-search-element="advanced-options-form-show" class="btn btn-icon w-20px btn-sm btn-active-color-primary me-n1" data-bs-toggle="tooltip" title="Show more search options">
+																<i class="ki-duotone ki-down fs-2"></i>
+															</div>
+															<!--end::Advanced search toggle-->
+														</div>
+														<!--end::Toolbar-->
+													</div>
+													<!--end::Heading-->
+													<!--begin::Items-->
+													<div class="scroll-y mh-200px mh-lg-325px">
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-laptop fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">BoomApp by Keenthemes</a>
+																<span class="fs-7 text-muted fw-semibold">#45789</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-chart-simple fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																		<span class="path4"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">"Kept API Project Meeting</a>
+																<span class="fs-7 text-muted fw-semibold">#84050</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-chart fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">"KPI Monitoring App Launch</a>
+																<span class="fs-7 text-muted fw-semibold">#84250</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-chart-line-down fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">Project Reference FAQ</a>
+																<span class="fs-7 text-muted fw-semibold">#67945</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-sms fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">"FitPro App Development</a>
+																<span class="fs-7 text-muted fw-semibold">#84250</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-bank fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">Shopix Mobile App</a>
+																<span class="fs-7 text-muted fw-semibold">#45690</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+														<!--begin::Item-->
+														<div class="d-flex align-items-center mb-5">
+															<!--begin::Symbol-->
+															<div class="symbol symbol-40px me-4">
+																<span class="symbol-label bg-light">
+																	<i class="ki-duotone ki-chart-line-down fs-2 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</div>
+															<!--end::Symbol-->
+															<!--begin::Title-->
+															<div class="d-flex flex-column">
+																<a href="#" class="fs-6 text-gray-800 text-hover-primary fw-semibold">"Landing UI Design" Launch</a>
+																<span class="fs-7 text-muted fw-semibold">#24005</span>
+															</div>
+															<!--end::Title-->
+														</div>
+														<!--end::Item-->
+													</div>
+													<!--end::Items-->
+												</div>
+												<!--end::Recently viewed-->
+												<!--begin::Empty-->
+												<div data-kt-search-element="empty" class="text-center d-none">
+													<!--begin::Icon-->
+													<div class="pt-10 pb-10">
+														<i class="ki-duotone ki-search-list fs-4x opacity-50">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</div>
+													<!--end::Icon-->
+													<!--begin::Message-->
+													<div class="pb-15 fw-semibold">
+														<h3 class="text-gray-600 fs-5 mb-2">No result found</h3>
+														<div class="text-muted fs-7">Please try again with a different query</div>
+													</div>
+													<!--end::Message-->
+												</div>
+												<!--end::Empty-->
+											</div>
+											<!--end::Wrapper-->
+											<!--begin::Preferences-->
+											<form data-kt-search-element="advanced-options-form" class="pt-1 d-none">
+												<!--begin::Heading-->
+												<h3 class="fw-semibold text-dark mb-7">Advanced Search</h3>
+												<!--end::Heading-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<input type="text" class="form-control form-control-sm form-control-solid" placeholder="Contains the word" name="query" />
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<!--begin::Radio group-->
+													<div class="nav-group nav-group-fluid">
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="type" value="has" checked="checked" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary">All</span>
+														</label>
+														<!--end::Option-->
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="type" value="users" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4">Users</span>
+														</label>
+														<!--end::Option-->
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="type" value="orders" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4">Orders</span>
+														</label>
+														<!--end::Option-->
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="type" value="projects" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4">Projects</span>
+														</label>
+														<!--end::Option-->
+													</div>
+													<!--end::Radio group-->
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<input type="text" name="assignedto" class="form-control form-control-sm form-control-solid" placeholder="Assigned to" value="" />
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<input type="text" name="collaborators" class="form-control form-control-sm form-control-solid" placeholder="Collaborators" value="" />
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<!--begin::Radio group-->
+													<div class="nav-group nav-group-fluid">
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="attachment" value="has" checked="checked" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary">Has attachment</span>
+														</label>
+														<!--end::Option-->
+														<!--begin::Option-->
+														<label>
+															<input type="radio" class="btn-check" name="attachment" value="any" />
+															<span class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4">Any</span>
+														</label>
+														<!--end::Option-->
+													</div>
+													<!--end::Radio group-->
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="mb-5">
+													<select name="timezone" aria-label="Select a Timezone" data-control="select2" data-dropdown-parent="#kt_header_search" data-placeholder="date_period" class="form-select form-select-sm form-select-solid">
+														<option value="next">Within the next</option>
+														<option value="last">Within the last</option>
+														<option value="between">Between</option>
+														<option value="on">On</option>
+													</select>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="row mb-8">
+													<!--begin::Col-->
+													<div class="col-6">
+														<input type="number" name="date_number" class="form-control form-control-sm form-control-solid" placeholder="Lenght" value="" />
+													</div>
+													<!--end::Col-->
+													<!--begin::Col-->
+													<div class="col-6">
+														<select name="date_typer" aria-label="Select a Timezone" data-control="select2" data-dropdown-parent="#kt_header_search" data-placeholder="Period" class="form-select form-select-sm form-select-solid">
+															<option value="days">Days</option>
+															<option value="weeks">Weeks</option>
+															<option value="months">Months</option>
+															<option value="years">Years</option>
+														</select>
+													</div>
+													<!--end::Col-->
+												</div>
+												<!--end::Input group-->
+												<!--begin::Actions-->
+												<div class="d-flex justify-content-end">
+													<button type="reset" class="btn btn-sm btn-light fw-bold btn-active-light-primary me-2" data-kt-search-element="advanced-options-form-cancel">Cancel</button>
+													<a href="../../demo9/dist/pages/search/horizontal.html" class="btn btn-sm fw-bold btn-primary" data-kt-search-element="advanced-options-form-search">Search</a>
+												</div>
+												<!--end::Actions-->
+											</form>
+											<!--end::Preferences-->
+											<!--begin::Preferences-->
+											<form data-kt-search-element="preferences" class="pt-1 d-none">
+												<!--begin::Heading-->
+												<h3 class="fw-semibold text-dark mb-7">Search Preferences</h3>
+												<!--end::Heading-->
+												<!--begin::Input group-->
+												<div class="pb-4 border-bottom">
+													<label class="form-check form-switch form-switch-sm form-check-custom form-check-solid flex-stack">
+														<span class="form-check-label text-gray-700 fs-6 fw-semibold ms-0 me-2">Projects</span>
+														<input class="form-check-input" type="checkbox" value="1" checked="checked" />
+													</label>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="py-4 border-bottom">
+													<label class="form-check form-switch form-switch-sm form-check-custom form-check-solid flex-stack">
+														<span class="form-check-label text-gray-700 fs-6 fw-semibold ms-0 me-2">Targets</span>
+														<input class="form-check-input" type="checkbox" value="1" checked="checked" />
+													</label>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="py-4 border-bottom">
+													<label class="form-check form-switch form-switch-sm form-check-custom form-check-solid flex-stack">
+														<span class="form-check-label text-gray-700 fs-6 fw-semibold ms-0 me-2">Affiliate Programs</span>
+														<input class="form-check-input" type="checkbox" value="1" />
+													</label>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="py-4 border-bottom">
+													<label class="form-check form-switch form-switch-sm form-check-custom form-check-solid flex-stack">
+														<span class="form-check-label text-gray-700 fs-6 fw-semibold ms-0 me-2">Referrals</span>
+														<input class="form-check-input" type="checkbox" value="1" checked="checked" />
+													</label>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Input group-->
+												<div class="py-4 border-bottom">
+													<label class="form-check form-switch form-switch-sm form-check-custom form-check-solid flex-stack">
+														<span class="form-check-label text-gray-700 fs-6 fw-semibold ms-0 me-2">Users</span>
+														<input class="form-check-input" type="checkbox" value="1" />
+													</label>
+												</div>
+												<!--end::Input group-->
+												<!--begin::Actions-->
+												<div class="d-flex justify-content-end pt-7">
+													<button type="reset" class="btn btn-sm btn-light fw-bold btn-active-light-primary me-2" data-kt-search-element="preferences-dismiss">Cancel</button>
+													<button type="submit" class="btn btn-sm fw-bold btn-primary">Save Changes</button>
+												</div>
+												<!--end::Actions-->
+											</form>
+											<!--end::Preferences-->
+										</div>
+										<!--end::Menu-->
+									</div>
+									<!--end::Search-->
 								</div>
-								<div class="m-stack__item m-stack__item--middle m-brand__tools">
-									<!-- BEGIN: Left Aside Minimize Toggle -->
-									<a href="javascript:;" id="m_aside_left_minimize_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block
-					 ">
-										<span></span>
-									</a>
-									<!-- END -->
-							<!-- BEGIN: Responsive Aside Left Menu Toggler -->
-									<a href="javascript:;" id="m_aside_left_offcanvas_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-tablet-and-mobile-inline-block">
-										<span></span>
-									</a>
-									<!-- END -->
-							<!-- BEGIN: Responsive Header Menu Toggler -->
-									<a id="m_aside_header_menu_mobile_toggle" href="javascript:;" class="m-brand__icon m-brand__toggler m--visible-tablet-and-mobile-inline-block">
-										<span></span>
-									</a>
-									<!-- END -->
-			<!-- BEGIN: Topbar Toggler -->
-									<a id="m_aside_header_topbar_mobile_toggle" href="javascript:;" class="m-brand__icon m--visible-tablet-and-mobile-inline-block">
-										<i class="flaticon-more"></i>
-									</a>
-									<!-- BEGIN: Topbar Toggler -->
+								<!--end::Search-->
+								<!--begin::Action-->
+								<div class="d-flex align-items-center py-3 py-lg-0"> 
+									<!--end::Item-->
+									<!--begin::Item-->
+									<div class="me-3">
+										<a href="#" class="btn btn-icon btn-custom btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+											<i class="ki-duotone ki-user fs-1 text-white">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+										</a>
+										<!--begin::User account menu-->
+										<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
+											<!--begin::Menu item-->
+											<div class="menu-item px-3">
+												<div class="menu-content d-flex align-items-center px-3">
+													<!--begin::Avatar-->
+													<div class="symbol symbol-50px me-5">
+														<img alt="Logo" src="assets/media/avatars/300-1.jpg" />
+													</div>
+													<!--end::Avatar-->
+													<!--begin::Username-->
+													<div class="d-flex flex-column">
+														<div class="fw-bold d-flex align-items-center fs-5">{{ Session('user_fullname') }}
+														<span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span></div>
+														<a href="#" class="fw-semibold text-muted text-hover-primary fs-7">	{{ Session('user_email') }}</a>
+													</div>
+													<!--end::Username-->
+												</div>
+											</div>
+											<!--end::Menu item-->
+											<!--begin::Menu separator-->
+											<div class="separator my-2"></div>
+											<!--end::Menu separator-->
+											<!--begin::Menu item-->
+											<div class="menu-item px-5">
+												<a href="#" class="menu-link px-5">My Profile</a>
+											</div>
+											<!--begin::Menu separator-->
+											<div class="separator my-2"></div>
+											<!--end::Menu separator-->
+											<!--begin::Menu item-->
+											<div class="menu-item px-5 my-1">
+												<a href="#" class="menu-link px-5">Account Settings</a>
+											</div>
+											<!--end::Menu item-->
+											<!--begin::Menu item-->
+											<div class="menu-item px-5">
+												<a href="{{ url('/user/logout') }}" class="menu-link px-5">Sign Out</a>
+											</div>
+											<!--end::Menu item-->
+										</div>
+										<!--end::User account menu-->
+									</div>
+									<!--end::Item-->
+									<!--begin::Theme mode-->
+									<div class="d-flex align-items-center me-3">
+										<!--begin::Menu toggle-->
+										<a href="#" class="btn btn-icon btn-custom btn-active-color-primary" data-kt-menu-trigger="{default:'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+											<i class="ki-duotone ki-night-day theme-light-show fs-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+												<span class="path3"></span>
+												<span class="path4"></span>
+												<span class="path5"></span>
+												<span class="path6"></span>
+												<span class="path7"></span>
+												<span class="path8"></span>
+												<span class="path9"></span>
+												<span class="path10"></span>
+											</i>
+											<i class="ki-duotone ki-moon theme-dark-show fs-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+										</a>
+										<!--begin::Menu toggle-->
+										<!--begin::Menu-->
+										<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-150px" data-kt-menu="true" data-kt-element="theme-mode-menu">
+											<!--begin::Menu item-->
+											<div class="menu-item px-3 my-0">
+												<a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="light">
+													<span class="menu-icon" data-kt-element="icon">
+														<i class="ki-duotone ki-night-day fs-2">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+															<span class="path5"></span>
+															<span class="path6"></span>
+															<span class="path7"></span>
+															<span class="path8"></span>
+															<span class="path9"></span>
+															<span class="path10"></span>
+														</i>
+													</span>
+													<span class="menu-title">Light</span>
+												</a>
+											</div>
+											<!--end::Menu item-->
+											<!--begin::Menu item-->
+											<div class="menu-item px-3 my-0">
+												<a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
+													<span class="menu-icon" data-kt-element="icon">
+														<i class="ki-duotone ki-moon fs-2">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i>
+													</span>
+													<span class="menu-title">Dark</span>
+												</a>
+											</div>
+											<!--end::Menu item-->
+											<!--begin::Menu item-->
+											<div class="menu-item px-3 my-0">
+												<a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
+													<span class="menu-icon" data-kt-element="icon">
+														<i class="ki-duotone ki-screen fs-2">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+														</i>
+													</span>
+													<span class="menu-title">System</span>
+												</a>
+											</div>
+											<!--end::Menu item-->
+										</div>
+										<!--end::Menu-->
+									</div>
+									<!--end::Theme mode-->
 								</div>
+								<!--end::Action-->
 							</div>
+							<!--end::Wrapper-->
 						</div>
-						<!-- END: Brand -->
-						<div class="m-stack__item m-stack__item--fluid m-header-head" id="m_header_nav">
-							<!-- BEGIN: Horizontal Menu -->
-							<button class="m-aside-header-menu-mobile-close  m-aside-header-menu-mobile-close--skin-dark " id="m_aside_header_menu_mobile_close_btn">
-								<i class="la la-close"></i>
+						<!--end::Container-->
+						<div class="header-offset"></div>
+					</div>
+					<!--end::Header-->
+					<!--begin::Content-->
+					<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+						<!--begin::Container-->
+						<div class="container-xxl" id="kt_content_container">
+						   @yield("content")
+						</div>
+						<!--end::Container-->
+					</div>
+					<!--end::Content-->
+					<!--begin::Footer-->
+					<div class="footer py-4 d-flex flex-lg-column" id="kt_footer">
+						<!--begin::Container-->
+						<div class="container-fluid d-flex flex-column flex-md-row flex-stack">
+							<!--begin::Copyright-->
+							<div class="text-dark order-2 order-md-1">
+								<span class="text-gray-400 fw-semibold me-1">Created by</span>
+								<a href="#" target="_blank" class="text-muted text-hover-primary fw-semibold me-2 fs-6">itm solutions </a>
+							</div>
+							<!--end::Copyright-->
+						</div>
+						<!--end::Container-->
+					</div>
+					<!--end::Footer-->
+				</div>
+				<!--end::Wrapper-->
+			</div>
+			<!--end::Page-->
+		</div>
+		<!--end::Root-->
+		<!--begin::Drawers-->
+		<!--begin::Activities drawer-->
+		<div id="kt_activities" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="activities" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'lg': '900px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_activities_toggle" data-kt-drawer-close="#kt_activities_close">
+			<div class="card shadow-none border-0 rounded-0">
+				<!--begin::Header-->
+				<div class="card-header" id="kt_activities_header">
+					<h3 class="card-title fw-bold text-dark">Activity Logs</h3>
+					<div class="card-toolbar">
+						<button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_activities_close">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</button>
+					</div>
+				</div>
+				<!--end::Header-->
+				<!--begin::Body-->
+				<div class="card-body position-relative" id="kt_activities_body">
+					<!--begin::Content-->
+					<div id="kt_activities_scroll" class="position-relative scroll-y me-n5 pe-5" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_activities_body" data-kt-scroll-dependencies="#kt_activities_header, #kt_activities_footer" data-kt-scroll-offset="5px">
+						<!--begin::Timeline items-->
+						<div class="timeline">
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px me-4">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">There are 2 new tasks for you in “AirPlus Mobile App” project:</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Added at 4:23 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Nina Nilson">
+												<img src="assets/media/avatars/300-14.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+									<!--begin::Timeline details-->
+									<div class="overflow-auto pb-5">
+										<!--begin::Record-->
+										<div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-5">
+											<!--begin::Title-->
+											<a href="../../demo9/dist/apps/projects/project.html" class="fs-5 text-dark text-hover-primary fw-semibold w-375px min-w-200px">Meeting with customer</a>
+											<!--end::Title-->
+											<!--begin::Label-->
+											<div class="min-w-175px pe-2">
+												<span class="badge badge-light text-muted">Application Design</span>
+											</div>
+											<!--end::Label-->
+											<!--begin::Users-->
+											<div class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px pe-2">
+												<!--begin::User-->
+												<div class="symbol symbol-circle symbol-25px">
+													<img src="assets/media/avatars/300-2.jpg" alt="img" />
+												</div>
+												<!--end::User-->
+												<!--begin::User-->
+												<div class="symbol symbol-circle symbol-25px">
+													<img src="assets/media/avatars/300-14.jpg" alt="img" />
+												</div>
+												<!--end::User-->
+												<!--begin::User-->
+												<div class="symbol symbol-circle symbol-25px">
+													<div class="symbol-label fs-8 fw-semibold bg-primary text-inverse-primary">A</div>
+												</div>
+												<!--end::User-->
+											</div>
+											<!--end::Users-->
+											<!--begin::Progress-->
+											<div class="min-w-125px pe-2">
+												<span class="badge badge-light-primary">In Progress</span>
+											</div>
+											<!--end::Progress-->
+											<!--begin::Action-->
+											<a href="../../demo9/dist/apps/projects/project.html" class="btn btn-sm btn-light btn-active-light-primary">View</a>
+											<!--end::Action-->
+										</div>
+										<!--end::Record-->
+										<!--begin::Record-->
+										<div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-0">
+											<!--begin::Title-->
+											<a href="../../demo9/dist/apps/projects/project.html" class="fs-5 text-dark text-hover-primary fw-semibold w-375px min-w-200px">Project Delivery Preparation</a>
+											<!--end::Title-->
+											<!--begin::Label-->
+											<div class="min-w-175px">
+												<span class="badge badge-light text-muted">CRM System Development</span>
+											</div>
+											<!--end::Label-->
+											<!--begin::Users-->
+											<div class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px">
+												<!--begin::User-->
+												<div class="symbol symbol-circle symbol-25px">
+													<img src="assets/media/avatars/300-20.jpg" alt="img" />
+												</div>
+												<!--end::User-->
+												<!--begin::User-->
+												<div class="symbol symbol-circle symbol-25px">
+													<div class="symbol-label fs-8 fw-semibold bg-success text-inverse-primary">B</div>
+												</div>
+												<!--end::User-->
+											</div>
+											<!--end::Users-->
+											<!--begin::Progress-->
+											<div class="min-w-125px">
+												<span class="badge badge-light-success">Completed</span>
+											</div>
+											<!--end::Progress-->
+											<!--begin::Action-->
+											<a href="../../demo9/dist/apps/projects/project.html" class="btn btn-sm btn-light btn-active-light-primary">View</a>
+											<!--end::Action-->
+										</div>
+										<!--end::Record-->
+									</div>
+									<!--end::Timeline details-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-flag fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n2">
+									<!--begin::Timeline heading-->
+									<div class="overflow-auto pe-3">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">Invitation for crafting engaging designs that speak human workshop</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Sent at 4:23 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Alan Nilson">
+												<img src="assets/media/avatars/300-1.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-disconnect fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+											<span class="path4"></span>
+											<span class="path5"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="mb-5 pe-3">
+										<!--begin::Title-->
+										<a href="#" class="fs-5 fw-semibold text-gray-800 text-hover-primary mb-2">3 New Incoming Project Files:</a>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Sent at 10:30 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Jan Hummer">
+												<img src="assets/media/avatars/300-23.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+									<!--begin::Timeline details-->
+									<div class="overflow-auto pb-5">
+										<div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-700px p-5">
+											<!--begin::Item-->
+											<div class="d-flex flex-aligns-center pe-10 pe-lg-20">
+												<!--begin::Icon-->
+												<img alt="" class="w-30px me-3" src="assets/media/svg/files/pdf.svg" />
+												<!--end::Icon-->
+												<!--begin::Info-->
+												<div class="ms-1 fw-semibold">
+													<!--begin::Desc-->
+													<a href="../../demo9/dist/apps/projects/project.html" class="fs-6 text-hover-primary fw-bold">Finance KPI App Guidelines</a>
+													<!--end::Desc-->
+													<!--begin::Number-->
+													<div class="text-gray-400">1.9mb</div>
+													<!--end::Number-->
+												</div>
+												<!--begin::Info-->
+											</div>
+											<!--end::Item-->
+											<!--begin::Item-->
+											<div class="d-flex flex-aligns-center pe-10 pe-lg-20">
+												<!--begin::Icon-->
+												<img alt="../../demo9/dist/apps/projects/project.html" class="w-30px me-3" src="assets/media/svg/files/doc.svg" />
+												<!--end::Icon-->
+												<!--begin::Info-->
+												<div class="ms-1 fw-semibold">
+													<!--begin::Desc-->
+													<a href="#" class="fs-6 text-hover-primary fw-bold">Client UAT Testing Results</a>
+													<!--end::Desc-->
+													<!--begin::Number-->
+													<div class="text-gray-400">18kb</div>
+													<!--end::Number-->
+												</div>
+												<!--end::Info-->
+											</div>
+											<!--end::Item-->
+											<!--begin::Item-->
+											<div class="d-flex flex-aligns-center">
+												<!--begin::Icon-->
+												<img alt="../../demo9/dist/apps/projects/project.html" class="w-30px me-3" src="assets/media/svg/files/css.svg" />
+												<!--end::Icon-->
+												<!--begin::Info-->
+												<div class="ms-1 fw-semibold">
+													<!--begin::Desc-->
+													<a href="#" class="fs-6 text-hover-primary fw-bold">Finance Reports</a>
+													<!--end::Desc-->
+													<!--begin::Number-->
+													<div class="text-gray-400">20mb</div>
+													<!--end::Number-->
+												</div>
+												<!--end::Icon-->
+											</div>
+											<!--end::Item-->
+										</div>
+									</div>
+									<!--end::Timeline details-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-abstract-26 fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">Task
+										<a href="#" class="text-primary fw-bold me-1">#45890</a>merged with
+										<a href="#" class="text-primary fw-bold me-1">#45890</a>in “Ads Pro Admin Dashboard project:</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Initiated at 4:23 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Nina Nilson">
+												<img src="assets/media/avatars/300-14.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-pencil fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">3 new application design concepts added:</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Created at 4:23 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Marcus Dotson">
+												<img src="assets/media/avatars/300-2.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+									<!--begin::Timeline details-->
+									<div class="overflow-auto pb-5">
+										<div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-700px p-7">
+											<!--begin::Item-->
+											<div class="overlay me-10">
+												<!--begin::Image-->
+												<div class="overlay-wrapper">
+													<img alt="img" class="rounded w-150px" src="assets/media/stock/600x400/img-29.jpg" />
+												</div>
+												<!--end::Image-->
+												<!--begin::Link-->
+												<div class="overlay-layer bg-dark bg-opacity-10 rounded">
+													<a href="#" class="btn btn-sm btn-primary btn-shadow">Explore</a>
+												</div>
+												<!--end::Link-->
+											</div>
+											<!--end::Item-->
+											<!--begin::Item-->
+											<div class="overlay me-10">
+												<!--begin::Image-->
+												<div class="overlay-wrapper">
+													<img alt="img" class="rounded w-150px" src="assets/media/stock/600x400/img-31.jpg" />
+												</div>
+												<!--end::Image-->
+												<!--begin::Link-->
+												<div class="overlay-layer bg-dark bg-opacity-10 rounded">
+													<a href="#" class="btn btn-sm btn-primary btn-shadow">Explore</a>
+												</div>
+												<!--end::Link-->
+											</div>
+											<!--end::Item-->
+											<!--begin::Item-->
+											<div class="overlay">
+												<!--begin::Image-->
+												<div class="overlay-wrapper">
+													<img alt="img" class="rounded w-150px" src="assets/media/stock/600x400/img-40.jpg" />
+												</div>
+												<!--end::Image-->
+												<!--begin::Link-->
+												<div class="overlay-layer bg-dark bg-opacity-10 rounded">
+													<a href="#" class="btn btn-sm btn-primary btn-shadow">Explore</a>
+												</div>
+												<!--end::Link-->
+											</div>
+											<!--end::Item-->
+										</div>
+									</div>
+									<!--end::Timeline details-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-sms fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">New case
+										<a href="#" class="text-primary fw-bold me-1">#67890</a>is assigned to you in Multi-platform Database Design project</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="overflow-auto pb-5">
+											<!--begin::Wrapper-->
+											<div class="d-flex align-items-center mt-1 fs-6">
+												<!--begin::Info-->
+												<div class="text-muted me-2 fs-7">Added at 4:23 PM by</div>
+												<!--end::Info-->
+												<!--begin::User-->
+												<a href="#" class="text-primary fw-bold me-1">Alice Tan</a>
+												<!--end::User-->
+											</div>
+											<!--end::Wrapper-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-pencil fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mb-10 mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">You have received a new order:</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Placed at 5:05 AM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="Robert Rich">
+												<img src="assets/media/avatars/300-4.jpg" alt="img" />
+											</div>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+									<!--begin::Timeline details-->
+									<div class="overflow-auto pb-5">
+										<!--begin::Notice-->
+										<div class="notice d-flex bg-light-primary rounded border-primary border border-dashed min-w-lg-600px flex-shrink-0 p-6">
+											<!--begin::Icon-->
+											<i class="ki-duotone ki-devices-2 fs-2tx text-primary me-4">
+												<span class="path1"></span>
+												<span class="path2"></span>
+												<span class="path3"></span>
+											</i>
+											<!--end::Icon-->
+											<!--begin::Wrapper-->
+											<div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+												<!--begin::Content-->
+												<div class="mb-3 mb-md-0 fw-semibold">
+													<h4 class="text-gray-900 fw-bold">Database Backup Process Completed!</h4>
+													<div class="fs-6 text-gray-700 pe-7">Login into Admin Dashboard to make sure the data integrity is OK</div>
+												</div>
+												<!--end::Content-->
+												<!--begin::Action-->
+												<a href="#" class="btn btn-primary px-6 align-self-center text-nowrap">Proceed</a>
+												<!--end::Action-->
+											</div>
+											<!--end::Wrapper-->
+										</div>
+										<!--end::Notice-->
+									</div>
+									<!--end::Timeline details-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+							<!--begin::Timeline item-->
+							<div class="timeline-item">
+								<!--begin::Timeline line-->
+								<div class="timeline-line w-40px"></div>
+								<!--end::Timeline line-->
+								<!--begin::Timeline icon-->
+								<div class="timeline-icon symbol symbol-circle symbol-40px">
+									<div class="symbol-label bg-light">
+										<i class="ki-duotone ki-basket fs-2 text-gray-500">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+											<span class="path4"></span>
+										</i>
+									</div>
+								</div>
+								<!--end::Timeline icon-->
+								<!--begin::Timeline content-->
+								<div class="timeline-content mt-n1">
+									<!--begin::Timeline heading-->
+									<div class="pe-3 mb-5">
+										<!--begin::Title-->
+										<div class="fs-5 fw-semibold mb-2">New order
+										<a href="#" class="text-primary fw-bold me-1">#67890</a>is placed for Workshow Planning & Budget Estimation</div>
+										<!--end::Title-->
+										<!--begin::Description-->
+										<div class="d-flex align-items-center mt-1 fs-6">
+											<!--begin::Info-->
+											<div class="text-muted me-2 fs-7">Placed at 4:23 PM by</div>
+											<!--end::Info-->
+											<!--begin::User-->
+											<a href="#" class="text-primary fw-bold me-1">Jimmy Bold</a>
+											<!--end::User-->
+										</div>
+										<!--end::Description-->
+									</div>
+									<!--end::Timeline heading-->
+								</div>
+								<!--end::Timeline content-->
+							</div>
+							<!--end::Timeline item-->
+						</div>
+						<!--end::Timeline items-->
+					</div>
+					<!--end::Content-->
+				</div>
+				<!--end::Body-->
+				<!--begin::Footer-->
+				<div class="card-footer py-5 text-center" id="kt_activities_footer">
+					<a href="../../demo9/dist/pages/user-profile/activity.html" class="btn btn-bg-body text-primary">View All Activities
+					<i class="ki-duotone ki-arrow-right fs-3 text-primary">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i></a>
+				</div>
+				<!--end::Footer-->
+			</div>
+		</div>
+		<!--end::Activities drawer-->
+		<!--begin::Chat drawer-->
+		<div id="kt_drawer_chat" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="chat" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_drawer_chat_toggle" data-kt-drawer-close="#kt_drawer_chat_close">
+			<!--begin::Messenger-->
+			<div class="card w-100 border-0 rounded-0" id="kt_drawer_chat_messenger">
+				<!--begin::Card header-->
+				<div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+					<!--begin::Title-->
+					<div class="card-title">
+						<!--begin::User-->
+						<div class="d-flex justify-content-center flex-column me-3">
+							<a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">Brian Cox</a>
+							<!--begin::Info-->
+							<div class="mb-0 lh-1">
+								<span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
+								<span class="fs-7 fw-semibold text-muted">Active</span>
+							</div>
+							<!--end::Info-->
+						</div>
+						<!--end::User-->
+					</div>
+					<!--end::Title-->
+					<!--begin::Card toolbar-->
+					<div class="card-toolbar">
+						<!--begin::Menu-->
+						<div class="me-0">
+							<button class="btn btn-sm btn-icon btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+								<i class="ki-duotone ki-dots-square fs-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
 							</button>
-							<div id="m_header_menu" class="m-header-menu m-aside-header-menu-mobile m-aside-header-menu-mobile--offcanvas  m-header-menu--skin-light m-header-menu--submenu-skin-light m-aside-header-menu-mobile--skin-dark m-aside-header-menu-mobile--submenu-skin-dark "  >
-								<ul class="m-menu__nav  m-menu__nav--submenu-arrow ">
-									<!-- <li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" data-redirect="true" aria-haspopup="true">
-										<a  href="#" class="m-menu__link m-menu__toggle">
-											<i class="m-menu__link-icon flaticon-add"></i>
-											<span class="m-menu__link-text">
-												Actions
-											</span>
-											<i class="m-menu__hor-arrow la la-angle-down"></i>
-											<i class="m-menu__ver-arrow la la-angle-right"></i>
-										</a>
-										<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--left">
-											<span class="m-menu__arrow m-menu__arrow--adjust"></span>
-											<ul class="m-menu__subnav">
-												<li class="m-menu__item "  aria-haspopup="true">
-													<a  href="{{ url('user/myprofile') }}" class="m-menu__link ">
-														<i class="m-menu__link-icon flaticon-file"></i>
-														<span class="m-menu__link-text">
-															My Profile
-														</span>
-													</a>
-												</li>
-												<li class="m-menu__item"  aria-haspopup="true">
-													<a  href="{{ url('user/logout') }}" class="m-menu__link ">
-														<i class="m-menu__link-icon fas fa-sign-out-alt"></i>
-														<span class="m-menu__link-text" style="width:182px;">
-														  Log Out
-														</span>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</li>
-									<li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" data-redirect="true" aria-haspopup="true">
-										<a  href="#" class="m-menu__link m-menu__toggle">
-											<i class="m-menu__link-icon flaticon-line-graph"></i>
-											<span class="m-menu__link-text">
-												Reports
-											</span>
-											<i class="m-menu__hor-arrow la la-angle-down"></i>
-											<i class="m-menu__ver-arrow la la-angle-right"></i>
-										</a>
-										<div class="m-menu__submenu  m-menu__submenu--fixed m-menu__submenu--left" style="width:1000px">
-											<span class="m-menu__arrow m-menu__arrow--adjust"></span>
-											<div class="m-menu__subnav"></div>
-										</div>
-									</li>
-									<li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" data-redirect="true" aria-haspopup="true">
-										<a  href="#" class="m-menu__link m-menu__toggle">
-											<i class="m-menu__link-icon flaticon-paper-plane"></i>
-											<span class="m-menu__link-title">
-												<span class="m-menu__link-wrap">
-													<span class="m-menu__link-text">
-														Apps
-													</span>
-													<span class="m-menu__link-badge">
-														<span class="m-badge m-badge--brand m-badge--wide">
-															new
-														</span>
-													</span>
-												</span>
-											</span>
-											<i class="m-menu__hor-arrow la la-angle-down"></i>
-											<i class="m-menu__ver-arrow la la-angle-right"></i>
-										</a>
-										<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--left">
-											<span class="m-menu__arrow m-menu__arrow--adjust"></span>
-											<ul class="m-menu__subnav">
-												<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-													<a  href="header/actions.html" class="m-menu__link ">
-														<i class="m-menu__link-icon flaticon-business"></i>
-														<span class="m-menu__link-text">
-															eCommerce
-														</span>
-													</a>
-												</li>
-												<li class="m-menu__item  m-menu__item--submenu"  data-menu-submenu-toggle="hover" data-redirect="true" aria-haspopup="true">
-													<a  href="crud/datatable_v1.html" class="m-menu__link m-menu__toggle">
-														<i class="m-menu__link-icon flaticon-computer"></i>
-														<span class="m-menu__link-text">
-															Audience
-														</span>
-														<i class="m-menu__hor-arrow la la-angle-right"></i>
-														<i class="m-menu__ver-arrow la la-angle-right"></i>
-													</a>
-													<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--right">
-														<span class="m-menu__arrow "></span>
-														<ul class="m-menu__subnav">
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-users"></i>
-																	<span class="m-menu__link-text">
-																		Active Users
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-interface-1"></i>
-																	<span class="m-menu__link-text">
-																		User Explorer
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-lifebuoy"></i>
-																	<span class="m-menu__link-text">
-																		Users Flows
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-graphic-1"></i>
-																	<span class="m-menu__link-text">
-																		Market Segments
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-graphic"></i>
-																	<span class="m-menu__link-text">
-																		User Reports
-																	</span>
-																</a>
-															</li>
-														</ul>
-													</div>
-												</li>
-												<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-													<a  href="header/actions.html" class="m-menu__link ">
-														<i class="m-menu__link-icon flaticon-map"></i>
-														<span class="m-menu__link-text">
-															Marketing
-														</span>
-													</a>
-												</li>
-												<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-													<a  href="header/actions.html" class="m-menu__link ">
-														<i class="m-menu__link-icon flaticon-graphic-2"></i>
-														<span class="m-menu__link-title">
-															<span class="m-menu__link-wrap">
-																<span class="m-menu__link-text">
-																	Campaigns
-																</span>
-																<span class="m-menu__link-badge">
-																	<span class="m-badge m-badge--success">
-																		3
-																	</span>
-																</span>
-															</span>
-														</span>
-													</a>
-												</li>
-												<li class="m-menu__item  m-menu__item--submenu"  data-menu-submenu-toggle="hover" data-redirect="true" aria-haspopup="true">
-													<a  href="#" class="m-menu__link m-menu__toggle">
-														<i class="m-menu__link-icon flaticon-infinity"></i>
-														<span class="m-menu__link-text">
-															Cloud Manager
-														</span>
-														<i class="m-menu__hor-arrow la la-angle-right"></i>
-														<i class="m-menu__ver-arrow la la-angle-right"></i>
-													</a>
-													<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--left">
-														<span class="m-menu__arrow "></span>
-														<ul class="m-menu__subnav">
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-add"></i>
-																	<span class="m-menu__link-title">
-																		<span class="m-menu__link-wrap">
-																			<span class="m-menu__link-text">
-																				File Upload
-																			</span>
-																			<span class="m-menu__link-badge">
-																				<span class="m-badge m-badge--danger">
-																					3
-																				</span>
-																			</span>
-																		</span>
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-signs-1"></i>
-																	<span class="m-menu__link-text">
-																		File Attributes
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-folder"></i>
-																	<span class="m-menu__link-text">
-																		Folders
-																	</span>
-																</a>
-															</li>
-															<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
-																<a  href="header/actions.html" class="m-menu__link ">
-																	<i class="m-menu__link-icon flaticon-cogwheel-2"></i>
-																	<span class="m-menu__link-text">
-																		System Settings
-																	</span>
-																</a>
-															</li>
-														</ul>
-													</div>
-												</li>
-											</ul>
-										</div>
-									</li> -->
-								</ul>
-							</div>
-							<!-- END: Horizontal Menu -->								<!-- BEGIN: Topbar -->
-							<div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general">
-								<div class="m-stack__item m-topbar__nav-wrapper">
-									<ul class="m-topbar__nav m-nav m-nav--inline">
-										<li class="m-nav__item m-topbar__notifications m-topbar__notifications--img m-dropdown m-dropdown--large m-dropdown--header-bg-fill m-dropdown--arrow m-dropdown--align-center 	m-dropdown--mobile-full-width" data-dropdown-toggle="click" data-dropdown-persistent="true">
-											<a href="#" class="m-nav__link m-dropdown__toggle" id="m_topbar_notification_icon">
-												<span class="m-nav__link-badge m-badge m-badge--dot m-badge--dot-small m-badge--danger"></span>
-												<span class="m-nav__link-icon">
-													<i class="flaticon-music-2"></i>
-												</span>
-											</a>
-											<div class="m-dropdown__wrapper">
-												<span class="m-dropdown__arrow m-dropdown__arrow--center"></span>
-												<div class="m-dropdown__inner">
-													<div class="m-dropdown__header m--align-center" style="background: url(assets/app/media/img/misc/notification_bg.jpg); background-size: cover;">
-														<span class="m-dropdown__header-title">
-															9 New
-														</span>
-														<span class="m-dropdown__header-subtitle">
-															User Notifications
-														</span>
-													</div>
-													<div class="m-dropdown__body">
-														<div class="m-dropdown__content">
-															<ul class="nav nav-tabs m-tabs m-tabs-line m-tabs-line--brand" role="tablist">
-																<li class="nav-item m-tabs__item">
-																	<a class="nav-link m-tabs__link active" data-toggle="tab" href="#topbar_notifications_notifications" role="tab">
-																		Alerts
-																	</a>
-																</li>
-																<li class="nav-item m-tabs__item">
-																	<a class="nav-link m-tabs__link" data-toggle="tab" href="#topbar_notifications_events" role="tab">
-																		Events
-																	</a>
-																</li>
-																<li class="nav-item m-tabs__item">
-																	<a class="nav-link m-tabs__link" data-toggle="tab" href="#topbar_notifications_logs" role="tab">
-																		Logs
-																	</a>
-																</li>
-															</ul>
-															<div class="tab-content">
-																<div class="tab-pane active" id="topbar_notifications_notifications" role="tabpanel">
-																	<div class="m-scrollable" data-scrollable="true" data-max-height="250" data-mobile-max-height="200">
-																		<div class="m-list-timeline m-list-timeline--skin-light">
-																			<div class="m-list-timeline__items">
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge -m-list-timeline__badge--state-success"></span>
-																					<span class="m-list-timeline__text">
-																						12 new users registered
-																					</span>
-																					<span class="m-list-timeline__time">
-																						Just now
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						System shutdown
-																						<span class="m-badge m-badge--success m-badge--wide">
-																							pending
-																						</span>
-																					</span>
-																					<span class="m-list-timeline__time">
-																						14 mins
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						New invoice received
-																					</span>
-																					<span class="m-list-timeline__time">
-																						20 mins
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						DB overloaded 80%
-																						<span class="m-badge m-badge--info m-badge--wide">
-																							settled
-																						</span>
-																					</span>
-																					<span class="m-list-timeline__time">
-																						1 hr
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						System error -
-																						<a href="#" class="m-link">
-																							Check
-																						</a>
-																					</span>
-																					<span class="m-list-timeline__time">
-																						2 hrs
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item m-list-timeline__item--read">
-																					<span class="m-list-timeline__badge"></span>
-																					<span href="" class="m-list-timeline__text">
-																						New order received
-																						<span class="m-badge m-badge--danger m-badge--wide">
-																							urgent
-																						</span>
-																					</span>
-																					<span class="m-list-timeline__time">
-																						7 hrs
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item m-list-timeline__item--read">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						Production server down
-																					</span>
-																					<span class="m-list-timeline__time">
-																						3 hrs
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge"></span>
-																					<span class="m-list-timeline__text">
-																						Production server up
-																					</span>
-																					<span class="m-list-timeline__time">
-																						5 hrs
-																					</span>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="tab-pane" id="topbar_notifications_events" role="tabpanel">
-																	<div class="m-scrollable" data-max-height="250" data-mobile-max-height="200">
-																		<div class="m-list-timeline m-list-timeline--skin-light">
-																			<div class="m-list-timeline__items">
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-success"></span>
-																					<a href="" class="m-list-timeline__text">
-																						New order received
-																					</a>
-																					<span class="m-list-timeline__time">
-																						Just now
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-danger"></span>
-																					<a href="" class="m-list-timeline__text">
-																						New invoice received
-																					</a>
-																					<span class="m-list-timeline__time">
-																						20 mins
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-success"></span>
-																					<a href="" class="m-list-timeline__text">
-																						Production server up
-																					</a>
-																					<span class="m-list-timeline__time">
-																						5 hrs
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-info"></span>
-																					<a href="" class="m-list-timeline__text">
-																						New order received
-																					</a>
-																					<span class="m-list-timeline__time">
-																						7 hrs
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-info"></span>
-																					<a href="" class="m-list-timeline__text">
-																						System shutdown
-																					</a>
-																					<span class="m-list-timeline__time">
-																						11 mins
-																					</span>
-																				</div>
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge m-list-timeline__badge--state1-info"></span>
-																					<a href="" class="m-list-timeline__text">
-																						Production server down
-																					</a>
-																					<span class="m-list-timeline__time">
-																						3 hrs
-																					</span>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="tab-pane" id="topbar_notifications_logs" role="tabpanel">
-																	<div class="m-stack m-stack--ver m-stack--general" style="min-height: 180px;">
-																		<div class="m-stack__item m-stack__item--center m-stack__item--middle">
-																			<span class="">
-																				All caught up!
-																				<br>
-																				No new logs.
-																			</span>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-										<li class="m-nav__item m-topbar__quick-actions m-topbar__quick-actions--img m-dropdown m-dropdown--large m-dropdown--header-bg-fill m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push m-dropdown--mobile-full-width m-dropdown--skin-light"  data-dropdown-toggle="click">
-											<a href="#" class="m-nav__link m-dropdown__toggle">
-												<span class="m-nav__link-badge m-badge m-badge--dot m-badge--info m--hide"></span>
-												<span class="m-nav__link-icon">
-													<i class="flaticon-share"></i>
-												</span>
-											</a>
-											<div class="m-dropdown__wrapper">
-												<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-												<div class="m-dropdown__inner">
-													<div class="m-dropdown__header m--align-center" style="background: url(assets/app/media/img/misc/quick_actions_bg.jpg); background-size: cover;">
-														<span class="m-dropdown__header-title">
-															Quick Actions
-														</span>
-														<span class="m-dropdown__header-subtitle">
-															Shortcuts
-														</span>
-													</div>
-													<div class="m-dropdown__body m-dropdown__body--paddingless">
-														<div class="m-dropdown__content">
-															<div class="m-scrollable" data-scrollable="false" data-max-height="380" data-mobile-max-height="200">
-																<div class="m-nav-grid m-nav-grid--skin-light">
-																	<div class="m-nav-grid__row">
-																		<a href="#" class="m-nav-grid__item ManageFisicalYear"  data-toggle="modal" data-target="#FisicalYearModal">
-																			<i class="m-nav-grid__icon flaticon-time"></i>
-																			<span class="m-nav-grid__text">
-																				Manage Fiscal Year
-																			</span>
-																		</a>
-																		<a href="#"  class="m-nav-grid__item">
-																			<i class="m-nav-grid__icon flaticon-file"></i>
-																			<span class="m-nav-grid__text">
-																				Digital Asset Management
-																			</span>
-																		</a>
-																	</div>
-																	<div class="m-nav-grid__row">
-																		<a href="#" class="m-nav-grid__item">
-																			<i class="m-nav-grid__icon flaticon-folder"></i>
-																			<span class="m-nav-grid__text">
-																				Projects Management
-																			</span>
-																		</a>
-																		<a href="#" class="m-nav-grid__item ManageYearlyClosing" data-toggle="modal" data-target="#ManageYearlyClosingModal">
-																			<i class="m-nav-grid__icon flaticon-clipboard"></i>
-																			<span class="m-nav-grid__text">
-																				Yearly Closing
-																			</span>
-																		</a>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-										<li class="m-nav__item m-topbar__user-profile m-topbar__user-profile--img  m-dropdown m-dropdown--medium m-dropdown--arrow m-dropdown--header-bg-fill m-dropdown--align-right m-dropdown--mobile-full-width m-dropdown--skin-light" data-dropdown-toggle="click">
-											<a href="#" class="m-nav__link m-dropdown__toggle">
-												<span class="m-topbar__userpic">
-													<img src="{{ Session('user_profile_url') }}" class="m--img-rounded m--marginless m--img-centered" alt=""/>
-												</span>
-												<span class="m-topbar__username m--hide">
-													{{ Session('user_fullname') }}
-												</span>
-											</a>
-											<div class="m-dropdown__wrapper">
-												<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-												<div class="m-dropdown__inner">
-													<div class="m-dropdown__header m--align-center" style="background: url(assets/app/media/img/misc/user_profile_bg.jpg); background-size: cover;">
-														<div class="m-card-user m-card-user--skin-dark">
-															<div class="m-card-user__pic">
-																<img src="{{ Session('user_profile_url') }}" class="m--img-rounded m--marginless" alt=""/>
-															</div>
-															<div class="m-card-user__details">
-																<span class="m-card-user__name m--font-weight-500">
-																	{{ Session('user_fullname') }}
-																</span>
-																<a href="" class="m-card-user__email m--font-weight-300 m-link">
-																	{{ Session('user_email') }}
-																</a>
-															</div>
-														</div>
-													</div>
-													<div class="m-dropdown__body">
-														<div class="m-dropdown__content">
-															<ul class="m-nav m-nav--skin-light">
-																<li class="m-nav__section m--hide">
-																	<span class="m-nav__section-text">
-																		Section
-																	</span>
-																</li>
-																<li class="m-nav__item">
-																	<a href="{{ url('user/myprofile') }}" class="m-nav__link">
-																		<i class="m-nav__link-icon flaticon-profile-1"></i>
-																		<span class="m-nav__link-title">
-																			<span class="m-nav__link-wrap">
-																				<span class="m-nav__link-text">
-																					My Profile
-																				</span>
-																			</span>
-																		</span>
-																	</a>
-																</li>
-																<li class="m-nav__item">
-																	<a href="{{ url('timesheet/sendholidayrequest') }}" class="m-nav__link">
-																		<i class="m-nav__link-icon flaticon-share"></i>
-																		<span class="m-nav__link-text">
-																			Send Holiday Request
-																		</span>
-																	</a>
-																</li>
-																<li class="m-nav__item">
-																	<a href="{{ url('timesheet/personalholidays') }}" class="m-nav__link">
-																		<i class="m-nav__link-icon fas fa-hotel"></i>
-																		<span class="m-nav__link-text">
-																			Personal Holidays
-																		</span>
-																	</a>
-																</li>
-																<li class="m-nav__separator m-nav__separator--fit"></li>
-																<li class="m-nav__item">
-																	<a href="{{ url('timesheet/timesheetmanagement') }}" class="m-nav__link">
-																		<i class="m-nav__link-icon far fa-clock"></i>
-																		<span class="m-nav__link-text">
-																			Timesheet
-																		</span>
-																	</a>
-																</li>
-																<li class="m-nav__separator m-nav__separator--fit"></li>
-																<li class="m-nav__item">
-																	<a href="{{ url('appointments/mycalendar') }}" class="m-nav__link">
-																		<i class="m-nav__link-icon far  fa-calendar-o"></i>
-																		<span class="m-nav__link-text">
-																			My Calendar
-																		</span>
-																	</a>
-																</li>
-																<li class="m-nav__separator m-nav__separator--fit"></li>
-																<li class="m-nav__item">
-																	<a href="{{ url('user/logout') }}" class="btn m-btn--pill    btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder">
-																		Logout
-																	</a>
-																</li>
-															</ul>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-										<li id="m_quick_sidebar_toggle" class="m-nav__item">
-											<a href="#" class="m-nav__link m-dropdown__toggle">
-												<span class="m-nav__link-icon">
-													<i class="flaticon-grid-menu"></i>
-												</span>
-											</a>
-										</li>
-									</ul>
+							<!--begin::Menu 3-->
+							<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
+								<!--begin::Heading-->
+								<div class="menu-item px-3">
+									<div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Contacts</div>
 								</div>
-							</div>
-							<!-- END: Topbar -->
-						</div>
-					</div>
-				</div>
-			</header>
-			<!-- END: Header -->
-		<!-- begin::Body -->
-			<div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body">
-				<!-- BEGIN: Left Aside -->
-				<button class="m-aside-left-close  m-aside-left-close--skin-dark " id="m_aside_left_close_btn">
-					<i class="la la-close"></i>
-				</button>
-				<div id="m_aside_left" class="m-grid__item	m-aside-left  m-aside-left--skin-dark ">
-					<!-- BEGIN: Aside Menu -->
-	<div
-		id="m_ver_menu"
-		class="m-aside-menu  m-aside-menu--skin-dark m-aside-menu--submenu-skin-dark "
-		data-menu-vertical="true"
-		 data-menu-scrollable="false" data-menu-dropdown-timeout="500"
-		>
-						<ul class="m-menu__nav  m-menu__nav--dropdown-submenu-arrow ">
-							<li class="m-menu__item  m-menu__item--active" aria-haspopup="true" >
-								<?php
-								    $dashboard_url = "";
-    								switch (session('company_homepage'))
-    								{
-    								    case 1:
-								        {
-								            $dashboard_url = url("dashboard");
-								        }
-								        break;
-    								    case 2:
-								        {
-								            $dashboard_url = url("accounting/dashboard");
-								        }
-								        break;
-    								    case 3:
-								        {
-								            $dashboard_url = url("services/dashboard");
-								        }
-								        break;
-    								}
-								?> 
-								
-								
-							
-								<a  href="{{ $dashboard_url }}" class="m-menu__link DashboardLink">
-									<i class="m-menu__link-icon flaticon-line-graph"></i>
-									<span class="m-menu__link-title">
-										<span class="m-menu__link-wrap">
-											<span class="m-menu__link-text">
-												Dashboard
-											</span> 
-										</span>
-									</span>
-								</a>
-							</li>
-							<li class="m-menu__section">
-								<h4 class="m-menu__section-text">
-
-								</h4>
-								<i class="m-menu__section-icon flaticon-more-v3"></i>
-							</li>
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-users-cog"></i>
-									<span class="m-menu__link-text">
-									   Administration
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item  m-menu__item--parent" aria-haspopup="true" >
-											<span class="m-menu__link">
-												<span class="m-menu__link-text">
-
-												</span>
-											</span>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('administrator/users') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Users Management
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('administrator/usersteam') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Users Team
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('administrator/roles') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Roles Management
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('system/companies') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Company Details
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('system/departments') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Departments
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('system/jobtitles') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Job Titles
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('system/jobroles') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Job Roles
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('system/employmenttype') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Employment type
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('timesheet/daytypes') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Day types
-												</span>
-											</a>
-										</li>
-									</ul>
+								<!--end::Heading-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_users_search">Add Contact</a>
 								</div>
-							</li>
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-cogs"></i>
-									<span class="m-menu__link-text">
-									   Configuration
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true">
-											<a  href="{{ url('administrator/config') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Main ConfIguration
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('administrator/roles') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Financial Configuration
-												</span>
-											</a>
-										</li>
-								    </ul>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link flex-stack px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">Invite Contacts
+									<span class="ms-2" data-bs-toggle="tooltip" title="Specify a contact email to send an invitation">
+										<i class="ki-duotone ki-information fs-7">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+										</i>
+									</span></a>
 								</div>
-							</li>
-							@if($license_array->TIMESHEET_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-clock"></i>
-									<span class="m-menu__link-text">
-									   Timesheet Management
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('timesheet/holidays') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													 yearly holidays
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('timesheet/holidayrequests') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Holiday Requests
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('timesheet/generaltimesheetmanagement') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Manage Timesheet
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('timesheet/onlineemployees') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Online Employees
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item" aria-haspopup="true" >
-											<a  href="{{ url('timesheet/transportationemployees') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Transportation Report
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item" aria-haspopup="true" >
-											<a  href="{{ url('timesheet/holidayemployees') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Holidays Report
-												</span>
-											</a>
-										</li>
-								    </ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->INVENTORY_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-boxes"></i>
-									<span class="m-menu__link-text">
-										inventory Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/warehouses') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Warehouses
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/productcategories') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Products Categories
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/products') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Products ( SKU's )
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/stocks') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Stock
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/services') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Services
-												</span>
-											</a>
-										</li> 
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/stocktransfer') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Stock Transfer
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/vendors') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Vendors
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/customers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Customers
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->BANKING_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-university"></i>
-									<span class="m-menu__link-text">
-										Banking | Cash
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a title="Create A New Bank Account And Link to the Chart of Account Added to the System"  href="{{ url('banking/financialaccount/addform') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span> 
-												</i>
-												<span class="m-menu__link-text">
-													New Financial Account
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('banking/financialaccount') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													List Bank Accounts
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('banking/entries/list') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													List Entries
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('banking/internaltransfer') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Internal Transfer
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->PAYROLL_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" title="Supplier Relationship Management" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-money-check-alt"></i>
-									<span class="m-menu__link-text">
-										PayRoll
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item" aria-haspopup="true" >
-											<a  href="{{ url('payroll/employeespayroll') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Employees PayRoll
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if(isset($license_array->SRM_MODULE) && $license_array->SRM_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" title="Supplier Relationship Management" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon flaticon-multimedia-1"></i>
-									<span class="m-menu__link-text">
-										Suppliers management
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('srm/suppliercategories') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Supplier Categories
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('srm/supplierstatuses') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Supplier Statuses
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('srm/suppliers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Suppliers
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('srm/supplier/bidding') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Supplier Bidding
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('srm/bidding/quotations') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Supplier Quotations
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" style="display:none" >
-											<a  href="{{ url('srm/suppliercontracts') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Supplier Contracts
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->ACCOUNTING_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-calculator"></i>									
-									<span class="m-menu__link-text">
-										Accounting
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-											<a  href="#" class="m-menu__link m-menu__toggle">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Setup
-												</span>
-												<i class="m-menu__ver-arrow la la-angle-right"></i>
-											</a>
-											<div class="m-menu__submenu ">
-												<span class="m-menu__arrow"></span>
-												<ul class="m-menu__subnav">
-													 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/chartofaccounts') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Chart Of Accounts
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/accountingjournals') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Accounting journals
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/personalizedgroups') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Personalized groups
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/defaultaccounts') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Default Accounts
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/vataccounts') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													VAT & TAX Accounts
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/exchangerates') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Exchange Rates
-                												</span>
-                											</a>
-                										</li>
-                										 <li class="m-menu__item " aria-haspopup="true" >
-                											<a  href="{{ url('accounting/openingvoucher') }}" class="m-menu__link ">
-                												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-                													<span></span>
-                												</i>
-                												<span class="m-menu__link-text">
-                													Opening Voucher
-                												</span>
-                											</a>
-                										</li>
-												</ul>
-											</div>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('accounting/dashboard') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Dashboard
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('accounting/ledger') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Ledger
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Income Statement
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Balance Sheet
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('accounting/accountstatment') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Account Statment
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('accounting/accountstatmentdetails') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Account Statment details
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('accounting/accountsbalance') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Trial Balance
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->BILLING_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-file-invoice-dollar"></i>
-									<span class="m-menu__link-text">
-										Billing / Payments
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/paymenttypes') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Payment Types
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('sales/orders') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Orders
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/invoices') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Invoices
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/receipts') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Receipts
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/internaltransfers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Internal Transfers
-												</span>
-											</a>
-										</li>  
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/vouchers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Vouchers
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('billing/journalvouchers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Journal Vouchers
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('banking/financialaccount') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Bank Accounts
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/services') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Services
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('inventory/customers') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Customers
-												</span>
-											</a>
-										</li> 
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->MANUFACTURING_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-industry"></i>
-									<span class="m-menu__link-text">
-                                         MRP Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('mrp/billofmaterial') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													BILL of Material
-												</span>
-											</a>
-										</li>
-									 	 
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->PRODUCTION_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon flaticon-multimedia-1"></i>
-									<span class="m-menu__link-text">
-                                         Production Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('production/machines') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Production Schedule
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('production/planstatus') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Plan Status
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('production/planning') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Production Plans
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link m-menu__toggle">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Quality Control
-												</span>
-												<i class="m-menu__ver-arrow la la-angle-right"></i>
-											</a>
-											<div class="m-menu__submenu ">
-												<span class="m-menu__arrow"></span>
-												<ul class="m-menu__subnav">
-													<li class="m-menu__item " aria-haspopup="true" >
-														<a  href="#" class="m-menu__link ">
-															<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-																<span></span>
-															</i>
-															<span class="m-menu__link-text">
-																Quanlity Alerts
-															</span>
-														</a>
-													</li>
-												</ul>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->PROJECTS_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-project-diagram"></i>
-									<span class="m-menu__link-text">
-                                        Project Management
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('pm/projects/types') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Project Types
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('projects/statuses') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Project Status
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('maintenance/jobstatus') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Job Status
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Task Status
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Project Workflow
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Project Workflow
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->SALES_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon flaticon-multimedia-1"></i>
-									<span class="m-menu__link-text">
-                                         Sales Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('sales/orderstatus') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Order Status
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('sales/orders') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Orders
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@endif
-							@if($license_array->CRM_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-intercom"></i>
-									<span class="m-menu__link-text">
-                                         CRM Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="#" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Dashboard
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('leads/status') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Lead Statuses
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/leads') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Leads
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/activities') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Activities
-												</span>
-											</a>
-										</li>
-									 	<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/clientcategories') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Client Categories
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/clients') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Clients
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/contacts') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Contacts
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/servicecategories') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Service Categories
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/services') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Services
-												</span>
-											</a>
-										</li>
-										 <li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('crm/accounts/deals') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Deals
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-											<a  href="#" class="m-menu__link m-menu__toggle">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													CRM Reports
-												</span>
-												<i class="m-menu__ver-arrow la la-angle-right"></i>
-											</a>
-											<div class="m-menu__submenu ">
-												<span class="m-menu__arrow"></span>
-												<ul class="m-menu__subnav">
-													<li class="m-menu__item " aria-haspopup="true" >
-														<a  href="{{ url('crm/reports/leads') }}" class="m-menu__link ">
-															<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-																<span></span>
-															</i>
-															<span class="m-menu__link-text">
-																List Leads
-															</span>
-														</a>
-													</li>
-													<li class="m-menu__item " aria-haspopup="true" >
-														<a  href="{{ url('crm/reports/accounts') }}" class="m-menu__link ">
-															<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-																<span></span>
-															</i>
-															<span class="m-menu__link-text">
-																List Accounts
-															</span>
-														</a>
-													</li>
-												</ul>
-											</div>
-										</li>
-								    </ul>
-								</div>
-						  </li>
-						  	@endif
-							@if($license_array->SHIPMENT_MODULE == 1)
-						  <li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-shipping-fast"></i>
-									<span class="m-menu__link-text">
-									   Shipment Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('operation/statuses') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Operation Statuses
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('shipments/shipmentoperations') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Shipment Operations
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('shipment/maptracker') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Map Tracker
-												</span>
-											</a>
-										</li>
-								    </ul>
-								</div>
-							</li>
-							@endif
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" title="Supplier Relationship Management" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-toolbox"></i>
-									<span class="m-menu__link-text">
-										Maintenance
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item" aria-haspopup="true" >
-											<a  href="{{ url('maintenance/jobstatus') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Job Status
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item" aria-haspopup="true" >
-											<a  href="{{ url('maintenance/jobs') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Jobs
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							@if($license_array->LOGISTICS_MODULE == 1)
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
-								<a  href="#" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon fas fa-truck"></i>
-									<span class="m-menu__link-text">
-									   Logistics Module
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('logistics/vehicules') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Vehicules
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('logistics/shipmentcompanies') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Shipment Companies
-												</span>
-											</a>
-										</li>
-								    </ul>
-								</div>
-							</li>
-							@endif
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" style="display: none" data-menu-submenu-toggle="hover">
-								<a  href="#" title="Supplier Relationship Management" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-icon flaticon-multimedia-1"></i>
-									<span class="m-menu__link-text">
-										Phone Lines Management
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-								<div class="m-menu__submenu ">
-									<span class="m-menu__arrow"></span>
-									<ul class="m-menu__subnav">
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('phones/lines') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Phone Lines
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('phones/units') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Phone Units
-												</span>
-											</a>
-										</li>
-										<li class="m-menu__item " aria-haspopup="true" >
-											<a  href="{{ url('phones/transactions') }}" class="m-menu__link ">
-												<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-													<span></span>
-												</i>
-												<span class="m-menu__link-text">
-													Phone Transaction Transfers
-												</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-						</ul>
-					</div>
-					<!-- END: Aside Menu -->
-				</div>
-				<!-- END: Left Aside -->
-				<div class="m-grid__item m-grid__item--fluid m-wrapper">
-					<!-- BEGIN: Subheader -->
-					<div class="m-subheader ">
-						<div class="d-flex align-items-center">
-							<div class="mr-auto">
-								<h3 class="m-subheader__title ">
-									{{ $page_title }}
-								</h3>
-							</div>
-							<div>
-								 
-							</div>
-						</div>
-					</div>
-					<!-- END: Subheader -->
-					<div class="m-content">
-                     @yield("content")
-					</div>
-				</div>
-			</div>
-			<!-- end:: Body -->
-<!-- begin::Footer -->
-			<footer class="m-grid__item		m-footer ">
-				<div class="m-container m-container--fluid m-container--full-height m-page__container">
-					<div class="m-stack m-stack--flex-tablet-and-mobile m-stack--ver m-stack--desktop">
-						<div class="m-stack__item m-stack__item--left m-stack__item--middle m-stack__item--last">
-							<span class="m-footer__copyright">
-								2019 &copy; ERP
-								<a href="{{ url("#") }}" class="m-link">
-									ERP
-								</a>
-							</span>
-						</div>
-						<div class="m-stack__item m-stack__item--right m-stack__item--middle m-stack__item--first">
-							 
-						</div>
-					</div>
-				</div>
-			</footer>
-			<!-- end::Footer -->
-		</div>
-		<!-- end:: Page -->
-    		        <!-- begin::Quick Sidebar -->
-		<div id="m_quick_sidebar" class="m-quick-sidebar m-quick-sidebar--tabbed m-quick-sidebar--skin-light">
-			<div class="m-quick-sidebar__content m--hide">
-				<span id="m_quick_sidebar_close" class="m-quick-sidebar__close">
-					<i class="la la-close"></i>
-				</span>
-				<ul id="m_quick_sidebar_tabs" class="nav nav-tabs m-tabs m-tabs-line m-tabs-line--brand" role="tablist">
-					<li class="nav-item m-tabs__item">
-						<a class="nav-link m-tabs__link active" data-toggle="tab" href="#m_quick_sidebar_tabs_messenger" role="tab">
-							Messages
-						</a>
-					</li>
-					<li class="nav-item m-tabs__item">
-						<a class="nav-link m-tabs__link" 		data-toggle="tab" href="#m_quick_sidebar_tabs_settings" role="tab">
-							Settings
-						</a>
-					</li>
-					<li class="nav-item m-tabs__item">
-						<a class="nav-link m-tabs__link" data-toggle="tab" href="#m_quick_sidebar_tabs_logs" role="tab">
-							Logs
-						</a>
-					</li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane active m-scrollable" id="m_quick_sidebar_tabs_messenger" role="tabpanel">
-						<div class="m-messenger m-messenger--message-arrow m-messenger--skin-light">
-							<div class="m-messenger__messages">
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--in">
-										<div class="m-messenger__message-pic">
-											<img src="assets/app/media/img//users/user3.jpg" alt=""/>
-										</div>
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-username">
-													Megan wrote
-												</div>
-												<div class="m-messenger__message-text">
-													Hi Bob. What time will be the meeting ?
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--out">
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-text">
-													Hi Megan. It's at 2.30PM
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--in">
-										<div class="m-messenger__message-pic">
-											<img src="assets/app/media/img//users/user3.jpg" alt=""/>
-										</div>
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-username">
-													Megan wrote
-												</div>
-												<div class="m-messenger__message-text">
-													Will the development team be joining ?
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--out">
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-text">
-													Yes sure. I invited them as well
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__datetime">
-									2:30PM
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--in">
-										<div class="m-messenger__message-pic">
-											<img src="assets/app/media/img//users/user3.jpg"  alt=""/>
-										</div>
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-username">
-													Megan wrote
-												</div>
-												<div class="m-messenger__message-text">
-													Noted. For the Coca-Cola Mobile App project as well ?
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--out">
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-text">
-													Yes, sure.
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--out">
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-text">
-													Please also prepare the quotation for the Loop CRM project as well.
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__datetime">
-									3:15PM
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--in">
-										<div class="m-messenger__message-no-pic m--bg-fill-danger">
-											<span>
-												M
-											</span>
-										</div>
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-username">
-													Megan wrote
-												</div>
-												<div class="m-messenger__message-text">
-													Noted. I will prepare it.
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--out">
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-text">
-													Thanks Megan. I will see you later.
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="m-messenger__wrapper">
-									<div class="m-messenger__message m-messenger__message--in">
-										<div class="m-messenger__message-pic">
-											<img src="assets/app/media/img//users/user3.jpg"  alt=""/>
-										</div>
-										<div class="m-messenger__message-body">
-											<div class="m-messenger__message-arrow"></div>
-											<div class="m-messenger__message-content">
-												<div class="m-messenger__message-username">
-													Megan wrote
-												</div>
-												<div class="m-messenger__message-text">
-													Sure. See you in the meeting soon.
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="m-messenger__seperator"></div>
-							<div class="m-messenger__form">
-								<div class="m-messenger__form-controls">
-									<input type="text" name="" placeholder="Type here..." class="m-messenger__form-input">
-								</div>
-								<div class="m-messenger__form-tools">
-									<a href="" class="m-messenger__form-attachment">
-										<i class="la la-paperclip"></i>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+									<a href="#" class="menu-link px-3">
+										<span class="menu-title">Groups</span>
+										<span class="menu-arrow"></span>
 									</a>
+									<!--begin::Menu sub-->
+									<div class="menu-sub menu-sub-dropdown w-175px py-4">
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Create Group</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Invite Members</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Settings</a>
+										</div>
+										<!--end::Menu item-->
+									</div>
+									<!--end::Menu sub-->
 								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3 my-1">
+									<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Settings</a>
+								</div>
+								<!--end::Menu item-->
 							</div>
+							<!--end::Menu 3-->
 						</div>
-					</div>
-					<div class="tab-pane  m-scrollable" id="m_quick_sidebar_tabs_settings" role="tabpanel">
-						<div class="m-list-settings">
-							<div class="m-list-settings__group">
-								<div class="m-list-settings__heading">
-									General Settings
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Email Notifications
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" checked="checked" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Site Tracking
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										SMS Alerts
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Backup Storage
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Audit Logs
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" checked="checked" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-							</div>
-							<div class="m-list-settings__group">
-								<div class="m-list-settings__heading">
-									System Settings
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										System Logs
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Error Reporting
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Applications Logs
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Backup Servers
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" checked="checked" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-								<div class="m-list-settings__item">
-									<span class="m-list-settings__item-label">
-										Audit Logs
-									</span>
-									<span class="m-list-settings__item-control">
-										<span class="m-switch m-switch--outline m-switch--icon-check m-switch--brand">
-											<label>
-												<input type="checkbox" name="">
-												<span></span>
-											</label>
-										</span>
-									</span>
-								</div>
-							</div>
+						<!--end::Menu-->
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" id="kt_drawer_chat_close">
+							<i class="ki-duotone ki-cross-square fs-2">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
 						</div>
+						<!--end::Close-->
 					</div>
-					<div class="tab-pane  m-scrollable" id="m_quick_sidebar_tabs_logs" role="tabpanel">
-						<div class="m-list-timeline">
-							<div class="m-list-timeline__group">
-								<div class="m-list-timeline__heading">
-									System Logs
-								</div>
-								<div class="m-list-timeline__items">
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											12 new users registered
-											<span class="m-badge m-badge--warning m-badge--wide">
-												important
-											</span>
-										</a>
-										<span class="m-list-timeline__time">
-											Just now
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											System shutdown
-										</a>
-										<span class="m-list-timeline__time">
-											11 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-danger"></span>
-										<a href="" class="m-list-timeline__text">
-											New invoice received
-										</a>
-										<span class="m-list-timeline__time">
-											20 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-warning"></span>
-										<a href="" class="m-list-timeline__text">
-											Database overloaded 89%
-											<span class="m-badge m-badge--success m-badge--wide">
-												resolved
-											</span>
-										</a>
-										<span class="m-list-timeline__time">
-											1 hr
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											System error
-										</a>
-										<span class="m-list-timeline__time">
-											2 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server down
-											<span class="m-badge m-badge--danger m-badge--wide">
-												pending
-											</span>
-										</a>
-										<span class="m-list-timeline__time">
-											3 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server up
-										</a>
-										<span class="m-list-timeline__time">
-											5 hrs
-										</span>
-									</div>
-								</div>
-							</div>
-							<div class="m-list-timeline__group">
-								<div class="m-list-timeline__heading">
-									Applications Logs
-								</div>
-								<div class="m-list-timeline__items">
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											New order received
-											<span class="m-badge m-badge--info m-badge--wide">
-												urgent
-											</span>
-										</a>
-										<span class="m-list-timeline__time">
-											7 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											12 new users registered
-										</a>
-										<span class="m-list-timeline__time">
-											Just now
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											System shutdown
-										</a>
-										<span class="m-list-timeline__time">
-											11 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-danger"></span>
-										<a href="" class="m-list-timeline__text">
-											New invoices received
-										</a>
-										<span class="m-list-timeline__time">
-											20 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-warning"></span>
-										<a href="" class="m-list-timeline__text">
-											Database overloaded 89%
-										</a>
-										<span class="m-list-timeline__time">
-											1 hr
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											System error
-											<span class="m-badge m-badge--info m-badge--wide">
-												pending
-											</span>
-										</a>
-										<span class="m-list-timeline__time">
-											2 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server down
-										</a>
-										<span class="m-list-timeline__time">
-											3 hrs
-										</span>
-									</div>
-								</div>
-							</div>
-							<div class="m-list-timeline__group">
-								<div class="m-list-timeline__heading">
-									Server Logs
-								</div>
-								<div class="m-list-timeline__items">
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server up
-										</a>
-										<span class="m-list-timeline__time">
-											5 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											New order received
-										</a>
-										<span class="m-list-timeline__time">
-											7 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											12 new users registered
-										</a>
-										<span class="m-list-timeline__time">
-											Just now
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											System shutdown
-										</a>
-										<span class="m-list-timeline__time">
-											11 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-danger"></span>
-										<a href="" class="m-list-timeline__text">
-											New invoice received
-										</a>
-										<span class="m-list-timeline__time">
-											20 mins
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-warning"></span>
-										<a href="" class="m-list-timeline__text">
-											Database overloaded 89%
-										</a>
-										<span class="m-list-timeline__time">
-											1 hr
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											System error
-										</a>
-										<span class="m-list-timeline__time">
-											2 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server down
-										</a>
-										<span class="m-list-timeline__time">
-											3 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-										<a href="" class="m-list-timeline__text">
-											Production server up
-										</a>
-										<span class="m-list-timeline__time">
-											5 hrs
-										</span>
-									</div>
-									<div class="m-list-timeline__item">
-										<span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-										<a href="" class="m-list-timeline__text">
-											New order received
-										</a>
-										<span class="m-list-timeline__time">
-											1117 hrs
-										</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					<!--end::Card toolbar-->
 				</div>
+				<!--end::Card header-->
+				<!--begin::Card body-->
+				<div class="card-body" id="kt_drawer_chat_messenger_body">
+					<!--begin::Messages-->
+					<div class="scroll-y me-n5 pe-5" data-kt-element="messages" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer" data-kt-scroll-wrappers="#kt_drawer_chat_messenger_body" data-kt-scroll-offset="0px">
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">2 mins</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">How likely are you to recommend our company to your friends and family ?</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">5 mins</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">Hey there, we’re just writing to let you know that you’ve been subscribed to a repository on GitHub.</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">1 Hour</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Ok, Understood!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">2 Hours</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">You’ll receive notifications for all issues, pull requests!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">3 Hours</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">You can unwatch this repository immediately by clicking here:
+								<a href="https://keenthemes.com">Keenthemes.com</a></div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">4 Hours</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">Most purchased Business courses during this sale!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">5 Hours</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Company BBQ to celebrate the last quater achievements and goals. Food and drinks provided</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(template for out)-->
+						<div class="d-flex justify-content-end mb-10 d-none" data-kt-element="template-out">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">Just now</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text"></div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(template for out)-->
+						<!--begin::Message(template for in)-->
+						<div class="d-flex justify-content-start mb-10 d-none" data-kt-element="template-in">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">Just now</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Right before vacation season we have the next Big Deal for you.</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(template for in)-->
+					</div>
+					<!--end::Messages-->
+				</div>
+				<!--end::Card body-->
+				<!--begin::Card footer-->
+				<div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+					<!--begin::Input-->
+					<textarea class="form-control form-control-flush mb-3" rows="1" data-kt-element="input" placeholder="Type a message"></textarea>
+					<!--end::Input-->
+					<!--begin:Toolbar-->
+					<div class="d-flex flex-stack">
+						<!--begin::Actions-->
+						<div class="d-flex align-items-center me-2">
+							<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Coming soon">
+								<i class="ki-duotone ki-paper-clip fs-3"></i>
+							</button>
+							<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Coming soon">
+								<i class="ki-duotone ki-cloud-add fs-3">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</button>
+						</div>
+						<!--end::Actions-->
+						<!--begin::Send-->
+						<button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+						<!--end::Send-->
+					</div>
+					<!--end::Toolbar-->
+				</div>
+				<!--end::Card footer-->
 			</div>
+			<!--end::Messenger-->
 		</div>
-		<!-- #ManageYearlyClosingModal  -->
-		<div class="modal fade" id="FisicalYearModal" tabindex="-1" role="dialog" aria-labelledby="FisicalYearModalTitle" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Closing Year Manager</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-               		<div class="container-fluid">
-               			<div class="row">
-               				<div class="col-md-6">
-               					 <div class="form-group">
-                                    <label class="control-label">Closing Fisical Year</label><br/>
-                                    <select name="fisical_year" class="form-control" id="FISICAL_YEAR">
-                                    	<option value="0">-- Select One --</option>
-                                    	<?php
-                                    	   $syear = intval(session("company_starting_year"));
-                                    	   $eyear = date("Y");
-                                    	   for ($i = $syear; $i <= $eyear; $i++) {
-                                    	       ?>
-                                    				<option <?= isset($_COOKIE['fisical_year']) && $_COOKIE['fisical_year'] == $i ? "selected" : ""  ?> value="{{ $i }}">{{ $i }}</option>
-                                    	       <?php
-                                    	   }
-                                    	
-                                    	?> 
-                                    </select>
-                                </div>
-               				</div>
-               				<div class="col-md-6"></div>
-               			</div>
-               		</div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" name="btn_save_fyear" class="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div>
-		<!-- end::Quick Sidebar -->
-	    <!-- begin::Scroll Top -->
-		<div class="m-scroll-top m-scroll-top--skin-top" data-toggle="m-scroll-top" data-scroll-offset="500" data-scroll-speed="300">
-			<i class="la la-arrow-up"></i>
+		<!--end::Chat drawer-->
+		<!--begin::Chat drawer-->
+		<div id="kt_shopping_cart" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="cart" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_drawer_shopping_cart_toggle" data-kt-drawer-close="#kt_drawer_shopping_cart_close">
+			<!--begin::Messenger-->
+			<div class="card card-flush w-100 rounded-0">
+				<!--begin::Card header-->
+				<div class="card-header">
+					<!--begin::Title-->
+					<h3 class="card-title text-gray-900 fw-bold">Shopping Cart</h3>
+					<!--end::Title-->
+					<!--begin::Card toolbar-->
+					<div class="card-toolbar">
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-light-primary" id="kt_drawer_shopping_cart_close">
+							<i class="ki-duotone ki-cross fs-2">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--end::Card toolbar-->
+				</div>
+				<!--end::Card header-->
+				<!--begin::Card body-->
+				<div class="card-body hover-scroll-overlay-y h-400px pt-5">
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">Iblender</a>
+								<span class="text-gray-400 fw-semibold d-block">The best kitchen gadget in 2022</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 350</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">5</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-1.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">SmartCleaner</a>
+								<span class="text-gray-400 fw-semibold d-block">Smart tool for cooking</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 650</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">4</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-3.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">CameraMaxr</a>
+								<span class="text-gray-400 fw-semibold d-block">Professional camera for edge</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 150</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">3</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-8.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">$D Printer</a>
+								<span class="text-gray-400 fw-semibold d-block">Manfactoring unique objekts</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 1450</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">7</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-26.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">MotionWire</a>
+								<span class="text-gray-400 fw-semibold d-block">Perfect animation tool</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 650</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">7</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-21.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">Samsung</a>
+								<span class="text-gray-400 fw-semibold d-block">Profile info,Timeline etc</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 720</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">6</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-34.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+					<!--begin::Separator-->
+					<div class="separator separator-dashed my-6"></div>
+					<!--end::Separator-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<!--begin::Wrapper-->
+						<div class="d-flex flex-column me-3">
+							<!--begin::Section-->
+							<div class="mb-3">
+								<a href="../../demo9/dist/apps/ecommerce/sales/details.html" class="text-gray-800 text-hover-primary fs-4 fw-bold">$D Printer</a>
+								<span class="text-gray-400 fw-semibold d-block">Manfactoring unique objekts</span>
+							</div>
+							<!--end::Section-->
+							<!--begin::Section-->
+							<div class="d-flex align-items-center">
+								<span class="fw-bold text-gray-800 fs-5">$ 430</span>
+								<span class="text-muted mx-2">for</span>
+								<span class="fw-bold text-gray-800 fs-5 me-3">8</span>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon-success btn-icon w-25px h-25px me-2">
+									<i class="ki-duotone ki-minus fs-4"></i>
+								</a>
+								<a href="#" class="btn btn-sm btn-light-success btn-icon w-25px h-25px">
+									<i class="ki-duotone ki-plus fs-4"></i>
+								</a>
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Wrapper-->
+						<!--begin::Pic-->
+						<div class="symbol symbol-70px symbol-2by3 flex-shrink-0">
+							<img src="assets/media/stock/600x400/img-27.jpg" alt="" />
+						</div>
+						<!--end::Pic-->
+					</div>
+					<!--end::Item-->
+				</div>
+				<!--end::Card body-->
+				<!--begin::Card footer-->
+				<div class="card-footer">
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<span class="fw-bold text-gray-600">Total</span>
+						<span class="text-gray-800 fw-bolder fs-5">$ 1840.00</span>
+					</div>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<div class="d-flex flex-stack">
+						<span class="fw-bold text-gray-600">Sub total</span>
+						<span class="text-primary fw-bolder fs-5">$ 246.35</span>
+					</div>
+					<!--end::Item-->
+					<!--end::Action-->
+					<div class="d-flex justify-content-end mt-9">
+						<a href="#" class="btn btn-primary d-flex justify-content-end">Pleace Order</a>
+					</div>
+					<!--end::Action-->
+				</div>
+				<!--end::Card footer-->
+			</div>
+			<!--end::Messenger-->
 		</div>
-		<!-- end::Scroll Top -->		    <!-- begin::Quick Nav -->
-		<ul class="m-nav-sticky" style="margin-top: 30px;">
-			<!--
-			<li class="m-nav-sticky__item" data-toggle="m-tooltip" title="Showcase" data-placement="left">
-				<a href="">
-					<i class="la la-eye"></i>
-				</a>
-			</li>
-			<li class="m-nav-sticky__item" data-toggle="m-tooltip" title="Pre-sale Chat" data-placement="left">
-				<a href="" >
-					<i class="la la-comments-o"></i>
-				</a>
-			</li>
-			-->
-			<li class="m-nav-sticky__item" data-toggle="m-tooltip" title="Purchase" data-placement="left">
-				<a href="https://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes" target="_blank">
-					<i class="la la-cart-arrow-down"></i>
-				</a>
-			</li>
-			<li class="m-nav-sticky__item" data-toggle="m-tooltip" title="Documentation" data-placement="left">
-				<a href="https://keenthemes.com/metronic/documentation.html" target="_blank">
-					<i class="la la-code-fork"></i>
-				</a>
-			</li>
-			<li class="m-nav-sticky__item" data-toggle="m-tooltip" title="Support" data-placement="left">
-				<a href="https://keenthemes.com/forums/forum/support/metronic5/" target="_blank">
-					<i class="la la-life-ring"></i>
-				</a>
-			</li>
-		</ul>
-		<!-- begin::Quick Nav -->
-    	<!--begin::Base Scripts -->
-		<script src="{{ url('default/assets/vendors/base/vendors.bundle.js') }}" type="text/javascript"></script>
-		<script src="{{ url('default/assets/demo/default/base/scripts.bundle.js') }}" type="text/javascript"></script>
-			
-		<!--end::Base Scripts -->
-        <!--begin::Page Vendors -->
-		<script src="{{ url('default/assets/vendors/custom/fullcalendar/fullcalendar.bundle.js') }}" type="text/javascript"></script>
-		<!--end::Page Vendors -->
-        <!--begin::Page Snippets -->
+		<!--end::Chat drawer-->
+		<!--end::Drawers-->
+		<!--end::Main-->
+		<!--begin::Scrolltop-->
+		<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+			<i class="ki-duotone ki-arrow-up">
+				<span class="path1"></span>
+				<span class="path2"></span>
+			</i>
+		</div>
+		<!--end::Scrolltop-->
+		<!--begin::Modals-->
+		<!--begin::Modal - Upgrade plan-->
+		<div class="modal fade" id="kt_modal_upgrade_plan" tabindex="-1" aria-hidden="true">
+			<!--begin::Modal dialog-->
+			<div class="modal-dialog modal-xl">
+				<!--begin::Modal content-->
+				<div class="modal-content rounded">
+					<!--begin::Modal header-->
+					<div class="modal-header justify-content-end border-0 pb-0">
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--end::Modal header-->
+					<!--begin::Modal body-->
+					<div class="modal-body pt-0 pb-15 px-5 px-xl-20">
+						<!--begin::Heading-->
+						<div class="mb-13 text-center">
+							<h1 class="mb-3">Upgrade a Plan</h1>
+							<div class="text-muted fw-semibold fs-5">If you need more info, please check
+							<a href="#" class="link-primary fw-bold">Pricing Guidelines</a>.</div>
+						</div>
+						<!--end::Heading-->
+						<!--begin::Plans-->
+						<div class="d-flex flex-column">
+							<!--begin::Nav group-->
+							<div class="nav-group nav-group-outline mx-auto" data-kt-buttons="true">
+								<button class="btn btn-color-gray-400 btn-active btn-active-secondary px-6 py-3 me-2 active" data-kt-plan="month">Monthly</button>
+								<button class="btn btn-color-gray-400 btn-active btn-active-secondary px-6 py-3" data-kt-plan="annual">Annual</button>
+							</div>
+							<!--end::Nav group-->
+							<!--begin::Row-->
+							<div class="row mt-10">
+								<!--begin::Col-->
+								<div class="col-lg-6 mb-10 mb-lg-0">
+									<!--begin::Tabs-->
+									<div class="nav flex-column">
+										<!--begin::Tab link-->
+										<label class="nav-link btn btn-outline btn-outline-dashed btn-color-dark btn-active btn-active-primary d-flex flex-stack text-start p-6 active mb-6" data-bs-toggle="tab" data-bs-target="#kt_upgrade_plan_startup">
+											<!--end::Description-->
+											<div class="d-flex align-items-center me-2">
+												<!--begin::Radio-->
+												<div class="form-check form-check-custom form-check-solid form-check-success flex-shrink-0 me-6">
+													<input class="form-check-input" type="radio" name="plan" checked="checked" value="startup" />
+												</div>
+												<!--end::Radio-->
+												<!--begin::Info-->
+												<div class="flex-grow-1">
+													<div class="d-flex align-items-center fs-2 fw-bold flex-wrap">Startup</div>
+													<div class="fw-semibold opacity-75">Best for startups</div>
+												</div>
+												<!--end::Info-->
+											</div>
+											<!--end::Description-->
+											<!--begin::Price-->
+											<div class="ms-5">
+												<span class="mb-2">$</span>
+												<span class="fs-3x fw-bold" data-kt-plan-price-month="39" data-kt-plan-price-annual="399">39</span>
+												<span class="fs-7 opacity-50">/
+												<span data-kt-element="period">Mon</span></span>
+											</div>
+											<!--end::Price-->
+										</label>
+										<!--end::Tab link-->
+										<!--begin::Tab link-->
+										<label class="nav-link btn btn-outline btn-outline-dashed btn-color-dark btn-active btn-active-primary d-flex flex-stack text-start p-6 mb-6" data-bs-toggle="tab" data-bs-target="#kt_upgrade_plan_advanced">
+											<!--end::Description-->
+											<div class="d-flex align-items-center me-2">
+												<!--begin::Radio-->
+												<div class="form-check form-check-custom form-check-solid form-check-success flex-shrink-0 me-6">
+													<input class="form-check-input" type="radio" name="plan" value="advanced" />
+												</div>
+												<!--end::Radio-->
+												<!--begin::Info-->
+												<div class="flex-grow-1">
+													<div class="d-flex align-items-center fs-2 fw-bold flex-wrap">Advanced</div>
+													<div class="fw-semibold opacity-75">Best for 100+ team size</div>
+												</div>
+												<!--end::Info-->
+											</div>
+											<!--end::Description-->
+											<!--begin::Price-->
+											<div class="ms-5">
+												<span class="mb-2">$</span>
+												<span class="fs-3x fw-bold" data-kt-plan-price-month="339" data-kt-plan-price-annual="3399">339</span>
+												<span class="fs-7 opacity-50">/
+												<span data-kt-element="period">Mon</span></span>
+											</div>
+											<!--end::Price-->
+										</label>
+										<!--end::Tab link-->
+										<!--begin::Tab link-->
+										<label class="nav-link btn btn-outline btn-outline-dashed btn-color-dark btn-active btn-active-primary d-flex flex-stack text-start p-6 mb-6" data-bs-toggle="tab" data-bs-target="#kt_upgrade_plan_enterprise">
+											<!--end::Description-->
+											<div class="d-flex align-items-center me-2">
+												<!--begin::Radio-->
+												<div class="form-check form-check-custom form-check-solid form-check-success flex-shrink-0 me-6">
+													<input class="form-check-input" type="radio" name="plan" value="enterprise" />
+												</div>
+												<!--end::Radio-->
+												<!--begin::Info-->
+												<div class="flex-grow-1">
+													<div class="d-flex align-items-center fs-2 fw-bold flex-wrap">Enterprise
+													<span class="badge badge-light-success ms-2 py-2 px-3 fs-7">Popular</span></div>
+													<div class="fw-semibold opacity-75">Best value for 1000+ team</div>
+												</div>
+												<!--end::Info-->
+											</div>
+											<!--end::Description-->
+											<!--begin::Price-->
+											<div class="ms-5">
+												<span class="mb-2">$</span>
+												<span class="fs-3x fw-bold" data-kt-plan-price-month="999" data-kt-plan-price-annual="9999">999</span>
+												<span class="fs-7 opacity-50">/
+												<span data-kt-element="period">Mon</span></span>
+											</div>
+											<!--end::Price-->
+										</label>
+										<!--end::Tab link-->
+										<!--begin::Tab link-->
+										<label class="nav-link btn btn-outline btn-outline-dashed btn-color-dark btn-active btn-active-primary d-flex flex-stack text-start p-6 mb-6" data-bs-toggle="tab" data-bs-target="#kt_upgrade_plan_custom">
+											<!--end::Description-->
+											<div class="d-flex align-items-center me-2">
+												<!--begin::Radio-->
+												<div class="form-check form-check-custom form-check-solid form-check-success flex-shrink-0 me-6">
+													<input class="form-check-input" type="radio" name="plan" value="custom" />
+												</div>
+												<!--end::Radio-->
+												<!--begin::Info-->
+												<div class="flex-grow-1">
+													<div class="d-flex align-items-center fs-2 fw-bold flex-wrap">Custom</div>
+													<div class="fw-semibold opacity-75">Requet a custom license</div>
+												</div>
+												<!--end::Info-->
+											</div>
+											<!--end::Description-->
+											<!--begin::Price-->
+											<div class="ms-5">
+												<a href="#" class="btn btn-sm btn-success">Contact Us</a>
+											</div>
+											<!--end::Price-->
+										</label>
+										<!--end::Tab link-->
+									</div>
+									<!--end::Tabs-->
+								</div>
+								<!--end::Col-->
+								<!--begin::Col-->
+								<div class="col-lg-6">
+									<!--begin::Tab content-->
+									<div class="tab-content rounded h-100 bg-light p-10">
+										<!--begin::Tab Pane-->
+										<div class="tab-pane fade show active" id="kt_upgrade_plan_startup">
+											<!--begin::Heading-->
+											<div class="pb-5">
+												<h2 class="fw-bold text-dark">What’s in Startup Plan?</h2>
+												<div class="text-muted fw-semibold">Optimal for 10+ team size and new startup</div>
+											</div>
+											<!--end::Heading-->
+											<!--begin::Body-->
+											<div class="pt-1">
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 10 Active Users</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 30 Project Integrations</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Analytics Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Finance Module</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Accounting Module</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Network Platform</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Unlimited Cloud Space</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+											</div>
+											<!--end::Body-->
+										</div>
+										<!--end::Tab Pane-->
+										<!--begin::Tab Pane-->
+										<div class="tab-pane fade" id="kt_upgrade_plan_advanced">
+											<!--begin::Heading-->
+											<div class="pb-5">
+												<h2 class="fw-bold text-dark">What’s in Startup Plan?</h2>
+												<div class="text-muted fw-semibold">Optimal for 100+ team size and grown company</div>
+											</div>
+											<!--end::Heading-->
+											<!--begin::Body-->
+											<div class="pt-1">
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 10 Active Users</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 30 Project Integrations</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Analytics Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Finance Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Accounting Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Network Platform</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center">
+													<span class="fw-semibold fs-5 text-muted flex-grow-1">Unlimited Cloud Space</span>
+													<i class="ki-duotone ki-cross-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+											</div>
+											<!--end::Body-->
+										</div>
+										<!--end::Tab Pane-->
+										<!--begin::Tab Pane-->
+										<div class="tab-pane fade" id="kt_upgrade_plan_enterprise">
+											<!--begin::Heading-->
+											<div class="pb-5">
+												<h2 class="fw-bold text-dark">What’s in Startup Plan?</h2>
+												<div class="text-muted fw-semibold">Optimal for 1000+ team and enterpise</div>
+											</div>
+											<!--end::Heading-->
+											<!--begin::Body-->
+											<div class="pt-1">
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 10 Active Users</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Up to 30 Project Integrations</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Analytics Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Finance Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Accounting Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Network Platform</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Unlimited Cloud Space</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+											</div>
+											<!--end::Body-->
+										</div>
+										<!--end::Tab Pane-->
+										<!--begin::Tab Pane-->
+										<div class="tab-pane fade" id="kt_upgrade_plan_custom">
+											<!--begin::Heading-->
+											<div class="pb-5">
+												<h2 class="fw-bold text-dark">What’s in Startup Plan?</h2>
+												<div class="text-muted fw-semibold">Optimal for corporations</div>
+											</div>
+											<!--end::Heading-->
+											<!--begin::Body-->
+											<div class="pt-1">
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Unlimited Users</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Unlimited Project Integrations</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Analytics Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Finance Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Accounting Module</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center mb-7">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Network Platform</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+												<!--begin::Item-->
+												<div class="d-flex align-items-center">
+													<span class="fw-semibold fs-5 text-gray-700 flex-grow-1">Unlimited Cloud Space</span>
+													<i class="ki-duotone ki-check-circle fs-1 text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</div>
+												<!--end::Item-->
+											</div>
+											<!--end::Body-->
+										</div>
+										<!--end::Tab Pane-->
+									</div>
+									<!--end::Tab content-->
+								</div>
+								<!--end::Col-->
+							</div>
+							<!--end::Row-->
+						</div>
+						<!--end::Plans-->
+						<!--begin::Actions-->
+						<div class="d-flex flex-center flex-row-fluid pt-12">
+							<button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary" id="kt_modal_upgrade_plan_btn">
+								<!--begin::Indicator label-->
+								<span class="indicator-label">Upgrade Plan</span>
+								<!--end::Indicator label-->
+								<!--begin::Indicator progress-->
+								<span class="indicator-progress">Please wait...
+								<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+								<!--end::Indicator progress-->
+							</button>
+						</div>
+						<!--end::Actions-->
+					</div>
+					<!--end::Modal body-->
+				</div>
+				<!--end::Modal content-->
+			</div>
+			<!--end::Modal dialog-->
+		</div>
+		<!--end::Modal - Upgrade plan-->
+		<!--begin::Modal - Create App-->
+		<div class="modal fade" id="kt_modal_create_app" tabindex="-1" aria-hidden="true">
+			<!--begin::Modal dialog-->
+			<div class="modal-dialog modal-dialog-centered mw-900px">
+				<!--begin::Modal content-->
+				<div class="modal-content">
+					<!--begin::Modal header-->
+					<div class="modal-header">
+						<!--begin::Modal title-->
+						<h2>Create App</h2>
+						<!--end::Modal title-->
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--end::Modal header-->
+					<!--begin::Modal body-->
+					<div class="modal-body py-lg-10 px-lg-10">
+						<!--begin::Stepper-->
+						<div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid" id="kt_modal_create_app_stepper">
+							<!--begin::Aside-->
+							<div class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px">
+								<!--begin::Nav-->
+								<div class="stepper-nav ps-lg-10">
+									<!--begin::Step 1-->
+									<div class="stepper-item current" data-kt-stepper-element="nav">
+										<!--begin::Wrapper-->
+										<div class="stepper-wrapper">
+											<!--begin::Icon-->
+											<div class="stepper-icon w-40px h-40px">
+												<i class="ki-duotone ki-check stepper-check fs-2"></i>
+												<span class="stepper-number">1</span>
+											</div>
+											<!--end::Icon-->
+											<!--begin::Label-->
+											<div class="stepper-label">
+												<h3 class="stepper-title">Details</h3>
+												<div class="stepper-desc">Name your App</div>
+											</div>
+											<!--end::Label-->
+										</div>
+										<!--end::Wrapper-->
+										<!--begin::Line-->
+										<div class="stepper-line h-40px"></div>
+										<!--end::Line-->
+									</div>
+									<!--end::Step 1-->
+									<!--begin::Step 2-->
+									<div class="stepper-item" data-kt-stepper-element="nav">
+										<!--begin::Wrapper-->
+										<div class="stepper-wrapper">
+											<!--begin::Icon-->
+											<div class="stepper-icon w-40px h-40px">
+												<i class="ki-duotone ki-check stepper-check fs-2"></i>
+												<span class="stepper-number">2</span>
+											</div>
+											<!--begin::Icon-->
+											<!--begin::Label-->
+											<div class="stepper-label">
+												<h3 class="stepper-title">Frameworks</h3>
+												<div class="stepper-desc">Define your app framework</div>
+											</div>
+											<!--begin::Label-->
+										</div>
+										<!--end::Wrapper-->
+										<!--begin::Line-->
+										<div class="stepper-line h-40px"></div>
+										<!--end::Line-->
+									</div>
+									<!--end::Step 2-->
+									<!--begin::Step 3-->
+									<div class="stepper-item" data-kt-stepper-element="nav">
+										<!--begin::Wrapper-->
+										<div class="stepper-wrapper">
+											<!--begin::Icon-->
+											<div class="stepper-icon w-40px h-40px">
+												<i class="ki-duotone ki-check stepper-check fs-2"></i>
+												<span class="stepper-number">3</span>
+											</div>
+											<!--end::Icon-->
+											<!--begin::Label-->
+											<div class="stepper-label">
+												<h3 class="stepper-title">Database</h3>
+												<div class="stepper-desc">Select the app database type</div>
+											</div>
+											<!--end::Label-->
+										</div>
+										<!--end::Wrapper-->
+										<!--begin::Line-->
+										<div class="stepper-line h-40px"></div>
+										<!--end::Line-->
+									</div>
+									<!--end::Step 3-->
+									<!--begin::Step 4-->
+									<div class="stepper-item" data-kt-stepper-element="nav">
+										<!--begin::Wrapper-->
+										<div class="stepper-wrapper">
+											<!--begin::Icon-->
+											<div class="stepper-icon w-40px h-40px">
+												<i class="ki-duotone ki-check stepper-check fs-2"></i>
+												<span class="stepper-number">4</span>
+											</div>
+											<!--end::Icon-->
+											<!--begin::Label-->
+											<div class="stepper-label">
+												<h3 class="stepper-title">Billing</h3>
+												<div class="stepper-desc">Provide payment details</div>
+											</div>
+											<!--end::Label-->
+										</div>
+										<!--end::Wrapper-->
+										<!--begin::Line-->
+										<div class="stepper-line h-40px"></div>
+										<!--end::Line-->
+									</div>
+									<!--end::Step 4-->
+									<!--begin::Step 5-->
+									<div class="stepper-item mark-completed" data-kt-stepper-element="nav">
+										<!--begin::Wrapper-->
+										<div class="stepper-wrapper">
+											<!--begin::Icon-->
+											<div class="stepper-icon w-40px h-40px">
+												<i class="ki-duotone ki-check stepper-check fs-2"></i>
+												<span class="stepper-number">5</span>
+											</div>
+											<!--end::Icon-->
+											<!--begin::Label-->
+											<div class="stepper-label">
+												<h3 class="stepper-title">Completed</h3>
+												<div class="stepper-desc">Review and Submit</div>
+											</div>
+											<!--end::Label-->
+										</div>
+										<!--end::Wrapper-->
+									</div>
+									<!--end::Step 5-->
+								</div>
+								<!--end::Nav-->
+							</div>
+							<!--begin::Aside-->
+							<!--begin::Content-->
+							<div class="flex-row-fluid py-lg-5 px-lg-15">
+								<!--begin::Form-->
+								<form class="form" novalidate="novalidate" id="kt_modal_create_app_form">
+									<!--begin::Step 1-->
+									<div class="current" data-kt-stepper-element="content">
+										<div class="w-100">
+											<!--begin::Input group-->
+											<div class="fv-row mb-10">
+												<!--begin::Label-->
+												<label class="d-flex align-items-center fs-5 fw-semibold mb-2">
+													<span class="required">App Name</span>
+													<span class="ms-1" data-bs-toggle="tooltip" title="Specify your unique app name">
+														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</label>
+												<!--end::Label-->
+												<!--begin::Input-->
+												<input type="text" class="form-control form-control-lg form-control-solid" name="name" placeholder="" value="" />
+												<!--end::Input-->
+											</div>
+											<!--end::Input group-->
+											<!--begin::Input group-->
+											<div class="fv-row">
+												<!--begin::Label-->
+												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
+													<span class="required">Category</span>
+													<span class="ms-1" data-bs-toggle="tooltip" title="Select your app category">
+														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</label>
+												<!--end::Label-->
+												<!--begin:Options-->
+												<div class="fv-row">
+													<!--begin:Option-->
+													<label class="d-flex flex-stack mb-5 cursor-pointer">
+														<!--begin:Label-->
+														<span class="d-flex align-items-center me-2">
+															<!--begin:Icon-->
+															<span class="symbol symbol-50px me-6">
+																<span class="symbol-label bg-light-primary">
+																	<i class="ki-duotone ki-compass fs-1 text-primary">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>
+																</span>
+															</span>
+															<!--end:Icon-->
+															<!--begin:Info-->
+															<span class="d-flex flex-column">
+																<span class="fw-bold fs-6">Quick Online Courses</span>
+																<span class="fs-7 text-muted">Creating a clear text structure is just one SEO</span>
+															</span>
+															<!--end:Info-->
+														</span>
+														<!--end:Label-->
+														<!--begin:Input-->
+														<span class="form-check form-check-custom form-check-solid">
+															<input class="form-check-input" type="radio" name="category" value="1" />
+														</span>
+														<!--end:Input-->
+													</label>
+													<!--end::Option-->
+													<!--begin:Option-->
+													<label class="d-flex flex-stack mb-5 cursor-pointer">
+														<!--begin:Label-->
+														<span class="d-flex align-items-center me-2">
+															<!--begin:Icon-->
+															<span class="symbol symbol-50px me-6">
+																<span class="symbol-label bg-light-danger">
+																	<i class="ki-duotone ki-element-11 fs-1 text-danger">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																		<span class="path4"></span>
+																	</i>
+																</span>
+															</span>
+															<!--end:Icon-->
+															<!--begin:Info-->
+															<span class="d-flex flex-column">
+																<span class="fw-bold fs-6">Face to Face Discussions</span>
+																<span class="fs-7 text-muted">Creating a clear text structure is just one aspect</span>
+															</span>
+															<!--end:Info-->
+														</span>
+														<!--end:Label-->
+														<!--begin:Input-->
+														<span class="form-check form-check-custom form-check-solid">
+															<input class="form-check-input" type="radio" name="category" value="2" />
+														</span>
+														<!--end:Input-->
+													</label>
+													<!--end::Option-->
+													<!--begin:Option-->
+													<label class="d-flex flex-stack cursor-pointer">
+														<!--begin:Label-->
+														<span class="d-flex align-items-center me-2">
+															<!--begin:Icon-->
+															<span class="symbol symbol-50px me-6">
+																<span class="symbol-label bg-light-success">
+																	<i class="ki-duotone ki-timer fs-1 text-success">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																		<span class="path3"></span>
+																	</i>
+																</span>
+															</span>
+															<!--end:Icon-->
+															<!--begin:Info-->
+															<span class="d-flex flex-column">
+																<span class="fw-bold fs-6">Full Intro Training</span>
+																<span class="fs-7 text-muted">Creating a clear text structure copywriting</span>
+															</span>
+															<!--end:Info-->
+														</span>
+														<!--end:Label-->
+														<!--begin:Input-->
+														<span class="form-check form-check-custom form-check-solid">
+															<input class="form-check-input" type="radio" name="category" value="3" />
+														</span>
+														<!--end:Input-->
+													</label>
+													<!--end::Option-->
+												</div>
+												<!--end:Options-->
+											</div>
+											<!--end::Input group-->
+										</div>
+									</div>
+									<!--end::Step 1-->
+									<!--begin::Step 2-->
+									<div data-kt-stepper-element="content">
+										<div class="w-100">
+											<!--begin::Input group-->
+											<div class="fv-row">
+												<!--begin::Label-->
+												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
+													<span class="required">Select Framework</span>
+													<span class="ms-1" data-bs-toggle="tooltip" title="Specify your apps framework">
+														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</label>
+												<!--end::Label-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer mb-5">
+													<!--begin:Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin:Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-warning">
+																<i class="ki-duotone ki-html fs-2x text-warning">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</span>
+														</span>
+														<!--end:Icon-->
+														<!--begin:Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">HTML5</span>
+															<span class="fs-7 text-muted">Base Web Projec</span>
+														</span>
+														<!--end:Info-->
+													</span>
+													<!--end:Label-->
+													<!--begin:Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" checked="checked" name="framework" value="1" />
+													</span>
+													<!--end:Input-->
+												</label>
+												<!--end::Option-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer mb-5">
+													<!--begin:Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin:Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-success">
+																<i class="ki-duotone ki-react fs-2x text-success">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</span>
+														</span>
+														<!--end:Icon-->
+														<!--begin:Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">ReactJS</span>
+															<span class="fs-7 text-muted">Robust and flexible app framework</span>
+														</span>
+														<!--end:Info-->
+													</span>
+													<!--end:Label-->
+													<!--begin:Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="framework" value="2" />
+													</span>
+													<!--end:Input-->
+												</label>
+												<!--end::Option-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer mb-5">
+													<!--begin:Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin:Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-danger">
+																<i class="ki-duotone ki-angular fs-2x text-danger">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																	<span class="path3"></span>
+																</i>
+															</span>
+														</span>
+														<!--end:Icon-->
+														<!--begin:Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">Angular</span>
+															<span class="fs-7 text-muted">Powerful data mangement</span>
+														</span>
+														<!--end:Info-->
+													</span>
+													<!--end:Label-->
+													<!--begin:Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="framework" value="3" />
+													</span>
+													<!--end:Input-->
+												</label>
+												<!--end::Option-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer">
+													<!--begin:Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin:Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-primary">
+																<i class="ki-duotone ki-vue fs-2x text-primary">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</span>
+														</span>
+														<!--end:Icon-->
+														<!--begin:Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">Vue</span>
+															<span class="fs-7 text-muted">Lightweight and responsive framework</span>
+														</span>
+														<!--end:Info-->
+													</span>
+													<!--end:Label-->
+													<!--begin:Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="framework" value="4" />
+													</span>
+													<!--end:Input-->
+												</label>
+												<!--end::Option-->
+											</div>
+											<!--end::Input group-->
+										</div>
+									</div>
+									<!--end::Step 2-->
+									<!--begin::Step 3-->
+									<div data-kt-stepper-element="content">
+										<div class="w-100">
+											<!--begin::Input group-->
+											<div class="fv-row mb-10">
+												<!--begin::Label-->
+												<label class="required fs-5 fw-semibold mb-2">Database Name</label>
+												<!--end::Label-->
+												<!--begin::Input-->
+												<input type="text" class="form-control form-control-lg form-control-solid" name="dbname" placeholder="" value="master_db" />
+												<!--end::Input-->
+											</div>
+											<!--end::Input group-->
+											<!--begin::Input group-->
+											<div class="fv-row">
+												<!--begin::Label-->
+												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
+													<span class="required">Select Database Engine</span>
+													<span class="ms-1" data-bs-toggle="tooltip" title="Select your app database engine">
+														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</label>
+												<!--end::Label-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer mb-5">
+													<!--begin::Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin::Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-success">
+																<i class="ki-duotone ki-note text-success fs-2x">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</span>
+														</span>
+														<!--end::Icon-->
+														<!--begin::Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">MySQL</span>
+															<span class="fs-7 text-muted">Basic MySQL database</span>
+														</span>
+														<!--end::Info-->
+													</span>
+													<!--end::Label-->
+													<!--begin::Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="dbengine" checked="checked" value="1" />
+													</span>
+													<!--end::Input-->
+												</label>
+												<!--end::Option-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer mb-5">
+													<!--begin::Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin::Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-danger">
+																<i class="ki-duotone ki-google text-danger fs-2x">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+															</span>
+														</span>
+														<!--end::Icon-->
+														<!--begin::Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">Firebase</span>
+															<span class="fs-7 text-muted">Google based app data management</span>
+														</span>
+														<!--end::Info-->
+													</span>
+													<!--end::Label-->
+													<!--begin::Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="dbengine" value="2" />
+													</span>
+													<!--end::Input-->
+												</label>
+												<!--end::Option-->
+												<!--begin:Option-->
+												<label class="d-flex flex-stack cursor-pointer">
+													<!--begin::Label-->
+													<span class="d-flex align-items-center me-2">
+														<!--begin::Icon-->
+														<span class="symbol symbol-50px me-6">
+															<span class="symbol-label bg-light-warning">
+																<i class="ki-duotone ki-microsoft text-warning fs-2x">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																	<span class="path3"></span>
+																	<span class="path4"></span>
+																</i>
+															</span>
+														</span>
+														<!--end::Icon-->
+														<!--begin::Info-->
+														<span class="d-flex flex-column">
+															<span class="fw-bold fs-6">DynamoDB</span>
+															<span class="fs-7 text-muted">Microsoft Fast NoSQL Database</span>
+														</span>
+														<!--end::Info-->
+													</span>
+													<!--end::Label-->
+													<!--begin::Input-->
+													<span class="form-check form-check-custom form-check-solid">
+														<input class="form-check-input" type="radio" name="dbengine" value="3" />
+													</span>
+													<!--end::Input-->
+												</label>
+												<!--end::Option-->
+											</div>
+											<!--end::Input group-->
+										</div>
+									</div>
+									<!--end::Step 3-->
+									<!--begin::Step 4-->
+									<div data-kt-stepper-element="content">
+										<div class="w-100">
+											<!--begin::Input group-->
+											<div class="d-flex flex-column mb-7 fv-row">
+												<!--begin::Label-->
+												<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
+													<span class="required">Name On Card</span>
+													<span class="ms-1" data-bs-toggle="tooltip" title="Specify a card holder's name">
+														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</label>
+												<!--end::Label-->
+												<input type="text" class="form-control form-control-solid" placeholder="" name="card_name" value="Max Doe" />
+											</div>
+											<!--end::Input group-->
+											<!--begin::Input group-->
+											<div class="d-flex flex-column mb-7 fv-row">
+												<!--begin::Label-->
+												<label class="required fs-6 fw-semibold form-label mb-2">Card Number</label>
+												<!--end::Label-->
+												<!--begin::Input wrapper-->
+												<div class="position-relative">
+													<!--begin::Input-->
+													<input type="text" class="form-control form-control-solid" placeholder="Enter card number" name="card_number" value="4111 1111 1111 1111" />
+													<!--end::Input-->
+													<!--begin::Card logos-->
+													<div class="position-absolute translate-middle-y top-50 end-0 me-5">
+														<img src="assets/media/svg/card-logos/visa.svg" alt="" class="h-25px" />
+														<img src="assets/media/svg/card-logos/mastercard.svg" alt="" class="h-25px" />
+														<img src="assets/media/svg/card-logos/american-express.svg" alt="" class="h-25px" />
+													</div>
+													<!--end::Card logos-->
+												</div>
+												<!--end::Input wrapper-->
+											</div>
+											<!--end::Input group-->
+											<!--begin::Input group-->
+											<div class="row mb-10">
+												<!--begin::Col-->
+												<div class="col-md-8 fv-row">
+													<!--begin::Label-->
+													<label class="required fs-6 fw-semibold form-label mb-2">Expiration Date</label>
+													<!--end::Label-->
+													<!--begin::Row-->
+													<div class="row fv-row">
+														<!--begin::Col-->
+														<div class="col-6">
+															<select name="card_expiry_month" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Month">
+																<option></option>
+																<option value="1">1</option>
+																<option value="2">2</option>
+																<option value="3">3</option>
+																<option value="4">4</option>
+																<option value="5">5</option>
+																<option value="6">6</option>
+																<option value="7">7</option>
+																<option value="8">8</option>
+																<option value="9">9</option>
+																<option value="10">10</option>
+																<option value="11">11</option>
+																<option value="12">12</option>
+															</select>
+														</div>
+														<!--end::Col-->
+														<!--begin::Col-->
+														<div class="col-6">
+															<select name="card_expiry_year" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Year">
+																<option></option>
+																<option value="2023">2023</option>
+																<option value="2024">2024</option>
+																<option value="2025">2025</option>
+																<option value="2026">2026</option>
+																<option value="2027">2027</option>
+																<option value="2028">2028</option>
+																<option value="2029">2029</option>
+																<option value="2030">2030</option>
+																<option value="2031">2031</option>
+																<option value="2032">2032</option>
+																<option value="2033">2033</option>
+															</select>
+														</div>
+														<!--end::Col-->
+													</div>
+													<!--end::Row-->
+												</div>
+												<!--end::Col-->
+												<!--begin::Col-->
+												<div class="col-md-4 fv-row">
+													<!--begin::Label-->
+													<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
+														<span class="required">CVV</span>
+														<span class="ms-1" data-bs-toggle="tooltip" title="Enter a card CVV code">
+															<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+																<span class="path1"></span>
+																<span class="path2"></span>
+																<span class="path3"></span>
+															</i>
+														</span>
+													</label>
+													<!--end::Label-->
+													<!--begin::Input wrapper-->
+													<div class="position-relative">
+														<!--begin::Input-->
+														<input type="text" class="form-control form-control-solid" minlength="3" maxlength="4" placeholder="CVV" name="card_cvv" />
+														<!--end::Input-->
+														<!--begin::CVV icon-->
+														<div class="position-absolute translate-middle-y top-50 end-0 me-3">
+															<i class="ki-duotone ki-credit-cart fs-2hx">
+																<span class="path1"></span>
+																<span class="path2"></span>
+															</i>
+														</div>
+														<!--end::CVV icon-->
+													</div>
+													<!--end::Input wrapper-->
+												</div>
+												<!--end::Col-->
+											</div>
+											<!--end::Input group-->
+											<!--begin::Input group-->
+											<div class="d-flex flex-stack">
+												<!--begin::Label-->
+												<div class="me-5">
+													<label class="fs-6 fw-semibold form-label">Save Card for further billing?</label>
+													<div class="fs-7 fw-semibold text-muted">If you need more info, please check budget planning</div>
+												</div>
+												<!--end::Label-->
+												<!--begin::Switch-->
+												<label class="form-check form-switch form-check-custom form-check-solid">
+													<input class="form-check-input" type="checkbox" value="1" checked="checked" />
+													<span class="form-check-label fw-semibold text-muted">Save Card</span>
+												</label>
+												<!--end::Switch-->
+											</div>
+											<!--end::Input group-->
+										</div>
+									</div>
+									<!--end::Step 4-->
+									<!--begin::Step 5-->
+									<div data-kt-stepper-element="content">
+										<div class="w-100 text-center">
+											<!--begin::Heading-->
+											<h1 class="fw-bold text-dark mb-3">Release!</h1>
+											<!--end::Heading-->
+											<!--begin::Description-->
+											<div class="text-muted fw-semibold fs-3">Submit your app to kickstart your project.</div>
+											<!--end::Description-->
+											<!--begin::Illustration-->
+											<div class="text-center px-4 py-15">
+												<img src="assets/media/illustrations/sigma-1/9.png" alt="" class="mw-100 mh-300px" />
+											</div>
+											<!--end::Illustration-->
+										</div>
+									</div>
+									<!--end::Step 5-->
+									<!--begin::Actions-->
+									<div class="d-flex flex-stack pt-10">
+										<!--begin::Wrapper-->
+										<div class="me-2">
+											<button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
+											<i class="ki-duotone ki-arrow-left fs-3 me-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>Back</button>
+										</div>
+										<!--end::Wrapper-->
+										<!--begin::Wrapper-->
+										<div>
+											<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit">
+												<span class="indicator-label">Submit
+												<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i></span>
+												<span class="indicator-progress">Please wait...
+												<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											</button>
+											<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="next">Continue
+											<i class="ki-duotone ki-arrow-right fs-3 ms-1 me-0">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i></button>
+										</div>
+										<!--end::Wrapper-->
+									</div>
+									<!--end::Actions-->
+								</form>
+								<!--end::Form-->
+							</div>
+							<!--end::Content-->
+						</div>
+						<!--end::Stepper-->
+					</div>
+					<!--end::Modal body-->
+				</div>
+				<!--end::Modal content-->
+			</div>
+			<!--end::Modal dialog-->
+		</div>
+		<!--end::Modal - Create App-->
+		<!--begin::Modal - Users Search-->
+		<div class="modal fade" id="kt_modal_users_search" tabindex="-1" aria-hidden="true">
+			<!--begin::Modal dialog-->
+			<div class="modal-dialog modal-dialog-centered mw-650px">
+				<!--begin::Modal content-->
+				<div class="modal-content">
+					<!--begin::Modal header-->
+					<div class="modal-header pb-0 border-0 justify-content-end">
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--begin::Modal header-->
+					<!--begin::Modal body-->
+					<div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+						<!--begin::Content-->
+						<div class="text-center mb-13">
+							<h1 class="mb-3">Search Users</h1>
+							<div class="text-muted fw-semibold fs-5">Invite Collaborators To Your Project</div>
+						</div>
+						<!--end::Content-->
+						<!--begin::Search-->
+						<div id="kt_modal_users_search_handler" data-kt-search-keypress="true" data-kt-search-min-length="2" data-kt-search-enter="enter" data-kt-search-layout="inline">
+							<!--begin::Form-->
+							<form data-kt-search-element="form" class="w-100 position-relative mb-5" autocomplete="off">
+								<!--begin::Hidden input(Added to disable form autocomplete)-->
+								<input type="hidden" />
+								<!--end::Hidden input-->
+								<!--begin::Icon-->
+								<i class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 ms-5 translate-middle-y">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+								<!--end::Icon-->
+								<!--begin::Input-->
+								<input type="text" class="form-control form-control-lg form-control-solid px-15" name="search" value="" placeholder="Search by username, full name or email..." data-kt-search-element="input" />
+								<!--end::Input-->
+								<!--begin::Spinner-->
+								<span class="position-absolute top-50 end-0 translate-middle-y lh-0 d-none me-5" data-kt-search-element="spinner">
+									<span class="spinner-border h-15px w-15px align-middle text-muted"></span>
+								</span>
+								<!--end::Spinner-->
+								<!--begin::Reset-->
+								<span class="btn btn-flush btn-active-color-primary position-absolute top-50 end-0 translate-middle-y lh-0 me-5 d-none" data-kt-search-element="clear">
+									<i class="ki-duotone ki-cross fs-2 fs-lg-1 me-0">
+										<span class="path1"></span>
+										<span class="path2"></span>
+									</i>
+								</span>
+								<!--end::Reset-->
+							</form>
+							<!--end::Form-->
+							<!--begin::Wrapper-->
+							<div class="py-5">
+								<!--begin::Suggestions-->
+								<div data-kt-search-element="suggestions">
+									<!--begin::Heading-->
+									<h3 class="fw-semibold mb-5">Recently searched:</h3>
+									<!--end::Heading-->
+									<!--begin::Users-->
+									<div class="mh-375px scroll-y me-n7 pe-7">
+										<!--begin::User-->
+										<a href="#" class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
+											<!--begin::Avatar-->
+											<div class="symbol symbol-35px symbol-circle me-5">
+												<img alt="Pic" src="assets/media/avatars/300-6.jpg" />
+											</div>
+											<!--end::Avatar-->
+											<!--begin::Info-->
+											<div class="fw-semibold">
+												<span class="fs-6 text-gray-800 me-2">Emma Smith</span>
+												<span class="badge badge-light">Art Director</span>
+											</div>
+											<!--end::Info-->
+										</a>
+										<!--end::User-->
+										<!--begin::User-->
+										<a href="#" class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
+											<!--begin::Avatar-->
+											<div class="symbol symbol-35px symbol-circle me-5">
+												<span class="symbol-label bg-light-danger text-danger fw-semibold">M</span>
+											</div>
+											<!--end::Avatar-->
+											<!--begin::Info-->
+											<div class="fw-semibold">
+												<span class="fs-6 text-gray-800 me-2">Melody Macy</span>
+												<span class="badge badge-light">Marketing Analytic</span>
+											</div>
+											<!--end::Info-->
+										</a>
+										<!--end::User-->
+										<!--begin::User-->
+										<a href="#" class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
+											<!--begin::Avatar-->
+											<div class="symbol symbol-35px symbol-circle me-5">
+												<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+											</div>
+											<!--end::Avatar-->
+											<!--begin::Info-->
+											<div class="fw-semibold">
+												<span class="fs-6 text-gray-800 me-2">Max Smith</span>
+												<span class="badge badge-light">Software Enginer</span>
+											</div>
+											<!--end::Info-->
+										</a>
+										<!--end::User-->
+										<!--begin::User-->
+										<a href="#" class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
+											<!--begin::Avatar-->
+											<div class="symbol symbol-35px symbol-circle me-5">
+												<img alt="Pic" src="assets/media/avatars/300-5.jpg" />
+											</div>
+											<!--end::Avatar-->
+											<!--begin::Info-->
+											<div class="fw-semibold">
+												<span class="fs-6 text-gray-800 me-2">Sean Bean</span>
+												<span class="badge badge-light">Web Developer</span>
+											</div>
+											<!--end::Info-->
+										</a>
+										<!--end::User-->
+										<!--begin::User-->
+										<a href="#" class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
+											<!--begin::Avatar-->
+											<div class="symbol symbol-35px symbol-circle me-5">
+												<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+											</div>
+											<!--end::Avatar-->
+											<!--begin::Info-->
+											<div class="fw-semibold">
+												<span class="fs-6 text-gray-800 me-2">Brian Cox</span>
+												<span class="badge badge-light">UI/UX Designer</span>
+											</div>
+											<!--end::Info-->
+										</a>
+										<!--end::User-->
+									</div>
+									<!--end::Users-->
+								</div>
+								<!--end::Suggestions-->
+								<!--begin::Results(add d-none to below element to hide the users list by default)-->
+								<div data-kt-search-element="results" class="d-none">
+									<!--begin::Users-->
+									<div class="mh-375px scroll-y me-n7 pe-7">
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="0">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='0']" value="0" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-6.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Smith</a>
+													<div class="fw-semibold text-muted">smith@kpmg.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="1">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='1']" value="1" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-danger text-danger fw-semibold">M</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Melody Macy</a>
+													<div class="fw-semibold text-muted">melody@altbox.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1" selected="selected">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="2">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='2']" value="2" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Max Smith</a>
+													<div class="fw-semibold text-muted">max@kt.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="3">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='3']" value="3" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-5.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Sean Bean</a>
+													<div class="fw-semibold text-muted">sean@dellito.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="4">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='4']" value="4" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Brian Cox</a>
+													<div class="fw-semibold text-muted">brian@exchange.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="5">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='5']" value="5" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-warning text-warning fw-semibold">C</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Mikaela Collins</a>
+													<div class="fw-semibold text-muted">mik@pex.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="6">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='6']" value="6" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-9.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Francis Mitcham</a>
+													<div class="fw-semibold text-muted">f.mit@kpmg.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="7">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='7']" value="7" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-danger text-danger fw-semibold">O</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Olivia Wild</a>
+													<div class="fw-semibold text-muted">olivia@corpmail.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="8">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='8']" value="8" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-primary text-primary fw-semibold">N</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Neil Owen</a>
+													<div class="fw-semibold text-muted">owen.neil@gmail.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1" selected="selected">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="9">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='9']" value="9" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-23.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Dan Wilson</a>
+													<div class="fw-semibold text-muted">dam@consilting.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="10">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='10']" value="10" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-danger text-danger fw-semibold">E</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Bold</a>
+													<div class="fw-semibold text-muted">emma@intenso.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="11">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='11']" value="11" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-12.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Ana Crown</a>
+													<div class="fw-semibold text-muted">ana.cf@limtel.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1" selected="selected">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="12">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='12']" value="12" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-info text-info fw-semibold">A</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Robert Doe</a>
+													<div class="fw-semibold text-muted">robert@benko.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="13">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='13']" value="13" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-13.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">John Miller</a>
+													<div class="fw-semibold text-muted">miller@mapple.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="14">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='14']" value="14" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-success text-success fw-semibold">L</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Lucy Kunic</a>
+													<div class="fw-semibold text-muted">lucy.m@fentech.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2" selected="selected">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="15">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='15']" value="15" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<img alt="Pic" src="assets/media/avatars/300-21.jpg" />
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Ethan Wilder</a>
+													<div class="fw-semibold text-muted">ethan@loop.com.au</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1" selected="selected">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+										<!--begin::Separator-->
+										<div class="border-bottom border-gray-300 border-bottom-dashed"></div>
+										<!--end::Separator-->
+										<!--begin::User-->
+										<div class="rounded d-flex flex-stack bg-active-lighten p-4" data-user-id="16">
+											<!--begin::Details-->
+											<div class="d-flex align-items-center">
+												<!--begin::Checkbox-->
+												<label class="form-check form-check-custom form-check-solid me-5">
+													<input class="form-check-input" type="checkbox" name="users" data-kt-check="true" data-kt-check-target="[data-user-id='16']" value="16" />
+												</label>
+												<!--end::Checkbox-->
+												<!--begin::Avatar-->
+												<div class="symbol symbol-35px symbol-circle">
+													<span class="symbol-label bg-light-info text-info fw-semibold">A</span>
+												</div>
+												<!--end::Avatar-->
+												<!--begin::Details-->
+												<div class="ms-5">
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Robert Doe</a>
+													<div class="fw-semibold text-muted">robert@benko.com</div>
+												</div>
+												<!--end::Details-->
+											</div>
+											<!--end::Details-->
+											<!--begin::Access menu-->
+											<div class="ms-2 w-100px">
+												<select class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+													<option value="1">Guest</option>
+													<option value="2">Owner</option>
+													<option value="3" selected="selected">Can Edit</option>
+												</select>
+											</div>
+											<!--end::Access menu-->
+										</div>
+										<!--end::User-->
+									</div>
+									<!--end::Users-->
+									<!--begin::Actions-->
+									<div class="d-flex flex-center mt-15">
+										<button type="reset" id="kt_modal_users_search_reset" data-bs-dismiss="modal" class="btn btn-active-light me-3">Cancel</button>
+										<button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary">Add Selected Users</button>
+									</div>
+									<!--end::Actions-->
+								</div>
+								<!--end::Results-->
+								<!--begin::Empty-->
+								<div data-kt-search-element="empty" class="text-center d-none">
+									<!--begin::Message-->
+									<div class="fw-semibold py-10">
+										<div class="text-gray-600 fs-3 mb-2">No users found</div>
+										<div class="text-muted fs-6">Try to search by username, full name or email...</div>
+									</div>
+									<!--end::Message-->
+									<!--begin::Illustration-->
+									<div class="text-center px-5">
+										<img src="assets/media/illustrations/sigma-1/1.png" alt="" class="w-100 h-200px h-sm-325px" />
+									</div>
+									<!--end::Illustration-->
+								</div>
+								<!--end::Empty-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Search-->
+					</div>
+					<!--end::Modal body-->
+				</div>
+				<!--end::Modal content-->
+			</div>
+			<!--end::Modal dialog-->
+		</div>
+		<!--end::Modal - Users Search-->
+		<!--begin::Modal - Invite Friends-->
+		<div class="modal fade" id="kt_modal_invite_friends" tabindex="-1" aria-hidden="true">
+			<!--begin::Modal dialog-->
+			<div class="modal-dialog mw-650px">
+				<!--begin::Modal content-->
+				<div class="modal-content">
+					<!--begin::Modal header-->
+					<div class="modal-header pb-0 border-0 justify-content-end">
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--begin::Modal header-->
+					<!--begin::Modal body-->
+					<div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+						<!--begin::Heading-->
+						<div class="text-center mb-13">
+							<!--begin::Title-->
+							<h1 class="mb-3">Invite a Friend</h1>
+							<!--end::Title-->
+							<!--begin::Description-->
+							<div class="text-muted fw-semibold fs-5">If you need more info, please check out
+							<a href="#" class="link-primary fw-bold">FAQ Page</a>.</div>
+							<!--end::Description-->
+						</div>
+						<!--end::Heading-->
+						<!--begin::Google Contacts Invite-->
+						<div class="btn btn-light-primary fw-bold w-100 mb-8">
+						<img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3" />Invite Gmail Contacts</div>
+						<!--end::Google Contacts Invite-->
+						<!--begin::Separator-->
+						<div class="separator d-flex flex-center mb-8">
+							<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">or</span>
+						</div>
+						<!--end::Separator-->
+						<!--begin::Textarea-->
+						<textarea class="form-control form-control-solid mb-8" rows="3" placeholder="Type or paste emails here"></textarea>
+						<!--end::Textarea-->
+						<!--begin::Users-->
+						<div class="mb-10">
+							<!--begin::Heading-->
+							<div class="fs-6 fw-semibold mb-2">Your Invitations</div>
+							<!--end::Heading-->
+							<!--begin::List-->
+							<div class="mh-300px scroll-y me-n7 pe-7">
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-6.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Smith</a>
+											<div class="fw-semibold text-muted">smith@kpmg.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-danger text-danger fw-semibold">M</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Melody Macy</a>
+											<div class="fw-semibold text-muted">melody@altbox.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1" selected="selected">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Max Smith</a>
+											<div class="fw-semibold text-muted">max@kt.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-5.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Sean Bean</a>
+											<div class="fw-semibold text-muted">sean@dellito.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Brian Cox</a>
+											<div class="fw-semibold text-muted">brian@exchange.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-warning text-warning fw-semibold">C</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Mikaela Collins</a>
+											<div class="fw-semibold text-muted">mik@pex.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-9.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Francis Mitcham</a>
+											<div class="fw-semibold text-muted">f.mit@kpmg.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-danger text-danger fw-semibold">O</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Olivia Wild</a>
+											<div class="fw-semibold text-muted">olivia@corpmail.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-primary text-primary fw-semibold">N</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Neil Owen</a>
+											<div class="fw-semibold text-muted">owen.neil@gmail.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1" selected="selected">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-23.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Dan Wilson</a>
+											<div class="fw-semibold text-muted">dam@consilting.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-danger text-danger fw-semibold">E</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Bold</a>
+											<div class="fw-semibold text-muted">emma@intenso.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-12.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Ana Crown</a>
+											<div class="fw-semibold text-muted">ana.cf@limtel.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1" selected="selected">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-info text-info fw-semibold">A</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Robert Doe</a>
+											<div class="fw-semibold text-muted">robert@benko.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-13.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">John Miller</a>
+											<div class="fw-semibold text-muted">miller@mapple.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<span class="symbol-label bg-light-success text-success fw-semibold">L</span>
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Lucy Kunic</a>
+											<div class="fw-semibold text-muted">lucy.m@fentech.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2" selected="selected">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-21.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Ethan Wilder</a>
+											<div class="fw-semibold text-muted">ethan@loop.com.au</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1" selected="selected">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+								<!--begin::User-->
+								<div class="d-flex flex-stack py-4">
+									<!--begin::Details-->
+									<div class="d-flex align-items-center">
+										<!--begin::Avatar-->
+										<div class="symbol symbol-35px symbol-circle">
+											<img alt="Pic" src="assets/media/avatars/300-13.jpg" />
+										</div>
+										<!--end::Avatar-->
+										<!--begin::Details-->
+										<div class="ms-5">
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">John Miller</a>
+											<div class="fw-semibold text-muted">miller@mapple.com</div>
+										</div>
+										<!--end::Details-->
+									</div>
+									<!--end::Details-->
+									<!--begin::Access menu-->
+									<div class="ms-2 w-100px">
+										<select class="form-select form-select-solid form-select-sm" data-control="select2" data-dropdown-parent="#kt_modal_invite_friends" data-hide-search="true">
+											<option value="1">Guest</option>
+											<option value="2">Owner</option>
+											<option value="3" selected="selected">Can Edit</option>
+										</select>
+									</div>
+									<!--end::Access menu-->
+								</div>
+								<!--end::User-->
+							</div>
+							<!--end::List-->
+						</div>
+						<!--end::Users-->
+						<!--begin::Notice-->
+						<div class="d-flex flex-stack">
+							<!--begin::Label-->
+							<div class="me-5 fw-semibold">
+								<label class="fs-6">Adding Users by Team Members</label>
+								<div class="fs-7 text-muted">If you need more info, please check budget planning</div>
+							</div>
+							<!--end::Label-->
+							<!--begin::Switch-->
+							<label class="form-check form-switch form-check-custom form-check-solid">
+								<input class="form-check-input" type="checkbox" value="1" checked="checked" />
+								<span class="form-check-label fw-semibold text-muted">Allowed</span>
+							</label>
+							<!--end::Switch-->
+						</div>
+						<!--end::Notice-->
+					</div>
+					<!--end::Modal body-->
+				</div>
+				<!--end::Modal content-->
+			</div>
+			<!--end::Modal dialog-->
+		</div>
+		<!--end::Modal - Invite Friend-->
+		<!--end::Modals-->
+		<!--begin::Javascript-->
+		<script>var hostUrl = "assets/";</script>
+		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+		<script src="{{ url('theme/style/src/assets/plugins/global/plugins.bundle.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/scripts.bundle.js') }}"></script>
+		<!--end::Global Javascript Bundle-->
+		<!--begin::Vendors Javascript(used for this page only)-->
+		<script src="{{ url('theme/style/src/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
+		
 		<script src="{{ url('default/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
 		<script src="{{ url('default/assets/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
 		<script src="{{ url('default/assets/plugins/bootbox/bootbox.min.js') }}" type="text/javascript"></script>
-			<script src="{{ url('default/assets/plugins/twbs-pagination/jquery.twbsPagination.js') }}" type="text/javascript"></script> 
+			<script src="{{ url('default/assets/plugins/twbs-pagination/jquery.twbsPagination.js') }}" type="text/javascript"></script>
 
-		<script src="{{ url('default/assets/app/js/layout-builder.js') }}" type="text/javascript"></script>
-		<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-		<!--end::Page Snippets -->
+		<script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+		<!--end::Vendors Javascript-->
+		<!--begin::Custom Javascript(used for this page only)-->
+		<script src="{{ url('theme/style/src/assets/js/widgets.bundle.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/custom/widgets.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/custom/apps/chat/chat.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/upgrade-plan.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/create-app.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/users-search.js') }}"></script>
+		<script type="text/javascript">
+		function getCookie(cookieName) {
+		    const name = cookieName + '=';
+		    const decodedCookie = decodeURIComponent(document.cookie);
+		    const cookieArray = decodedCookie.split(';');
+
+		    for (let i = 0; i < cookieArray.length; i++) {
+		        let cookie = cookieArray[i].trim();
+		        if (cookie.indexOf(name) === 0) {
+		            return cookie.substring(name.length, cookie.length);
+		        }
+		    }
+
+		    return null; // Return null if the cookie is not found
+		}
+		</script>
 		 @yield("plugins")
+		<!--end::Javascript-->
 	</body>
-	<!-- end::Body -->
+	<!--end::Body-->
 </html>

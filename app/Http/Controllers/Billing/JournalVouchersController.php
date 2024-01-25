@@ -109,7 +109,7 @@ class JournalVouchersController extends Controller
         
         // filter items
         if($jv_account_id  > 0)
-            $lst_journal_vouchers= $lst_journal_vouchers->where('pj_account_receivable',$jv_account_id); 
+            $lst_journal_vouchers= $lst_journal_vouchers->where('pj_account_debit',$jv_account_id); 
         if(strlen($jv_start_date) > 0)
             $lst_journal_vouchers= $lst_journal_vouchers->where('pj_creation_date','>=',$jv_start_date);
         if(strlen($jv_end_date) > 0)
@@ -224,8 +224,9 @@ class JournalVouchersController extends Controller
         $pj_voucher_description = $request->input('pj_voucher_description');  
         $pj_journal_id          = $request->input('pj_journal_id');  
         $pj_account_credit      = $request->input('pj_account_credit');  
-        $pj_account_debit      = $request->input('pj_account_debit');  
-        $pj_creation_date       = $request->input('pj_creation_date');  
+        $pj_account_debit       = $request->input('pj_account_debit');  
+        $pj_creation_date       = $request->input('pj_creation_date');
+        $pj_creation_date       = date("Y-m-d",strtotime($pj_creation_date));
         $pj_payment_amount      = $request->input('pj_payment_amount');  
         $pj_currency_id         = $request->input('pj_currency_id'); 
         

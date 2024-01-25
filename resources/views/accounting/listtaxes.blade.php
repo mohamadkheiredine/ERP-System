@@ -14,9 +14,9 @@ Datasheet list of Taxes apply to this software
 
 ?>
 
-<table class="m-datatable" id="html_table" width="100%">
+<table class="table table-rounded table-striped border gy-7 gs-7">
 		<thead>
-			<tr>
+			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
 				<th title="Id">ID</th>
 				<th title="Code">Code</th>
 				<th title="Value">Value</th>
@@ -35,7 +35,7 @@ Datasheet list of Taxes apply to this software
     				<td>{{ $vat_info->av_vat_rate }}</td>
     				<td>{{ $accounts_array[ $vat_info->av_sale_account_code ]['aa_account'] . " - " . $accounts_array[ $vat_info->av_sale_account_code ]['aa_account_label'] }}</td>
     				<td>{{ $accounts_array[ $vat_info->av_purchase_account_code ]['aa_account'] . " - " . $accounts_array[ $vat_info->av_purchase_account_code ]['aa_account_label'] }}</td>
-    				<td style="width:2px;"><a  data-av_id="{{ $vat_info->av_id }}"  href="#"  id="EDIT_VAT_{{ $vat_info->av_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a></td>
+    				<td style="width:2px;"><a  data-av_id="{{ $vat_info->av_id }}"  href="#"  id="EDIT_VAT_{{ $vat_info->av_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
                     <td style="width:2px;"><a  data-av_id="{{ $vat_info->av_id }}"  href="#"  id="DELETE_VAT_{{ $vat_info->av_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
     			</tr>
 		     @endforeach

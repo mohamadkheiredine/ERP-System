@@ -328,24 +328,28 @@ class JobsController extends Controller
         
         $job_total_cost = 0;
         
-        foreach ( $items_array as $key => $item_info ) {
-            $item_type      = $item_info->item_type;
-            $item_id        = ($item_info->service_id == null) ? $item_info->product_id: $item_info->service_id;
-            $ji_item_cost   =  $item_info->mj_item_cost;
-            $ji_price_item  =  $item_info->mj_item_cost *  $item_info->bi_quanity;
-            
-            $job_item = new JobItems();
-            $job_item->fk_job_id        = $j_id;
-            $job_item->ji_item_id       = $item_id;
-            $job_item->ji_item_type     = $item_type;
-            $job_item->ji_item_cost     =  $ji_item_cost;
-            $job_item->ji_currency_id   =  $j_currency_id;
-            $job_item->ji_quantity      =  $item_info->bi_quanity;
-            $job_item->ji_price_item    =  $ji_price_item;
-            $job_item->save();
-            
-            $job_total_cost = $job_total_cost + $item_info->mj_item_cost *  $item_info->bi_quanity;
+        if($items_array != null)
+        {
+            foreach ( $items_array as $key => $item_info ) {
+                $item_type      = $item_info->item_type;
+                $item_id        = ($item_info->service_id == null) ? $item_info->product_id: $item_info->service_id;
+                $ji_item_cost   =  $item_info->mj_item_cost;
+                $ji_price_item  =  $item_info->mj_item_cost *  $item_info->bi_quanity;
+                
+                $job_item = new JobItems();
+                $job_item->fk_job_id        = $j_id;
+                $job_item->ji_item_id       = $item_id;
+                $job_item->ji_item_type     = $item_type;
+                $job_item->ji_item_cost     =  $ji_item_cost;
+                $job_item->ji_currency_id   =  $j_currency_id;
+                $job_item->ji_quantity      =  $item_info->bi_quanity;
+                $job_item->ji_price_item    =  $ji_price_item;
+                $job_item->save();
+                
+                $job_total_cost = $job_total_cost + $item_info->mj_item_cost *  $item_info->bi_quanity;
+            }
         }
+
         
         $job_info  = Jobs::find($j_id);
         $job_info->j_job_total_cost = $job_total_cost;

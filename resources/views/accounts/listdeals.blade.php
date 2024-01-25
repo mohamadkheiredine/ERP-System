@@ -14,20 +14,10 @@ List Deals
 
 ?>
 
-<table class="m-datatable" id="html_table" width="100%">
-		<thead>
-			<tr>
-				<th title="Id"> ID </th>
-				<th title="Deal ref"> Deal ref </th>
-				<th title="Deal Title"> Deal Title </th>
-				<th title="Account Name"> Account Name </th>
-				<th title="Account Name"> Deal Amount </th>
-				<th style="width:4px !important;" nowrap title="#">edit</th>
-				<th style="width:4px !important;" nowrap title="#">Delete</th>
-			</tr>
-		</thead>
-		<tbody>
-		     @foreach( $lst_account_deals as $key => $ad_info )
+
+
+
+	     @foreach( $lst_account_deals as $key => $ad_info )
                 <tr>
     				<td>{{ $ad_info->ad_id }}</td>
     				<td>{{ $ad_info->ad_deal_code }}</td>
@@ -42,5 +32,3 @@ List Deals
                       </td>
     			</tr>
 		     @endforeach
-			</tbody>
-</table>

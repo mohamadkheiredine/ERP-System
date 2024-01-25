@@ -85,7 +85,9 @@ class InternalTransfersController extends Controller
         $in_account_payable         = $request->input('in_account_payable');
         $in_account_receivable      = $request->input('in_account_receivable');
         $in_start_date              = $request->input('in_start_date');
+        $in_start_date              = date("Y-m-d",strtotime($in_start_date));
         $in_end_date                = $request->input('in_end_date');
+        $in_end_date                = date("Y-m-d",strtotime($in_end_date));
         $in_currency_id             = $request->input('in_currency_id');
         $page_number                = $request->input("page_number"); 
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");

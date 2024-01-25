@@ -14,9 +14,9 @@ Page Description :
 
 ?>
 
-<table class="m-datatable" id="html_table" width="100%">
+<table class="table" id="html_table" width="100%">
 		<thead>
-			<tr>
+			<tr class="fw-bold fs-6 text-gray-800">
 				<th title="Id" style="width:50px;white-space: nowrap;">
 					ID
 				</th>
@@ -26,10 +26,10 @@ Page Description :
 				<th title="Name" style="width:50px;white-space: nowrap;">
 					Day Color
 				</th>
-				<th style="width:4px !important;" nowrap title="#">
+				<th style="width:2px !important;" nowrap title="#">
 					edit
 				</th>
-				<th style="width:4px !important;" nowrap title="#">
+				<th style="width:2px !important;" nowrap title="#">
 					Delete
 				</th>
 			</tr>
@@ -50,7 +50,7 @@ Page Description :
     				</div>
     				</td>
     				 <td style="width:2px;">
-                       <a  data-dt_id="{{ $dt_info->dt_id }}"  href="#"  id="EDIT_DAYTYPE_{{ $dt_info->dt_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a>
+                       <a  data-dt_id="{{ $dt_info->dt_id }}"  href="#"  id="EDIT_DAYTYPE_{{ $dt_info->dt_id }}" ><i class="fa-solid fa-pen-to-square"></i></a>
                        </td>
                        <td style="width:2px;">
                        @if($dt_info->dt_line_code == 0 )

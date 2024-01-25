@@ -33,6 +33,7 @@ use App\models\Users\Users;
 use App\models\Logistics\Vehicules;
 use App\models\Inventory\WareHouseVehicules;
 use App\models\Inventory\Stocks;
+use App\models\Inventory\Products;
 
 
 
@@ -55,7 +56,16 @@ class WareHouseController extends Controller
      */
     public function DisplayList(Request $request)
     {
-        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $general_search = $request->input('general_search');
+        
+        $lst_warehouses = WareHouses::whereWIsDeleted(0);
+        if(strlen($general_search) > 0)
+        {
+            $lst_warehouses = $lst_warehouses->where("w_warehouse_name","LIKE",'%' . $general_search . '%');
+            $lst_warehouses = $lst_warehouses->orWhere("w_warehouse_description","LIKE",'%' . $general_search . '%');
+            
+        }
+        $lst_warehouses = $lst_warehouses->get();
 
         $response_array = array();
 
@@ -389,7 +399,8 @@ class WareHouseController extends Controller
             case "warehouse_load":
                 {
                     $lst_stock = Stocks::whereFkWarehouseId($warehouse_id)->get();
-                    
+                    $products_warehouse = Products::whereFkWarehouseId($warehouse_id)->wherePProductIsDeleted(0)->get();
+                  
                     // get  array for chart stock by zones
                     $lst_zonesstock_array = array();
                     foreach ( $lst_stock as $key => $stock_info ) {
@@ -410,12 +421,52 @@ class WareHouseController extends Controller
                         );
                     }
                     
+                    
+                    $lst_productsstock_array = array();
+                    foreach ( $lst_stock as $key => $stock_info ) {
+                        
+                        if($stock_info->products)
+                        { 
+                            if(isset($lst_productsstock_array[ $stock_info->products->p_product_name ])  )
+                            {
+                                $lst_productsstock_array[ $stock_info->products->p_product_name ] = ( $lst_productsstock_array[ $stock_info->products->p_product_name ] + $stock_info->is_quanity );
+                            }
+                            else {
+                                $lst_productsstock_array[ $stock_info->products->p_product_name ] =  $stock_info->is_quanity;
+                            }
+                        }
+                    }
+                     
+                    
+                    foreach ( $products_warehouse as $key => $product_info ) {
+                        if( isset($lst_productsstock_array[ $product_info->p_product_name ])  )
+                        {
+                            $lst_productsstock_array[ $product_info->p_product_name ] = $lst_productsstock_array[ $product_info->p_product_name ] + $product_info->p_product_quantity;
+                        }
+                        else {
+                            $lst_productsstock_array[ $product_info->p_product_name ] =  $product_info->p_product_quantity;
+                        }
+                        
+                    }
+                    
+                    
+                    // get list of porducts by quantity
+                    $products_quantity_array = array();
+                    foreach ($lst_productsstock_array as $label => $quantity) {
+                        $products_quantity_array[] = array(
+                            'product' => $label,
+                            'quantity' => $quantity
+                        );
+                    }
+                    
+                    
                     $data = array(
                         "warehouse_info" => $warehouse_info,
                         "lst_stock" => $lst_stock,
                     );
                     $result_array['display']    = view("warehouses.load",$data)->render();
                     $result_array['zonesstock'] = (String)json_encode($zonesstock_array);
+                    $result_array['productstock'] = (String)json_encode($products_quantity_array);
                 }
             break;
         }

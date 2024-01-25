@@ -36,7 +36,7 @@ List of recepits for a selected invoice
 			<td>{{ $receipt_info->br_receipt_label }}</td>
 			<td>{{ $receipt_info->br_payment_value }}&nbsp;&nbsp;{{ $currencies_array[ $receipt_info->br_receipt_currency ]['cc_currency_code'] }}</td>
 			<td><b>{!! $receipt_info->br_receipt_paid == 1 ? "<span class='m--font-success'>Yes</span>" : "<span class='m--font-danger'>No</span>" !!}</b></td>
-			<td><a href="#" data-br_id="{{ $receipt_info->br_id }}" id="EDIT_IRECEIPT_{{ $receipt_info->br_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+			<td><a href="#" data-br_id="{{ $receipt_info->br_id }}" id="EDIT_IRECEIPT_{{ $receipt_info->br_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
 			<td><b><a  id="DOWNLOAD_{{ $receipt_info->br_id }}" target="_blank" title="download" href="<?php echo ( $receipt_info->br_receipt_paid == 1 ? url('billing/invoices/downloadreceipt/' . $receipt_info->br_id ): "" ); ?>"><i class='fa fa-download'></i></a></b>&nbsp;&nbsp;<?php if($receipt_info->br_receipt_paid == 0){ ?><b><a data-br_id="{{ $receipt_info->br_id }}" id="PAY_{{ $receipt_info->br_id }}" href="#"><i class='fa fa-dollar' title='pay'></i></a></b><?php } ?></td>
 		</tr>
 		@endforeach

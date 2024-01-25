@@ -23,124 +23,137 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 }
 
 ?>
-
-<!DOCTYPE html>
-<html lang="en" >
-	<!-- begin::Head -->
+<html lang="en">
+	<!--begin::Head-->
 	<head>
-		<meta charset="utf-8" />
 		<title>
 			{{ strlen($company_info[0]['cd_company_name']) > 0 ? $company_info[0]['cd_company_name'] : "ITM" }} ERP - LOGIN
 		</title>
-		<meta name="description" content="Latest updates and statistic charts">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<!--begin::Web font -->
-		<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
-		<script>
-          WebFont.load({
-            google: {"families":["Poppins:300,400,500,600,700","Roboto:300,400,500,600,700"]},
-            active: function() {
-                sessionStorage.fonts = true;
-            }
-          });
-		</script>
-		<!--end::Web font -->
-        <!--begin::Base Styles -->
-		<link href="{{ url('default/assets/vendors/base/vendors.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<link href="{{ url('default/assets/demo/default/base/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<!--end::Base Styles -->
-		<link rel="shortcut icon" href="{{ url('favicon.ico') }}" />
+		<meta charset="utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+		<link rel="shortcut icon" href="{{ url('theme/src/assets/media/logos/favicon.ico') }}" />
+		<!--begin::Fonts(mandatory for all pages)-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<!--end::Fonts-->
+		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+		<link href="{{ url('theme/style/src/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<link href="{{ url('theme/style/src/assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<!--end::Global Stylesheets Bundle-->
+		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
 	</head>
-	<!-- end::Head -->
-    <!-- end::Body -->
-	<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default"  >
-		<!-- begin:: Page -->
-		<div class="m-grid m-grid--hor m-grid--root m-page">
-			<div class="m-grid__item m-grid__item--fluid m-grid m-grid--hor m-login m-login--signin m-login--2 m-login-2--skin-3" id="m_login" style="background-image: url('{{ url('default/assets/app/media/img/bg/bg-2.jpg') }}');">
-				<div class="m-grid__item m-grid__item--fluid	m-login__wrapper">
-					<div class="m-login__container">
-						<div class="m-login__logo">
-							<a href="#">
-								<img src="{{ $img_src }}" style="width:120px" />
-							</a>
-						</div>
-						<div class="m-login__signin">
-							<div class="m-login__head">
-								<h3 class="m-login__title">
-									Sign In To {{ strlen($company_info[0]['cd_company_name']) > 0 ? $company_info[0]['cd_company_name'] : "ITM" }}
-								</h3>
-							</div>
-							<form class="m-login__form m-form" action="">
+	<!--end::Head-->
+	<!--begin::Body-->
+	<body id="kt_body" class="auth-bg">
+		<!--begin::Theme mode setup on page load-->
+		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
+		<!--end::Theme mode setup on page load-->
+		<!--begin::Main-->
+		<!--begin::Root-->
+		<div class="d-flex flex-column flex-root">
+			<!--begin::Authentication - Sign-in -->
+			<div class="d-flex flex-column flex-lg-row flex-column-fluid">
+				<!--begin::Body-->
+				<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
+					<!--begin::Form-->
+					<div class="d-flex flex-center flex-column flex-lg-row-fluid">
+						<!--begin::Wrapper-->
+						<div class="w-lg-500px p-10">
+							<!--begin::Form-->
+							<form class="form w-100" novalidate="novalidate" id="m_login" data-kt-redirect-url="#" action="#">
 							 <span id="hidden_fields">
                                 <input type="hidden" name="base_url" id="BASE_URL" value="{{ url('/') }}" />
                                 {!! csrf_field() !!}
                             </span>
-								<div class="form-group m-form__group">
-									<input class="form-control m-input"   type="text" placeholder="UserName" name="username" autocomplete="off">
+								<!--begin::Heading-->
+								<div class="text-center mb-11">
+									<!--begin::Title-->
+									<h1 class="text-dark fw-bolder mb-3">Sign In</h1>
+									<!--end::Title-->
 								</div>
-								<div class="form-group m-form__group">
-									<input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password">
+								<!--begin::Input group=-->
+								<div class="fv-row mb-8">
+									<!--begin::Email-->
+									<input placeholder="UserName" name="username" autocomplete="off" class="form-control bg-transparent" />
+									<!--end::Email-->
 								</div>
-								<div class="row m-login__form-sub">
-									<div class="col m--align-left m-login__form-left">
-										<label class="m-checkbox  m-checkbox--light">
-											<input type="checkbox" name="remember">
-											Remember me
-											<span></span>
-										</label>
-									</div>
-									<div class="col m--align-right m-login__form-right">
-										<a href="javascript:;" id="m_login_forget_password" class="m-link">
-											Forget Password ?
-										</a>
-									</div>
+								<!--end::Input group=-->
+								<div class="fv-row mb-3">
+									<!--begin::Password-->
+									<input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" />
+									<!--end::Password-->
 								</div>
-								<div class="m-login__form-action">
-									<button id="m_login_signin_submit" type="button" class="btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air  m-login__btn">
-										Sign In
+								<!--end::Input group=-->
+						
+								<!--begin::Submit button-->
+								<div class="d-grid mb-10">
+									<button type="submit" id="kt_sign_in_submit" class="btn btn-primary">
+										<!--begin::Indicator label-->
+										<span class="indicator-label">Sign In</span>
+										<!--end::Indicator label-->
+										<!--begin::Indicator progress-->
+										<span class="indicator-progress">Please wait...
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+										<!--end::Indicator progress-->
 									</button>
 								</div>
+								<!--end::Submit button-->
 							</form>
+							<!--end::Form-->
 						</div>
-
-						<div class="m-login__forget-password">
-							<div class="m-login__head">
-								<h3 class="m-login__title">
-									Forgotten Password ?
-								</h3>
-								<div class="m-login__desc">
-									Enter your email to reset your password:
-								</div>
-							</div>
-							<form class="m-login__form m-form" action="">
-								<div class="form-group m-form__group">
-									<input class="form-control m-input" type="text" placeholder="Email" name="email" id="m_email" autocomplete="off">
-								</div>
-								<div class="m-login__form-action">
-									<button id="m_login_forget_password_submit" class="btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air m-login__btn m-login__btn--primary">
-										Request
-									</button>
-									&nbsp;&nbsp;
-									<button id="m_login_forget_password_cancel" class="btn btn-outline-focus m-btn m-btn--pill m-btn--custom  m-login__btn">
-										Cancel
-									</button>
-								</div>
-							</form>
-						</div>
-
+						<!--end::Wrapper-->
 					</div>
+					<!--end::Form-->
 				</div>
+				<!--end::Body-->
+				<!--begin::Aside-->
+				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ url('theme/style/src/assets/media/misc/auth-bg.png') }})">
+					<!--begin::Content-->
+					<div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
+						<!--begin::Logo-->
+						<a href="#" class="mb-0 mb-lg-12">
+							<img alt="Logo" src="{{ $img_src }}" class="h-60px h-lg-75px" />
+						</a>
+						<!--end::Logo-->
+						<!--begin::Title-->
+						<h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7"></h1>
+						<!--end::Title-->
+						<!--begin::Text-->
+						<div class="d-none d-lg-block text-white fs-base text-center"></div>
+						<!--end::Text-->
+					</div>
+					<!--end::Content-->
+				</div>
+				<!--end::Aside-->
 			</div>
+			<!--end::Authentication - Sign-in-->
 		</div>
-		<!-- end:: Page -->
-    	<!--begin::Base Scripts -->
-		<script src="{{ url('default/assets/vendors/base/vendors.bundle.js') }}" type="text/javascript"></script>
-		<script src="{{ url('default/assets/demo/default/base/scripts.bundle.js') }}" type="text/javascript"></script>
-		<!--end::Base Scripts -->
-        <!--begin::Page Snippets -->
-		<script src="{{ url('default/assets/snippets/pages/user/login.js') }}" type="text/javascript"></script>
-		<!--end::Page Snippets -->
+		<!--end::Root-->
+		<!--end::Main-->
+
+		<script src="{{ url('theme/style/src/assets/plugins/global/plugins.bundle.js') }}"></script>
+		<script src="{{ url('theme/style/src/assets/js/scripts.bundle.js') }}"></script>
+		    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"
+      integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8JpG/S0GUMZwebnVFLPd6SU5yg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer">
+    </script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"
+      integrity="sha512-XZEy8UQ9rngkxQVugAdOuBRDmJ5N4vCuNXCh8KlniZgDKTvf7zl75QBtaVG1lEhMFe2a2DuA22nZYY+qsI2/xA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+		<!--end::Global Javascript Bundle-->
+		<!--begin::Custom Javascript(used for this page only)-->
+<!-- 		<script src="{{ url('theme/style/src/assets/js/custom/authentication/sign-in/general.js') }}"></script> -->
+<script src="{{ url('default/assets/snippets/pages/user/login.js') }}" type="text/javascript"></script>
+		<!--end::Custom Javascript-->
+		<!--end::Javascript-->
 	</body>
-	<!-- end::Body -->
+	<!--end::Body-->
 </html>

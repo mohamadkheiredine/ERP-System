@@ -33,149 +33,98 @@ th{
 @endsection
 
 @section('content')
-<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Product Categories
-										</h3>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">	Product Categories</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    	 <span id="hidden_fields">
+            <input type="hidden" name="page_number" value="1" />
+        </span>
+			<!--begin: Search Form -->
+			<div class="col-md-12">
+				<div class="row align-items-center">
+					<div class="col-xl-8 order-2 order-xl-1">
+						<div class="form-group row align-items-center">
+							<div class="col-md-4">
+								<div class="d-flex align-items-center">
+										<!--begin::Input group-->
+										<div class="position-relative w-md-400px me-md-2">
+											<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+											<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+										</div>
+										<!--end::Input group-->
 									</div>
-								</div>
-								<div class="m-portlet__head-tools">
-									<ul class="m-portlet__nav">
-										<li class="m-portlet__nav-item">
-											<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-												<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-													<i class="la la-ellipsis-h m--font-brand"></i>
-												</a>
-												<div class="m-dropdown__wrapper">
-													<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-													<div class="m-dropdown__inner">
-														<div class="m-dropdown__body">
-															<div class="m-dropdown__content">
-																<ul class="m-nav">
-																	<li class="m-nav__section m-nav__section--first">
-																		<span class="m-nav__section-text">
-																			Quick Actions
-																		</span>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-share"></i>
-																			<span class="m-nav__link-text">
-																				Print
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-chat-1"></i>
-																			<span class="m-nav__link-text">
-																				Export As CSV
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-																			<span class="m-nav__link-text">
-																				Import
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a href="" class="m-nav__link">
-																			<i class="m-nav__link-icon flaticon-multimedia-2"></i>
-																			<span class="m-nav__link-text">
-																				Download Import Template
-																			</span>
-																		</a>
-																	</li>
 
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</div>
 							</div>
-							<div class="m-portlet__body">
-							 <span id="hidden_fields">
-                                <input type="hidden" name="page_number" value="1" />
-                            </span>
-								<!--begin: Search Form -->
-								<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
-									<div class="row align-items-center">
-										<div class="col-xl-8 order-2 order-xl-1">
-											<div class="form-group m-form__group row align-items-center">
-												<div class="col-md-4">
-												<div class="m-input-icon m-input-icon--left">
-														<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." id="generalSearch" name="search_query"  />
-														<span class="m-input-icon__icon m-input-icon__icon--right">
-															<span>
-																<i class="la la-search"></i>
-															</span>
-														</span>
-													</div>
-
-												</div>
-												<div class="col-md-4">
-                                                    <div class="d-md-none m--margin-bottom-10"></div>
-												</div>
-												<div class="col-md-4">
-                                                    <div class="d-md-none m--margin-bottom-10"></div>
-												</div>
-											</div>
-										</div>
-										<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-											<div class="m-separator m-separator--dashed d-xl-none"></div>
-										</div>
-									</div>
-								</div>
-								<!--end: Search Form -->
-		                          <!--begin: Datatable -->
-								<div class="row">
-									<div class="col-md-12">
-    									<table class="table">
-                    						<thead>
-                    							<tr>
-                    								<th style="width:2px;">#</th>
-                    								<th style="width:2px;">ID</th>
-                    								<th>Category Title</th>
-                    								<th>Parent Category</th>
-                    								<th style="width:10px;">Products</th>
-                    								<th style="width:4px;white-space: nowrap;text-align: center">edit</th>
-                    								<th style="width:4px;white-space: nowrap;text-align: center">Delete</th>
-                    							</tr>
-                    						</thead>
-                    						<tbody  class="LstCategoriesGrid"></tbody>
-                    					</table>
-									</div>
-								</div>
-								 <div class="row">
-                                     <div class="col-md-10" align="left">
-                                        <ul id="ProductCategoriesPagination" class="pagination-sm"></ul>
-                                     </div>
-                                     <div class="col-md-2" align="right"></div>
-                                 </div>
-								<!--end: Datatable -->
-								<div class="row">
-									<div class="col-md-10"></div>
-									<div class="col-md-2">
-											<a href="{{ url('inventory/product/addcategory') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
-												<span>
-													<i class="fas fa-user"></i>
-													<span>
-														New Category
-													</span>
-												</span>
-											</a>
-									</div>
-								</div>
+							<div class="col-md-4">
+                                <br/>
+							</div>
+							<div class="col-md-4">
+                                 <br/>
 							</div>
 						</div>
+					</div>
+					<div class="col-xl-4 order-1 order-xl-2 m--align-right">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12">&nbsp;</div>
+			<!--end: Search Form -->
+              <!--begin: Datatable -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table class="table table-rounded table-striped border gy-3 gs-3">
+    						<thead>
+    							<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+    								<th style="width:2px;">#</th>
+    								<th style="width:2px;">ID</th>
+    								<th>Category Title</th>
+    								<th>Parent Category</th>
+    								<th style="width:10px;">Products</th>
+    								<th style="width:4px;white-space: nowrap;text-align: center">edit</th>
+    								<th style="width:4px;white-space: nowrap;text-align: center">Delete</th>
+    							</tr>
+    						</thead>
+    						<tbody  class="LstCategoriesGrid"></tbody>
+    					</table>
+					</div>
+				</div>
+			</div>
+			 <div class="row">
+                 <div class="col-md-10" align="left">
+                    <ul id="ProductCategoriesPagination" class="pagination-sm"></ul>
+                 </div>
+                 <div class="col-md-2" align="right"></div>
+             </div>
+			<!--end: Datatable -->
+			<div class="row">
+				<div class="col-md-10"></div>
+				<div class="col-md-2">
+						<a href="{{ url('inventory/product/addcategory') }}" class="btn btn-info">
+							<span>
+								<i class="fas fa-user"></i>
+								<span>
+									New Category
+								</span>
+							</span>
+						</a>
+				</div>
+			</div>
+    </div>
+</div>
 @endsection

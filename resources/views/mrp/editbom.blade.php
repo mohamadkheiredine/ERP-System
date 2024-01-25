@@ -35,46 +35,21 @@ th{
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Edit Existing BOM
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_bom" id="FORM_SAVE_BOM">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Existing BOM</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_bom" id="FORM_SAVE_BOM">
                 <div class="form-body">
                      <span id="hidden_fields">
                        {!! csrf_field() !!}
@@ -157,27 +132,23 @@ th{
                             </div>
                         </div>
                          <div class="col-md-12">
-             				<ul class="nav nav-tabs  m-tabs-line" role="tablist">
-								<li class="nav-item m-tabs__item">
-									<a class="nav-link m-tabs__link active" data-toggle="tab" href="#mNotes" role="tab">
-										Notes
-									</a>
-								</li> 
-								<li class="nav-item m-tabs__item">
-									<a class="nav-link m-tabs__link" data-toggle="tab" href="#mProducts" role="tab">
-										Products
-									</a>
-								</li> 
-							</ul>
-							<div class="tab-content">
-								<div class="tab-pane active" id="mNotes" role="tabpanel">
-									<div class="form-group">
+                         	<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#tab_notes">Notes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tab_products">Products</a>
+                                </li> 
+                            </ul>
+                         	<div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="tab_notes" role="tabpanel">
+                                   	<div class="form-group">
                                         <label class="control-label">BOM  Note</label>
         								<textarea name="bm_bom_notes" id="BM_BOM_NOTES" class="form-control" style="width:100%;height:250px;">{{ $bom_info->bm_bom_notes }}</textarea>
                                     </div>
-								</div> 
-								<div class="tab-pane" id="mProducts" role="tabpanel">
-									<div class="row">
+                                </div>
+                                <div class="tab-pane fade" id="tab_products" role="tabpanel">
+                                   <div class="row">
 										<div id="LstBOMProducts" class="col-md-12">
 											<table class="table m-table m-table--head-bg-brand">
 											<thead>
@@ -199,8 +170,8 @@ th{
 											<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-primary" >Add Product</button>
 										</div>
 									</div>
-								</div> 
-							</div> 
+                                </div> 
+                            </div>
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
@@ -213,7 +184,7 @@ th{
                     </div>
                 </div>
             </form>
-	</div>
+    </div>
 </div>
 <div class="modal fade" id="BOMItemsModel" tabindex="-1" role="dialog" aria-labelledby="BOMItemsModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -231,7 +202,7 @@ th{
           			<div class="form-group">
           				<label> Product </label><br/>
           				<select name="bm_item_product" id="BM_ITEM_PRODUCT" style="width:100%;" class="form-control">
-          				         <option value="">-- Select product --</option>
+          				    <option value="">-- Select product --</option>
           					@foreach($lst_raw_materials as $index => $rm_info)
           						<option value="{{ $rm_info->p_id }}" data-weight="{{ $rm_info->p_product_weight }}" data-unit="{{ $rm_info->p_product_weight_unit }}" >{{ $rm_info->p_product_name }}</option>
           					@endforeach

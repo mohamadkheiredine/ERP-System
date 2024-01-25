@@ -47,7 +47,12 @@ $(function(){
 		 if(unit_type != '')
 			 products_module.DisplayMetricProduct(); 
 	 }
-
+	 
+	 let warehouse_id = $("#FK_WWAREHOUSE_ID").val();
+	 if(warehouse_id == "")
+	 {
+		products_module.GetZonesDropdown();
+	 }
 	 
 	 $("select").select2();
 	 $("#P_BAR_CODE").on("blur",products_module.GenerateBarCode);
@@ -55,21 +60,48 @@ $(function(){
 	 $("#BTN_ADD_STOCK").on("click",products_module.AddProductStock);
 	 $("#BTN_TRANSFER_STOCK").on("click",products_module.ProductTransferStock);
 	 $("#P_PRODUCT_UNIT_TYPE").on("change",products_module.DisplayMetricProduct);
-	 $("#P_PRODUCT_CURRENCY").on("change",products_module.ChangeCurrencyLabel);	
-         $('#P_PRODUCT_PRODUCTION_DATE').datepicker({ 
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	 $("#FK_WWAREHOUSE_ID").on("change",products_module.GetZonesDropdown);
+	 $('.DefaultZone').on('change','#FK_ZONE_ID',products_module.GetFloorDropDown)
+	 $("#P_PRODUCT_CURRENCY").on("change",products_module.ChangeCurrencyLabel);
+	 $('.dropdown-item').on('click',products_module.QuickActions);
+	 new tempusDominus.TempusDominus(document.getElementById('P_PRODUCT_PRODUCTION_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
-         $('#P_PRODUCT_EXPIRY_DATE').datepicker({ 
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	});
+	 new tempusDominus.TempusDominus(document.getElementById('P_PRODUCT_EXPIRY_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
+	});
 })

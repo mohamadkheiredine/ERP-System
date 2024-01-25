@@ -18,25 +18,48 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 $('#SO_ORDER_DATE').datepicker({
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	 
+	 new tempusDominus.TempusDominus(document.getElementById('SO_ORDER_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
-	 $('#SO_DELIVERY_DATE').datepicker({
-		 startDate :'+1d',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	});
+	 new tempusDominus.TempusDominus(document.getElementById('SO_DELIVERY_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
+	});
+	 
 	 $('select').select2();
 	 
 	 let so_id = $('input[name=so_id]').val();

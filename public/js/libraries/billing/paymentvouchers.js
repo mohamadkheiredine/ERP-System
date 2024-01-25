@@ -1,27 +1,49 @@
 $(function(){
-
 	var fisical_year = getCookie('fisical_year');
 	$('input[name=fisical_year]').val(fisical_year);
-	$('select').select2(); 
+
 	vouchers_module.displayListPayments();
-	$('input[name=pv_start_date]').datepicker({ 
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
-	});
-	 $('input[name=pv_end_date]').datepicker({ 
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+	new tempusDominus.TempusDominus(document.getElementById('PV_START_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
 		 }
-	 });
+	});
+	new tempusDominus.TempusDominus(document.getElementById('PV_END_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
+	});
+
 	 $('select').on("change",function(){
 		 $('input[page_number]').val(1);
 		 $('#VouchersPagination').twbsPagination('destroy');

@@ -22,8 +22,8 @@ Page Description :
    <td>{{ $cn_info->SenderAccount->aa_account_ref }} - {{ $cn_info->SenderAccount->aa_account_label }}</td>
     <td>{{ $cn_info->ReceivableAccount->aa_account_ref }} - {{ $cn_info->ReceivableAccount->aa_account_label }}</td>  
     <td>{{ $cn_info->cn_credit_label }}</td>  
-    <td>{{ $cn_info->cn_credit_value }}   <b>{{ $cn_info->Currency->cc_currency_code }}</b></td>  
-    <td><a href="#" data-cn_id="{{ $cn_info->cn_id }}" id="EDIT_CN_{{ $cn_info->cn_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
+    <td>{{ $cn_info->cn_credit_value }}<b>{{ $cn_info->Currency->cc_currency_code }}</b></td>  
+    <td><a href="#" data-cn_id="{{ $cn_info->cn_id }}" id="EDIT_CN_{{ $cn_info->cn_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="#" data-cn_id="{{ $cn_info->cn_id }}"  id="DELETE_CN_{{ $cn_info->cn_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>
 @endforeach

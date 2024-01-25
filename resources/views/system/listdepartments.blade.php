@@ -19,7 +19,7 @@ Page Description :
 	<td><input type="checkbox" name="ck_dep_{{ $dep_info->sd_id }}" id="CK_DEP_{{ $dep_info->sd_id }}" class="checkboxes" value="{{ $dep_info->sd_id }}" /></td>
    <td>{{ $dep_info->sd_id }}</td>
    <td>{{ $dep_info->sd_department_title }}</td>
-  <td style="width:2px;">  <a href="#"  data-d_id="{{ $dep_info->sd_id }}" id="EDIT_DEPARTMENT_{{ $dep_info->sd_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-d_id="{{ $dep_info->sd_id }}" id="EDIT_DEPARTMENT_{{ $dep_info->sd_id }}" ><i class="fa-solid fa-pen-to-square"></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-d_id="{{ $dep_info->sd_id }}"  id="DELETE_DEPARTMENT_{{ $dep_info->sd_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

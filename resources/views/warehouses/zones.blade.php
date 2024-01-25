@@ -16,10 +16,10 @@ Page to control warehouse zones Add/Edit and delete zones
 ?>
 <div class="row">
 	<div class="col-md-2 col-xs-2"></div>
-	<div class="col-md-8 col-xs-8">
-			<table class="table m-table m-table--head-bg-success">
+	<div class="col-md-8 col-xs-8 table-responsive">
+			<table  class="table table-row-dashed table-row-gray-300 gy-7">
 				<thead>
-					<tr>
+					<tr class="fw-bold fs-6 text-gray-800">
 						<th>
 							#
 						</th>
@@ -48,7 +48,7 @@ Page to control warehouse zones Add/Edit and delete zones
 				</tbody>
 			</table>
 			<div class="col-md-12" align="right">
-				<button type="button" name="btn_create_zone" id="BTN_CREATE_ZONE" class="btn m-btn m-btn--gradient-from-primary m-btn--gradient-to-info"> Create Zone </button>
+				<button type="button" name="btn_create_zone" id="BTN_CREATE_ZONE" class="btn btn-success"> Create Zone </button>
 			</div>
 	</div>
 	<div class="col-md-2 col-xs-2"></div>

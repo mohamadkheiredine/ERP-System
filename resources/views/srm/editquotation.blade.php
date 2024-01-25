@@ -27,7 +27,7 @@ th{
 </style>
 @endsection
 @section('plugins')
-<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script src="{{ url('default/assets/plugins/bootstrap-suggest/src/bootstrap-suggest.js') }}"></script>
 <script type="text/javascript" src="{{ url('default/assets/plugins/jquery-scanner-detection/jquery.scannerdetection.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/quotations.module.js') }}"></script>
@@ -35,46 +35,21 @@ th{
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Edit Pruchase Quotation
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_quotation" id="FORM_SAVE_QUOTATION">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Pruchase Quotation</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_quotation" id="FORM_SAVE_QUOTATION">
                 <div class="form-body">
                      <span id="hidden_fields">
                      {!! csrf_field() !!}
@@ -115,7 +90,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Due Date <span class="required"> * </span></label>
-                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ $supplier_quotation->sq_due_date }}" />
+                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ date('d/m/Y',strtotime($supplier_quotation->sq_due_date)) }}" />
                             </div>
                         </div>
                          <div class="col-md-4">
@@ -141,35 +116,39 @@ th{
                                 </div>
                         </div>
                         @if( $supplier_quotation->sq_quotation_approve == 0 )
-                         <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Quotation Approved </label><br/>
-                                    <input data-switch="true" type="checkbox" {{ $supplier_quotation->sq_quotation_approve == 1 ? 'checked="checked"' : "" }}  id="SQ_APPROVE_QUOTATION" name="sq_approve_quotation" />
-                                </div>
+                         <div class="col-md-4"><br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_APPROVE_QUOTATION" name="sq_approve_quotation" {{ $supplier_quotation->sq_quotation_approve == 1 ? 'checked="checked"' : "" }}  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Quotation Approved
+                                </span>
+                            </label>
                         </div>
                         @else
                         	<input type="hidden" name="sq_approve_quotation" value="1" />
                         @endif
+                        <div class="col-md-12">&nbsp;</div>
+                        <div class="col-md-4">
+                        	<button type="button" name="btnAddProduct" id="btnAddProduct" class="btn btn-info"  data-bs-toggle="modal" data-bs-target="#AddNewProduct">Add Product</button>
+                        </div>
+                        
                          <div class="col-md-12">
-                        	<ul class="nav nav-tabs" role="tablist">
-								<li class="nav-item">
-									<a class="nav-link active" data-toggle="tab" href="#m_tab_notes">
-										Notes
-									</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#m_tab_products">
-										Products
-									</a>
-								</li> 
-							</ul>
-							<div class="tab-content">
-								<div class="tab-pane active" id="m_tab_notes" role="tabpanel">
-                                    <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
+                         		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#m_tab_notes">Notes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#m_tab_products">Products</a>
+                                </li> 
+                            </ul>
+                            
+                            <div class="tab-content" id="myTabContent">
+                            	 <div class="tab-pane fade show active" id="m_tab_notes" role="tabpanel">
+                            	  <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
                                     <textarea style="width:100%;height:250px;resize:none" id="SQ_QUOTATION_NOTES"  class="form-control" name="sq_quotation_notes"  cols="">{{ $supplier_quotation->sq_quotation_notes }}</textarea>
-								</div>
-								<div class="tab-pane" id="m_tab_products" role="tabpanel">
-									 <table class="table m-table m-table--head-separator-primary">
+                            	 </div>
+                            	 <div class="tab-pane fade" id="m_tab_products" role="tabpanel">
+                            	 <table class="table m-table m-table--head-separator-primary">
 										<thead>
 											<tr>
 												<th>#</th>
@@ -251,8 +230,9 @@ th{
 											<button name="add_product" type="button" id="ADD_PRODUCT" class="btn btn-info" >Add Stock</button>
 										</div>
 									</div>
-								</div> 
-							</div> 
+                            	 </div>
+                            </div>
+                         
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
@@ -268,7 +248,37 @@ th{
                     </div>
                 </div>
             </form>
+    </div>
+</div>
+<div class="modal fade" id="AddNewProduct" tabindex="-1" role="dialog" aria-labelledby="AddNewProductModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="InserItemsModalLabel">
+					Add New Product
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">
+						&times;
+					</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form name="frm_save_quotation" id="FRM_SAVE_QUOTATION">
+					<div class="row">
+						<div class="col-md-6">
+							<label class="control-label"> Product Barcode  <span class="required"> * </span></label><br/>
+							<input type="text" class="form-control" name="p_barcode" id="P_BARCODE" value="" />
+						</div>
+						<div class="col-md-4">
+							<label class="control-label"> Product Name  <span class="required"> * </span></label><br/>
+							<input type="text" class="form-control" name="p_product_name" id="P_PRODUCT_NAME" value="" />
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
-
 @endsection

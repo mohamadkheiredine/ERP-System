@@ -34,118 +34,46 @@ th{
 @endsection
 
 @section('content')
-<div class="m-portlet m-portlet--mobile">
-							<div class="m-portlet__head">
-								<div class="m-portlet__head-caption">
-									<div class="m-portlet__head-title">
-										<h3 class="m-portlet__head-text">
-											Leads Management
-										</h3>
-									</div>
-								</div>
-								<div class="m-portlet__head-tools">
-									<ul class="m-portlet__nav">
-										<li class="m-portlet__nav-item">
-											<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-												<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-													<i class="la la-ellipsis-h m--font-brand"></i>
-												</a>
-												<div class="m-dropdown__wrapper">
-													<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-													<div class="m-dropdown__inner">
-														<div class="m-dropdown__body">
-															<div class="m-dropdown__content">
-																<ul class="m-nav">
-																	<li class="m-nav__section m-nav__section--first">
-																		<span class="m-nav__section-text">
-																			Quick Actions
-																		</span>
-																	</li>
-																	<li class="m-nav__item">
-																		<a data-action_type="PRINT"  href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon fa fa-print"></i>
-																			<span class="m-nav__link-text">
-																				Print
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a data-action_type="EXPORT_AS_CSV"  href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon fa fa-download"></i>
-																			<span class="m-nav__link-text">
-																				Export As CSV
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a data-action_type="IMPORT"  href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon fa fa-upload"></i>
-																			<span class="m-nav__link-text">
-																				Import
-																			</span>
-																		</a>
-																	</li>
-																	<li class="m-nav__item">
-																		<a  data-action_type="DOWNLOAD_TEMPLATE"  href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon flaticon-download"></i>
-																			<span class="m-nav__link-text">
-																				Download Import Template
-																			</span>
-																		</a>
-																	</li> 
-																	<li class="m-nav__item">
-																		<a data-action_type="ASSIGN_LEAD" href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon flaticon-users"></i>
-																			<span class="m-nav__link-text">
-																				Assign Leads
-																			</span>
-																		</a>
-																	</li> 
-																	<li class="m-nav__item">
-																		<a data-action_type="CHANGE_STATUS" href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon la la-check-circle"></i>
-																			<span class="m-nav__link-text">
-																				Change Lead Status
-																			</span>
-																		</a>
-																	</li> 
-																	<li class="m-nav__item">
-																		<a data-action_type="CONVERT_LEAD_ACCOUNT" href="#" class="m-nav__link quickactions">
-																			<i class="m-nav__link-icon flaticon-business"></i>
-																			<span class="m-nav__link-text">
-																				Convert Lead to Account
-																			</span>
-																		</a>
-																	</li> 
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="m-portlet__body">
-								<!--begin: Search Form -->
-								<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Leads Management</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              		<li><a class="dropdown-item" data-action_type="PRINT" href="#">Print</a></li>
+                    <li><a class="dropdown-item" data-action_type="EXPORT_AS_CSV" href="#">Export As CSV</a></li>
+                    <li><a class="dropdown-item" data-action_type="IMPORT" href="#">Import</a></li>
+                    <li><a class="dropdown-item" data-action_type="DOWNLOAD_TEMPLATE" href="#">Download Import Template</a></li>
+                    <li><a class="dropdown-item" data-action_type="ASSIGN_LEAD" href="#">Assign Lead</a></li>
+                    <li><a class="dropdown-item" data-action_type="CHANGE_STATUS" href="#">Change Lead Status</a></li>
+                    <li><a class="dropdown-item" data-action_type="CONVERT_LEAD_ACCOUNT" href="#">Convert Lead to Account</a></li>
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <div class="col-md-12">
 									<div class="row align-items-center">
 										<div class="col-xl-8 order-2 order-xl-1">
-											<div class="form-group m-form__group row align-items-center">
+											<div class="form-group row align-items-center">
 												<div class="col-md-4">
-												<div class="m-input-icon m-input-icon--left">
-														<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." id="generalSearch">
-														<span class="m-input-icon__icon m-input-icon__icon--right">
-															<span>
-																<i class="la la-search"></i>
-															</span>
-														</span>
-													</div>
-
+														<div class="d-flex align-items-center">
+                											<!--begin::Input group-->
+                											<div class="position-relative w-md-400px me-md-2">
+                												<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                													<span class="path1"></span>
+                													<span class="path2"></span>
+                												</i>
+                												<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                											</div>
+                											<!--end::Input group-->
+                										</div>
 												</div>
 												<div class="col-md-4">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_CATEGORY" name="lead_category">
                                                     			<option value="0">-- Select Category --</option>
                                                                 @foreach($lead_categories as $index => $cat_info)
@@ -155,7 +83,7 @@ th{
                                                     </div>
 												</div>
 												<div class="col-md-4">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_STATUS" name="lead_status">
                                                     			<option value="0">-- Select Status --</option>
                                                                 @foreach($lead_statuses as $index => $status_info)
@@ -165,7 +93,7 @@ th{
                                                     </div>
 												</div>
 												<div class="col-md-4" style="margin-top:10px;">
-                                                    <div class="m-input-icon m-input-icon--left">
+                                                    <div class="mb-10">
                                                     		<select class="bs-select form-control" id="LEAD_USER" name="lead_user">
                                                     			<option value="0">--All Users--</option>
                                                                 @foreach($lst_users as $index => $user_info)
@@ -176,8 +104,8 @@ th{
 												</div>
 											</div>
 										</div>
-										<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-											<a href="{{ url('crm/leads/addform') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
+										<div class="col-xl-4 order-1 order-xl-2 align-right">
+											<a href="{{ url('crm/leads/addform') }}" class="btn btn-info">
 												<span>
 													<i class="flaticon-tabs"></i>
 													<span>
@@ -191,13 +119,29 @@ th{
 								</div>
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
-								<div class="m_datatable" id="LstLeads">
-
+								<div class="table-responsive">
+									<table class="table table-rounded table-striped border gy-7 gs-7">
+                            		<thead>
+                						<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                            				<th title="#">#</th>
+                            				<th title="Id"> ID </th>
+                            				<th title="Lead name"> Lead Name </th>
+                            				<th title="Company"> Company </th>
+                            				<th title="Mobile"> Mobile </th>
+                            				<th title="Email"> Email </th>
+                            				<th style="width:2px;" nowrap title="#"> edit </th>
+                            				<th style="width:2px;" nowrap title="#"> Delete </th>
+                            			</tr>
+                            		</thead>
+                            		<tbody id="LstLeads">
+                            
+                            		</tbody>
+                            </table>
 								</div>
 								<!--end: Datatable -->
 								<div class="row">
 									<div class="col-md-12" align="right">
-										<a href="{{ url('crm/leads/addform') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
+										<a href="{{ url('crm/leads/addform') }}" class="btn btn-info">
 												<span>
 													<i class="flaticon-tabs"></i>
 													<span>
@@ -207,8 +151,9 @@ th{
 											</a>
 									</div>
 								</div>
-							</div>
-						</div>
+    </div>
+</div>
+ 
 						
 					<!-- Models Section -->
 					<div class="modal fade" id="ChangeStatusModel" tabindex="-1" role="dialog" aria-labelledby="ChangeStatusModelLabel" aria-hidden="true">

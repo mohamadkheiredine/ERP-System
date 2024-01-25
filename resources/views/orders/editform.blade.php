@@ -29,53 +29,28 @@ th{
 </style>
 @endsection
 @section('plugins')
-		<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+		<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
     	<script type="text/javascript" src="{{ url('default/assets/plugins/jquery-scanner-detection/jquery.scannerdetection.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/modules/orders.module.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/libraries/orders/saveorder.js') }}"></script>
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Edit Existing Order
-				</h3>
-			</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-             <form name="frm_save_order" id="FORM_SAVE_ORDER">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Edit Order</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form name="frm_save_order" id="FORM_SAVE_ORDER">
                 <div class="form-body">
                      <span id="hidden_fields">
                        {!! csrf_field() !!}
@@ -98,7 +73,7 @@ th{
                         </div>
                         <div class="col-md-4">
                               <div class="form-group">
-                                    <label class="control-label"> Order Code :&nbsp;<span class="required"> * </span></label><br/>
+                                    <label class="control-label"> Order Code :&nbsp;</label><br/>
                                     <input type="text" name="so_order_code" id="SO_ORDER_CODE" class="form-control" readonly="readonly" required="required" maxlength="25"  tabindex="1" value="{{ $order_info->so_order_code != null ? $order_info->so_order_code : $order_code }}" />
                                 </div>
                         </div> 
@@ -143,14 +118,14 @@ th{
                         </div> 
                         <div class="col-md-4">
                               <div class="form-group">
-                                    <label class="control-label"> Order Date :&nbsp;<span class="required"> * </span></label><br/>
-                                    <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ $order_info->so_order_date }}"  tabindex="6" />
+                                    <label class="control-label"> Order Date :&nbsp;</label><br/>
+                                    <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_order_date)) }}"  tabindex="6" />
                                 </div>
                         </div> 
                         <div class="col-md-4">
                           <div class="form-group">
-                                <label class="control-label"> Delivery Date :&nbsp;<span class="required"> * </span></label><br/>
-                                <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ $order_info->so_delivery_date }}" tabindex="7" />
+                                <label class="control-label"> Delivery Date :&nbsp;</label><br/>
+                                <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_delivery_date)) }}" tabindex="7" />
                             </div>
                         </div> 
                          <div class="col-md-4">
@@ -197,19 +172,16 @@ th{
                             </div>
                         </div>
                          <div class="col-md-4">
-                            <div class="m-form__group form-group row">
-								<label class="col-md-12 col-form-label">
-									Whole Sales
-								</label>
-								<div class="col-3">
-									<span class="m-switch m-switch--lg m-switch--icon">
-										<label>
-											<input type="checkbox"  name="so_whole_sale" id="SO_WHOLE_SALE" value="1" {{ $order_info->so_whole_sale == 1 ? "checked" : "checked" }}  tabindex="12" />
-											<span class="WholeSaleSpan"></span>
-										</label>
-									</span>
-								</div>
-							</div>
+                         	 <div class="form-group">
+                                <br/>
+                                  <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input"  type="checkbox" name="so_whole_sale" id="SO_WHOLE_SALE" {{ $order_info->so_whole_sale == 1 ? "checked" : "checked" }}  value="1"   />
+                                        <span class="form-check-label fw-semibold text-muted">
+                                          Whole Sales
+                                        </span>
+                                        <span class="WholeSaleSpan"></span>
+                                    </label>  
+                            </div> 
                         </div>
                         <div class="col-md-4">
                              <div class="form-group">
@@ -242,20 +214,34 @@ th{
                     </div>
                 </div>
             </form>
+            <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">Products</a>
+                </li>
+            </ul>
             
-            <ul class="nav nav-tabs" role="tablist">
-			<li class="nav-item">
-				<a class="nav-link active" data-toggle="tab" href="#ProductTab">
-					Products
-				</a>
-			</li>
-		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="ProductTab" role="tabpanel">
-				<div class="row">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="tabProducts" role="tabpanel">
+                    <div class="row">
 					<div class="col-md-12">
-						<div class="m_datatable"  id="LstProducts" >
-						
+						<div class="table-responsive" >
+						<table class="table table-row-dashed table-row-gray-300 gy-7">
+                    		<thead>
+                    			<tr class="fw-bold fs-6 text-gray-800">
+                    				<th title="#">#</th>
+                    				<th title="Id"> ID </th>
+                    				<th title="barcode"> Barcode </th>
+                    				<th title="image"> Image </th>
+                    				<th title="Product Name">Product Name</th>
+                    				<th title="Products Item">Item Price</th>
+                    				<th title="Quanity">Quanity</th>
+                    				<th title="Products Pice">Products Pice</th>
+                    			</tr>
+                    		</thead>
+                    		<tbody  id="LstProducts" >
+                    
+                    		</tbody>
+                    </table>
 						</div>
 					</div>
 					<div class="col-md-12" align="right">
@@ -264,8 +250,9 @@ th{
 						  @endif
 					</div>
 				</div>
-			</div>
-		</div>
+                </div>
+            </div>
+
          <div class="modal fade" id="OrderProductsModel" tabindex="-1" role="dialog" aria-labelledby="OrderProductsModelLabel" aria-hidden="true">
         	<div class="modal-dialog" role="document">
         		<div class="modal-content">
@@ -333,7 +320,7 @@ th{
         		</div>
         	</div>
         </div>  
-	</div>
-</div>
+    </div>
+ </div>
 
 @endsection

@@ -15,31 +15,6 @@ banking_module = {
             },
 	        success : function(response){
 	        	$('#LstBankAccounts').html(response.display);
-				$.ba_datatable = $('.m_datatable').mDatatable({
-					// layout definition
-					layout: {
-						theme: 'default', // datatable theme
-						class: '', // custom wrapper class
-						scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-						// height: 450, // datatable's body's fixed height
-						footer: false // display/hide footer
-					},
-					
-					// column sorting
-					sortable: true,
-					
-					pagination: true,
-					
-					search: {
-						input: $('#generalSearch')
-					},
-					
-					// inline and bactch editing(cooming soon)
-					// editable: false,
-				});
-				
-				$("a[id*=EDIT_ACCOUNT_]").on('click',banking_module.EditBankingAccountInfo);
-				$("a[id*=DELETE_ACCOUNT_]").on('click',banking_module.DeleteBankingAccountData);
 	        }
 	    });
 	},

@@ -29,14 +29,18 @@ vouchers_module = {
                       });
                       $.uniform.update(set);
                   }); 
-                 $.pagination = $('#VouchersPagination').twbsPagination({
-                       totalPages: response.total_pages,
-                       visiblePages: 7,
-                       onPageClick: function (event, page) {
-                            $('input[name=page_number]').val(page);
-                            vouchers_module.displayListJournalVouchers();
-                       }
-                   });
+	        	  if(response.total_pages > 0)
+        		  {
+	        		  $.pagination = $('#VouchersPagination').twbsPagination({
+	                       totalPages: response.total_pages,
+	                       visiblePages: 7,
+	                       onPageClick: function (event, page) {
+	                            $('input[name=page_number]').val(page);
+	                            vouchers_module.displayListJournalVouchers();
+	                       }
+	                   });
+        		  }
+                
 //                 
 //				$("a[id*=EDIT_PJ_]").on('click',vouchers_module.EditJournalVoucherInfo);
 //				$("a[id*=DELETE_PJ_]").on('click',vouchers_module.DeleteJournalVoucherData);

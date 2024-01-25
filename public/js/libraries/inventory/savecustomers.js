@@ -35,7 +35,7 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 $('input[name=ic_default_customer]').bootstrapSwitch();
+
 	$('select').select2(); 
 	$('select[name=aa_parent_account]').select2('destroy');
 	$("#BTN_SAVE_CUSTOMER").on('click',customers_module.SaveCustomerInfo);
