@@ -39,13 +39,25 @@ $(function(){
 	    });
 	 $("#BTN_SAVE_COMPANY").on('click',company_module.SaveCompanyInfo);
 	 $("select").select2();
-	 $('#CD_COMPANY_STARTING_DATE').datepicker({
-         todayHighlight: true,
-         format : "yyyy-mm-dd",
-         orientation: "bottom left",
-         templates: {
-             leftArrow: '<i class="la la-angle-left"></i>',
-             rightArrow: '<i class="la la-angle-right"></i>'
-         }
-     });
-})
+         new tempusDominus.TempusDominus(document.getElementById('CD_COMPANY_STARTING_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "L"
+			 
+		 }
+	});
+	 
+});

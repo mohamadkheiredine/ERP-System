@@ -86,13 +86,11 @@ class ProductsController extends Controller
         {
             $lst_categories = $lst_categories->whereFkPcId($category_id);
         }
-        elseif($category_id == null)
-        {
-            $lst_categories = $lst_categories->whereFkPcId(null);
-        }
+        
         
         //$lst_categories = $lst_categories->wherePcUseSerialNumber(0)->orderBy('pc_category','DESC')->get();
         $lst_categories = $lst_categories->orderBy('pc_category','DESC')->get(); 
+         
         $categories = array();
         
         foreach ( $lst_categories as $index => $category_info ) 
@@ -228,6 +226,7 @@ class ProductsController extends Controller
     {
         $user_id             = $request->input('user_id');
         $category_id         = $request->input('category_id');
+        $searchquery         = $request->input('searchquery');
         $g_hash              = $request->input('g_hash');
         $current_page              = $request->input('current_page');
         $has_pagination              = $request->has('has_pagination') ? $request->input('has_pagination') : 1;
@@ -262,6 +261,11 @@ class ProductsController extends Controller
         if( $category_id != 0 )
         {
             $products_cond = $products_cond->whereFkPcId($category_id);
+        }
+        
+        if(strlen($searchquery) > 0)
+        {
+            $products_cond = $products_cond->where('p_product_name','LIKE','%' . $searchquery . '%')
         }
         
         $products_count = $products_cond->count();
@@ -1005,14 +1009,12 @@ class ProductsController extends Controller
             
             return Response()->json($result_array);
         } 
-        DB::connection()->enableQueryLog();
+        
         $lst_categories = ProductCategories::wherePcIsDeleted(0);
-		if(is_numeric($category_id) && $category_id != 0)
-			$lst_categories = $lst_categories->whereFkPcId($category_id);
-		else 
-		    $lst_categories = $lst_categories->whereNull('fk_pc_id');
-		    $lst_categories = $lst_categories->get();
-		    $queries = DB::getQueryLog(); 
+        if(is_numeric($category_id) && $category_id != 0)
+                $lst_categories = $lst_categories->whereFkPcId($category_id);
+
+        $lst_categories = $lst_categories->get();
         $category_array = array();
         $items_array    = array();
         

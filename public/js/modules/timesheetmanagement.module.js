@@ -196,12 +196,23 @@ timesheet_module = {
 		        	$("#TimeSheetManagement").html(response.display);
 		        	$('select').select2();
 		        	$('.timesheet').each(function(){
-		        		$(this).timepicker({
-		        			  minuteStep: 1,
-		        	            showSeconds: true,
-		        	            showMeridian: false,
-		        	            snapToStep: true
-		        		});
+		        	 
+                                        
+                                        new tempusDominus.TempusDominus(this, {
+                                    display: {
+                                        viewMode: "clock",
+                                        components: {
+                                            decades: false,
+                                            year: false,
+                                            month: false,
+                                            date: false,
+                                            hours: true,
+                                            minutes: true,
+                                            seconds: false
+                                        }
+                                    }
+                                });
+                                        
 		        	})
 		        }
 		    });

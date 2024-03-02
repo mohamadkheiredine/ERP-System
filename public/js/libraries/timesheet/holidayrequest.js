@@ -4,15 +4,12 @@
 $(function(){
 	holidays_module.displayListHolidayRequests();
 	$("#HR_USER_ID").on("click",function(){
-		$.hr_datatable.destroy();
 		holidays_module.displayListHolidayRequests();
 	});
 	$("#HR_DEPARTMENT_ID").on("click",function(){
-		$.hr_datatable.destroy();
 		holidays_module.displayListHolidayRequests();
 	});
 	$("#HR_REQUEST_STATUS").on("click",function(){
-		$.hr_datatable.destroy();
 		holidays_module.displayListHolidayRequests();
 	});
 	$('select').select2();

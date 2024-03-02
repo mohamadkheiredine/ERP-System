@@ -46,7 +46,7 @@ th{
         </div>
     </div>
     <div class="card-body">
-    <form name="frm_save_daytype" id="FORM_SAVE_DAYTYPE">
+    		<form name="frm_save_daytype" id="FORM_SAVE_DAYTYPE">
                 <div class="form-body">
                      <span id="hidden_fields">
                       <div class="form-group">
@@ -102,5 +102,4 @@ th{
             </form>
     </div>
 </div>
-
 @endsection

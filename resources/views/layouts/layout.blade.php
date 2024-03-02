@@ -2147,6 +2147,9 @@ Page Description :
 											<div class="menu-item px-5">
 												<a href="#" class="menu-link px-5">My Profile</a>
 											</div>
+                                                                                        <div class="menu-item px-5">
+												<a href="{{ url('/timesheet/sendholidayrequest') }}" class="menu-link px-5">Send Holiday Request</a>
+											</div>
 											<!--begin::Menu separator-->
 											<div class="separator my-2"></div>
 											<!--end::Menu separator-->
@@ -6159,6 +6162,11 @@ Page Description :
 		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/upgrade-plan.js') }}"></script>
 		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/create-app.js') }}"></script>
 		<script src="{{ url('theme/style/src/assets/js/custom/utilities/modals/users-search.js') }}"></script>
+                <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+                <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+                <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+                <script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+                <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 		<script type="text/javascript">
 		function getCookie(cookieName) {
 		    const name = cookieName + '=';

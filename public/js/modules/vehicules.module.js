@@ -17,23 +17,23 @@ var vehicules_module = {
 	            },
 		        success : function(response){
 		            $('.LstVehiculesGrid').html(response.display);
-                             $('.group-checkable').change(function() {
-                                var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-                                var checked = $(this).prop("checked");
-                                $(set).each(function() {
-                                    $(this).prop("checked", checked);
-                                });
-                                $.uniform.update(set);
-                            });
+                     $('.group-checkable').change(function() {
+                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                        var checked = $(this).prop("checked");
+                        $(set).each(function() {
+                            $(this).prop("checked", checked);
+                        });
+                        $.uniform.update(set);
+                    });
 
-                            /** $('#ProductCategoriesPagination').twbsPagination({
-                                 totalPages: response.total_pages,
-                                 visiblePages: 7,
-                                 onPageClick: function (event, page) {
-                                      $('input[name=page_number]').val(page);
-                                      prodcategory_module.displayListProductCategories();
-                                 }
-                             });*/
+                    /** $('#ProductCategoriesPagination').twbsPagination({
+                         totalPages: response.total_pages,
+                         visiblePages: 7,
+                         onPageClick: function (event, page) {
+                              $('input[name=page_number]').val(page);
+                              prodcategory_module.displayListProductCategories();
+                         }
+                     });*/
 		        }
 		    });
 		},

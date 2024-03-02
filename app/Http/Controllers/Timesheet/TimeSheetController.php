@@ -285,6 +285,7 @@ class TimeSheetController extends Controller
     {
         $te_date        = $request->input('te_date');
         $result_array   = array();
+        $te_date = date("Y-m-d",strtotime($te_date));
         $date_array     = explode("-", $te_date);
 
         $year   = $date_array[0];

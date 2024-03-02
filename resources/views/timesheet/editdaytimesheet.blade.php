@@ -15,7 +15,7 @@ Edit Timesheet
 ?>
 
 <div class="row">
-	<div class="col-md-4">
+	<div class="col-md-12">
 		<div class="form-group">
             <label class="control-label"> Day Type </label><br/>
             <select class="bs-select form-control" name="ts_day_type" id="TS_DAY_TYPE"  style="width:100%" data-actions-box="true">
@@ -25,10 +25,7 @@ Edit Timesheet
                     @endforeach
             </select>
         </div>
-	</div>
-	<div class="col-md-8">
-	
-	</div>
+	</div> 
 </div>
 <div class="row">
 	<div class="col-md-12">
