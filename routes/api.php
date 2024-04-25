@@ -21,6 +21,9 @@ use Illuminate\Http\Request;
     Route::post('/request/api/changeprofilepassword','Api\UsersController@ChangeprofilePassword');
     Route::get('/request/api/getlistusers','Api\UsersController@GetListUsers');
     
+    
+    Route::get('/request/api/getteammembers','Api\UsersController@GetTeamMembers');
+    
     Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
     Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts');
     Route::post('/request/api/getdefaultaccounts','Api\GeneralController@GetDefaultAccounts');
@@ -75,6 +78,9 @@ use Illuminate\Http\Request;
     Route::get('/request/api/searchorderinfo','Api\OrdersController@SearchOrderInfo');
     Route::get('/request/api/getlistorders','Api\OrdersController@GetlistOrders');
     Route::get('/request/api/getorderinfo','Api\OrdersController@GetOrderInfo');
+    Route::get('/request/api/deleteorder','Api\OrdersController@DeleteOrder');
+    Route::get('/request/api/getorderinvoice','Api\OrdersController@GetOrderInvoice');
+    
     
     Route::post('/request/api/exportorderstoexcel','Api\OrdersController@ExportListOrdersToExcel');
     

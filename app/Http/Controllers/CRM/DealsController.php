@@ -29,7 +29,7 @@ use Config;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\CRM\CRMClientCategories;
-use App\Library\ClientsCategoriesManager;
+use App\library\ClientsCategoriesManager;
 use App\models\CRM\CRMAccounts;
 use App\models\CRM\CRMDeals;
 use App\models\CRM\CRMLeads;

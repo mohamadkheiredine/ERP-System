@@ -32,7 +32,7 @@ use App\models\CRM\CRMLeads;
 use App\models\Users\Users;
 use App\models\Inventory\WareHouses;
 use App\models\System\Industry;
-use App\Library\LeadsManager;
+use App\library\LeadsManager;
 use App\models\CRM\CRMLeadSources;
 use App\models\System\Countries;
 use App\models\CRM\CRMLeadActivities;
@@ -41,7 +41,7 @@ use App\models\CRM\CRMActivityTypes;
 use App\models\CRM\CRMActivityPurpose;
 use Maatwebsite\Excel\Facades\Excel;
 use App\models\CRM\CRMServiceCategories;
-use App\Library\CRMLogsManager;
+use App\library\CRMLogsManager;
 
 
 class LeadsController extends Controller
@@ -67,7 +67,7 @@ class LeadsController extends Controller
             "lst_users" => $lst_users,
             "lead_statuses" => $lead_statuses
         );
-        return Response()->view("Leads.leads",$data);
+        return Response()->view("leads.leads",$data);
     }
 
 
@@ -337,7 +337,7 @@ class LeadsController extends Controller
             "lst_activity_types" => $lst_activity_types,
             "lst_activity_purpose" => $lst_activity_purpose,
         );
-        return view("Leads.addleadactivity",$data);
+        return view("leads.addleadactivity",$data);
     }
 
     
@@ -438,8 +438,4 @@ class LeadsController extends Controller
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-     
-
 }

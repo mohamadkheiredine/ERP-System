@@ -70,7 +70,6 @@ th{
                              <div class="form-group">
                                 <label class="control-label">Team Members</label>
                                <select class="form-control m-bootstrap-select m_selectpicker" name="ut_members_id[]" multiple="multiple" id="UT_MEMBERS_ID" data-actions-box="true">
-                                        <option value="">-- Select Users --</option>
                                         @foreach ( $lst_users as $key => $user_info )
                                                 <option {{  array_search($user_info->id,$team_array) !== FALSE ? "selected" : "" }}  value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                         @endforeach

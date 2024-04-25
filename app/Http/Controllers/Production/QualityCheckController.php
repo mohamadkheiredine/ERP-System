@@ -28,7 +28,7 @@ use Config;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\CRM\CRMClientCategories;
-use App\Library\ClientsCategoriesManager;
+use App\library\ClientsCategoriesManager;
 use App\models\Sales\OrderStatus;
 use App\models\Production\PlanStatus;
 use App\models\Production\QualityCheck;

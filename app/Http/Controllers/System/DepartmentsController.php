@@ -27,10 +27,10 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
-use App\Library\ProductCategoriesManager;
+use App\library\ProductCategoriesManager;
 use App\models\System\Departments;
 use App\models\Users\Users;
-use App\Library\DepartmentsManager;
+use App\library\DepartmentsManager;
 
 
 

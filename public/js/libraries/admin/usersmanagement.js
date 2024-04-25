@@ -4,7 +4,7 @@
 
 $(function(){
 	users_module.DisplayListUsers();
-	
+	$("#COMPANY_ID").on('change',users_module.DisplayListUsers);
 	$("#LstUsers").on("click","a[id*=EDIT_USER_]",users_module.EditUserInfo);
 	$("#LstUsers").on("click","a[id*=DELETE_USER_]",users_module.DeleteUserInfo);
 	

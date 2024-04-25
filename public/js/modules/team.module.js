@@ -42,9 +42,6 @@ teams_module = {
              rules: {
             	 ut_team : {
                      required: true
-                 },
-                 ut_description : {
-                     required: true
                  }
              },
 

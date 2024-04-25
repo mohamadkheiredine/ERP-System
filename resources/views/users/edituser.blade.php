@@ -142,10 +142,9 @@ th{
                                                 <label> User Type <span class="required"> * </span></label>
                                                 <select class="bs-select form-control" name="u_user_type" id="U_USER_TYPE" data-actions-box="true">
                                                         <option value="">No User Type</option>
-                                                       <option {{ $user_info->u_user_type == 1 ? "selected" : "" }} value="1">Admin</option> 
-                                                       <option {{ $user_info->u_user_type == 2 ? "selected" : "" }} value="2">Employee</option> 
-                                                       <option {{ $user_info->u_user_type == 3 ? "selected" : "" }} value="3">Manager</option>
-                                                       <option {{ $user_info->u_user_type == 4 ? "selected" : "" }} value="4">POS Users</option>
+                                                         @foreach($lst_user_teams as $key => $ut_info)
+                                                     <option {{ $user_info->u_user_type ==  $ut_info->ut_id  ? "selected" : "" }} value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_team }}</option>
+                                                    @endforeach 
                                                 </select>
                                             </div>
                                         </div>

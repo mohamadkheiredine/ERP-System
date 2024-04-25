@@ -25,7 +25,7 @@ use DB;
 use App\Http\Controllers\Controller; 
 use Illuminate\Support\Facades\Hash;
 use App\Models\Roles\Roles;
-use App\Library\RolesManager;
+use App\library\RolesManager;
 use App\Models\Roles\RolePrivileges;
 
 

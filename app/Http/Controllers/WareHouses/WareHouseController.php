@@ -27,7 +27,7 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\WareHouses;
 use App\models\Inventory\WareHouseZones;
-use App\Library\WarehouseManager;
+use App\library\WarehouseManager;
 use App\models\Inventory\WareHouseEmployees;
 use App\models\Users\Users;
 use App\models\Logistics\Vehicules;
@@ -154,6 +154,9 @@ class WareHouseController extends Controller
         $w_warehouse_size_type  = $request->input('w_warehouse_size_type');
         $w_warehouse_description= $request->input('w_warehouse_description');
         $w_warehouse_status     = $request->input('w_warehouse_status');
+        $w_opening_time         = $request->input('w_opening_time');
+        $w_closing_time         = $request->input('w_closing_time');
+        $w_warehouse_location   = $request->input('w_warehouse_location');
         $w_material_warehouse   = $request->input('w_material_warehouse') == null ? 0 : 1;
         if($w_warehouse_status == null)
             $w_warehouse_status = 0;
@@ -182,6 +185,9 @@ class WareHouseController extends Controller
         $WareHouse->w_warehouse_description     = $w_warehouse_description;
         $WareHouse->w_warehouse_status          = $w_warehouse_status;
         $WareHouse->w_material_warehouse        = $w_material_warehouse;
+        $WareHouse->w_opening_time              = $w_opening_time;
+        $WareHouse->w_closing_time              = $w_closing_time;
+        $WareHouse->w_warehouse_location        = $w_warehouse_location;
         $WareHouse->save();
     
         $w_id = $WareHouse->w_id;

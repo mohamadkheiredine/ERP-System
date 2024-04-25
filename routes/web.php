@@ -377,4 +377,19 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/phones/transactions/addform','Phones\PhoneTransactionsController@AddForm');
     Route::get('/phones/transactions/editform/{pt_id}','Phones\PhoneTransactionsController@EditForm');
     
+    
+    
+    Route::get('/shipment/orderstatus','Shipment\SOrderStatusController@index');
+    Route::get('/shipment/orderstatus/addform','Shipment\SOrderStatusController@AddForm');
+    Route::get('/shipment/orderstatus/editform/{ss_id}','Shipment\SOrderStatusController@EditForm');
+    
+    Route::get('/shipment/packingprices','Shipment\PackingPricesController@index');
+    Route::get('/shipment/packingprices/addform','Shipment\PackingPricesController@AddForm');
+    Route::get('/shipment/packingprices/editform/{cp_id}','Shipment\PackingPricesController@EditForm');
+    
+    
+     Route::get('/shipment/orders','Shipment\SOrdersController@index');
+    Route::get('/shipment/orders/addform','Shipment\SOrdersController@AddForm');
+    Route::get('/shipment/orders/editform/{so_id}','Shipment\SOrdersController@EditForm');
+    
 });

@@ -23,7 +23,7 @@ use Session;
 use Redirect;
 use DB;
 use App\Http\Controllers\Controller;
-use App\Library\EncryptionManager;
+use App\library\EncryptionManager;
 use Illuminate\Support\Facades\Hash;
 use App\models\System\Companies;
 

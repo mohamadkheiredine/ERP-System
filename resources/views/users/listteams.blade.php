@@ -19,7 +19,7 @@ Display list of teams
    <td>{{ $ut_info->ut_id }}</td>
    <td>{{ $ut_info->ut_team }}</td>
    <td>{{ $ut_info->TeamMembers->count() }}</td> 
-  <td style="width:2px;">  <a href="#"  data-ut_id="{{ $ut_info->ut_id }}" id="EDIT_TEAM_{{ $ut_info->ut_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-ut_id="{{ $ut_info->ut_id }}" id="EDIT_TEAM_{{ $ut_info->ut_id }}" ><i class="fas fa-edit" aria-hidden="true" height="16" ></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-ut_id="{{ $ut_info->ut_id }}"  id="DELETE_TEAM_{{ $ut_info->ut_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

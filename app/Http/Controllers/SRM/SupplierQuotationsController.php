@@ -147,7 +147,7 @@ class SupplierQuotationsController extends Controller
         $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
         $company_currency       = session('company_currency');
         $user_id                = session('user_id');
-        $SRMManager             = new \App\Library\SRMManager();
+        $SRMManager             = new \App\library\SRMManager();
         $quotation_code         = $SRMManager->GenerateQuotationCode();
         
         $data = array(

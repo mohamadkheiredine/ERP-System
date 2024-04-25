@@ -37,8 +37,8 @@ use App\models\System\Companies;
 use App\models\System\Languages;
 use App\models\System\Currency;
 use App\models\System\CurrencyExchangeRates;
-
-
+use App\models\Users\UserTeam;
+use App\models\Users\TeamMembers;
 
 class UsersController extends Controller
 {
@@ -287,6 +287,58 @@ class UsersController extends Controller
            $result_array['is_error']       = 0;
            $result_array['error_message']  = 'Operation Completed Successfully';
        }
+       
+       
+       return Response()->json($result_array);
+   }
+   
+   
+   /**
+    * get list of members inside a specific team
+    * @param Request $request
+    */
+   public function GetTeamMembers(Request $request)
+   {
+       $user_id             = $request->input('user_id');
+       $g_hash              = $request->input('g_hash');
+       $team_name              = $request->input('team_name');
+       $user_info           = Users::find($user_id);
+       
+       $c_hash              = "POS567" . $user_info-> u_username . $user_info-> u_fullname . $user_info->u_email . "POS567";
+       $c_hash              =  hash('sha256',$c_hash);
+       
+       
+       
+       
+       if( $c_hash != $g_hash )
+       {
+           $result_array['is_error']       = 1;
+           $result_array['error_message']  = 'hash sequence is not valid !!';
+           
+           return Response()->json($result_array);
+       }
+       
+       $user_team = UserTeam::where('ut_team','LIKE','%' . $team_name .  '%')->get();
+       $team_id = 0;
+       if(count($user_team) > 0)
+       {
+           $team_id = $user_team[0]->ut_id;
+       }
+       $users_array = array();
+       
+       $lst_users = $user_team[0]->TeamMembers;
+       
+       foreach ($lst_users as $key => $user_info) {
+ 
+           $users_array[] = array(
+               'id' => $user_info->Users->id,
+               'fullname' => $user_info->Users->u_fullname,
+           );
+       } 
+       
+       
+       $result_array['is_error'] = 0;
+       $result_array['users_array'] = $users_array;
        
        
        return Response()->json($result_array);

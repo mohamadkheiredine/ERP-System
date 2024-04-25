@@ -30,7 +30,7 @@ use App\models\CRM\CRMLeadStatus;
 use App\models\CRM\CRMLeads;
 use App\models\Users\Users; 
 use App\models\System\Industry;
-use App\Library\LeadsManager;
+use App\library\LeadsManager;
 use App\models\CRM\CRMLeadSources;
 use App\models\System\Countries;
 use App\models\CRM\CRMLeadActivities;
@@ -38,7 +38,7 @@ use Config;
 use App\models\CRM\CRMActivityTypes;
 use App\models\CRM\CRMContacts;
 use App\models\CRM\CRMActivityPurpose;
-use App\Library\CRMLogsManager;
+use App\library\CRMLogsManager;
 
 
 class LeadActivitiesController extends Controller

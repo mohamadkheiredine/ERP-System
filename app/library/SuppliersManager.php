@@ -19,7 +19,7 @@ Class of Supplier Manager
 
 
 
-namespace App\Library;
+namespace App\library;
 
 
 use Validator;

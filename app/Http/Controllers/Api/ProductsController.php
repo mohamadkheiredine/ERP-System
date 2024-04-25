@@ -33,7 +33,7 @@ use Models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
-use App\Library\ProductManager;
+use App\library\ProductManager;
 use App\models\Inventory\WareHouses;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\VatAccounts;
@@ -265,7 +265,7 @@ class ProductsController extends Controller
         
         if(strlen($searchquery) > 0)
         {
-            $products_cond = $products_cond->where('p_product_name','LIKE','%' . $searchquery . '%')
+            $products_cond = $products_cond->where('p_product_name','LIKE','%' . $searchquery . '%');
         }
         
         $products_count = $products_cond->count();
@@ -286,6 +286,7 @@ class ProductsController extends Controller
             $products[ $product_info->p_id ]['p_barcode_img']               = $product_info->p_barcode_img;
             $products[ $product_info->p_id ]['p_product_name']              = $product_info->p_product_name;
             $products[ $product_info->p_id ]['p_product_selling_price']     = $product_info->p_product_selling_price;
+            $products[ $product_info->p_id ]['p_product_cost_price']        = $product_info->p_product_cost_price;
             $products[ $product_info->p_id ]['p_product_tax_rate']          = $product_info->p_product_tax_rate;
             $products[ $product_info->p_id ]['currency_code']               = $product_info->Currency->cc_currency_code;
             $products[ $product_info->p_id ]['currency']                    = $product_info->p_product_currency;
@@ -429,6 +430,9 @@ class ProductsController extends Controller
         $product_array['category_id']                 = $product_info->fk_pc_id;
         $product_array['category_name']               = $product_info->Category->pc_category;
         $product_array['p_product_selling_price']     = $product_info->p_product_selling_price;
+        $product_array['p_product_cost_price']     = $product_info->p_product_cost_price;
+        
+        
         $product_array['p_product_tax_rate']          = $product_info->p_product_tax_rate;
         $product_array['currency_code']               = $product_info->Currency->cc_currency_code;
         $product_array['currency']                    = $product_info->p_product_currency;
@@ -652,6 +656,7 @@ class ProductsController extends Controller
         $p_product_name             = $request->input('p_product_name');
         $fk_pc_id                   = $request->input('fk_pc_id');
         $p_product_price            = $request->input('p_product_price');
+        $p_product_cost             = $request->input('p_product_cost');
         $p_product_quantity         = $request->input('p_product_quantity');
         $p_product_color            = $request->input('p_product_color');
         $product_sales_account      = $request->input('product_sales_account');
@@ -674,7 +679,8 @@ class ProductsController extends Controller
         $product_data->p_product_stock_alert        = 1;
         $product_data->p_product_color              = $p_product_color;
         $product_data->p_product_selling_price      = $p_product_price;
-        $product_data->p_product_min_selling_price  = $p_product_price;
+        $product_data->p_product_min_selling_price  = $p_product_cost;
+        $product_data->p_product_cost_price         = $p_product_cost;
         $product_data->p_product_currency           = $company_currency;
         $product_data->p_sale_accounting_code       = $product_sales_account;
         $product_data->p_purchase_accounting_code   = $product_purchase_account;

@@ -7,7 +7,6 @@ $(function(){
     } )
      .catch( error => {
          console.error( error );
-     } );
-	 $('.m_selectpicker').selectpicker();
+     } ); 
 	 $("#BTN_SAVE_TEAM").on('click',teams_module.SaveTeamInfo);
 })

@@ -32,7 +32,7 @@ use Models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
-use App\Library\ProductManager;
+use App\library\ProductManager;
 use App\models\Inventory\WareHouses;
 use App\models\Users\Users;
 use App\models\System\Currency; 
@@ -41,7 +41,7 @@ use App\models\Accounting\Transactions;
 use App\models\Accounting\TransactionMovements;
 use App\models\SRM\Suppliers;
 use App\models\Inventory\StockIds;
-use App\Library\WarehouseManager;
+use App\library\WarehouseManager;
 
 
 

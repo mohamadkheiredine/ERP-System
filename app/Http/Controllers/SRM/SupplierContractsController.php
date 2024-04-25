@@ -30,7 +30,7 @@ use App\models\SRM\SupplierCategories;
 use App\models\SRM\SupplierStatus;
 use App\models\SRM\Suppliers;
 use App\models\Accounting\ChartAccounts;
-use App\Library\SuppliersManager;
+use App\library\SuppliersManager;
 use App\models\Users\Users;
 use App\models\System\Countries;
 use App\models\System\Industry;

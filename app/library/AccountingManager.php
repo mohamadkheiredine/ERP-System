@@ -11,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 Page Description :
 
 ***********************************************************/
-namespace App\Library;
+namespace App\library;
 
 
 use Validator;

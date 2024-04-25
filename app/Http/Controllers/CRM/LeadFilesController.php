@@ -32,10 +32,10 @@ use App\models\CRM\CRMLeads;
 use App\models\Users\Users;
 use App\models\Inventory\WareHouses;
 use App\models\System\Industry;
-use App\Library\LeadsManager;
+use App\library\LeadsManager;
 use App\models\CRM\CRMLeadSources;
 use App\models\CRM\CRMLeadFiles;
-use App\Library\CRMLogsManager;
+use App\library\CRMLogsManager;
 
 
 

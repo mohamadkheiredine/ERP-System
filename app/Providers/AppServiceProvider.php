@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Library\EncryptionManager;
+use App\library\EncryptionManager;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -79,6 +79,7 @@ Page Description :
 												<span class="path2"></span>
 											</i>
 										</span>
+                                                                            Dashboard
 									</span>
 									</a>
 									<!--end:Menu link-->
@@ -93,6 +94,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-toolbox fa-lg" style="font-size: 20px"></i>
 										</span>
+                                                                            Administration
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -207,6 +209,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-sliders fa-xl"></i>
 										</span>
+                                                                            Configuration
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -251,6 +254,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-business-time fa-xl"></i>
 										</span>
+                                                                            Timesheet Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -334,6 +338,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-boxes-stacked fa-xl"></i>
 										</span>
+                                                                            Inventory Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -427,6 +432,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-building-columns fa-xl"></i>
 										</span>
+                                                                            Banking Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -491,6 +497,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-hryvnia-sign fa-xl"></i>
 										</span>
+                                                                            PayRoll Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -525,6 +532,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-truck-field fa-xl"></i>
 										</span>
+                                                                            Suppliers Management
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -592,6 +600,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-money-bill fa-xl"></i>
 										</span>
+                                                                                        Accounting Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -747,6 +756,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-coins fa-xl"></i>
 										</span>
+                                                                                        Billing Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -868,8 +878,9 @@ Page Description :
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
 										<span class="menu-icon me-0">
-											<i class="ki-outline ki-wrench fs-2x"></i>
+											<i class="ki-outline ki-wrench fs-2x"></i> 
 										</span>
+                                                                            Manufacturing Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -904,6 +915,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-hands-holding-circle fa-xl"></i>
 										</span>
+                                                                                        Production Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -969,6 +981,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-diagram-project fa-xl"></i>
 										</span>
+                                                                                PM Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -1023,6 +1036,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-universal-access fa-xl"></i>
 										</span>
+                                                                                 Sales Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -1067,6 +1081,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-headset fa-xl"></i>
 										</span>
+                                                                                        CRM Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -1188,9 +1203,10 @@ Page Description :
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
-										<span class="menu-icon me-0">
-											<i class="fa-solid fa-truck-fast fa-xl"></i>
-										</span>
+                                                                            <span class="menu-icon me-0">
+                                                                                    <i class="fa-solid fa-truck-fast fa-xl"></i>
+                                                                            </span>
+                                                                            Shipping Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -1202,14 +1218,33 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
-										 <div class="menu-item">
+										<div class="menu-item">
 											<!--begin:Menu link-->
-											<a class="menu-link" href="{{ url('operation/statuses') }}">
+											<a class="menu-link" href="{{ url('shipment/orderstatus') }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-												<span class="menu-title">Operation Statuses</span>
+												<span class="menu-title">Order Statuses</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+                                                                             <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('shipment/packingprices') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Packing Prices</span>
+											</a>
+											<!--end:Menu link-->
+										</div> 
+                                                                             <div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('shipment/orders') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Shipment Orders</span>
 											</a>
 											<!--end:Menu link-->
 										</div> 
@@ -1244,6 +1279,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-paint-roller fa-xl"></i>
 										</span>
+                                                                                Maintenance Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -1288,6 +1324,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-paint-roller fa-xl"></i>
 										</span>
+                                                                                Logistics Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -2160,6 +2197,10 @@ Page Description :
 											<!--end::Menu item-->
 											<!--begin::Menu item-->
 											<div class="menu-item px-5">
+												<a href="{{ url('/timesheet/timesheetmanagement') }}" class="menu-link px-5">Checkin/Checkout Timesheet</a>
+											</div>
+                                                                                        
+                                                                                        <div class="menu-item px-5">
 												<a href="{{ url('/user/logout') }}" class="menu-link px-5">Sign Out</a>
 											</div>
 											<!--end::Menu item-->

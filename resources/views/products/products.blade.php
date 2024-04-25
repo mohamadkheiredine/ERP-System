@@ -145,6 +145,4 @@ th{
 								</div>
     </div>
 </div>
-
- 
 @endsection

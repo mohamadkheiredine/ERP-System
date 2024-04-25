@@ -27,7 +27,7 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
-use App\Library\ProductCategoriesManager;
+use App\library\ProductCategoriesManager;
 use App\models\System\Departments;
 use App\models\Accounting\ChartAccounts;
 use App\models\System\Countries;
@@ -35,7 +35,7 @@ use App\models\Accounting\AccountingJournals;
 use App\models\Accounting\Journaltypes;
 use App\models\Accounting\BankAccounts;
 use App\models\System\Currency;
-use App\Library\BankingManager;
+use App\library\BankingManager;
 
 
 

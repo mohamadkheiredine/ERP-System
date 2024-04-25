@@ -32,7 +32,7 @@ use Milon\Barcode\DNS1D;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
-use App\Library\ProductManager;
+use App\library\ProductManager;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\VatAccounts;
 use App\models\System\Currency;

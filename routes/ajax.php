@@ -465,3 +465,23 @@ Route::post('/phones/transactions/editform/{pt_id}','Phones\PhoneTransactionsCon
 
 Route::post('/crm/reports/leads','Reports\CRMReportsController@DisplayLeadReports');
 Route::post('/crm/reports/accounts','Reports\CRMReportsController@DisplayAccountsReport');
+
+
+
+Route::post('/request/displaylistsorderstatus','Shipment\SOrderStatusController@DisplayList');
+Route::post('/request/shipping/savesorderstatusinfo','Shipment\SOrderStatusController@SaveOrderStatusInfo');
+Route::delete('/request/deletesorderstatus','Shipment\SOrderStatusController@DeleteOrderStatusInfo');
+
+
+Route::post('/request/packing/displaylist','Shipment\PackingPricesController@DisplayList');
+Route::post('/request/packing/savepackingprice','Shipment\PackingPricesController@SavePackingPricesInfo');
+Route::delete('/request/packing/deletepackingprice','Shipment\PackingPricesController@DeletePackingPricesInfo');
+
+
+Route::post('/request/sorders/displaylist','Shipment\SOrdersController@DisplayList');
+Route::post('/request/sorders/saveorderinfo','Shipment\SOrdersController@SaveOrderInfo');
+Route::delete('/request/sorders/deleteorderinfo','Shipment\SOrdersController@DeleteOrderInfo');
+Route::post('/request/sorders/savepackingcategory','Shipment\SOrdersController@SavePackingCategory');
+Route::post('/request/sorders/displaylistcategories','Shipment\SOrdersController@DisplayListCategories');
+Route::post('/request/orders/getpackingprice','Shipment\SOrdersController@GetPackingPrice');
+Route::post('/request/sorders/payorder','Shipment\SOrdersController@PayOrder');

@@ -33,7 +33,7 @@ use App\models\Users\Users;
 use App\models\Inventory\Customers;
 use App\models\Inventory\Vendors;
 use App\models\System\Currency;
-use App\Library\MaintenanceManager;
+use App\library\MaintenanceManager;
 use App\models\Inventory\Products;
 use App\models\CRM\CRMServices;
 use Milon\Barcode\DNS1D;

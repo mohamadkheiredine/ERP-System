@@ -32,7 +32,7 @@ use Models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
-use App\Library\ProductManager;
+use App\library\ProductManager;
 use App\models\Inventory\WareHouses;
 use App\models\Users\Users;
 

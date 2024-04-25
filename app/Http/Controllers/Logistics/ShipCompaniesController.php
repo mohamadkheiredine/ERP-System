@@ -25,17 +25,17 @@ use Auth;
 use Config;
 use DB;
 use Illuminate\Support\Facades\Hash;
-use App\Library\ProductCategoriesManager;
+use App\library\ProductCategoriesManager;
 use App\models\System\Departments;
 use App\models\System\Companies;
 use App\models\System\Countries;
-use App\Library\CompaniesManager;
+use App\library\CompaniesManager;
 use App\models\System\Currency;
 use App\models\Logistics\Vehicules;
-use App\Library\VehiculesManager;
+use App\library\VehiculesManager;
 use App\models\Logistics\VehiculeTypes;
 use App\models\Logistics\ShipCompanies;
-use App\Library\ShipCompaniesManager;
+use App\library\ShipCompaniesManager;
 
 
 

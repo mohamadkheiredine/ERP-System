@@ -34,7 +34,7 @@ use Models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
-use App\Library\ProductManager;
+use App\library\ProductManager;
 use App\models\Inventory\WareHouses;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\VatAccounts;
@@ -44,9 +44,9 @@ use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Accounting\DefaultAccounts;
 use App\models\Sales\Orders;
-use App\Library\OrdersManager;
+use App\library\OrdersManager;
 use App\models\Sales\OrderProducts;
-use App\Library\AccountingManager;
+use App\library\AccountingManager;
 use App\models\Billing\Invoices;
 use App\models\Inventory\Customers;
 use App\models\Billing\InvoiceProducts;
@@ -394,6 +394,7 @@ class OrdersController extends Controller
         $company_currency            = $request->input('company_currency');
         $customer_name            = $request->input('customer_name');
         $customer_mobile            = $request->input('customer_mobile');
+        $assignto            = $request->input('assignto') != 0 ? $request->input('assignto') : $user_id;
         $delivery_fees            = $request->input('delivery_fees') != "" ? $request->input('delivery_fees') : 0;
         $extra_charges            = $request->input('extra_charges') != "" ? $request->input('extra_charges') : 0;
         $order_items = json_decode($pos_order);
@@ -467,6 +468,7 @@ class OrdersController extends Controller
             $order_info->so_payment_type   = $payment_method;
             $order_info->so_delivery_fees   = $delivery_fees;
             $order_info->so_extra_charges   = $extra_charges;
+            $order_info->so_assign_to   = $assignto;
             
             $order_info->save();
             
@@ -477,11 +479,23 @@ class OrdersController extends Controller
             {
                 if( $item_order != null )
                 {
+                    //p_product_cost_price
+                    $product_id = $item_order->product_id;
+                    $product_info = Products::find($product_id);
+                    if($product_info != null)
+                    {
+                        $product_cost = $product_info->p_product_cost_price;
+                    }
+                    else
+                    {
+                        $product_cost = 0;
+                    }
+                    
                     $orderitem = new OrderProducts();
                     $orderitem->fk_order_id          = $so_id;
                     $orderitem->fk_product_id        = $item_order->product_id;
                     $orderitem->so_stock_id          = -1;
-                    $orderitem->so_product_cost      = $item_order->product_selling_price;
+                    $orderitem->so_product_cost      = $product_cost;
                     $orderitem->so_product_price     = $item_order->product_selling_price;
                     $orderitem->so_product_quantity  = $item_order->quantity;  
                     $orderitem->save();
@@ -528,6 +542,47 @@ class OrdersController extends Controller
             return Response()->json($result_array);
         
     }
+    
+    
+    
+        public function DeleteOrder(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $order_id        = $request->input('order_id');
+        
+        
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        $order_info = Orders::find($order_id);
+        $order_info->so_is_deleted = 1;
+        $order_info->so_deleted_by = $user_id;
+        $order_info->save();
+        
+        
+        $result_array['is_error']           = 0;
+       $result_array['error_msg']          = "Order has been deleted";
+
+       return Response()->json($result_array);
+        
+        
+    }
+    
     
     
     /**
@@ -707,7 +762,8 @@ class OrdersController extends Controller
             $total_pages = intval($total_pages);
             
             $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-                
+            $total_cost = 0;
+            
             foreach ( $lst_orders as $key => $order_info )
             {
                 $orders[ $order_info->so_id ]['so_id']                        = $order_info->so_id;
@@ -719,11 +775,22 @@ class OrdersController extends Controller
                 $orders[ $order_info->so_id ]['so_total_cost']                        = $order_info->so_total_cost;
                 $orders[ $order_info->so_id ]['so_order_currency']                        = $order_info->so_order_currency;
                 $orders[ $order_info->so_id ]['currency_code']                        = ( $order_info->Currency != null ) ? $order_info->Currency->cc_currency_code : "";
+                
+                $order_id = $order_info->so_id;
+                
+                $list_order_products = OrderProducts::whereFkOrderId($order_id)->get();
+                
+                foreach ($list_order_products as $key => $order_product) 
+                {
+                    $total_cost = $total_cost + $order_product->Products->p_product_cost_price;
+                }
+                
             }
             
             $result_array['is_error']       = 0;
             $result_array['orders']       = $orders;
             $result_array['total_amount'] = $results[0]->total_amount;
+            $result_array['total_cost'] = $total_cost;
             $result_array['total_pages']       = $total_pages;
             
             
@@ -1168,6 +1235,72 @@ class OrdersController extends Controller
         return Response()->json($result_array);
     }
     
+    
+    public function GetOrderInvoice(Request $request)
+    {
+        $order_id           = $request->input('order_id');
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        
+        $company_id = $user_info->fk_company_id;
+        
+        $company_info   = Companies::find($company_id); 
+        
+        $order_info = Orders::find($order_id);
+        $customer_info = Customers::find($order_info->so_order_customer);
+        $lst_order_items = OrderProducts::whereFkOrderId($order_id)->get();
+        
+        foreach ($lst_order_items as $key => $item_info) 
+        {
+            
+        }
+        
+        /**
+         *             $orderitem = new OrderProducts();
+                    $orderitem->fk_order_id          = $so_id;
+                    $orderitem->fk_product_id        = $item_order->product_id;
+                    $orderitem->so_stock_id          = -1;
+                    $orderitem->so_product_cost      = $item_order->product_selling_price;
+                    $orderitem->so_product_price     = $item_order->product_selling_price;
+                    $orderitem->so_product_quantity  = $item_order->quantity;  
+                    $orderitem->save();
+         */
+        
+        $order_items = array();
+        
+        
+         // generate the POS Receipt
+            $data = array(
+                "company_info"      => $company_info,
+                "lst_order_items"   => $order_items,
+                "order_info"        => $order_info,
+                "user_info"         => $user_info,
+                "customer_info"         => $customer_info,
+                "cost_total"        => $order_info->so_total_cost,
+                "tax_total"         => 0
+            );
+            
+           $pos_receipt = view('templates.posrestaurantinvoices',$data)->render();
+        
+    }
     
     /**
      * add product to order array 

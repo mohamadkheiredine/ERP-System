@@ -18,7 +18,7 @@ Page Description :
 
 
 
-namespace App\Library;
+namespace App\library;
 
 
 use Validator;

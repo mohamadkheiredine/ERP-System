@@ -12,7 +12,7 @@ Page Description :
 Class  to Encrypt and decript data
 ***********************************************************/
 
-namespace App\Library;
+namespace App\library;
 
 
 class EncryptionManager

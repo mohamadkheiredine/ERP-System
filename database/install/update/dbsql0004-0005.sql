@@ -1,0 +1,25 @@
+DROP TABLE `lg_shipment_operations`;
+CREATE TABLE `lg_shipment_operations` (
+  `so_id` int NOT NULL AUTO_INCREMENT,
+  `so_operation_reference` varchar(15) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `so_operation_label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `so_operation_description` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `so_operation_type` tinyint DEFAULT '0',
+  `so_owner_id` int DEFAULT '0',
+  `so_creation_date` datetime DEFAULT NULL,
+  `so_operation_date` date DEFAULT NULL,
+  `so_operation_time` time DEFAULT NULL,
+  `so_operation_status` tinyint DEFAULT '0',
+  `so_country_source` smallint DEFAULT '0',
+  `so_country_destination` smallint DEFAULT '0',
+  `so_warehouse_source` smallint DEFAULT '0',
+  `so_warehouse_destination` smallint DEFAULT '0',
+  `so_operation_vehicule` smallint DEFAULT '0',
+  `so_is_deleted` tinyint DEFAULT '0',
+  `so_deleted_by` int DEFAULT '0',
+  PRIMARY KEY (`so_id`),
+  KEY `so_warehouse_source_idx` (`so_warehouse_source`),
+  KEY `so_owner_id_idx` (`so_owner_id`),
+  CONSTRAINT `so_owner_id` FOREIGN KEY (`so_owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `so_warehouse_source` FOREIGN KEY (`so_warehouse_source`) REFERENCES `inventory_warehouses` (`w_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;

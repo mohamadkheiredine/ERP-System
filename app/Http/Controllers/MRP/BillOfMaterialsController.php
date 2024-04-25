@@ -28,7 +28,7 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\MRP\BillOfMaterials;
 use App\models\MRP\BOMItems;
-use App\Library\BOMManager;
+use App\library\BOMManager;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
 use App\models\System\Units;

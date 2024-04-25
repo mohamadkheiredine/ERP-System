@@ -29,15 +29,15 @@ use Config;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\CRM\CRMClientCategories;
-use App\Library\ClientsCategoriesManager;
+use App\library\ClientsCategoriesManager;
 use App\models\CRM\CRMAccounts;
 use App\models\Users\Users;
 use App\models\CRM\CRMLeads;
 use App\models\System\Industry;
 use App\models\System\Countries;
 use App\models\CRM\CRMAccountTypes;
-use App\Library\AccountsManager;
-use App\Library\LeadsStatusManager;
+use App\library\AccountsManager;
+use App\library\LeadsStatusManager;
 use App\models\CRM\CRMLeadSources;
 
 

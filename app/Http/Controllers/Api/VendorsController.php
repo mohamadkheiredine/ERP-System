@@ -34,13 +34,13 @@ use App\models\Inventory\WareHouses;
 use App\models\System\Industry;
 use Maatwebsite\Excel\Facades\Excel;
 use App\models\CRM\CRMServiceCategories;
-use App\Library\CustomersManager;
+use App\library\CustomersManager;
 use App\models\System\Countries;
 use App\models\Accounting\VatAccounts;
 use App\models\Inventory\Vendors;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\DefaultAccounts;
-use App\Library\VendorsManager;
+use App\library\VendorsManager;
 
 
 class VendorsController extends Controller

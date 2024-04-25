@@ -35,7 +35,7 @@ use App\models\Inventory\WareHouses;
 use App\models\System\Industry;
 use Maatwebsite\Excel\Facades\Excel;
 use App\models\CRM\CRMServiceCategories;
-use App\Library\VendorsManager;
+use App\library\VendorsManager;
 use App\models\System\Countries;
 use App\models\Accounting\VatAccounts;
 use App\models\Accounting\ChartAccounts;

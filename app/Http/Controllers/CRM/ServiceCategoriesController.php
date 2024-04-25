@@ -26,7 +26,7 @@ use Config;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\CRM\CRMServiceCategories;
-use App\Library\ServiceCategoriesManager;
+use App\library\ServiceCategoriesManager;
 
 
 

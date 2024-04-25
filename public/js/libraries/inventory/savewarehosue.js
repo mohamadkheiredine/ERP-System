@@ -25,7 +25,46 @@ $(function(){
 			$("#VEHICULES").append("<option value='" + $(this).val() + "'>" + $(this).text() + "</option>");
 			$(this).remove();
 		})
-	});
-	$('select').select2();
-	  $('[data-switch=true]').bootstrapSwitch();
+	}); 
+          
+         new tempusDominus.TempusDominus(document.getElementById('W_OPENING_TIME'),{
+		 display: {
+			  components: {
+			      calendar: false,
+			      date: false,
+			      month: false,
+			      year: false,
+			      decades: false, 
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "LT"
+			 
+		 }
+	}); 
+        new tempusDominus.TempusDominus(document.getElementById('W_CLOSING_TIME'),{
+		 display: {
+			  components: {
+			          calendar: false,
+			      date: false,
+			      month: false,
+			      year: false,
+			      decades: false, 
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "LT"
+			 
+		 }
+	}); 
 });

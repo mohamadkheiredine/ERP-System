@@ -7,7 +7,8 @@ var users_module = {
 				var base_url 			= $('input[name=base_url]').val();
 				var general_search 			= $('input[name=general_search]').val();
 			    var _token	 			= $('input[name=_token]').val();
-			    var params = { _token : _token , general_search : general_search };
+                            var company_id	 			= $('select[name=company_id]').val();
+			    var params = { _token : _token , general_search : general_search , company_id : company_id };
 			    $.ajax
 		        ({
 		            url : base_url + "/request/displayusersManagement",

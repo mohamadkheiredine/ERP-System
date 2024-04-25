@@ -15,9 +15,7 @@ Page Description :
 
 {
     $image_src_url  = url('/')."/".Config::get('constants.SRM_PATH').$supplier_info->ss_logo_base_src.$supplier_info->ss_logo_file_name.".".$supplier_info->ss_logo_file_extension;
- 
     $image_src_path = public_path(). "/" .Config::get('constants.SRM_PATH').$supplier_info->ss_logo_base_src.$supplier_info->ss_logo_file_name.".".$supplier_info->ss_logo_file_extension;
-    
     if( is_file($image_src_path) ){
         $img_src = $image_src_url;
     }else{

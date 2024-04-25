@@ -29,11 +29,11 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
-use App\Library\ProductCategoriesManager;
+use App\library\ProductCategoriesManager;
 use App\models\System\Departments;
 use App\models\System\Companies;
 use App\models\System\Countries;
-use App\Library\CompaniesManager;
+use App\library\CompaniesManager;
 use App\models\System\Currency;
 use App\models\Accounting\VatAccounts;
 

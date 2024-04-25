@@ -115,18 +115,17 @@ th{
                                             <input type="password" name="retype_u_password" maxlength="150" id="RETYPE_U_PASSWORD" class="form-control" value="" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label> User Type <span class="required"> * </span></label>
-                                            <select class="bs-select form-control" name="u_user_type" id="U_USER_TYPE" data-actions-box="true">
-                                                    <option value="">No User Type</option>
-                                                   <option value="1">Admin</option> 
-                                                   <option value="2">Employee</option> 
-                                                   <option value="3">Manager</option>
-                                                   <option value="4">POS Users</option>
-                                            </select>
+                                                                     <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label> User Type <span class="required"> * </span></label>
+                                                <select class="bs-select form-control" name="u_user_type" id="U_USER_TYPE" data-actions-box="true">
+                                                        <option value="">No User Type</option>
+                                                         @foreach($lst_user_teams as $key => $ut_info)
+                                                     <option value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_team }}</option>
+                                                    @endforeach 
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
                                     <div class="col-md-4">
                                          <div class="form-group">
                                             <label class="control-label">Role <span class="required"> * </span></label>
