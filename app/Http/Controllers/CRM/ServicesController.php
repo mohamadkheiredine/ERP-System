@@ -230,13 +230,14 @@ class ServicesController extends Controller
     {
         $cs_id                          = $request->input('cs_id');
         $fk_category_id                 = $request->input('fk_category_id');
-        $cs_service_code                = "SRV" . rand(99,99999);
+        $cs_service_code                = $request->input('cs_service_code');
         $cs_service_title               = $request->input('cs_service_title');
         $cs_service_description         = $request->input('cs_service_description');
         $cs_cost_per_hour               = $request->input('cs_cost_per_hour');
         $cs_sale_accounting_code        = $request->input('cs_sale_accounting_code');
         $cs_purchase_accounting_code    = $request->input('cs_purchase_accounting_code');
         $cs_currency_id                 = $request->input('cs_currency_id');
+        $cs_service_cost                = $request->input('cs_service_cost');
         $cs_validate_payment_type       = $request->has('cs_validate_payment_type') ? 1 : 0;
         
         $result_array = array();
@@ -253,12 +254,14 @@ class ServicesController extends Controller
         }
         
         $Services->fk_category_id                   = $fk_category_id;
+        $Services->cs_service_code                  = $cs_service_code;
         $Services->cs_service_title                 = $cs_service_title;
         $Services->cs_service_description           = $cs_service_description;
         $Services->cs_cost_per_hour                 = $cs_cost_per_hour;
         $Services->cs_sale_accounting_code          = $cs_sale_accounting_code;
         $Services->cs_purchase_accounting_code      = $cs_purchase_accounting_code;
         $Services->cs_currency_id                   = $cs_currency_id;
+        $Services->cs_service_cost                   = $cs_service_cost;
         $Services->cs_validate_payment_type         = $cs_validate_payment_type;
  
         

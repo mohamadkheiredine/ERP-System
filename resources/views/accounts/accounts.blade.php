@@ -32,6 +32,7 @@ Page Description :
                 Action
               </button>
               <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" data-action_type="IMPORT" href="#">Import List Accounts</a></li>
               </ul>
             </div>
         </div>
@@ -79,29 +80,51 @@ Page Description :
 										</div>
 									</div>
 								</div>
-								<!--end: Search Form -->
-		                          <!--begin: Datatable -->
+								 
 								<div class="table-responsive">
-                                    <table class="table" id="html_table" width="100%">
-                                    		<thead>
-                                    			<tr>
-                                    				<th title="#">#</th>
-                                    				<th title="Id"> ID </th>
-                                    				<th title="Client name"> Client Name </th>
-                                    				<th title="Company"> Company </th>
-                                    				<th title="Mobile"> Mobile </th>
-                                    				<th title="Email"> Email </th>
-                                    				<th style="width:2px;" nowrap title="#"> edit </th>
-                                    				<th style="width:2px;" nowrap title="#"> Delete </th>
-                                    			</tr>
-                                    		</thead>
-                                    		<tbody  id="LstClients">
-                                    			
-                                    		</tbody>
-                                    </table>
-								</div>
-								<!--end: Datatable -->
+                                                      		<table class="table table-row-dashed table-row-gray-300 gy-7">
+                                                                    <thead>
+                                                                            <tr class="fw-bold fs-6 text-gray-800">
+                                                                                    <th title="#">#</th>
+                                                                                    <th title="Id"> ID </th>
+                                                                                    <th title="Client name"> Client Name </th>
+                                                                                    <th title="Company"> Company </th>
+                                                                                    <th title="Mobile"> Mobile </th>
+                                                                                    <th title="Email"> Email </th>
+                                                                                    <th style="width:2px;" nowrap title="#"> edit </th>
+                                                                                    <th style="width:2px;" nowrap title="#"> Delete </th>
+                                                                            </tr>
+                                                                    </thead>
+                                                                    <tbody  id="LstClients">
+
+                                                                    </tbody>
+                                                        </table>
+								</div> 
     </div>
 </div>
- 
+ <div id="ImportClientsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ImportModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="ImportModalLabel">Import Excel Sheet</h3>
+    </div>
+    <div class="modal-body">
+        <form name="frm_import_accounts" id="FRM_IMPORT_ACCOUNTS">
+              <span id="hidden_fields">
+                      {!! csrf_field() !!}
+                    </span>
+            <div class="row">
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                <label>select File <span class="required"> * </span> </label>
+                                <input type="file" name="ac_temp_file" class="form-control" />
+                            </div>
+                        </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button class="btn btn-primary">Save changes</button>
+    </div>
+</div>
 @endsection

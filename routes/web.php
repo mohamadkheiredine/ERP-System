@@ -116,6 +116,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/timesheet/onlineemployees','Timesheet\TimeSheetController@onlineemployees');
     Route::get('/timesheet/transportationemployees','Timesheet\TimeSheetController@TransportationEmployees');
     Route::get('/timesheet/holidayemployees','Timesheet\TimeSheetController@HolidayEmployees');
+    Route::get('/timesheet/hourlysalaries','Timesheet\TimeSheetController@Hourlysalaries');
     
     Route::get('/timesheet/holidays','Timesheet\HolidaysController@index');
     Route::get('/timesheet/holidays/addform','Timesheet\HolidaysController@AddForm');
@@ -151,6 +152,8 @@ Route::group(['middleware' => ['auth']], function() {
     
     
     Route::get('/payroll/employeespayroll','PayRoll\PayRollController@EmployeesPayroll');
+    Route::get('/payroll/employeespayroll/addform','Shipment\OperationStatusController@AddForm');
+    Route::get('/payroll/employeespayroll/editform/{up_id}','Shipment\OperationStatusController@EditForm');
     
     Route::get('/crm/leads','CRM\LeadsController@index');
     Route::get('/crm/leads/addform','CRM\LeadsController@AddForm');

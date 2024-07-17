@@ -112,7 +112,7 @@ th{
                            		 <div class="col-md-4">
                                     <div class="form-group">
                                         <label> Product Category</label>
-                                        <select class="bs-select form-control" name="fk_pc_id" id="FK_PC_ID" data-actions-box="true">
+                                        <select  name="fk_pc_id" id="FK_PC_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product Category">
                                                 <option value="">No Parent</option>
                                                 <?php foreach ( $lst_product_categories_array as $key => $category_info ) { ?>
                                                         <option value="<?php echo $category_info->pc_id;  ?>"><?php echo $category_info->pc_category;  ?></option>
@@ -152,8 +152,8 @@ th{
                                 </div>
                                  <div class="col-md-4">
                                     <div class="form-group">
-                                        <label> Product Supplier</label>
-                                        <select class="bs-select form-control" name="fk_psupplier_id" id="FK_PSUPPLIER_ID" data-actions-box="true">
+                                        <label> Product Supplier</label> 
+                                            <select  name="fk_psupplier_id" id="FK_PSUPPLIER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product Supplier">
                                                 <option value="">-- Select Supplier --</option>
                                                 <?php foreach ( $lst_suppliers as $key => $supplier_info ) { ?>
                                                         <option value="{{ $supplier_info->ss_id }}">{{  $supplier_info->ss_supplier_name }}</option>
@@ -177,8 +177,8 @@ th{
                                  @if($license_array->PRODUCTION_MODULE == 1)
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label> Product Lot</label>
-                                        <select class="bs-select form-control" name="fk_lot_id" id="FK_LOT_ID" data-actions-box="true">
+                                        <label> Product Lot</label> 
+                                            <select name="fk_lot_id" id="FK_LOT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Lot">
                                                 <option value="">No Lot</option>
                                                 @foreach($lst_lot as $index => $lo_info)
                                                 	<option value="{{ $lo_info->l_id }}">{{ $lo_info->l_lot_label  }}</option>
@@ -189,19 +189,19 @@ th{
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label> Product Type</label>
-                                        <select class="bs-select form-control" name="p_product_type" id="P_PRODUCT_TYPE" data-actions-box="true">
+                                        <select name="p_product_type" id="P_PRODUCT_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Product Type">
                                                 <option value="">Product Type</option>
-                                                <option value="1">Manufactured Product</option>
-                                                <option value="2">Raw Material</option>
-                                            	<option  value="3" selected>Regular Products</option>
+                                                 @foreach($lst_product_types as $index => $type_info)
+                                                	<option value="{{ $type_info->pt_id }}">{{ $type_info->pt_type_name  }}</option>
+                                                @endforeach
                                         </select>
                                     </div>
                                 </div>
                           		 @endif
                                 <div class="col-md-4">
                           			<div class="form-group">
-                          				<label> UNit type </label><br/>
-                          				<select name="p_product_unit_type" id="P_PRODUCT_UNIT_TYPE" style="width:100%;" class="form-control">
+                          				<label> UNit type </label><br/> 
+                                                            <select name="p_product_unit_type" id="P_PRODUCT_UNIT_TYPE" class="form-control form-select" style="width:100%;"  data-control="select2" data-placeholder="Select Product unit type">
                           					<option value="">-- Select type --</option>       
                           					<option value="size">size</option>
                           					<option value="volume">Volume</option> 
@@ -249,7 +249,7 @@ th{
                                      <div class="col-md-4">
                                         <div class="form-group">
                                             <label> Stock Currency </label>
-                                            <select class="bs-select form-control" name="p_product_currency" id="P_PRODUCT_CURRENCY" data-actions-box="true">
+                                                <select class="bs-select form-control" name="p_product_currency" id="P_PRODUCT_CURRENCY" data-control="select2" data-placeholder="Select Product Currency">
                                                     @foreach( $lst_currencies as $key => $curr_info )
                                                             <option {{ session('company_currency') == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
                                                      @endforeach 
@@ -259,7 +259,7 @@ th{
                                     <div class="col-md-4" style="display: none">
                                         <div class="form-group">
                                             <label> Sales Accounting</label>
-                                            <select class="bs-select form-control" name="p_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" data-actions-box="true">
+                                                <select class="bs-select form-control" name="p_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" data-control="select2" data-placeholder="Select Sales Account">
                                                     <option value="">-- Select Account --</option>
                                                     @foreach ( $lst_accounts as $key => $acc_info )
                                                             <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
@@ -270,7 +270,7 @@ th{
                                     <div class="col-md-4" style="display: none">
                                                 <div class="form-group">
                                                     <label> Purchase Accounting</label>
-                                                    <select class="bs-select form-control" name="p_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" data-actions-box="true">
+                                                        <select class="bs-select form-control" name="p_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" data-control="select2" data-placeholder="Select Purchase Account">
                                                             <option value="">-- Select Account --</option>
                                                             @foreach ( $lst_accounts as $key => $acc_info )
                                                                     <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
@@ -280,8 +280,8 @@ th{
                                             </div>
                                             <div class="col-md-4">
                                               	<div class="form-group">
-                                                    <label class="control-label"> Product Tax Rate</label>
-                                                     <select class="bs-select form-control" name="p_product_tax_rate" id="P_PRODUCT_TAX_RATE" data-actions-box="true">
+                                                    <label class="control-label"> Product Tax Rate</label> 
+                                                         <select class="bs-select form-control" name="p_product_tax_rate" id="P_PRODUCT_TAX_RATE"  data-control="select2" data-placeholder="Select Product Tax Rate">
                                                             <option value="">&nbsp;&nbsp;</option>
                                                             @foreach ( $lst_taxes as $key => $tax_info )
                                                                     <option value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_code . " - " .  $tax_info->av_vat_label }}</option>

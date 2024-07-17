@@ -41,36 +41,15 @@ holidays_module = {
 	            dataType : "json",
 		        success : function(response){
 		            $('#LstHolidayRequests').html(response.display);
-		            $.hr_datatable = $('.m_datatable').mDatatable({
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						},
-						
-						// inline and bactch editing(cooming soon)
-						// editable: false,
-					});
-                     $('.group-checkable').change(function() {
-                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-                        var checked = $(this).prop("checked");
-                        $(set).each(function() {
-                            $(this).prop("checked", checked);
-                        });
-                        $.uniform.update(set);
-                    });
+		             
+                            $('.group-checkable').change(function() {
+                               var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                               var checked = $(this).prop("checked");
+                               $(set).each(function() {
+                                   $(this).prop("checked", checked);
+                               });
+                               $.uniform.update(set);
+                           });
 		        }
 		    });
 		},

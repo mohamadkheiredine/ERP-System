@@ -50,8 +50,11 @@ class PayRollController extends Controller
      */
     public function EmployeesPayroll()
     { 
+        $lst_users = Users::whereUIsDeleted(0)->get();
         
-        $data = array();
+        $data = array(
+            "lst_users" => $lst_users
+        );
         return Response()->view('payroll.employeespayroll',$data);
     }
     

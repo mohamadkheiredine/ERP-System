@@ -7,5 +7,7 @@ $(function(){
 		 $('input[page_number]').val(1);
 		 $('#CustomersPagination').twbsPagination('destroy');
 		customers_module.DisplayListCustomers();
-	})
+	});
+        $('.dropdown-item').on('click',customers_module.QuickAction)
+        $('#BTN_UPLOAD_CUSTOMERS').on('click',customers_module.UploadListCustomers);
 })

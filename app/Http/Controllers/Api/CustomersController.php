@@ -61,7 +61,8 @@ class CustomersController extends Controller
         
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
-        $customer_search     = $request->input('customer_search'); 
+        $customer_search     = $request->input('searchquery');
+        $current_page = $request->input('current_page');
         $user_info           = Users::find($user_id); 
         
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
@@ -79,10 +80,25 @@ class CustomersController extends Controller
         }
         
         
-        $lst_customers_obj    = Customers::whereIcIsDeleted(0);
+        $nbr_rows_per_pages    = 10;
+        if($current_page > 1)
+            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
+        
+        $customers_cond    = Customers::whereIcIsDeleted(0);
         if(strlen($customer_search) > 0)
-            $lst_customers_obj    = $lst_customers_obj->where('ic_customer_name','LIKE','%' . $customer_search. '%');
-        $lst_customers_obj    = $lst_customers_obj->get();
+            $customers_cond    = $customers_cond->where('ic_customer_name','LIKE','%' . $customer_search. '%');
+        
+        $customers_count = $customers_cond->count();
+        
+        
+        $total_pages = ceil( $customers_count/$nbr_rows_per_pages );
+        $total_pages = intval($total_pages);
+        
+        $lst_customers_obj = $customers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        
         $result_array = array();
         $customers_array = array();
         $AccountingManager = new AccountingManager();
@@ -122,6 +138,96 @@ class CustomersController extends Controller
         
         $result_array['is_error']               = 0;
         $result_array['customers_array']        = $customers_array;
+        $result_array['total_pages']       = $total_pages;
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    
+     public function GetListCustomerslight(Request $request)
+    {
+        
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $customer_search     = $request->input('searchquery');
+        $current_page = $request->input('current_page');
+        $user_info           = Users::find($user_id); 
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        $nbr_rows_per_pages    = 10;
+        if($current_page > 1)
+            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
+        
+        $customers_cond    = Customers::whereIcIsDeleted(0);
+
+        $customers_count = $customers_cond->count();
+      
+        $lst_customers_obj = $customers_cond->get();
+        
+        $result_array = array();
+        $customers_array = array();
+        $AccountingManager = new AccountingManager();
+        
+        
+        foreach ($lst_customers_obj as $index => $customer_info) 
+        { 
+            $customers_array[] = array(
+                'id' =>  $customer_info->ic_id,
+                'label' =>  $customer_info->ic_customer_name,
+            );
+           
+        }
+        
+        $result_array['is_error']               = 0;
+        $result_array['customers_array']        = $customers_array;
+        
+        return Response()->json($result_array);
+    }
+    
+    public function DeleteCustomerInfo(Request $request)
+    {
+         $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $customer_id         = $request->input('customer_id');
+        $user_info           = Users::find($user_id);
+        
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        }
+        
+        $customer_res = Customers::find($customer_id)->delete();
+        
+        $result_array['is_error']       = 0;
+        $result_array['error_msg']       = "Delete Customer Completed Successfully";
+        
         
         return Response()->json($result_array);
     }
@@ -206,6 +312,36 @@ class CustomersController extends Controller
         
         $result_array['is_error'] = 0;
         $result_array['customer_name'] = $customer_info->ic_customer_name;
+        return Response()->json($result_array);
+    }
+
+
+    public function SearchCustomerByName(Request $request)
+    {
+        $sc_customer_name = $request->input('sc_customer_name');
+        $customer_info = Customers::where('ic_customer_name','LIKE','%' . $sc_customer_name . '%')->get();
+        
+        $result_array = array();
+        $customer_data = array();
+        
+         
+        
+        if(count($customer_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = "Customer Does not Exist";
+             return Response()->json($result_array);
+        }
+        
+        $customer_data = array(
+            'customer_id' => $customer_info[0]->ic_id,
+            'customer_name' => $customer_info[0]->ic_customer_name,
+            'customer_mobile' => $customer_info[0]->ic_customer_mobile,
+            'customer_address' => $customer_info[0]->ic_customer_address,
+        );
+        
+        $result_array['is_error'] = 0;
+        $result_array['customer_data'] = json_encode($customer_data);
         return Response()->json($result_array);
     }
     

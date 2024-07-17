@@ -280,31 +280,6 @@ class AccountingController extends Controller
         }
         
         
-        
-//         $delete_trans = TransactionMovements::whereFkTranId($at_id)->delete(); 
-        
-//         foreach ($lst_accounts as $key => $data_info) 
-//         {
-//             $account_ref = $data_info->aa_account_ref;
-//             $is_deb = (strpos($data_info->aa_account_ref, "411") === 0) ? 1 : 0;
-            
-            
-//             $Movement_obj = new TransactionMovements();
-//             $Movement_obj->fk_tran_id               = $at_id;
-//             $Movement_obj->tm_ledger_account        = 0;
-//             $Movement_obj->tm_sub_ledger_account    = $data_info->aa_id;
-//             $Movement_obj->tm_ledger_label          = $data_info->aa_account_label;
-//             $Movement_obj->tm_debit                 = ( $data_info->total_balance > 0) ? $data_info->total_balance : 0;
-//             $Movement_obj->tm_credit                = ($data_info->total_balance< 0) ? -1 * $data_info->total_balance: 0;
-//             $Movement_obj->tm_creation_date         = $at_creation_date;
-//             $Movement_obj->tm_transaction_date      = $at_transaction_date;
-//             $Movement_obj->tm_currency_id           = $data_info->cc_id;
-//             $Movement_obj->save();
-//         }
-        
-       
-        
-        
         $result_array['is_error'] = 0;
         
         return Response()->json($result_array);

@@ -164,17 +164,6 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Supplier:&nbsp;</label><br/>
-                            <select class="bs-select form-control" name="so_supplier_id" id="SO_SUPPLIER_ID" data-actions-box="true" tabindex="13">
-                                <option value=""> -- Supplier -- </option>
-                                @foreach ( $lst_suppliers as $key => $supplier_info )
-                                <option {{ $order_info->so_supplier_id == $supplier_info->ss_id ? "selected='selected'" : "" }} value="{{ $supplier_info->ss_id }}">{{ $supplier_info->ss_supplier_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label"> Order Note :&nbsp;</label>
@@ -250,6 +239,15 @@
                             <input type="hidden" name="order_id" id="ORDER_ID" value="{{ $order_info->so_id }}" />
                             <input type="hidden" name="currency_id" id="CURRENCY_ID" value="0" />
                             <div class="row">
+                                 <div class="col-md-12">
+                                    <label>Supplier</label>
+                                    <select class="form-control" name="fk_oc_supplier_id" id="FK_OC_SUPPLIER_ID" required="required" style="width:100%;" data-actions-box="true" tabindex="1">
+                                        <option value=""> -- Select Supplier -- </option>
+                                        @foreach ( $lst_suppliers as $key => $supplier_info )
+                                        <option value="{{ $supplier_info->ss_id }}">{{ $supplier_info->ss_supplier_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="control-label" tabindex="0">Weight</label>

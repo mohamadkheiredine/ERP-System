@@ -27,13 +27,13 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 	<!--begin::Head-->
 	<head>
 		<title>
-			{{ strlen($company_info[0]['cd_company_name']) > 0 ? $company_info[0]['cd_company_name'] : "ITM" }} ERP - LOGIN
+			{{ strlen($company_info[0]['cd_company_name']) > 0 ? $company_info[0]['cd_company_name'] : "TITAN" }} ERP - LOGIN
 		</title>
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+		<link rel="canonical" href="https://itmsolutionsmena.com" />
 		<link rel="shortcut icon" href="{{ url('theme/src/assets/media/logos/favicon.ico') }}" />
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
@@ -68,28 +68,28 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
                                 {!! csrf_field() !!}
                             </span>
 								<!--begin::Heading-->
-								<div class="text-center mb-11">
-									<!--begin::Title-->
-									<h1 class="text-dark fw-bolder mb-3">Sign In</h1>
-									<!--end::Title-->
+								<div class="text-left mb-11">
+                                                                        <a href="#" class="mb-0 mb-lg-12">
+							<img alt="Logo" src="{{ url('images/titanerp.svg') }}" class="h-60px h-lg-75px" />
+						</a>
 								</div>
 								<!--begin::Input group=-->
 								<div class="fv-row mb-8">
 									<!--begin::Email-->
-									<input placeholder="UserName" name="username" autocomplete="off" class="form-control bg-transparent" />
+									<input placeholder="UserName" name="username" autocomplete="off" class="form-control bg-transparent fieldlogin" />
 									<!--end::Email-->
 								</div>
 								<!--end::Input group=-->
 								<div class="fv-row mb-3">
 									<!--begin::Password-->
-									<input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" />
+									<input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent fieldlogin" />
 									<!--end::Password-->
 								</div>
 								<!--end::Input group=-->
 						
 								<!--begin::Submit button-->
-								<div class="d-grid mb-10">
-									<button type="submit" id="kt_sign_in_submit" class="btn btn-primary">
+								<div class="d-grid mb-10" style="text-align: left">
+									<button type="submit" id="kt_sign_in_submit" class="btn btnLogin">
 										<!--begin::Indicator label-->
 										<span class="indicator-label">Sign In</span>
 										<!--end::Indicator label-->
@@ -109,21 +109,9 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 				</div>
 				<!--end::Body-->
 				<!--begin::Aside-->
-				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ url('theme/style/src/assets/media/misc/auth-bg.png') }})">
+				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ url('images/titanerpbackground.jpg') }})">
 					<!--begin::Content-->
-					<div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
-						<!--begin::Logo-->
-						<a href="#" class="mb-0 mb-lg-12">
-							<img alt="Logo" src="{{ $img_src }}" class="h-60px h-lg-75px" />
-						</a>
-						<!--end::Logo-->
-						<!--begin::Title-->
-						<h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7"></h1>
-						<!--end::Title-->
-						<!--begin::Text-->
-						<div class="d-none d-lg-block text-white fs-base text-center"></div>
-						<!--end::Text-->
-					</div>
+					
 					<!--end::Content-->
 				</div>
 				<!--end::Aside-->

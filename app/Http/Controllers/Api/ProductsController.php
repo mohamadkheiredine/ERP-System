@@ -80,7 +80,7 @@ class ProductsController extends Controller
             return Response()->json($result_array);
         }
         
-        $lst_categories = ProductCategories::wherePcIsDeleted(0);
+        $lst_categories = ProductCategories::wherePcIsDeleted(0)->where('pc_show_on_pos',1);
         
         if($category_id != 0)
         {
@@ -100,6 +100,9 @@ class ProductsController extends Controller
             $categories[ $category_info->pc_id ]['title']               = $category_info->pc_category;
             $categories[ $category_info->pc_id ]['description']         = $category_info->pc_description;
             $categories[ $category_info->pc_id ]['use_serial_number']   = $category_info->pc_use_serial_number;
+            $categories[ $category_info->pc_id ]['show_on_pos']         = $category_info->pc_show_on_pos;
+            
+             
             
             
             $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$category_info->pc_avatar_base_src.$category_info->pc_avatar_file_name.".".$category_info->pc_avatar_extension;
@@ -151,6 +154,7 @@ class ProductsController extends Controller
         $category_info_array['pc_id']               = $category_data->pc_id;
         $category_info_array['title']               = $category_data->pc_category;
         $category_info_array['description']         = $category_data->pc_description; 
+        $category_info_array['show_on_pos']         = $category_data->pc_show_on_pos; 
         
         $result_array['is_error']       = 0;
         $result_array['category_info_array']       = $category_info_array;
@@ -189,12 +193,13 @@ class ProductsController extends Controller
             return Response()->json($result_array);
         }
         
-        
+
         // save category  information
         $pc_category    = $request->input("pc_category");
-        $fk_pc_id       = $request->input("fk_pc_id");
+        $fk_pc_id       = $request->input("fk_pc_id") == NULL ? 0 :  $request->input("fk_pc_id");
         $pc_id          = $request->input("pc_id");
-        
+        $pc_show_on_pos = $request->input("pc_show_on_pos");
+   
         if($pc_id != null)
             $category_info = ProductCategories::find($pc_id);
         else 
@@ -202,8 +207,9 @@ class ProductsController extends Controller
         
         $category_info->fk_pc_id = $fk_pc_id;
         $category_info->pc_category = $pc_category;
+        $category_info->pc_show_on_pos = $pc_show_on_pos;
         $category_info->save();
-        
+             
         $result_array['is_error']        = 0;
         $result_array['error_msg']       = "Operation Complete Successfully";
         
@@ -224,12 +230,12 @@ class ProductsController extends Controller
      */
     public function GetListProducts(Request $request)
     {
-        $user_id             = $request->input('user_id');
-        $category_id         = $request->input('category_id');
-        $searchquery         = $request->input('searchquery');
-        $g_hash              = $request->input('g_hash');
-        $current_page              = $request->input('current_page');
-        $has_pagination              = $request->has('has_pagination') ? $request->input('has_pagination') : 1;
+        $user_id                        = $request->input('user_id');
+        $category_id                    = $request->input('category_id');
+        $searchquery                    = $request->input('searchquery');
+        $g_hash                         = $request->input('g_hash');
+        $current_page                   = $request->input('current_page');
+        $has_pagination                 = $request->has('has_pagination') ? $request->input('has_pagination') : 1;
         
         
         $nbr_rows_per_pages    = 10;
@@ -266,6 +272,7 @@ class ProductsController extends Controller
         if(strlen($searchquery) > 0)
         {
             $products_cond = $products_cond->where('p_product_name','LIKE','%' . $searchquery . '%');
+            $products_cond = $products_cond->orWhere('p_barcode','LIKE','%' . $searchquery . '%');
         }
         
         $products_count = $products_cond->count();
@@ -515,7 +522,8 @@ class ProductsController extends Controller
                 continue;
             }
             
-            $uid_bar_code_png                           = DNS1D::getBarcodePNG($stock_info->is_stock_uid, "C39+",150 , 50 );
+            $barcode_obj = new DNS1D();
+            $uid_bar_code_png = $barcode_obj->getBarcodePNG($stock_info->is_stock_uid , "C39+",150 , 50 );
         
             $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
             $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
@@ -606,8 +614,8 @@ class ProductsController extends Controller
         else 
         {
             $product_info = $stock_info->products;
-            
-            $uid_bar_code_png                           = DNS1D::getBarcodePNG($stock_info->is_stock_uid, "C39+",150 , 50 );
+            $barcode_obj = new DNS1D();
+            $uid_bar_code_png = $barcode_obj->getBarcodePNG($stock_info->is_stock_uid, "C39+",150 , 50 );
             $stock_data['uid_bar_code_png']             = $uid_bar_code_png;
             $stock_data['uid_bar_code_png']             = $stock_info->is_selling_price;
         }
@@ -672,7 +680,7 @@ class ProductsController extends Controller
         
         $product_data->fk_pc_id                     = $fk_pc_id;
         $product_data->p_barcode                    = $p_bar_code;
-        $product_data->p_barcode_img                = DNS1D::getBarcodePNG($product_data->p_barcode, "C39+",150 , 50 );
+        $product_data->p_barcode_img                = NULL;
         $product_data->p_product_ref                = $p_bar_code;
         $product_data->p_product_name               = $p_product_name;
         $product_data->p_product_description        = $p_product_name;
@@ -778,8 +786,8 @@ class ProductsController extends Controller
             return Response()->json($result_array);
         }
         
-        
-        $uid_bar_code_png                           = DNS1D::getBarcodePNG($product_barcode, "C39+",150 , 50 );
+        $barcode_obj = new DNS1D();
+            $uid_bar_code_png = $barcode_obj->getBarcodePNG($product_barcode, "C39+",150 , 50 );
         $result_array['bar_code_img']               = $uid_bar_code_png;
         $result_array['is_error']                   = 0;
         
@@ -821,7 +829,71 @@ class ProductsController extends Controller
             $result_array['error_message']  = 'hash sequence is not valid !!';
             
             return Response()->json($result_array);
-        } 
+        }
+        
+        
+        $product_data = Products::wherePProductIsDeleted(0)->where('p_barcode','LIKE','%' .$product_barcode . '%' )->get();
+        $wproduct_data = Products::wherePProductIsDeleted(0)->where('p_barcode','LIKE','20%' )->get();
+        
+        if(count($product_data) > 0)
+        { 
+            $result_array['is_error'] = 0;
+            $row_array['p_id'] = $product_data[0]->p_id;
+            $result_array['quantity'] = 1;
+            $row_array['is_id'] = 0;
+            $row_array['uid'] = $product_data[0]->p_barcode;
+            $row_array['product_name'] = $product_data[0]->p_product_name;
+
+            $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_data[0]->p_product_profile_base_src.$product_data[0]->p_product_profile_file_name.".".$product_data[0]->p_product_profile_extention;
+            $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_data[0]->p_product_profile_base_src.$product_data[0]->p_product_profile_file_name.".".$product_data[0]->p_product_profile_extention;
+            if(strlen($product_data[0]->p_product_profile_base_src) > 0 ){
+                $img_src = $image_src_url;
+            }else{
+                $img_src = url('images/NoImageAvailable.jpg');
+            }
+            $row_array['image_url'] = $img_src;
+            $row_array['product_cost'] = $product_data[0]->p_product_selling_price;
+            
+            $row_array['product_discount'] = 0;
+            $row_array['product_quantity'] = 1;
+            $result_array['row_array'] = $row_array;
+            $total_cost_row =  $product_data[0]->p_product_selling_price * 1;
+            
+            $result_array['total_cost_row'] = $total_cost_row;
+            return Response()->json($result_array);
+        }
+        else
+        {
+           $barcode = substr($product_barcode, 0,7);
+           $price = substr($product_barcode, 7,2);
+           $comma = substr($product_barcode, 9,3);
+           $weight = round(floatval($price . "." . $comma ),2);
+           $product_barcode_data = Products::wherePProductIsDeleted(0)->where('p_barcode','LIKE','%' .$barcode . '%' )->get();
+           if(count($product_barcode_data) > 0)
+           { 
+               $price_killo = floatval($product_barcode_data[0]->p_product_selling_price);
+               $qyt_price = floatval($price_killo) * $weight;
+               
+               $result_array['is_error'] = 0;
+                $row_array['p_id'] = $product_barcode_data[0]->p_id;
+                $result_array['quantity'] = $weight;
+                $row_array['is_id'] = 0;
+                $row_array['uid'] = $barcode;
+                $row_array['product_name'] = $product_barcode_data[0]->p_product_name . " x " . $weight . " Kg";
+
+                $row_array['image_url'] = url('images/NoImageAvailable.jpg');
+                $row_array['product_cost'] = $price_killo;
+
+                $row_array['product_discount'] = 0;
+                $row_array['product_quantity'] = $weight;
+                $result_array['row_array'] = $row_array;
+                $total_cost_row =  $qyt_price;
+                //$total_cost_row =  $price_killo * $weight;
+
+                $result_array['total_cost_row'] = $total_cost_row;
+                return Response()->json($result_array);
+           }
+        }
         
         // first check we check if the barcode exist in the stock_ids table
         $stock_ids = StockIds::whereSiStockUid($product_barcode)->get();
@@ -957,17 +1029,7 @@ class ProductsController extends Controller
         // get the second currency rate
         $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($sec_company_currency)->orderBy('er_id','desc')->get();
         $sec_cur_product_cost = 0;
-//         if(count($currency_exchange) == 0)
-//         {
-//             $sc_currency        = Currency::find($stock_currency);
-//             $sec_currency        = Currency::find($sec_company_currency);
-//             $sec_cur_product_cost= convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
-//         }
-//         else
-//         {
-//             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
-//             $sec_cur_product_cost= $price_item * $exchange_rate;
-//         }
+
         
         
         $row_array['product_cost']          = $op_product_cost;
@@ -982,6 +1044,102 @@ class ProductsController extends Controller
         $result_array['total_cost_row']  = $total_cost_row;
         
         return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * get list of products and put it in autocomplete
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function ListSearchProducts(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $user_info           = Users::find($user_id);
+         
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        $products_array      = array();
+        
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        } 
+        
+        
+        $lst_products = Products::wherePProductIsDeleted(0)->get();
+        foreach ( $lst_products as $key => $product_info ) 
+        {
+            $products_array[] = $product_info->p_product_name;
+        }
+        
+        $result_array['is_error']           = 0;
+        $result_array['products_array']     = $products_array;
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    public function AddProductToOrder(Request $request)
+    {
+         $user_id            = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $selectedproduct     = $request->input('selectedproduct');
+        $user_info           = Users::find($user_id);
+         
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+        
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+            
+            return Response()->json($result_array);
+        } 
+        
+        $product_data = Products::wherePProductName($selectedproduct)->get();
+        
+        if(count($product_data) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] ="Product Does not exist";
+              return Response()->json($result_array);
+        }
+        $product_data = $product_data[0];
+            $result_array['is_error'] = 0;
+            $row_array['p_id'] = $product_data->p_id;
+            $result_array['quantity'] = 1;
+            $row_array['is_id'] = $product_data->p_id;
+            $row_array['uid'] = $product_data->p_id;
+            $row_array['product_name'] = $product_data->p_product_name;
+
+            $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_data->p_product_profile_base_src.$product_data->p_product_profile_file_name.".".$product_data->p_product_profile_extention;
+            $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_data->p_product_profile_base_src.$product_data->p_product_profile_file_name.".".$product_data->p_product_profile_extention;
+            if(strlen($product_data->p_product_profile_base_src) > 0 ){
+                $img_src = $image_src_url;
+            }else{
+                $img_src = url('images/NoImageAvailable.jpg');
+            }
+            $row_array['image_url'] = $img_src;
+            $row_array['product_cost'] = $product_data->p_product_selling_price;
+            $row_array['cost_price'] = $product_data->p_product_cost_price;
+            $row_array['product_quantity'] = 1;
+            $row_array['product_discount'] = 0;
+            $result_array['row_array'] = $row_array;
+            $total_cost_row =  $product_data->p_product_selling_price * 1;
+            
+            $result_array['total_cost_row'] = $total_cost_row;
+            return Response()->json($result_array);
+        
     }
    
     
@@ -1000,6 +1158,7 @@ class ProductsController extends Controller
         $category_id = $request->input('category_id'); 
         $user_id             = $request->input('user_id');
         $warehouse_id        = $request->input('warehouse_id'); 
+        $display_type        = $request->input('display_type'); 
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
          
@@ -1019,7 +1178,8 @@ class ProductsController extends Controller
         $lst_categories = ProductCategories::wherePcIsDeleted(0);
         if(is_numeric($category_id) && $category_id != 0)
                 $lst_categories = $lst_categories->whereFkPcId($category_id);
-
+		if($display_type  != 'list')
+			$lst_categories = $lst_categories->wherePcShowOnPos(1);
         $lst_categories = $lst_categories->get();
         $category_array = array();
         $items_array    = array();

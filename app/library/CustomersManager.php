@@ -131,7 +131,7 @@ class CustomersManager
         $index = $count_customers + 1;
         
         
-        $customer_code = "cust" . $cd_company_name[0] . $year . "-" . sprintf('%04d', $index);
+        $customer_code = "S" . sprintf('%04d', $index);
         
         // check if customer code exist
         
@@ -141,7 +141,7 @@ class CustomersManager
             $index = $count_customers + 2;
             
             
-            $customer_code = "cust" . $cd_company_name[0] . $year . "-" . sprintf('%04d', $index);
+             $customer_code = "S" . sprintf('%04d', $index);
         }
         
         unset($code_count);

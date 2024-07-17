@@ -94,6 +94,89 @@ class TimeSheetController extends Controller
     
     
     /**
+     * 
+     * @param Request $request
+     */
+    public function Hourlysalaries(Request $request)
+    {
+        $query = "SELECT id,u_fullname,u_hourly_rate,day(ts_timesheet.ts_timesheet_date) as timesheet_day,ts_timesheet_checkin,ts_timesheet_checkout  FROM users left join ts_timesheet on ts_timesheet.fk_user_id = users.id  where MONTH(ts_timesheet.ts_timesheet_date) = MONTH(CURRENT_DATE()) order by id;";
+        
+        $timesheet_result = DB::select($query);
+           
+        $lst_total_timesheet_array = array(); 
+        foreach ($timesheet_result as $key => $timesheet_item) {
+            if($timesheet_item->ts_timesheet_checkout != NULL && $timesheet_item->ts_timesheet_checkin != NULL)
+                $hourdiff = round((strtotime($timesheet_item->ts_timesheet_checkout) - strtotime($timesheet_item->ts_timesheet_checkin))/3600, 1);
+            else
+                $hourdiff = 0;
+            
+            
+            if(!isset($lst_total_timesheet_array[$timesheet_item->timesheet_day]))
+            {
+                $lst_total_timesheet_array[$timesheet_item->id]['total_hours'] = $hourdiff;
+                $lst_total_timesheet_array[$timesheet_item->id]['user_name'] = $timesheet_item->u_fullname;
+                $lst_total_timesheet_array[$timesheet_item->id]['hourly_rate'] = $timesheet_item->u_hourly_rate;
+                $lst_total_timesheet_array[$timesheet_item->id]['total_salary'] = $hourdiff * $timesheet_item->u_hourly_rate;
+                $lst_total_timesheet_array[$timesheet_item->id]['currency'] = Session('currency_symbol');
+            }
+            else
+            {
+                 $lst_total_timesheet_array[$timesheet_item->id]['total_hours'] = $lst_total_timesheet_array[$timesheet_item->id]['total_hours']  + $hourdiff; 
+            }
+        }
+            
+         
+        $data = array(
+            "lst_total_timesheet_array" => $lst_total_timesheet_array
+        );
+        
+        return Response()->view("timesheet.hourlysalaries",$data);
+    }
+    
+    
+    public function DisplayListSalaries(Request $request)
+    {
+        
+        $month = $request->input('ts_month');
+            
+         $query = "SELECT id,u_fullname,u_hourly_rate,day(ts_timesheet.ts_timesheet_date) as timesheet_day,ts_timesheet_checkin,ts_timesheet_checkout  FROM users left join ts_timesheet on ts_timesheet.fk_user_id = users.id  where MONTH(ts_timesheet.ts_timesheet_date) = " . $month . " order by id;";
+        
+        $timesheet_result = DB::select($query);
+           
+        $lst_total_timesheet_array = array(); 
+        foreach ($timesheet_result as $key => $timesheet_item) {
+            if($timesheet_item->ts_timesheet_checkout != NULL && $timesheet_item->ts_timesheet_checkin != NULL)
+                $hourdiff = round((strtotime($timesheet_item->ts_timesheet_checkout) - strtotime($timesheet_item->ts_timesheet_checkin))/3600, 1);
+            else
+                $hourdiff = 0;
+            
+            
+            if(!isset($lst_total_timesheet_array[$timesheet_item->timesheet_day]))
+            {
+                $lst_total_timesheet_array[$timesheet_item->id]['total_hours'] = $hourdiff;
+                $lst_total_timesheet_array[$timesheet_item->id]['user_name'] = $timesheet_item->u_fullname;
+                $lst_total_timesheet_array[$timesheet_item->id]['hourly_rate'] = $timesheet_item->u_hourly_rate;
+                $lst_total_timesheet_array[$timesheet_item->id]['total_salary'] = $hourdiff * $timesheet_item->u_hourly_rate;
+                $lst_total_timesheet_array[$timesheet_item->id]['currency'] = Session('currency_symbol');
+            }
+            else
+            {
+                 $lst_total_timesheet_array[$timesheet_item->id]['total_hours'] = $lst_total_timesheet_array[$timesheet_item->id]['total_hours']  + $hourdiff; 
+            }
+        }
+            
+         
+        $data = array(
+            "lst_total_timesheet_array" => $lst_total_timesheet_array
+        );
+        $result_array = array();
+        $result_array['display'] = view("timesheet.listhourlysalaries",$data)->render();
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
      * Display list of today's that's are online
      * 
      * @author Moe Mantach
@@ -201,11 +284,12 @@ class TimeSheetController extends Controller
     {
         $ts_user        = $request->input("ts_user");
         $ts_date        = $request->input("ts_date");
+        $ts_date = date('Y-m-d', strtotime($ts_date));
         $result_array   = array();
         
         $today_timesheet = TimesheetRecords::whereFkUserId($ts_user)->whereTsTimesheetDate($ts_date)->get();
         $lst_day_types   = DayTypes::whereDtIsDeleted(0)->get();
-
+        
         $data = array(
             "today_timesheet" => $today_timesheet,
             "list_days_type" => $lst_day_types
@@ -327,7 +411,8 @@ class TimeSheetController extends Controller
         $ts_timesheet_checkout  = $request->input('ts_timesheet_checkout');
         $ts_record_note         = $request->input('ts_record_note');
         $ts_user                = $request->input('ts_user');
-        $ts_date                = $request->input('ts_date'); 
+        $ts_date                = $request->input('ts_date');
+        $ts_date                = date('Y-m-d',strtotime($ts_date));
         $ts_day_type            = $request->input('ts_day_type');
         
         

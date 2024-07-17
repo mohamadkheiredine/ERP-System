@@ -291,7 +291,7 @@ orders_module = {
     	            success : function(response){
     	              if(response.is_error == 0)
     	              {
-    	                 window.location.href = base_url + "/shipment/orders";
+    	                 window.location.href = base_url + "/shipment/orders/editform/" + response.so_id ;
     	              }
     	            }
     	        });
@@ -344,10 +344,15 @@ orders_module = {
             dataType : "Json",
             type : "POST",
             success : function(response){
+               $("#AjaxLoader").css({'display':'none'});  
               if(response.is_error == 0)
               {
             	 $('input[name=so_package_cost]').val(response.package_cost);
-            	 $("#AjaxLoader").css({'display':'none'});   
+            	 
+              }
+              else{
+                  bootbox.alert(response.error_msg);
+                  $('input[name=so_package_cost]').val('');
               }
             }
         });

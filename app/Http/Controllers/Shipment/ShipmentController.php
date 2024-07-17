@@ -32,8 +32,11 @@ use App\models\Inventory\Stocks;
 use App\models\Inventory\Products;
 use App\models\Logistics\ShipOperationProducts;
 use App\library\WarehouseManager;
-
-
+use App\models\System\Countries;
+use App\models\Shipment\TransportationMode;
+use App\models\Shipment\OperationOrders;
+use App\models\Shipment\shippingOrders;
+use App\models\Inventory\Customers;
 
 class ShipmentController extends Controller
 {
@@ -48,7 +51,7 @@ class ShipmentController extends Controller
     {
       
         
-        $lst_accounts = CRMAccounts::whereCaIsDeleted(0)->get();
+        $lst_accounts = Customers::whereIcIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
         
        $data = array(
@@ -269,9 +272,17 @@ class ShipmentController extends Controller
     public function AddForm()
     {
         $operation_status = ShipOperationStatus::whereOsIsDeleted(0)->get();
+        $lst_countries = Countries::all();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $lst_modes = TransportationMode::whereTmIsDeleted(0)->get();
+        $operation_code = "ORC" . rand(100000,999999);
         
         $data = array(
-            "operation_status" => $operation_status
+            "operation_status" => $operation_status,
+            "lst_warehouses" => $lst_warehouses,
+            "lst_modes" => $lst_modes,
+            "operation_code" => $operation_code,
+            "lst_countries" => $lst_countries
         );
         return Response()->view('shipment.addoperation',$data);
     }
@@ -288,14 +299,83 @@ class ShipmentController extends Controller
     {
         $operation_shipment = ShipOperations::find($so_id);
         $operation_status = ShipOperationStatus::whereOsIsDeleted(0)->get();
+        $lst_countries = Countries::all();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $lst_modes = TransportationMode::whereTmIsDeleted(0)->get();
         
+        $OperationOrders = OperationOrders::whereFkOoOperationId($so_id)->get();
+        $lst_op_orders = array();
+        
+        foreach ($OperationOrders as $key => $oo_info) {
+            $lst_op_orders[] = $oo_info->fk_oo_order_id;
+        }
+            
+        
+        if(count($lst_op_orders) > 0) 
+        { 
+            $lst_drpdown_orders = shippingOrders::whereNotIn('so_id',$lst_op_orders)->whereSoIsDeleted(0)->get();  
+        }
+        else
+            $lst_drpdown_orders = shippingOrders::whereSoIsDeleted(0)->get();
+            
         $data = array(
             "operation_status" => $operation_status,
-            "operation_shipment" => $operation_shipment
+            "operation_shipment" => $operation_shipment,
+            "lst_warehouses" => $lst_warehouses,
+            "lst_modes" => $lst_modes,
+            "lst_drpdown_orders" => $lst_drpdown_orders,
+            "lst_countries" => $lst_countries
         );
         return Response()->view('shipment.editoperation',$data);
     }
     
+    
+    /**
+     * Displaylist of orders linked to specific operation
+     * @param Request $request
+     */
+    public function Displaylistorders(Request $request)
+    {
+        $so_id = $request->input('so_id');
+        $result_array = array();
+        $OperationOrders = OperationOrders::whereFkOoOperationId($so_id)->get();
+        
+        
+        $result_array['is_error'] = 0;
+        
+        $data = array(
+           "OperationOrders"  => $OperationOrders
+        );
+        $result_array['display'] = view('logistics.displaylistorders',$data)->render();
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * Link oorder to an operation
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function LinkOperationOrder(Request $request)
+    {
+          $so_id = $request->input('so_id');
+          $fk_oo_order_id = $request->input('fk_oo_order_id');
+          $result_array = array();
+          
+          $operation_order = new OperationOrders();
+          $operation_order->fk_oo_operation_id = $so_id;
+          $operation_order->fk_oo_order_id = $fk_oo_order_id;
+          $operation_order->save();
+          
+          
+           $result_array['is_error'] = 0;
+           $result_array['error_msg'] = "Operation Complete Successfuly";
+        
+        return Response()->json($result_array);
+    }
     
     /**
      * Map Tracker where you can track all operations running in the current time

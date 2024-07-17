@@ -320,23 +320,21 @@ class UsersController extends Controller
        
        $user_team = UserTeam::where('ut_team','LIKE','%' . $team_name .  '%')->get();
        $team_id = 0;
+        $users_array = array();
        if(count($user_team) > 0)
        {
            $team_id = $user_team[0]->ut_id;
+              $lst_users = $user_team[0]->TeamMembers;
+       
+                foreach ($lst_users as $key => $user_info) {
+
+                    $users_array[] = array(
+                        'id' => $user_info->Users->id,
+                        'fullname' => $user_info->Users->u_fullname,
+                    );
+                } 
        }
-       $users_array = array();
-       
-       $lst_users = $user_team[0]->TeamMembers;
-       
-       foreach ($lst_users as $key => $user_info) {
- 
-           $users_array[] = array(
-               'id' => $user_info->Users->id,
-               'fullname' => $user_info->Users->u_fullname,
-           );
-       } 
-       
-       
+      
        $result_array['is_error'] = 0;
        $result_array['users_array'] = $users_array;
        

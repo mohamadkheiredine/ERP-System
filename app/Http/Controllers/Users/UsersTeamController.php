@@ -134,13 +134,19 @@ class UsersTeamController extends Controller
         $tem_members_del =  TeamMembers::whereFkTeamId($ut_id)->delete();
         
         // save members in the team
-        foreach ( $ut_members_id as $key => $user_id ) 
+        
+        if( $ut_members_id != null )
         {
-            $tem_members = new TeamMembers();
-            $tem_members->fk_team_id    = $ut_id;
-            $tem_members->fk_user_id    = $user_id;
-            $tem_members->save();
+            foreach ( $ut_members_id as $key => $user_id ) 
+            {
+                $tem_members = new TeamMembers();
+                $tem_members->fk_team_id    = $ut_id;
+                $tem_members->fk_user_id    = $user_id;
+                $tem_members->save();
+            }          
         }
+        
+
         
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Users Team Information Has been saved';

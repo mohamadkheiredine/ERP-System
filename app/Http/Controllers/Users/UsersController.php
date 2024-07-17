@@ -227,6 +227,7 @@ class UsersController extends Controller {
         $u_has_insurance = $request->input('u_has_insurance');
         $u_marital_status = $request->input('u_marital_status');
         $u_number_of_dependencies = $request->input('u_number_of_dependencies');
+        $u_hourly_rate = $request->input('u_hourly_rate');
         $u_is_active = $request->input('u_is_active');
 
         $result_array = array();
@@ -291,6 +292,7 @@ class UsersController extends Controller {
         $Users->u_marital_status = $u_marital_status;
         $Users->u_number_of_dependencies = $u_number_of_dependencies;
         $Users->u_has_insurance = $u_has_insurance;
+        $Users->u_hourly_rate = $u_hourly_rate;
         $Users->u_is_active = $u_is_active;
         $Users->save();
 

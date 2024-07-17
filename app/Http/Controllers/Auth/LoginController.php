@@ -62,6 +62,9 @@ class LoginController extends Controller
         $ua_remember    = $request->input('ua_remember');
         $ua_remember    = ($ua_remember == null) ? false : true;
         
+
+        
+        
         
         if (Auth::attempt(array('u_username' => $username, 'password' => $password),$ua_remember))
         {
@@ -74,8 +77,8 @@ class LoginController extends Controller
              
              return Response()->json($result_array);
              }*/
-            
-            
+                                
+        
             // Save information in the session
             self::SaveSessionInformaiton($user_info , $ua_remember);
             
@@ -121,6 +124,8 @@ class LoginController extends Controller
         }else{
             $company_logo = url('images/NoImageAvailable.jpg');
         }
+        
+
         
         
         session()->put('user_id' , $user_id );

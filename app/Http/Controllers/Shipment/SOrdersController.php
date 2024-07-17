@@ -105,10 +105,7 @@ class SOrdersController extends Controller
         
         
         $list_orders = shippingOrders::whereSoIsDeleted(0); 
-        if($so_order_warehouse > 0)
-            $list_orders = $list_orders->whereFkWarehouseId($so_order_warehouse);
-        if($so_vendor_id > 0)
-            $list_orders = $list_orders->whereSoVendorId($so_vendor_id);
+
         if($so_order_customer > 0)
             $list_orders = $list_orders->whereSoOrderCustomer($so_order_customer);
          if( strlen($general_search)  > 0)
@@ -180,6 +177,7 @@ class SOrdersController extends Controller
             return Response()->json($result_array);
         }
         
+        
         $result_array['is_error']  = 0;
         $result_array['package_cost']  = $packing_cost_obj[0]->cp_price_range;
         $result_array['error_msg'] = 'Order Item Has been saved';
@@ -198,7 +196,8 @@ class SOrdersController extends Controller
     {
         
         $rand_barcode       = rand(10000000,99999999999);
-        $bar_code_png       = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+        $barcode = new DNS1D();
+        $bar_code_png = $barcode->getBarcodePNG($rand_barcode, "C39+",150 , 50 ); 
         
         $lst_order_status   = OrderStatus::whereSsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
@@ -256,7 +255,6 @@ class SOrdersController extends Controller
         $so_delivery_date           = $request->input('so_delivery_date'); 
         $so_delivery_date           = date("Y-m-d",strtotime($so_delivery_date));
         $so_vat_id                  = $request->input('so_vat_id'); 
-        $so_total_cost              = $request->input('so_total_cost'); 
         $so_order_currency          = $request->input('so_order_currency'); 
         $fk_warehouse_id            = $request->input('fk_warehouse_id');
         $so_customer_payment        = $request->input('so_customer_payment');
@@ -302,7 +300,6 @@ class SOrdersController extends Controller
         $Orders->so_delivery_date    = $so_delivery_date;
         $Orders->so_vat_id           = $so_vat_id;
         $Orders->so_currency_id   = $so_order_currency;
-        $Orders->so_supplier_id   = $so_supplier_id;
         $Orders->so_assign_to   = $so_assign_to;
         $Orders->so_customer_payment   = $so_customer_payment;
         $Orders->so_total_price   = $total_price;
@@ -310,6 +307,7 @@ class SOrdersController extends Controller
         $Orders->save();
         
         $result_array['is_error']  = 0;
+        $result_array['so_id']  = $Orders->so_id;
         $result_array['error_msg'] = 'Order Information Has been saved';
         
         return Response()->json($result_array);
@@ -326,6 +324,8 @@ class SOrdersController extends Controller
      */
     public function EditForm( $so_id )
     {
+        
+        
         $lst_order_status   = OrderStatus::whereSsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_vat_tax        = VatAccounts::whereAvIsDeleted(0)->get();
@@ -345,10 +345,12 @@ class SOrdersController extends Controller
             $order_code = $OrderManager->GenerateOrdereCode();
             unset($OrderManager);
         }
-
+        $barcode = new DNS1D();
+        $bar_code_png = $barcode->getBarcodePNG($order_info->so_order_code, "C39+",150 , 50 ); 
         
         $data = array(
             "order_info" => $order_info,
+            "bar_code_png" => $bar_code_png,
             "lst_order_status" => $lst_order_status,
             "lst_users" => $lst_users,
             "lst_products" => $lst_products,
@@ -376,6 +378,7 @@ class SOrdersController extends Controller
         $so_product_category    = $request->input('so_product_category');
         $so_package_weight      = $request->input('so_package_weight');
         $so_package_cost        = $request->input('so_package_cost');
+        $fk_oc_supplier_id        = $request->input('fk_oc_supplier_id');
         $currency_id            = $request->input('currency_id');
         
         $order_item = new OrderCategories();
@@ -385,8 +388,15 @@ class SOrdersController extends Controller
         $order_item->so_package_cost = $so_package_cost;
         $order_item->so_package_price = $so_package_cost;
         $order_item->so_package_currency = $currency_id;
+        $order_item->fk_oc_supplier_id = $fk_oc_supplier_id;
         $order_item->save();
         
+        
+        // add price to total order price
+        $order_info = shippingOrders::find($order_id);
+        $order_info->so_total_price = $order_info->so_total_price + $so_package_cost;
+        
+        $order_info->save(); 
         
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Order Item Has been saved';

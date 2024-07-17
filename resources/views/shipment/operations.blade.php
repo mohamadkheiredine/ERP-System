@@ -71,7 +71,7 @@ th{
                             <select class="bs-select form-control" name="fk_account_id" id="FK_ACCOUNT_ID" data-actions-box="true">
                                     <option value="">-- select one --</option>
                                     @foreach ( $lst_accounts as $key => $account_info )
-                                            <option value="{{ $account_info->ca_id }}">{{ $account_info->ca_account_name }}</option>
+                                            <option value="{{ $account_info->ic_id }}">{{ $account_info->ic_customer_name }}</option>
                                     @endforeach
                             </select>
                                     </div>
@@ -86,7 +86,7 @@ th{
                                     </div>
                             </div>
                     </div>
-                    <div class="col-xl-4 order-1 order-xl-2 align-right">
+                    <div class="col-xl-4 order-1 order-xl-2 align-right" style="padding-right:0px;">
                             <a href="{{ url('shipments/shipmentoperations/addform') }}" class="btn btn-success">
                                     <span>
                                             <i class="fas fa-user"></i>

@@ -126,7 +126,10 @@ var users_module = {
 		                 	email : true,
 		                 	 minlength: 5,
 		                     required: true
-		                 }
+		                 },
+                                 u_hourly_rate : {
+                                     number :true
+                                 }
 		             },
 
 		             messages: { // custom messages for radio buttons and checkboxes

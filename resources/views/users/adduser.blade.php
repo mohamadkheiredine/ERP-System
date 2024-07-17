@@ -24,6 +24,9 @@ th{
 #ModelPopUp{
 	width:800px;
 }
+.card-body{
+    min-height:600px;
+}
 </style>
 @endsection
 @section('plugins')
@@ -79,13 +82,17 @@ th{
                         </div>
                 	</div>
                 	<div class="col-md-12">
-                		<div class="m-portlet m-portlet--tab">
-							<div class="m-portlet__head bg-success">
-                				<div class="bg-light">User Information</div>
-							</div>
-							<div class="m-portlet__body">
-								<div class="row">
-                                   <div class="col-md-4">
+                		
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h3 class="card-title">User Information</h3>
+                                    <div class="card-toolbar">
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Full Name <span class="required"> * </span></label>
                                             <input type="text" maxlength="500" name="u_fullname" id="U_FULLNAME" class="form-control" value="" />
@@ -167,9 +174,10 @@ th{
 											</span>
 										</div> 
                                     </div>
+                                    </div>
                                 </div>
-							</div>
-						</div>
+                            </div>
+                           
                 	</div> 
                 </div> 
                <div class="row" style="height:5px;"></div>
@@ -267,8 +275,8 @@ th{
 				</div>
                 <div class="row">
                		<div class="col-md-12">
-               			<div class="card bg-light shadow-sm">
-                            <div class="card-header">
+               			<div class="card shadow-sm">
+                            <div class="card-header bg-success">
                                 <h3 class="card-title">Employment Information</h3>
                                 <div class="card-toolbar">
                                    
@@ -364,6 +372,12 @@ th{
                                        <div class="form-group">
                                             <label class="control-label">User Sallary</label>
                                              <input type="text" name='u_user_sallary' maxlength="50" class="form-control" id="U_USER_SALLARY" value="" />
+                                        </div>
+                                    </div>
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Hourly Rate</label>
+                                             <input type="text" name='u_hourly_rate' maxlength="50" class="form-control" id="U_HOURLY_RATE" value="" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">

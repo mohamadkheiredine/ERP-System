@@ -58,7 +58,7 @@ class OrdersManager
         $index = $count_orders + 1;
         
         
-        $invoice_code = "ORD" .  strtoupper( $cd_company_name[0] )  . $year . date("m") . "-" . sprintf('%04d', $index);
+        $invoice_code = "ORD" . sprintf('%04d', $index);
         
         return $invoice_code;
         

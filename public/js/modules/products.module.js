@@ -142,7 +142,6 @@ products_module = {
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let action 				= $(this).data('action');
-			alert(action);
 			switch(action)
 			{
 				case "EXPORT_CSV":
@@ -150,6 +149,11 @@ products_module = {
 				
 				}
 				break;
+                            case "IMPORT_PRODUCTS":
+                            {
+                             // $('#myModal').modal('show');
+                            }
+                            break;
 				case "DOWNLOAD_TEMPLATE":
 				{
 					$.ajax({
@@ -181,6 +185,41 @@ products_module = {
 				break;
 			}
 		},
+                ImportProducts : function(e){
+                    e.preventDefault();
+                    var FormDataFields = $("form[id=FRM_IMPORT_PRODUCTS]");
+                    var base_url = $("#BASE_URL").val();
+                    var data = new FormData();
+                    var index = 0;
+
+                    $.each($("input[type=file]"), function(i, obj) {
+                            var name = $(this).attr('name');
+                            $.each(obj.files,function(j,file){
+                                    data.append(name, file);
+                            })
+                    });
+
+                    FormDataFields.find('input').each(function(){
+                            data.append($(this).attr('name'), $(this).val() );
+                    });
+                     $.ajax
+                    ({
+                        url : base_url + "/request/products/uploadlistproducts",
+                        data : data,
+                        async: false,
+                        cache: false,
+                        method : 'post',
+                        contentType: false,
+                        processData: false,
+                        dataType : "json",
+                        success : function(response){
+                          if(response.is_error == 0)
+                          {
+                             window.location.href = base_url + "/inventory/products";
+                          }
+                        }
+                    });
+                },
 		GenerateBarCode : function(){
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();

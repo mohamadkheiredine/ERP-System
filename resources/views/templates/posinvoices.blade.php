@@ -1,149 +1,127 @@
-	<style>
-#invoice-POS{
-  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
-  padding:2mm;
-  margin: 0 auto;
-  width: 44mm;
-  background: #FFF;
-  
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .receipt {
 
-::selection {background: #f31544; color: #FFF;}
-::moz-selection {background: #f31544; color: #FFF;}
-h1{
-  font-size: 1.5em;
-  color: #222;
-}
-h2{font-size: .6em;}
-.tabletitle h2{
-    font-size:12px;
-}
-h3{
-  font-size: 1.2em;
-  font-weight: 300;
-  line-height: 2em;
-}
-p{
-  font-size: .7em;
-  color: #666;
-  line-height: 1.2em;
-}
- 
-#top, #mid,#bot{ /* Targets all id with 'col-' */
-  border-bottom: 1px solid #EEE;
-}
-
-#top{min-height: 100px;}
-#mid{min-height: 80px;} 
-#bot{ min-height: 50px;}
-
-#top .logo{
-  //float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
-	background-size: 60px 60px;
-}
-.clientlogo{
-  float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
-	background-size: 60px 60px;
-  border-radius: 50px;
-}
-.info{
-  display: block;
-  //float:left;
-  margin-left: 0;
-}
-.title{
-  float: right;
-}
-.title p{text-align: right;} 
-table{
-  width: 100%;
-  border-collapse: collapse;
-}
-td{
-  //padding: 5px 0 5px 15px;
-  //border: 1px solid #EEE
-}
-.tabletitle{
-  //padding: 5px;
-  font-size: .5em;
-  background: #EEE;
-}
-.service{border-bottom: 1px solid #EEE;}
-.item{width: 30mm;}
-.itemtext{font-size: .5em;}
-
-#legalcopy{
-  margin-top: 5mm;
-}
-
-	</style>
-	<script src="{{ url('default/assets/plugins/jquery.min.js') }}" type="text/javascript"></script>
-	<script>
-		$(function(){
-			window.print();
-		})
-	</script>
-  <div id="invoice-POS">
-    
-    <center id="top">
-      <div class="logo"></div>
-      <div class="info"> 
-        <h2>{{$company_info->cd_company_name}}</h2>
-      </div><!--End Info-->
-    </center><!--End InvoiceTop-->
-    
-    <div id="mid">
-      <div class="info">
-        <h2>Contact Info</h2>
-        <p> 
-            Address : {{$user_info->u_address}}</br>
-            Email   : {{$user_info->u_email}}</br>
-            Phone   : {{$user_info->u_mobile}}</br>
-        </p>
-      </div>
-    </div><!--End Invoice Mid-->
-    <div id="bot">
-
-					<div id="table">
-						<table>
-							<tr class="tabletitle">
-								<td class="item"><b>Item</b></td>
-								<td class="Hours"><b>Qty</b></td>
-								<td class="Rate"><b>Sub Total</b></td>
-							</tr>
-							@foreach($lst_order_items as $index => $order_item)
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">{{ $order_item->fk_product_id > 0  ?  $order_item->Products->p_product_name : $order_item->so_unit_label }}</p></td>
-								<td class="tableitem"><p class="itemtext">{{ $order_item->so_product_quantity }}</p></td>
-								<td class="tableitem"><p class="itemtext">{{ $order_item->so_product_cost }}&nbsp;<b>{{ $order_info->Currency->so_product_cost }}</b>&nbsp;</p></td>
-							</tr>
-							@endforeach
-							@if($tax_total > 0)
-							<tr class="tabletitle">
-								<td></td>
-								<td class="Rate"><b>tax</b></td>
-								<td class="payment"><b>{{ $tax_total }}</b></td>
-							</tr>
-							@endif
-							<tr class="tabletitle">
-								<td></td>
-								<td class="Rate"><b>Total</b></td>
-								<td class="payment"><b>{{ ( $cost_total + $tax_total ) }}</b>&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
-							</tr>
-
-						</table>
-					</div><!--End Table-->
-
-					<div id="legalcopy">
-						<p class="legal"><strong>Thank you for your business!</strong>  Payment is expected within 31 days; please process this invoice within that time. There will be a 5% interest charge per month on late invoices. 
-						</p>
-					</div>
-
-				</div><!--End InvoiceBot-->
-  </div><!--End Invoice-->
+        }
+        .header, .footer {
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+          
+        }
+        .items {
+           
+        }
+        .items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .items table, .items th, .items td {
+     
+        }
+        .items th, .items td {
+            padding: 8px;
+            text-align: left;
+        }
+        .totals {
+            margin: 20px 0;
+        }
+        .totals table {
+            width: 100%;
+        }
+        .totals th, .totals td {
+            padding: 8px;
+            text-align: left;
+        }
+        .totals th {
+            text-align: left;
+        }
+        .footer p {
+            margin: 10px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div style="width:100%;text-align:center">
+            <p  style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_name}}</p>
+            <p style="width:100%;" align="center">{{ $creation_date }}&nbsp;&nbsp;{{ $creation_time }}</p>
+            <p style="width:100%;" align="center">FACTURE N:<b>{{ $so_order_code }}</b></p>
+			<p  style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_phone}}</p>
+			<p  style="width:100%;font-weight:bold" align="center">code marchand: 590953</p>
+        </div>
+            @if(isset($delivery_id) && $delivery_id != 0)
+            <div id="mid">
+              <div class="info">
+                <h2>Contact Info</h2>
+                <p> 
+                    Name   : {{$customer_info->ic_customer_name}}</br>
+                    Address : {{$customer_info->ic_customer_address}}</br>
+                    Phone   : {{$customer_info->ic_customer_phone}}</br>
+                </p>
+              </div>
+            </div>
+            @endif
+        <div class="items">
+            <table border='0' style='width:100%;'>
+                <thead> 
+                </thead>
+                <tbody>
+                    @foreach($lst_order_items as $index => $order_item)
+                    <tr>
+                        <td>{{ $order_item->fk_product_id > 0  ?  $order_item->Products->p_product_name : $order_item->so_unit_label }}</td>
+                        <td>{{ $order_item->so_product_quantity }}</td>
+                        <td>{{ number_format($order_item->so_product_price * $order_item->so_product_quantity,2) }}&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="items">
+            <table style="width:100%">
+                <tr>
+                    <th align="left">Subtotal:</th>
+                    <td align="left">{{ number_format($pos_sub_total,2) }}&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th align="left">Discount :</th>
+                    <td align="left">{{ $pos_discount }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th align="left">Total:</th>
+                    <td align="left">{{ number_format(( $cost_total),2) }}</b>&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div class="footer">
+            <p>
+			Merci pour votre visite<br/>
+			Au cas de probleme contactez-nous immediatement
+			</p>
+            <p>{{$company_info->cd_company_name}}</p>
+        </div>
+    </div>
+</body>
+</html>

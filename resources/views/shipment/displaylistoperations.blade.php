@@ -22,7 +22,7 @@ Page Description :
    <td>{{ $so_info->so_operation_label }}</td>
    <td>{{ $so_info->so_operation_date }}</td>
    <td>{{ $so_info->so_operation_time }}</td>
-  <td style="width:2px;">  <a href="#"  data-so_id="{{ $so_info->so_id }}" id="EDIT_SHIPOP_{{ $so_info->so_id }}" ><i class="fa fa-pencil-square-o" aria-hidden="true" height="16" ></i></a> </td>
+  <td style="width:2px;">  <a href="#"  data-so_id="{{ $so_info->so_id }}" id="EDIT_SHIPOP_{{ $so_info->so_id }}" ><i class="fa-solid fa-pen-to-square" aria-hidden="true" height="16" ></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-so_id="{{ $so_info->so_id }}"  id="DELETE_SHIPOP_{{ $so_info->so_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

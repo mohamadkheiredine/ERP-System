@@ -74,7 +74,9 @@ class HolidayRequestsController extends Controller
         $user_id                = session("user_id");
         $u_department_id        = session("u_department_id");
         $tr_holiday_date_from   = $request->input("tr_holiday_date_from");
+        $tr_holiday_date_from   = date("Y-m-d",strtotime($tr_holiday_date_from));
         $tr_holiday_date_to     = $request->input("tr_holiday_date_to");
+        $tr_holiday_date_to     = date("Y-m-d",strtotime($tr_holiday_date_to));
         $tr_reason_for_holiday  = $request->input("tr_reason_for_holiday");
         
         // check if this date range is valid

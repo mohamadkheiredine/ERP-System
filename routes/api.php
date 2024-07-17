@@ -14,8 +14,31 @@ use Illuminate\Http\Request;
 */
 
 //Route::group(['middleware' => ['cors']], function() {
-    Route::post('/request/api/login','Api\UsersController@LoginPOS');
-    Route::post('/request/api/logout','Api\UsersController@LogoutPOS');
+
+    
+    
+    
+    Route::group([
+    "prefix" => "auth"
+], function () {
+  
+});
+    
+
+  Route::post('/request/api/login','Api\UsersController@Login');
+    Route::post('/request/api/logout','Api\UsersController@Logout');
+    Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
+    Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts'); 
+    
+    
+    Route::group([
+    "middleware" => "auth:api", 
+], function() {
+        
+});
+    
+    
+    
     Route::post('/request/api/getprofileinfo','Api\UsersController@GetUserInfo');
     Route::post('/request/api/saveprofileinfo','Api\UsersController@SetmyprofileInfo');
     Route::post('/request/api/changeprofilepassword','Api\UsersController@ChangeprofilePassword');
@@ -24,11 +47,11 @@ use Illuminate\Http\Request;
     
     Route::get('/request/api/getteammembers','Api\UsersController@GetTeamMembers');
     
-    Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
-    Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts');
+
     Route::post('/request/api/getdefaultaccounts','Api\GeneralController@GetDefaultAccounts');
     
     Route::get('/request/api/getlistproducts','Api\ProductsController@GetListProducts');
+    Route::get('/request/api/listsearchproducts','Api\ProductsController@ListSearchProducts');
     Route::post('/request/api/getproductsstock','Api\ProductsController@GetProductsStock');
     Route::get('/request/api/getproductinfo','Api\ProductsController@GetProductInfo');
     Route::post('/request/api/searchproductbyuid','Api\ProductsController@SearchProductByUID');
@@ -36,6 +59,7 @@ use Illuminate\Http\Request;
     Route::post('/request/api/generatebarcode','Api\ProductsController@GenerateBarCode');
     Route::post('/request/api/searchproductbyid','Api\ProductsController@SearchProductById');
     Route::get('/request/api/getproductcategories','Api\ProductsController@GetProductCategories');
+    Route::post('/request/api/addproducttoorder','Api\ProductsController@AddProductToOrder');
     Route::get('/request/api/getcategoryinfo','Api\ProductsController@GetCategoryInfo');
     Route::delete('/request/api/deletecategory','Api\ProductsController@DeleteCategoryInfo');
     Route::delete('/request/api/deleteproductinfo','Api\ProductsController@DeleteProductInfo');
@@ -56,10 +80,21 @@ use Illuminate\Http\Request;
     
     
     Route::get('/request/api/listcustomers','Api\CustomersController@GetListCustomers');
+    Route::get('/request/api/listcustomerslight','Api\CustomersController@GetListCustomerslight');
+    
     Route::get('/request/api/getcustomerinfo','Api\CustomersController@GetCustomerInfo');
     Route::post('/request/api/savecustomer','Api\CustomersController@SaveCustomerInfo');
     Route::post('/request/api/deletecustomers','Api\CustomersController@DeleteCustomer');
     Route::get('/request/api/searchcustomer','Api\CustomersController@SearchCustomer');
+    Route::delete('/request/api/deletecustomerinfo','Api\CustomersController@DeleteCustomerInfo');
+    Route::get('/request/api/searchcustomerbyname','Api\CustomersController@SearchCustomerByName');
+    
+    
+    
+    Route::post('/request/api/debitorder','Api\PaymentsController@DebitCustomerOrder');
+    Route::post('/request/api/creditpaymentcustomer','Api\PaymentsController@CreditPaymentCustomer');
+    Route::post('/request/api/getaccountstatment','Api\PaymentsController@Getaccountstatment');
+    
     
     
     Route::get('/request/api/listsuppliers','Api\SuppliersController@GetListSuppliers');
@@ -80,6 +115,8 @@ use Illuminate\Http\Request;
     Route::get('/request/api/getorderinfo','Api\OrdersController@GetOrderInfo');
     Route::get('/request/api/deleteorder','Api\OrdersController@DeleteOrder');
     Route::get('/request/api/getorderinvoice','Api\OrdersController@GetOrderInvoice');
+    Route::get('/request/api/printinvoiceorder','Api\OrdersController@PrintOrder');
+    Route::get('/request/api/getlastorderinfo','Api\OrdersController@GetLastOrderInfo');
     
     
     Route::post('/request/api/exportorderstoexcel','Api\OrdersController@ExportListOrdersToExcel');

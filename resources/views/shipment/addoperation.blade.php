@@ -62,7 +62,7 @@ th{
                             <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label">Operation Reference <span class="required"> * </span></label>
-                                    <input type="text" maxlength="10" name="so_operation_reference" id="SO_OPERATION_REFERENCE" class="form-control" required="required"  value="" />
+                                    <input type="text" maxlength="10" name="so_operation_reference" id="SO_OPERATION_REFERENCE" class="form-control" required="required"  value="{{ $operation_code }}" />
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -74,17 +74,73 @@ th{
                             <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label">Operation Type <span class="required"> * </span></label>
-                                    <select class="bs-select form-control" name="so_operation_type" id="SO_OPERATION_TYPE" required="required" data-actions-box="true">
+                                    <select  name="so_operation_type" id="SO_OPERATION_TYPE"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Operation Type">
                                         <option value="0">--Select One--</option>
                                         <option value="1">Internal Operation</option>
                                         <option value="2">External Operation</option>
+                                </select>
+                                </div>
+                            </div> 
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label">Operation Transportation Type <span class="required"> * </span></label>
+                                    <select  name="so_transportation_mode" id="SO_TRANSPORTATION_MODE"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Transportation Mode">
+                                        <option value="0">--Select One--</option>
+                                        @foreach($lst_modes as $index => $mode_info)
+                                        <option value="{{ $mode_info->tm_id  }}">{{ $mode_info->tm_mode  }}</option> 
+                                        @endforeach
+                                </select>
+                                </div>
+                            </div>
+                                     <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Country From <span class="required"> * </span></label>
+                                    <select  name="so_country_source" id="SO_COUNTRY_SOURCE"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Country Source">
+                                        <option value="0">--Select One--</option>
+                                        @foreach($lst_countries as $index => $country_info)
+                                        <option value="{{ $country_info->id  }}">{{ $country_info->name  }}</option> 
+                                        @endforeach
+                                </select>
+                                </div>
+                            </div>
+                                    
+                                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Country Destination <span class="required"> * </span></label>
+                                    <select  name="so_country_destination" id="SO_COUNTRY_DESTINATION"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Country Destination">
+                                        <option value="0">--Select One--</option>
+                                        @foreach($lst_countries as $index => $country_info)
+                                        <option value="{{ $country_info->id  }}">{{ $country_info->name  }}</option> 
+                                        @endforeach
+                                </select>
+                                </div>
+                            </div>
+                                        <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Warehouse Source <span class="required"> * </span></label>
+                                    <select  name="so_warehouse_source" id="SO_WAREHOUSE_SOURCE"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Warehouse source">
+                                        <option value="0">--Select One--</option>
+                                        @foreach($lst_warehouses as $index => $warehouse_info)
+                                        <option value="{{ $warehouse_info->w_id  }}">{{ $warehouse_info->w_warehouse_name }}</option> 
+                                        @endforeach
+                                </select>
+                                </div>
+                            </div>  
+                             <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Warehouse Destination <span class="required"> * </span></label>
+                                    <select  name="so_warehouse_destination" id="SO_WAREHOUSE_DESTINATION"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Warehouse Destination">
+                                         <option value="0">--Select One--</option>
+                                        @foreach($lst_warehouses as $index => $warehouse_info)
+                                        <option value="{{ $warehouse_info->w_id  }}">{{ $warehouse_info->w_warehouse_name }}</option> 
+                                        @endforeach
                                 </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
                               <div class="form-group">
                                     <label> Status : </label>
-                                    <select class="bs-select form-control" name="so_operation_status" id="SO_OPERATION_STATUS" data-actions-box="true">
+                                    <select  name="so_operation_status" id="SO_OPERATION_STATUS"  class="form-control form-select" data-control="select2" data-placeholder="Select Operation Status">
                                             <option value="">-- select one --</option>
                                             @foreach ( $operation_status as $key => $os_info )
                                                     <option value="{{ $os_info->os_id }}">{{ $os_info->os_status_title }}</option>
@@ -101,7 +157,7 @@ th{
                             <div class="col-md-4">
                             	<label> Operation Time : </label>
                                  <div class='input-group timepicker' id='OPERATION_TIMEPICKER'>
-									<input type='text' name="so_operation_time" class="form-control m-input" readonly placeholder="Select time" type="text"/>
+									<input type='text' name="so_operation_time" class="form-control" id="SO_OPERATION_TIME" value="" readonly placeholder="Select time" type="text"/>
 									<div class="input-group-append">
 										<span class="input-group-text">
 											<i class="la la-clock-o"></i>

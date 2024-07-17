@@ -1,0 +1,1 @@
+ALTER TABLE `inventory_product_categories` ADD COLUMN `pc_show_on_pos` TINYINT NULL DEFAULT 0 AFTER `pc_maintenance_category`;

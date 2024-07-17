@@ -53,20 +53,43 @@ Page Description :
                     <div class="row">
                         <div class="col-md-4">
                              <div class="form-group">
+                                <label class="control-label">Service Code <span class="required"> * </span></label>
+                                <input type="text" name="cs_service_code" id="CS_SERVICE_CODE" class="form-control" required="required" maxlength="10"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
                                 <label class="control-label">Service Title <span class="required"> * </span></label>
                                 <input type="text" name="cs_service_title" id="CS_SERVICE_TITLE" class="form-control" required="required" maxlength="100"  value="" />
                             </div>
                         </div>
-                         <div class="col-md-4" style="display: none">
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Service Cost / hour</label>
+                                <input type="text" name="cs_cost_per_hour" id="CS_COSTPER_HOUR" class="form-control" maxlength="100"  value="0" />
+                            </div>
+                        </div>
+                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Service Cost</label>
-                                <input type="text" name="cs_cost_per_hour" id="CS_COSTPER_HOUR" class="form-control" maxlength="100"  value="0" />
+                                <input type="text" name="cs_service_cost" id="CS_SERVICE_COST" class="form-control" maxlength="100"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Currency </label>
+                                <select  name="cs_currency_id" id="CS_CURRENCY_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                        <option value="">-- Select Currency --</option>
+                                        @foreach ( $lst_currencies as $key => $currency_info )
+                                                <option {{ session("company_currency") == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name }}</option>
+                                        @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Service Category</label>
-                                <select class="bs-select form-control" name="fk_category_id" id="FK_CATEGORY_ID" data-actions-box="true">
+                                <select  name="fk_category_id" id="FK_CATEGORY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Category">
                                         <option value="">No Category</option>
                                         @foreach ( $lst_service_categories as $key => $category_info )
                                                 <option value="{{ $category_info->sc_id }}">{{ $category_info->sc_category_name }}</option>
@@ -74,10 +97,10 @@ Page Description :
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4"  style="display:none">
                             <div class="form-group">
                                 <label> Sales Accounting&nbsp;<a href="#" id="ADD_SALES_ACCOUNT" style="text-decoration: none;"  data-dropdown_name="cs_sale_accounting_code" ><i class="flaticon-add-circular-button"></i></a>&nbsp;<span class="required"> * </span></label>
-                                <select class="bs-select form-control" name="cs_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" required="required" data-actions-box="true">
+                                <select class="bs-select form-control" name="cs_sale_accounting_code" id="P_SALE_ACCOUNTING_CODE" data-actions-box="true">
                                         <option value="">-- Select Account --</option>
                                         @foreach ( $lst_accounts as $key => $acc_info )
                                                 <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
@@ -85,10 +108,10 @@ Page Description :
                                 </select>
                             </div>
                         </div>
-                         <div class="col-md-4">
+                         <div class="col-md-4"  style="display:none">
                             <div class="form-group">
                                 <label> Purchase Accounting&nbsp;<a href="#" id="ADD_PURCHASE_ACCOUNT" style="text-decoration: none;"  data-dropdown_name="cs_purchase_accounting_code" ><i class="flaticon-add-circular-button"></i></a>&nbsp;<span class="required"> * </span></label>
-                                <select class="bs-select form-control" name="cs_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" required="required" data-actions-box="true">
+                                <select class="bs-select form-control" name="cs_purchase_accounting_code" id="P_PURCHASE_ACCOUNTING_CODE" data-actions-box="true">
                                         <option value="">-- Select Account --</option>
                                         @foreach ( $lst_accounts as $key => $acc_info )
                                                 <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label }}</option>
@@ -99,18 +122,7 @@ Page Description :
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Validate Payment Type On invoice record</label><br/>
-                                <input type="checkbox" name="cs_validate_payment_type"  id="CS_VALIDATE_PAYMENT_TYPE" class="form-control ValidatePaymentType" value="1" />
-                            </div>
-                        </div>
-                        <div class="col-md-4" style="display: none">
-                            <div class="form-group">
-                                <label> Currency </label>
-                                <select class="bs-select form-control" name="cs_currency_id" id="CS_CURRENCY_ID" data-actions-box="true">
-                                        <option value="">-- Select Currency --</option>
-                                        @foreach ( $lst_currencies as $key => $currency_info )
-                                                <option {{ session("company_currency") == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name }}</option>
-                                        @endforeach
-                                </select>
+                                <input type="checkbox" name="cs_validate_payment_type"  class="ValidatePaymentType"  id="CS_VALIDATE_PAYMENT_TYPE" value="1" />
                             </div>
                         </div>
                         <div class="col-md-12">

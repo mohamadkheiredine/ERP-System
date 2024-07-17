@@ -88,9 +88,9 @@ th{
 			<div class="row">
 				<div class="col-md-12">
 					<div class="table-responsive">
-						<table class="table table-rounded table-striped border gy-3 gs-3">
-    						<thead>
-    							<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+						<table class="table table-row-dashed table-row-gray-300 gy-7">
+                                                    <thead>
+                                                      <tr class="fw-bold fs-6 text-gray-800">
     								<th style="width:2px;">#</th>
     								<th style="width:2px;">ID</th>
     								<th>Category Title</th>

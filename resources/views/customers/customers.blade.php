@@ -42,6 +42,9 @@ th{
                 Action
               </button>
               <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" data-action_type="EXPORT_AS_CSV" href="#">Export As CSV</a></li>
+                    <li><a class="dropdown-item" data-action_type="IMPORT" href="#" data-bs-toggle="modal" data-bs-target="#modal_import">Import</a></li>
+                    <li><a class="dropdown-item" data-action_type="DOWNLOAD_TEMPLATE" href="#">Download Import Template</a></li>
               </ul>
             </div>
         </div>
@@ -93,10 +96,10 @@ th{
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
 								<div class="row">
-                                <div class="col-md-12"  id="LstallCustomers">
-                                <table class="table" style="width:100%">
-                                    		<thead>
-                                    			<tr>
+                                <div class="col-md-12 tabel-responsive"  id="LstallCustomers">
+                               			<table class="table table-row-dashed table-row-gray-300 gy-7">
+                            <thead>
+                              <tr class="fw-bold fs-6 text-gray-800">
                                     				<th title="#">#</th>
                                     				<th title="Id"> ID </th>
                                     				<th title="Customer Code"> Customer Code </th>
@@ -133,6 +136,61 @@ th{
 											</a>
 									</div>
 								</div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" id="modal_import">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Import List Customers</h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form name="FORM_IMPORT_CUSTOMERS" id="FORM_IMPORT_CUSTOMERS">
+                             <span id="hidden_fields">
+                                {!! csrf_field() !!} 
+                            </span><div class="row">
+                                <div class="col-md-12" style="height:20px;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                     <div class="form-group">
+                                        <label class="control-label">Customers List <span class="required"> * </span></label>
+                                        <input type="file" name="cc_customers_list" id="CC_CUSTOMERS_LIST" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" style="height:20px;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                     <div class="form-group" style="text-align:right">
+                                   
+                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" name="btn_upload_customers" id="BTN_UPLOAD_CUSTOMERS" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+              
+            </div>
+        </div>
     </div>
 </div>
 @endsection

@@ -89,7 +89,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Parent Category </label>
-                                <select class="bs-select form-control" name="fk_pc_id" id="FK_PC_ID" data-actions-box="true">
+                                <select  name="fk_pc_id" id="FK_PC_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product Category">
                                         <option value="">No Parent</option>
                                         <?php foreach ( $lst_product_categories as $key => $category_info ) { ?>
                                                 <option value="<?php echo $category_info->pc_id;  ?>"><?php echo $category_info->pc_category;  ?></option>
@@ -113,7 +113,7 @@ th{
                              <div class="form-group">
                                 <br/>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                        <input class="form-check-input" name="w_warehouse_status" type="checkbox" name="pc_use_serial_number" id="PC_USE_SERIAL_NUMBER"  value="1"  />
+                                        <input class="form-check-input" type="checkbox" name="pc_use_serial_number" id="PC_USE_SERIAL_NUMBER"  value="1"  />
                                         <span class="form-check-label fw-semibold text-muted">
                                            Products use Serialnumber
                                         </span>
@@ -124,13 +124,36 @@ th{
                              <div class="form-group">
                              <br/>
                              	  <label class="form-check form-switch form-check-custom form-check-solid">
-                                        <input class="form-check-input" name="w_warehouse_status" type="checkbox" name="pc_maintenance_category" id="PC_MAINTENANCE_CATEGORY"   value="1"  />
+                                        <input class="form-check-input" type="checkbox" name="pc_maintenance_category" id="PC_MAINTENANCE_CATEGORY"   value="1"  />
                                         <span class="form-check-label fw-semibold text-muted">
                                           Products Maintenance
                                         </span>
                                     </label> 
                             </div>
                         </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                             <br/>
+                             	  <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" name="pc_is_returnable" id="PC_IS_RETURNABLE"   value="1"  />
+                                        <span class="form-check-label fw-semibold text-muted">
+                                          Products Returnable
+                                        </span>
+                                    </label> 
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                             <br/>
+                             	  <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" name="pc_is_perishable" id="PC_IS_PERISHABLE"   value="1"  />
+                                        <span class="form-check-label fw-semibold text-muted">
+                                          Products Perishable
+                                        </span>
+                                    </label> 
+                            </div>
+                        </div>
+                        
                         <div class="col-md-12">
                              <div class="form-group">
                                 <label class="control-label"> Category Description</label><br/>

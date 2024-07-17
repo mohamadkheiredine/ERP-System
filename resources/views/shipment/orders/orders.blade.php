@@ -52,7 +52,7 @@ th{
 		<!--begin: Search Form -->
 		<div class="col-md-12">
 			<div class="row align-items-center">
-				<div class="col-xl-8 order-2 order-xl-1">
+				<div class="col-xl-12 order-2 order-xl-1">
 					<div class="form-group row">
 						<div class="col-md-4">
 							<div class="d-flex align-items-center">
@@ -68,32 +68,23 @@ th{
 							</div>
 						</div>
 						<div class="col-md-4">
-						<select class="form-select form-select-transparent" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2"> 
+						<select class="form-select form-control" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2"> 
                                     <option value="0"> -- Customer -- </option>
                                     @foreach ( $lst_customers as $key => $customer_info )
                                             <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_code }}&nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                     @endforeach
                             </select>
-						</div>
+						</div>  
 						<div class="col-md-4">
-							<select class="form-select form-select-transparent" name="so_vendor_id" id="SO_VENDOR_ID"  data-control="select2" data-placeholder="Select a Vendor" tabindex="3"> 
-                                    <option value="0"> -- Vendor -- </option>
-                                    @foreach ( $lst_vendors as $key => $vendor_info )
-                                            <option value="{{ $vendor_info->iv_id }}">{{ $vendor_info->iv_vendor_name }}</option>
-                                    @endforeach
-                            </select>
-						</div>
-						<div class="col-md-4">
-						<select class="form-select form-select-transparent" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4"> 
+						<select class="form-select form-control" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4"> 
                                     <option value="0" selected="selected"> -- Warehouse -- </option>
                                     @foreach ( $lst_warehouses as $key => $warehouse_info )
                                             <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                     @endforeach
                             </select> 
 						</div>
-					</div>
-				</div>
-				<div class="col-xl-4 order-1 order-xl-2 align-right">
+                                            
+                                            <div class="col-md-4">
 					<a href="{{ url('shipment/orders/addform') }}" class="btn btn-info">
 						<span>
 							<i class="fas fa-user"></i>
@@ -103,26 +94,30 @@ th{
 						</span>
 					</a>
 				</div>
+                                            <div class="col-md-12">&nbsp;</div>
+					</div>
+				</div>
+				
 			</div>
 		</div>
 		<!--end: Search Form -->
           <!--begin: Datatable -->
 		<div id="LstOrders" class="table-responsive">
 			<table class="table table-row-dashed table-row-gray-300 gy-7">
-              <thead>
-               	<tr class="fw-bold fs-6 text-gray-800">
-    				<th title="#">#</th>
-    				<th title="Id"> ID </th>
-    				<th title="Order Code"> Order Code </th>
-    				<th title="Order Name"> Order Name </th>
-    				<th title="Order total"> Order total </th>
-    				<th title="edit"> edit </th>
-    				<th title="delete"> Delete </th>
-    			</tr>
-              </thead>
-              <tbody class="LstOrdersBody">
-              </tbody>
-             </table>
+                            <thead>
+                              <tr class="fw-bold fs-6 text-gray-800">
+                                              <th title="#">#</th>
+                                              <th title="Id"> ID </th>
+                                              <th title="Order Code"> Order Code </th>
+                                              <th title="Order Name"> Order Name </th>
+                                              <th title="Order total"> Order total </th>
+                                              <th title="edit"> edit </th>
+                                              <th title="delete"> Delete </th>
+                                      </tr>
+                            </thead>
+                            <tbody class="LstOrdersBody">
+                            </tbody>
+                       </table>
 		
 		
 		</div>

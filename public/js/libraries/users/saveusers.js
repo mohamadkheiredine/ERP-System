@@ -12,7 +12,8 @@ $(function(){
 	$('#FK_WAREHOUSE_ID').select2({  placeholder: "Select a Warehouse" });
 	$('select').select2();
 	
-	new tempusDominus.TempusDominus(document.getElementById('U_DATE_BIRTH'),{
+        
+        new tempusDominus.TempusDominus(document.getElementById('U_DATE_BIRTH'),{
 		 display: {
 			  components: {
 			      calendar: true,
@@ -20,15 +21,40 @@ $(function(){
 			      month: true,
 			      year: true,
 			      decades: true, 
-			      clock: false,
-			      hours: false,
-			      minutes: false,
-			      seconds: false,
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
 			      useTwentyfourHour: undefined
 			    }
+		 },
+		 localization: {
+			 format : "MM/dd/yyyy"
+			 
 		 }
 	});
-	new tempusDominus.TempusDominus(document.getElementById('U_EMPLOYMENT_DATE'),{ });
+        
+           new tempusDominus.TempusDominus(document.getElementById('U_EMPLOYMENT_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "MM/dd/yyyy"
+			 
+		 }
+	});
+        
 
 	 $('#U_PROFILE_PIC').on('change', function () {
 	        var countFiles   = $(this)[0].files.length;

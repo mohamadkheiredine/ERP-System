@@ -15,53 +15,7 @@ clients_module = {
 	            dataType : "json",
 	            type : "POST",
 	            success : function(response){
-	            	$('#LstClients').html(response.display);
-	            	$.clients_datatable = $('.m_datatable').mDatatable({
-
-	        			// layout definition
-	        			layout: {
-	        				theme: 'default', // datatable theme
-	        				class: '', // custom wrapper class
-	        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-	        				// height: 450, // datatable's body's fixed height
-	        				footer: false // display/hide footer
-	        			},
-
-	        			// column sorting
-	        			sortable: true,
-
-	        			pagination: true,
-
-	        			search: {
-	        				input: $('#generalSearch')
-	        			},
-	        			columns : [
-	        				{
-	        					field: 'Id',
-	        					type: 'number',
-	        					width: 4
-	        				},
-	        				{
-	        					field: 'Client name',
-	        					type: 'text'
-	        				},
-	        				{
-	        					field: 'Company',
-	        					type: 'text'
-	        				},
-	        				{
-	        					field: 'Mobile',
-	        					type: 'text'
-	        				},
-	        				{
-	        					field: 'Email',
-	        					type: 'text'
-	        				}
-	        			]
-
-	        			// inline and bactch editing(cooming soon)
-	        			// editable: false,
-	        		});
+	            	$('#LstClients').html(response.display); 
 	            	 $('.group-checkable').change(function() {
 	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
 	                        var checked = $(this).prop("checked");
@@ -70,8 +24,6 @@ clients_module = {
 	                        });
 	                        $.uniform.update(set);
 	                    });
-	            	$("a[id*=EDIT_ACCOUNT_]").on("click",clients_module.EditAccountInfo);
-	            	$("a[id*=DELETE_ACCOUNT_]").on("click",clients_module.DeleteAccountInfo);
 	            }
 	        });
 		},
@@ -98,7 +50,6 @@ clients_module = {
 					            success : function(response){
 					              if(response.is_error == 0)
 					              {
-					            	  $.clients_datatable.destroy();
 					            	  clients_module.DisplayListClients();
 					              }
 					            }
@@ -229,5 +180,21 @@ clients_module = {
 	             }
 
 	         });
-		}
+		},
+                ActionDropdown : function() {
+                        let action_type = $(this).data('action_type');
+                        switch(action_type)
+                        {
+                            case "IMPORT":
+                            {
+                                clients_module.ImportLstAccounts();
+                            }
+                            break;
+                        }
+                },
+                ImportLstAccounts : function(){
+                    $('#ImportClientsModal').modal({
+                        show: 'true'
+                    }); 
+                }
 };

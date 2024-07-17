@@ -174,16 +174,22 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse zipcode </label>
                                                         <input type="text" maxlength="5" name="w_warehouse_zipcode" id="W_WAREHOUSE_ZIPCODE" class="form-control"   value="{{ $wareHouseInfo->w_warehouse_zipcode }}" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse City </label>
                                                         <input type="text" name="w_warehouse_city" id="W_WAREHOUSE_CITY" class="form-control" maxlength="200"  value="{{ $wareHouseInfo->w_warehouse_city }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Warehouse Street </label>
+                                                        <input type="text" name="w_warehouse_street" id="W_WAREHOUSE_STREET" class="form-control" maxlength="255"  value="{{ $wareHouseInfo->w_warehouse_street }}" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">

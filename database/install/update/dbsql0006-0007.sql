@@ -1,0 +1,1 @@
+ALTER TABLE `sales_order_products` ADD COLUMN `so_discount` FLOAT NULL DEFAULT 0 AFTER `so_product_cost`;

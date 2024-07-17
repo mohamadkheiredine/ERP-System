@@ -157,8 +157,11 @@ class ProductCategoriesController extends Controller
         $pc_cat_ref                 = str_replace(" ", "", $pc_cat_ref);
         $pc_cat_ref                 = substr($pc_cat_ref, 0,3);
         $pc_description             = $request->input('pc_description');
-        $pc_use_serial_number       = $request->input('pc_use_serial_number');
-        $pc_maintenance_category    = $request->input('pc_maintenance_category');
+        $pc_use_serial_number       = $request->has('pc_use_serial_number') ? 1 : 0;
+        $pc_maintenance_category    = $request->has('pc_maintenance_category') ? 1 : 0;
+        $pc_is_returnable           = $request->has('pc_is_returnable') ? 1 : 0;
+        $pc_is_perishable           = $request->has('pc_is_perishable') ? 1 : 0;
+       
         $pc_id                      = $request->input( "pc_id");
         $result_array = array();
         $ProductCategoriesManager  = new ProductCategoriesManager();
@@ -182,13 +185,15 @@ class ProductCategoriesController extends Controller
         {
             $ProductCategory = ProductCategories::find($pc_id);
         }
-         
+        
         $ProductCategory->fk_pc_id                  = $fk_pc_id;
         $ProductCategory->pc_category               = $pc_category;
         $ProductCategory->pc_description            = $pc_description;
         $ProductCategory->pc_cat_ref                = $pc_cat_ref;
         $ProductCategory->pc_use_serial_number      = $pc_use_serial_number;
         $ProductCategory->pc_maintenance_category   = $pc_maintenance_category;
+        $ProductCategory->pc_is_returnable          = $pc_is_returnable;
+        $ProductCategory->pc_is_perishable          = $pc_is_perishable;
         
         if(strlen($pc_avatar_base_src) > 0)
         {

@@ -42,7 +42,9 @@ use App\models\Inventory\WareHouseZones;
 use App\models\Inventory\WareHouseFloors;
 use League\Csv\Writer;
 use App\models\SRM\Suppliers;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\library\ExcelImport;
+use App\models\Inventory\ProductTypes;
 
 
 class ProductsController extends Controller
@@ -55,14 +57,14 @@ class ProductsController extends Controller
     * @access public
     */
       public function index()
-      {
-          
+      {  
           $lst_product_categories = ProductCategories::wherePcIsDeleted(0)->get();
           $lst_currencies = Currency::all();
           
           $data = array(
               "lst_product_categories" => $lst_product_categories,
               "lst_currencies" => $lst_currencies,
+              "company_currency" => session('company_currency')
           );
           return Response()->view('products.products',$data);
       }
@@ -79,12 +81,15 @@ class ProductsController extends Controller
           
           $lst_product_categories_array = ProductCategories::wherePcIsDeleted(0)->orderBy('fk_pc_id', 'desc')->get();
           $rand_barcode                 = rand(10000000,99999999999);
-          $bar_code_png                 = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+          $barcode_obj = new DNS1D();
+          $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
           $lst_lot                      = ProductLots::whereLLotIsDeleted(0)->get();
           $lst_accounts                 = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
           $lst_taxes                    = VatAccounts::whereAvIsDeleted(0)->get();
           $lst_currencies               = Currency::all();
-          $lst_suppliers               = Suppliers::whereSsIsDeleted(0)->get();
+          $lst_suppliers                = Suppliers::whereSsIsDeleted(0)->get();
+          $lst_product_types            = ProductTypes::wherePtIsDeleted(0)->get();
+          
           
           $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
           
@@ -97,11 +102,77 @@ class ProductsController extends Controller
               "lst_currencies" => $lst_currencies,
               "lst_lot" => $lst_lot,
               "lst_suppliers" => $lst_suppliers,
+              "lst_product_types" => $lst_product_types,
               "bar_code_png" => $bar_code_png
           );
           return Response()->view('products.addnewproduct',$data);
       }
       
+      
+      public function Uploadlistproducts(Request $request)
+      {
+          $result_array = array();
+          $company_currency = $request->input('company_currency');
+          $file_name = $_FILES['ac_temp_file']['name'];
+        
+          $tmp_path = $_FILES['ac_temp_file']['tmp_name'];
+          $full_path = storage_path($file_name); 
+          
+            if (move_uploaded_file($tmp_path, $full_path)) {
+                
+                $data = Excel::toArray(new ExcelImport, $full_path);
+                $data = $data[0];
+                
+                foreach ($data as $key => $product_info) 
+                { 
+                    $item       = $product_info['item'];
+                    $price_gnf  = $product_info['price_gnf'];
+                    $category   = $product_info['category'];
+                    $pc_id = 0;
+                    $category_info = ProductCategories::where('pc_category','=', $category)->get();
+                    if(count($category_info) == 0)
+                    {
+                        $category_data = new ProductCategories();
+                        $category_data->pc_cat_ref = "";
+                        $category_data->fk_pc_id = 0;
+                        $category_data->pc_category = $item;
+                        $category_data->pc_description = $item;
+                        $category_data->save();
+                        
+                        $pc_id = $category_data->pc_id;
+                    }
+                    else
+                    {
+                        $pc_id = $category_info[0]->pc_id;
+                    }    
+                        
+                   $gnf = $company_currency;
+                   
+                   $product_count = Products::where('p_product_name','LIKE','%' . $item . '%')->count(); 
+                   
+                   if($product_count == 0)
+                   {
+                       $product = new Products();
+                       $product->fk_pc_id = $pc_id;
+                       $product->p_product_name = $item;
+                       $product->p_product_selling_price = $price_gnf;
+                       $product->p_product_min_selling_price = $price_gnf;
+                       $product->p_product_cost_price = $price_gnf;
+                       $product->p_product_currency = $gnf;
+                       $product->save();
+                   }
+                   
+                    
+                }
+                
+            }
+          
+            $result_array = array();
+            $result_array['is_error'] = 0;
+          
+          
+          return Response()->json($result_array);
+      }
       
       /**
        * Page of Edit Product
@@ -121,10 +192,13 @@ class ProductsController extends Controller
           $system_currencies            = Currency::all();
           $currency_array               = CreateDatabaseArrayByIndex($system_currencies, "cc_id");
           $rand_barcode                 = $product_info->p_barcode;
-          $bar_code_png                 = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+          
+          $barcode_obj                  = new DNS1D();
+          $bar_code_png                 = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
           $lst_currencies               = Currency::all();
-          $lst_suppliers               = Suppliers::whereSsIsDeleted(0)->get();
-          $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+          $lst_suppliers                = Suppliers::whereSsIsDeleted(0)->get();
+          $lst_warehouses               = WareHouses::whereWIsDeleted(0)->get();
+          $lst_product_types            = ProductTypes::wherePtIsDeleted(0)->get();
           
           $data = array(
               "lst_product_categories_array" => $lst_product_categories_array,
@@ -137,6 +211,7 @@ class ProductsController extends Controller
               "bar_code_png" => $bar_code_png,
               "lst_suppliers" => $lst_suppliers,
               "lst_warehouses" => $lst_warehouses,
+              "lst_product_types" => $lst_product_types,
               "lst_lot" => $lst_lot
           );
           return Response()->view('products.editproduct',$data);

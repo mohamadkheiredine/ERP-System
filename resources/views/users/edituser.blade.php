@@ -41,10 +41,6 @@ th{
 @endsection
 @section('plugins')
 <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
-<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-inline.bundle.js') }}"></script>
-<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-balloon.bundle.js') }}"></script>
-<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-balloon-block.bundle.js') }}"></script>
-<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-document.bundle.js') }}"></script>
 
 <script type="text/javascript" src="{{ url('js/modules/users.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/users/saveusers.js') }}"></script>
@@ -238,7 +234,7 @@ th{
                                     <div class="col-md-4">
                                          <div class="form-group">
                                             <label class="control-label">Date Of Birth <span class="required"> * </span></label>
-                                             <input type="text" name='u_date_birth' value="{{ $user_info->u_date_birth }}" class="form-control" id="U_DATE_BIRTH" />
+                                             <input type="text" name='u_date_birth' value="{{ date('m/d/Y',strtotime($user_info->u_date_birth)) }}" class="form-control" id="U_DATE_BIRTH" />
                                         </div>
                                     </div><div class="col-md-4">
                                         <div class="form-group">
@@ -370,7 +366,7 @@ th{
                                     <div class="col-md-4">
                                        <div class="form-group">
                                             <label class="control-label">Employment Date <span class="required"> * </span></label>
-                                             <input type="text" name='u_employment_date' class="form-control" id="U_EMPLOYMENT_DATE" value="{{ $user_info->u_employment_date }}" />
+                                             <input type="text" name='u_employment_date' class="form-control" id="U_EMPLOYMENT_DATE" value="{{ date('m/d/Y',strtotime($user_info->u_employment_date)) }}" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -389,6 +385,13 @@ th{
                                        <div class="form-group">
                                             <label class="control-label">User Sallary</label>
                                              <input type="text" name='u_user_sallary' class="form-control" id="U_USER_SALLARY" value="{{ $user_info->u_user_sallary }}" />
+                                        </div>
+                                    </div>
+                                
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Hourly Rate</label>
+                                             <input type="text" name='u_hourly_rate' maxlength="50" class="form-control" id="U_HOURLY_RATE" value="{{ $user_info->u_hourly_rate }}" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">

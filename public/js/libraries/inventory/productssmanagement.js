@@ -20,5 +20,6 @@ $(function(){
 	});
 	$('#DUPLICATE_PRODUCT').on('click',products_module.DuplicateProduct);
 	 $(".dropdown-item").on("click",products_module.QuickActions);
+	 $("#BTN_IMPORT_PRODUCTS").on("click",products_module.ImportProducts);
 	$('select').select2();
 })

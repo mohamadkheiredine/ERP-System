@@ -64,6 +64,7 @@ Route::post('/request/products/duplicateproducts','Inventory\ProductsController@
 Route::post('/request/products/getzonesdropdown','Inventory\ProductsController@GetZonesDropdown');
 Route::post('/request/products/getfloorsdropdown','Inventory\ProductsController@GetFloorsDropdown');
 Route::get('/request/products/downloadtemplate','Inventory\ProductsController@DownloadTemplate');
+Route::post('/request/products/uploadlistproducts','Inventory\ProductsController@Uploadlistproducts');
 
 Route::post('/request/productcategories/displaylistitems','Inventory\ProductCategoriesController@DisplayListItems');
 
@@ -91,6 +92,8 @@ Route::post('/request/savecustomerinfo','Inventory\CustomersController@SaveCusto
 Route::post('/request/savemaincustomerinfo','Inventory\CustomersController@SaveMainCustomerInfo');
 Route::post('/request/deletecustomerinfo','Inventory\CustomersController@DeleteCustomerInfo');
 Route::post('/request/customers/saveaccaccounting','Inventory\CustomersController@SaveAccAccounting');
+Route::post('/request/customers/download-template', 'Inventory\CustomersController@DownloadCsvTemplate');
+Route::post('/request/customers/importlistcustomers', 'Inventory\CustomersController@ImportListCustomers');
 
 Route::post('/request/stockmovements/displaylist','Inventory\ProductStockTransferController@DisplayList');
 Route::post('/request/transferstockoperation','Inventory\ProductStockTransferController@TransferStockOperation');
@@ -132,6 +135,7 @@ Route::post('/request/timesheet/saveadmintimesheet','Timesheet\TimeSheetControll
 Route::post('/request/timesheet/displaylistonlineemployees','Timesheet\TimeSheetController@DisplayListOnlineemployees');
 Route::post('/request/timesheet/displaylisttransportationemployees','Timesheet\TimeSheetController@DisplaylistTransportationEmployees');
 Route::post('/request/timesheet/displaylistholidayemployees','Timesheet\TimeSheetController@Displaylistholidayemployees');
+Route::post('/request/timesheet/displaylistsalaries','Timesheet\TimeSheetController@DisplayListSalaries');
 
 
 Route::post('/request/timesheet/displaylistdaytypes','Timesheet\DayTypesController@DisplayList');
@@ -151,6 +155,8 @@ Route::post('/request/shipment/operations/displayformtype','Shipment\ShipmentCon
 Route::post('/request/shipment/operations/displayproducts','Shipment\ShipmentController@DisplayOperationProducts');
 Route::post('/request/shipment/operations/saveinfo','Shipment\ShipmentController@SaveShipmentOperationInfo');
 Route::post('/request/shipment/operations/deleteinfo','Shipment\ShipmentController@DeleteShipmentInfo');
+    Route::post('/request/shipment/operations/displaylistorders','Shipment\ShipmentController@Displaylistorders');
+    Route::post('/request/shipment/operations/addorder','Shipment\ShipmentController@LinkOperationOrder');
 
 
 Route::post('/request/operationstatuses/displaylist','Shipment\OperationStatusController@DisplayList');
@@ -354,7 +360,8 @@ Route::post('/request/srm/displaylistsuppliers','SRM\SuppliersController@Display
 Route::post('/request/srm/savesupplierinfo','SRM\SuppliersController@SaveSupplierInfo');
 Route::post('/request/srm/deletesupplierinfo','SRM\SuppliersController@DeleteSupplierInfo');
 Route::post('/request/suppliers/saveaccaccounting','SRM\SuppliersController@SaveAccAccounting');
-
+Route::post('/request/suppliers/download-template', 'SRM\SuppliersController@DownloadCsvTemplate');
+Route::post('/request/suppliers/importlistsuppliers', 'SRM\SuppliersController@ImportListSuppliers');
 
 Route::post('/request/accounting/saveaccaccounting','Accounting\VendorsController@SaveAccAccounting');
 
@@ -477,6 +484,10 @@ Route::post('/request/packing/displaylist','Shipment\PackingPricesController@Dis
 Route::post('/request/packing/savepackingprice','Shipment\PackingPricesController@SavePackingPricesInfo');
 Route::delete('/request/packing/deletepackingprice','Shipment\PackingPricesController@DeletePackingPricesInfo');
 
+
+Route::post('/payroll/employeespayroll/displaylist','PayRoll\PayRollController@DisplayList');
+Route::post('/payroll/employeespayroll/savepackingprice','PayRoll\PayRollController@SavePayRollInfo');
+Route::delete('/payroll/employeespayroll/deletepackingprice','PayRoll\PayRollController@DeletePayRollInfo');
 
 Route::post('/request/sorders/displaylist','Shipment\SOrdersController@DisplayList');
 Route::post('/request/sorders/saveorderinfo','Shipment\SOrdersController@SaveOrderInfo');

@@ -210,6 +210,10 @@ timesheet_module = {
                                             minutes: true,
                                             seconds: false
                                         }
+                                    },
+                                    localization: {
+                                            format : "HH:mm:ss"
+
                                     }
                                 });
                                         
@@ -217,6 +221,24 @@ timesheet_module = {
 		        }
 		    });
 		},
+                DisplayListHourlySalaries : function(){
+                    	var base_url 	= $('input[name=base_url]').val();
+			var _token 		= $('input[name=_token]').val();
+		    var ts_month 		= $('select[name=ts_month]').val();
+		    
+		    $.ajax
+		    ({
+		        url : base_url + "/request/timesheet/displaylistsalaries",
+		        data : { _token : _token , ts_month : ts_month },
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+                     success : function(response){
+                         $("#LstHourlySalaries").html(response.display);
+                     }
+                    })
+                },
 		SaveDailyTimesheetRecords : function(){
 			var base_url 		= $('input[name=base_url]').val();
 			var ts_user 		= $('select[name=ts_user]').val();

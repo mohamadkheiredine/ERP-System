@@ -34,7 +34,8 @@ use App\library\SuppliersManager;
 use App\models\Users\Users;
 use App\models\System\Countries;
 use App\models\System\Industry;
-
+use League\Csv\Writer;
+use League\Csv\Reader;
 
 
 class SuppliersController extends Controller
@@ -55,6 +56,92 @@ class SuppliersController extends Controller
         );
         return Response()->view('srm.suppliers',$data);
     }
+    
+    
+    /**
+     * Download CSV template
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function DownloadCsvTemplate(Request $request)
+    {
+        $data = array();
+        $data[] = ['Code', 'Supplier Name','Company Name','Email','Address','City','Phone','Mobile'];
+
+
+        $csv = Writer::createFromFileObject(new \SplTempFileObject());
+
+        $csv->insertAll($data);
+
+       return $csv->output('data.csv');
+
+    }
+    
+    
+    /**
+     * import list of all customers from a template already used
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function ImportListSuppliers(Request $request)
+    {
+        
+        $result_array = array();
+        $file_path = $_FILES['ss_suppliers_list']['tmp_name'];
+        
+         // Create a new CsvReader instance
+        $csvReader = Reader::createFromPath($file_path, 'r');
+
+        // Read the CSV records
+        $records = $csvReader->getRecords();
+
+        // Process the records
+        foreach ($records as $record) {
+            $code           = trim($record[0]);
+            $supplier_name      = trim($record[1]);
+            $company_name      = trim($record[2]);
+            $email          = trim($record[3]);
+            $address        = trim($record[4]);
+            $city        = trim($record[5]);
+            $phone          = trim($record[6]);
+            $mobile         = trim($record[7]);
+            
+            $supplier_manager = new SuppliersManager();
+            
+            if($code != 'Code')
+            {
+                $supplier_info = new Suppliers();
+                $supplier_info->ss_supplier_code =  $code;       
+                $supplier_info->ss_supplier_name =  $supplier_name;       
+                $supplier_info->ss_company_name =  $company_name;       
+                $supplier_info->ss_supplier_email =  $email;       
+                $supplier_info->ss_address =  $address;       
+                $supplier_info->ss_city_name =  $city;       
+                $supplier_info->ss_supplier_phone =  $phone;       
+                $supplier_info->ss_supplier_mobile =  $mobile;       
+                $params_array = array(
+                    "account_label" => $supplier_name
+                );
+                $account_id = $supplier_manager->GenerateNewSupplierAcc($params_array);
+                $supplier_info->ss_sale_account_id       = $account_id;
+                $supplier_info->ss_purchase_account_id   = $account_id;
+                $supplier_info->save();
+                
+            }
+            
+        }
+
+    
+        
+        $result_array['is_error'] = 0;
+        
+        
+        return Response()->json($result_array);
+    }
+    
     
     
    /**

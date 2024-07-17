@@ -43,6 +43,7 @@ th{
               </button>
               <ul class="dropdown-menu">
                     <li><a data-action="EXPORT_CSV" class="dropdown-item" href="#">Export as CSV</a></li>
+                	<li><a data-action="IMPORT_PRODUCTS" data-bs-toggle="modal" data-bs-target="#ImportProductsModal" class="dropdown-item" href="#">Import Products List</a></li>
                 	<li><a data-action="DOWNLOAD_TEMPLATE" class="dropdown-item" href="#">Download Import Template</a></li>
               </ul>
             </div>
@@ -107,9 +108,9 @@ th{
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
 								<div class="table-responsive" id="LstProductsMain">
-									<table class="table">
-                                		<thead>
-                                			<tr>
+									<table class="table table-striped gy-7 gs-7">
+                                                                <thead>
+                                                                        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                 				<th title="#">#</th>
                                 				<th title="Id"> ID </th>
                                 				<th title="Reference"> Product Reference </th>
@@ -143,6 +144,55 @@ th{
 											</a>
 									</div>
 								</div>
+                                                                
+                                                                
+                                                                
+                                                                  
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" id="ImportProductsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Modal title</h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+                 <form name="frm_import_products" id="FRM_IMPORT_PRODUCTS">
+              <span id="hidden_fields">
+                      {!! csrf_field() !!}
+                      <input type="hidden" name="company_currency" value="{{ $company_currency }}" />
+                    </span>
+            <div class="row">
+                        <div class="col-md-12">
+                              <div class="form-group">
+                                <label>select File <span class="required"> * </span> </label>
+                                <input type="file" name="ac_temp_file" class="form-control" />
+                            </div>
+                        </div>
+            </div>
+                     <div class="row"> <div class="col-md-12" style="height:10px">&nbsp;</div> </div>
+                     <div class="row">
+                         <div class="col-md-12" align="right">
+                             
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" id="BTN_IMPORT_PRODUCTS" class="btn btn-primary">Save changes</button>
+                         </div>
+                     </div>
+        </form>
+            </div>
+
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection

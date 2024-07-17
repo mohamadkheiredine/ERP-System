@@ -40,7 +40,9 @@ use App\models\Accounting\VatAccounts;
 use App\models\Inventory\Vendors;
 use App\models\Accounting\ChartAccounts;
 use App\models\Accounting\DefaultAccounts;
-
+use League\Csv\Writer;
+use League\Csv\Reader;
+use App\models\CRM\CRMAccounts;
 
 class CustomersController extends Controller
 {
@@ -175,6 +177,102 @@ class CustomersController extends Controller
         
         return Response()->view('customers.editform',$data);
 
+    }
+    
+    /**
+     * Download CSV template
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function DownloadCsvTemplate(Request $request)
+    {
+        $data = array();
+        $data[] = ['Code', 'Full Name','Email','Address','Phone','Mobile'];
+
+
+        $csv = Writer::createFromFileObject(new \SplTempFileObject());
+
+        $csv->insertAll($data);
+
+       return $csv->output('data.csv');
+
+    }
+    
+    
+    /**
+     * import list of all customers from a template already used
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function ImportListCustomers(Request $request)
+    {
+        
+        $result_array = array();
+        $file_path = $_FILES['cc_customers_list']['tmp_name'];
+        
+         // Create a new CsvReader instance
+        $csvReader = Reader::createFromPath($file_path, 'r');
+
+        // Read the CSV records
+        $records = $csvReader->getRecords();
+
+        // Process the records
+        foreach ($records as $record) {
+            $code           = trim($record[0]);
+            $full_name      = trim($record[1]);
+            $email          = trim($record[2]);
+            $address        = trim($record[3]);
+            $phone          = trim($record[4]);
+            $mobile         = trim($record[5]);
+            
+            if($code != 'Code' && $full_name != 'Full Name')
+            {
+                $customer_info = new Customers();
+                $customer_info->ic_customer_code = $code;
+                $customer_info->ic_customer_name = $full_name;
+                $customer_info->ic_customer_email = $email;
+                $customer_info->ic_customer_address = $address;
+                $customer_info->ic_customer_phone = $phone;
+                $customer_info->ic_customer_mobile = $mobile;
+                
+                
+                 $customer_info->ic_date_creation = date("Y-m-d");
+            
+                $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+                $account_info = $account_info[0];
+
+                $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+
+                $new_count      = $count + 1;
+                $aa_account_ref = $account_info->aa_account . (String)$new_count;
+
+                $AccAccounting = new ChartAccounts();
+                $AccAccounting->aa_parent_account   = $account_info->aa_id;
+                $AccAccounting->aa_account_ref      = $aa_account_ref;
+                $AccAccounting->aa_account          = $aa_account_ref;
+                $AccAccounting->aa_sub_account      = $account_info->aa_id;
+                $AccAccounting->aa_account_label    = $full_name;
+                $AccAccounting->fk_country_id       = 0;
+                $AccAccounting->save(); 
+                $aa_id = $AccAccounting->aa_id;
+                $customer_info->ic_account_number = $aa_id;
+                
+                
+                $customer_info->save();
+                
+            }
+            
+        }
+
+    
+        
+        $result_array['is_error'] = 0;
+        
+        
+        return Response()->json($result_array);
     }
     
     
