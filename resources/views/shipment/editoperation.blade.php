@@ -25,6 +25,10 @@ th{
 #ModelPopUp{
 	width:800px;
 }
+.input-group-text{
+    width:100%;
+    height:100%;
+}
 </style>
 @endsection
 @section('plugins')
@@ -42,7 +46,8 @@ th{
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 Action
               </button>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu"> 
+                 <li><a class="dropdown-item" data-action_type="EXPORT_PACKING_LIST" href="#">Export Packing List</a></li>
               </ul>
             </div>
         </div>
@@ -167,6 +172,12 @@ th{
 									</div>
 								</div>
                             </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                    <label> Delivery Date : </label>
+                                      <input type="text" name='so_delivery_date' class="form-control" id="SO_DELIVERY_DATE" value="{{ date('Y-m-d H:i:s',strtotime($operation_shipment->so_operation_date)) }}" />
+                                </div>
+                            </div>
                         </div>
                    	<div class="row">
                    		<div class="col-md-12">
@@ -195,6 +206,7 @@ th{
                                                                   <th title="Id"> ID </th>
                                                                   <th title="Order Code"> Order Code </th>
                                                                   <th title="Order Name"> Order Name </th>
+                                                                  <th title="Customer"> Customer </th>
                                                                   <th title="Order total"> Order total </th>
                                                                   <th title="delete"> Delete </th>
                                                           </tr>

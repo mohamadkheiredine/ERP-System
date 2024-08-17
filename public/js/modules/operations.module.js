@@ -322,5 +322,41 @@ operations_module = {
 		            	 $('#SO_OPERATION_VEHICULE').select2({  placeholder: "Select Vehicules" });
 		            }
 		        });
-		}
+		},
+                QuickActions : function(){
+                    var action_type = $(this).data('action_type');
+                    
+                    switch(action_type)
+                    {
+                        case "EXPORT_PACKING_LIST":
+                        {
+                            operations_module.ExportPackingList();
+                        }
+                        break;
+                        case "PRINT_PACKING_LIST":
+                        {
+                            operations_module.PrintPackingList();
+                        }
+                        break;
+                    }
+                    
+                },
+                ExportPackingList : function(){
+                    var base_url = $('#BASE_URL').val();
+                    var _token = $('input[name=_token]').val();
+                    var so_id = $('input[name=so_id]').val();
+                    $.ajax({
+                         url: base_url + '/request/operations/downloadpackinglist',
+                         type: 'POST',
+                         data: { _token : _token , so_id : so_id },
+                         success: function(response) {
+                             const url = window.URL.createObjectURL(new Blob([response]));
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', 'packing-list-' +  so_id + '.csv');
+                            document.body.appendChild(link);
+                            link.click();
+                         }
+                     });
+                }
 };

@@ -89,24 +89,22 @@ class ReceiptsController extends Controller
         $receipt_customer       = $request->input('receipt_customer');
         $receipt_invoice        = $request->input('receipt_invoice');
         $start_date             = $request->input('start_date');
-        $start_date             = date("Y-m-d",strtotime($start_date));
         $end_date               = $request->input('end_date');
-        $end_date               = date("Y-m-d",strtotime($end_date));
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
-        
+       
         $strfirstday = 'first day of January ' . $fisical_year;
         $strlastday = 'last day of December ' . $fisical_year;
         
         $firstday = date("Y-m-d",strtotime($strfirstday));
         $lastday = date("Y-m-d",strtotime($strlastday));
-        
+      
         
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-
+        
         $receipts_cond = Receipts::whereBrIsDeleted(0);
         
         if(strlen($search_query) > 0)
@@ -133,26 +131,25 @@ class ReceiptsController extends Controller
         if( strlen($end_date) > 0 )
         {
             $receipts_cond = $receipts_cond->where('br_receipt_date', '<' , $end_date);
-        }
+        } 
         
-        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
-        {
-            $receipts_cond= $receipts_cond->whereBetween('br_receipt_date', [$firstday, $lastday]);
-        }
-        
+//        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
+//        { 
+//            $receipts_cond= $receipts_cond->whereBetween('br_receipt_date', [$firstday, $lastday]);
+//        }
+//        
         
          
         $receipts_count= $receipts_cond->count();
         
-        
-            $total_pages = ceil( $receipts_count/$nbr_rows_per_pages );
+        $total_pages = ceil( $receipts_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
         
-        $receipts =new Receipts();
+        $receipts   = new Receipts();
       
             
-        $receipts= $receipts_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('br_id', 'ASC')->get();
-
+        $receipts= $receipts_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('br_id', 'ASC')->get(); 
+        
             $data = array(
                 "receipts" => $receipts
             );

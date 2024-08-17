@@ -21,6 +21,7 @@ Route::get('/order/posreceipt/{os_id}','Sales\OrdersController@POSReceipt');
 Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/dashboard','Dashboard\DashboardController@Dashboard');
+    Route::get('/callcenters/dashboard','Dashboard\DashboardController@CallcenterDashboard');
     Route::get('/accounting/dashboard','Dashboard\DashboardController@Accounting');
     Route::get('/services/dashboard','Dashboard\DashboardController@Services');
     
@@ -391,8 +392,13 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/shipment/packingprices/editform/{cp_id}','Shipment\PackingPricesController@EditForm');
     
     
-     Route::get('/shipment/orders','Shipment\SOrdersController@index');
+    Route::get('/shipment/orders','Shipment\SOrdersController@index');
     Route::get('/shipment/orders/addform','Shipment\SOrdersController@AddForm');
     Route::get('/shipment/orders/editform/{so_id}','Shipment\SOrdersController@EditForm');
+    
+    
+    Route::get('/costcenters','CostCenter\CostCenterController@index');
+    Route::get('/costcenters/addform','CostCenter\CostCenterController@AddForm');
+    Route::get('/costcenters/editform/{ac_id}','CostCenter\CostCenterController@EditForm');
     
 });

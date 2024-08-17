@@ -50,12 +50,34 @@ $(function(){
 			 
 		 }
 	});
+        
+         new tempusDominus.TempusDominus(document.getElementById('SO_DELIVERY_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "yyyy-m-d HH:mm:ss"
+			 
+		 }
+	});
 	
 	 operations_module.DisplayOperationTypeFields();
          operations_module.DisplayListOperationOrders();
 	 $("#BTN_SAVE_OPERATION").on("click",operations_module.SaveOperationInfo);
 	 $("#BTN_ADD_ORDER").on("click",operations_module.AddOperationOrder);
 	 $("#SO_OPERATION_TYPE").on("change",operations_module.DisplayOperationTypeFields);
+	 $(".dropdown-item").on("click",operations_module.QuickActions);
 //	 $("#OPERATION_INFO").on("change","#SO_WAREHOUSE_SOURCE",operations_module.DisplayListOperationProducts);
 //	 $("#OPERATION_INFO").on("click","#ADD_NEW_PRODUCT",operations_module.AddNewProductRow);
 //	 $("#OPERATION_INFO").on("click",".deleteRow",operations_module.DeleteProductRow);

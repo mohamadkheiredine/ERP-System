@@ -135,11 +135,11 @@ th{
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label> User Type <span class="required"> * </span></label>
-                                                <select class="bs-select form-control" name="u_user_type" id="U_USER_TYPE" data-actions-box="true">
+                                                <label> User Type <span class="required"> * </span></label> 
+                                                <select  name="u_user_type" id="U_USER_TYPE" class="form-select" data-control="select2" data-placeholder="Select user type">
                                                         <option value="">No User Type</option>
-                                                         @foreach($lst_user_teams as $key => $ut_info)
-                                                     <option {{ $user_info->u_user_type ==  $ut_info->ut_id  ? "selected" : "" }} value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_team }}</option>
+                                                         @foreach($lst_user_types as $key => $ut_info)
+                                                     <option {{ $user_info->u_user_type ==  $ut_info->ut_id  ? "selected" : "" }} value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_user_type }}</option>
                                                     @endforeach 
                                                 </select>
                                             </div>
@@ -147,7 +147,7 @@ th{
                                         <div class="col-md-4">
                                              <div class="form-group">
                                                 <label class="control-label">Role <span class="required"> * </span></label>
-                                                 <select name="u_role" id="U_ROLE" class="form-control m-select2" style="width:100%">
+                                                <select name="u_role" id="U_ROLE"  class="form-select" data-control="select2" data-placeholder="Select Role">
                                                     <option value="">--Select One--</option>
                                                     @foreach( $lst_roles as $key => $role_info)
                                                      <option {{ $user_info->fk_role_id  ==  $role_info->role_id  ? "selected" : "" }} value="{{ $role_info->role_id }}">{{ $role_info->role_name }}</option>
@@ -158,7 +158,7 @@ th{
                                         <div class="col-md-4">
                                              <div class="form-group">
                                                 <label class="control-label">Language <span class="required"> * </span></label>
-                                                 <select name="u_lang_id" id="U_LANG_ID" class="form-control m-select2" style="width:100%">
+                                                     <select name="u_lang_id" id="U_LANG_ID"  class="form-select" data-control="select2" data-placeholder="Select Language">
                                                     <option value="">--Select One--</option>
                                                     @foreach($lst_langs as $key => $lang_info)
                                                      <option {{ $user_info->u_lang_id ==  $lang_info->lm_id  ? "selected" : "" }} value="{{ $lang_info->lm_id }}">{{ $lang_info->lm_lang_name }}</option>
@@ -173,17 +173,15 @@ th{
                                             </div>
                                         </div>
                                         <div class="col-md-4" style="height: 40px;">
-                                        	<label class="col-12 col-form-label">
-    											Enable User
-    										</label>
-    										<div class="col-12">
-    											<span class="m-switch m-switch--icon m-switch--success">
-    												<label>
-    													<input type="checkbox" name="u_is_active" {{ $user_info->u_is_active == 1 ? "checked='checked'" : "" }}  value='1' />
-    													<span></span>
-    												</label>
-    											</span>
-    										</div> 
+                                            <div class="col-12"> 
+                                             <br/>
+                                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                                  <input class="form-check-input" {{ $user_info->u_is_active == 1 ? "checked='checked'" : "" }}  type="checkbox" name="u_is_active" value="1"  />
+                                                  <span class="form-check-label fw-semibold text-muted">
+                                                        Enable User
+                                                  </span>
+                                              </label> 
+                                        </div>
                                         </div> 
                                     </div>
                         </div>
@@ -263,7 +261,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Marital Status</label>
-                                            <select class="bs-select form-control" name="u_marital_status" id="U_MARITAL_STATUS" data-actions-box="true">
+                                                <select name="u_marital_status" id="U_MARITAL_STATUS"  class="form-select" data-control="select2" data-placeholder="Select marital status">
                                                     <option value="">-- Select One --</option>
                                                    <option {{ $user_info->u_marital_status == 1 ? "selected" : "" }} value="1">single</option> 
                                                    <option {{ $user_info->u_marital_status == 2 ? "selected" : "" }} value="2">married</option> 
@@ -300,7 +298,7 @@ th{
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Company</label>
-                                            <select name="fk_company_id" id="FK_COMPANY_ID" class="form-control m-select2" style="width:100%">
+                                                <select name="fk_company_id" id="FK_COMPANY_ID" class="form-select" data-control="select2" data-placeholder="Select Company">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_companies as $key => $cmp_info)
                                                  <option {{ $user_info->fk_company_id == $cmp_info->cd_id ? "selected" : "" }} value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }}</option>
@@ -311,7 +309,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Department</label>
-                                            <select name="u_department_id" id="U_DEPARTMENT_ID" class="form-control m-select2" style="width:100%">
+                                            <select name="u_department_id" id="U_DEPARTMENT_ID" class="form-select" data-control="select2" data-placeholder="Select Department">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_departments as $key => $dep_info)
                                                  <option {{ $user_info->u_department_id == $dep_info->sd_id ? "selected" : "" }} value="{{ $dep_info->sd_id }}">{{ $dep_info->sd_department_title }}</option>
@@ -321,8 +319,8 @@ th{
                                     </div> 
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="control-label">Warehouse Responsible</label>
-                                            <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-control m-select2" style="width:100%">
+                                            <label class="control-label">Warehouse Responsible</label> 
+                                                <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-select" data-control="select2" data-placeholder="Select Warehouse">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_warhouses as $key => $warehouse_info)
                                                  <option {{ $user_info->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
@@ -333,7 +331,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Job Role</label>
-                                            <select name="u_job_role_id" id="U_JOB_ROLE_ID" class="form-control m-select2" style="width:100%">
+                                               <select name="u_job_role_id" id="U_JOB_ROLE_ID" class="form-select" data-control="select2" data-placeholder="Select Job Role">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_roles as $key => $jr_info)
                                                  <option {{ $user_info->u_job_role_id == $jr_info->jr_id ? "selected" : "" }}  value="{{ $jr_info->jr_id }}">{{ $jr_info->jr_job_role }}</option>
@@ -344,7 +342,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Job Title</label>
-                                            <select name="u_job_title_id" id="U_JOB_TITLE_ID" class="form-control m-select2" style="width:100%">
+                                               <select name="u_job_title_id" id="U_JOB_TITLE_ID" class="form-select" data-control="select2" data-placeholder="Select Job Title">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_titles as $key => $jt_info)
                                                  <option {{ $user_info->u_job_title_id == $jt_info->jt_id ? "selected" : "" }} value="{{ $jt_info->jt_id }}">{{ $jt_info->jt_job_title }}</option>
@@ -355,7 +353,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Employee Type</label>
-                                            <select name="u_employee_type" id="U_EMPLOYEE_TYPE" class="form-control m-select2" style="width:100%">
+                                            <select name="u_employee_type" id="U_EMPLOYEE_TYPE" class="form-select" data-control="select2" data-placeholder="Select Employee Type">
                                                 <option value="">--Select One--</option>
                                                     @foreach( $lst_employment_type as $key => $et_info)
                                                  <option {{ $user_info->u_employee_type == $et_info->et_id ? "selected" : "" }}  value="{{ $et_info->et_id }}">{{ $et_info->et_type }}</option>
@@ -400,18 +398,18 @@ th{
                                              <input type="number" min="0" max="100" step="1"  name='u_number_holidays' class="form-control" id="U_NUMBER_HOLIDAYS" value="{{ $user_info->u_number_holidays }}" />
                                         </div>
                                     </div>
-                                     <div class="col-md-4" style="height: 40px;">
-                                    	<label class="col-12 col-form-label">
-											Has Insurance
-										</label>
-										<div class="col-12">
-											<span class="m-switch m-switch--icon m-switch--success">
-												<label>
-													<input type="checkbox" name="u_has_insurance"  {{ $user_info->u_has_insurance == 1 ? "checked='checked'" : "" }}  value='1' />
-													<span></span>
-												</label>
-											</span>
-										</div> 
+                                     <div class="col-md-4" style="height: 40px;"> 
+                                         <div class="form-group"> 
+                                              <br/>
+                                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                                  <input class="form-check-input" type="checkbox" name="u_has_insurance"  {{ $user_info->u_has_insurance == 1 ? "checked='checked'" : "" }}  value="1"  />
+                                                  <span class="form-check-label fw-semibold text-muted">
+                                                   Has Insurance
+                                                  </span>
+                                              </label> 
+
+
+                                        </div> 
                                     </div>
                                     <div class="col-md-4">
                                        <div class="form-group">

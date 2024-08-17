@@ -165,6 +165,12 @@ th{
 									</div>
 								</div>
                             </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                    <label> Delivery Date : </label>
+                                      <input type="text" name='so_delivery_date' class="form-control" id="SO_DELIVERY_DATE" value="" />
+                                </div>
+                            </div>
                         </div>
                    <div class="row" style="height:5px;"></div>
                    <div class="row">

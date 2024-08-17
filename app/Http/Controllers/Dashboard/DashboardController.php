@@ -78,6 +78,15 @@ class DashboardController extends Controller
     
     
     
+    public function CallcenterDashboard()
+    {
+         
+        $data = array( );
+        return Response()->view("dashboard.callcenters",$data);
+    }
+    
+    
+    
     public function Services()
     {
         // get list of orders related to this user

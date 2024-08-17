@@ -157,6 +157,7 @@ Route::post('/request/shipment/operations/saveinfo','Shipment\ShipmentController
 Route::post('/request/shipment/operations/deleteinfo','Shipment\ShipmentController@DeleteShipmentInfo');
     Route::post('/request/shipment/operations/displaylistorders','Shipment\ShipmentController@Displaylistorders');
     Route::post('/request/shipment/operations/addorder','Shipment\ShipmentController@LinkOperationOrder');
+    Route::post('/request/operations/downloadpackinglist','Shipment\ShipmentController@DownloadPackingList');
 
 
 Route::post('/request/operationstatuses/displaylist','Shipment\OperationStatusController@DisplayList');
@@ -496,3 +497,15 @@ Route::post('/request/sorders/savepackingcategory','Shipment\SOrdersController@S
 Route::post('/request/sorders/displaylistcategories','Shipment\SOrdersController@DisplayListCategories');
 Route::post('/request/orders/getpackingprice','Shipment\SOrdersController@GetPackingPrice');
 Route::post('/request/sorders/payorder','Shipment\SOrdersController@PayOrder');
+
+
+
+Route::post('/request/costcenters/displaylistcategories','CostCenter\CostCenterCategoriesController@DisplayList');
+Route::post('/request/costcenters/savecategoryinfo','CostCenter\CostCenterCategoriesController@SaveCostCenterCategoryInfo');
+Route::delete('/request/costcenters/deletecategoryinfo','CostCenter\CostCenterCategoriesController@DeleteCostCenterCategoryInformation');
+
+
+
+Route::post('/request/costcenters/displaylist','CostCenter\CostCenterController@DisplayList');
+Route::post('/request/costcenters/saveinfo','CostCenter\CostCenterController@SaveCostCenterInfo');
+Route::delete('/request/costcenters/deleteinfo','CostCenter\CostCenterController@DeleteCostCenterInformation');

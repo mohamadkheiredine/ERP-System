@@ -44,7 +44,7 @@ th{
         </div>
     </div>
     <div class="card-body">
-    <form name="form_save_users" id="FORM_SAVE_USERS">
+        <form name="form_save_users" autocomplete="off" id="FORM_SAVE_USERS">
             <div  class="form-body">
              <span id="hidden_fields">
                 {!! csrf_field() !!}
@@ -95,40 +95,40 @@ th{
                                         <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Full Name <span class="required"> * </span></label>
-                                            <input type="text" maxlength="500" name="u_fullname" id="U_FULLNAME" class="form-control" value="" />
+                                            <input type="text" maxlength="500" autocomplete="off" name="u_fullname" id="U_FULLNAME" class="form-control" value="" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Username<span class="required"> * </span></label>
-                                            <input type="text" maxlength="255" name="u_username" id="U_USERNAME" class="form-control" value="" />
+                                            <input type="text" autocomplete="off" maxlength="255" name="u_username" id="U_USERNAME" class="form-control" value="" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Access Code<span class="required"> * </span></label>
-                                            <input type="text" maxlength="5" readonly="readonly" name="u_attendance_code" id="U_ATTENDANCE_CODE" class="form-control" value="{{ $rand }}" />
+                                            <input type="text" autocomplete="off" maxlength="5" readonly="readonly" name="u_attendance_code" id="U_ATTENDANCE_CODE" class="form-control" value="{{ $rand }}" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">password <span class="required"> * </span></label>
-                                            <input type="password" name="u_password" maxlength="150" id="U_PASSWORD" class="form-control" value="" />
+                                            <input type="password" autocomplete="off" name="u_password" maxlength="150" id="U_PASSWORD" class="form-control" value="" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Re-type password <span class="required"> * </span></label>
-                                            <input type="password" name="retype_u_password" maxlength="150" id="RETYPE_U_PASSWORD" class="form-control" value="" />
+                                            <input type="password" autocomplete="off" name="retype_u_password" maxlength="150" id="RETYPE_U_PASSWORD" class="form-control" value="" />
                                         </div>
                                     </div>
-                                                                     <div class="col-md-4">
+                                       <div class="col-md-4">
                                             <div class="form-group">
                                                 <label> User Type <span class="required"> * </span></label>
-                                                <select class="bs-select form-control" name="u_user_type" id="U_USER_TYPE" data-actions-box="true">
+                                                 <select  name="u_user_type" id="U_USER_TYPE" class="form-select" data-control="select2" data-placeholder="Select user type">
                                                         <option value="">No User Type</option>
-                                                         @foreach($lst_user_teams as $key => $ut_info)
-                                                     <option value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_team }}</option>
+                                                         @foreach($lst_user_types as $key => $ut_info)
+                                                     <option value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_user_type }}</option>
                                                     @endforeach 
                                                 </select>
                                             </div>
@@ -136,7 +136,7 @@ th{
                                     <div class="col-md-4">
                                          <div class="form-group">
                                             <label class="control-label">Role <span class="required"> * </span></label>
-                                             <select name="u_role" id="U_ROLE" class="form-control m-select2" style="width:100%">
+                                            <select  name="u_role" id="U_ROLE" class="form-select" data-control="select2" data-placeholder="Select Role">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_roles as $key => $role_info)
                                                  <option value="{{ $role_info->role_id }}">{{ $role_info->role_name }}</option>
@@ -147,7 +147,7 @@ th{
                                     <div class="col-md-4">
                                          <div class="form-group">
                                             <label class="control-label">Language <span class="required"> * </span></label>
-                                             <select name="u_lang_id" id="U_LANG_ID" class="form-control m-select2" style="width:100%">
+                                                 <select  name="u_lang_id" id="U_LANG_ID" class="form-select" data-control="select2" data-placeholder="Select Language">
                                                 <option value="">--Select One--</option>
                                                 @foreach($lst_langs as $key => $lang_info)
                                                  <option value="{{ $lang_info->lm_id }}">{{ $lang_info->lm_lang_name }}</option>
@@ -161,18 +161,16 @@ th{
                                             <textarea style="width:100%;height: 100px;resize:none" class="form-control" name="u_address" id="U_ADDRESS"></textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-4" style="height: 40px;">
-                                    	<label class="col-12 col-form-label">
-											Enable User
-										</label>
-										<div class="col-12">
-											<span class="m-switch m-switch--icon m-switch--success">
-												<label>
-													<input type="checkbox" name="u_is_active" value='1' />
-													<span></span>
-												</label>
-											</span>
-										</div> 
+                                    <div class="col-md-4" style="height: 40px;"> 
+                                        <div class="col-12"> 
+                                             <br/>
+                                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                                  <input class="form-check-input" type="checkbox" name="u_is_active" value="1"  />
+                                                  <span class="form-check-label fw-semibold text-muted">
+                                                        Enable User
+                                                  </span>
+                                              </label> 
+                                        </div> 
                                     </div>
                                     </div>
                                 </div>
@@ -252,7 +250,7 @@ th{
                                      <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Marital Status</label>
-                                            <select class="bs-select form-control" name="u_marital_status" id="U_MARITAL_STATUS" data-actions-box="true">
+                                            <select  name="u_marital_status" id="U_MARITAL_STATUS" class="form-select" data-control="select2" data-placeholder="Select Marital Status">
                                                     <option value="">-- Select One --</option>
                                                    <option value="1">single</option> 
                                                    <option value="2">married</option> 
@@ -287,7 +285,7 @@ th{
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Company</label>
-                                            <select name="fk_company_id" id="FK_COMPANY_ID" class="form-control m-select2" style="width:100%">
+                                            <select  name="fk_company_id" id="FK_COMPANY_ID" class="form-select" data-control="select2" data-placeholder="Select Company">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_companies as $key => $cmp_info)
                                                  <option value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }}</option>
@@ -298,7 +296,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Department</label>
-                                            <select name="u_department_id" id="U_DEPARTMENT_ID" class="form-control m-select2" style="width:100%">
+                                            <select  name="u_department_id" id="U_DEPARTMENT_ID" class="form-select" data-control="select2" data-placeholder="Select department">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_departments as $key => $dep_info)
                                                  <option value="{{ $dep_info->sd_id }}">{{ $dep_info->sd_department_title }}</option>
@@ -306,10 +304,10 @@ th{
                                             </select>
                                         </div>
                                     </div> 
-									<div class="col-md-4">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Warehouse Responsible</label>
-                                            <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-control m-select2" style="width:100%">
+                                                <select  name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-select" data-control="select2" data-placeholder="Select warehouse">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_warhouses as $key => $warehouse_info)
                                                  <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
@@ -320,7 +318,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Job Role</label>
-                                            <select name="u_job_role_id" id="U_JOB_ROLE_ID" class="form-control m-select2" style="width:100%">
+                                            <select name="u_job_role_id" id="U_JOB_ROLE_ID" class="form-select" data-control="select2" data-placeholder="Select Job Role">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_roles as $key => $jr_info)
                                                  <option value="{{ $jr_info->jr_id }}">{{ $jr_info->jr_job_role }}</option>
@@ -331,7 +329,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Job Title</label>
-                                            <select name="u_job_title_id" id="U_JOB_TITLE_ID" class="form-control m-select2" style="width:100%">
+                                            <select name="u_job_title_id" id="U_JOB_TITLE_ID" class="form-select" data-control="select2" data-placeholder="Select Job Title">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_titles as $key => $jt_info)
                                                  <option value="{{ $jt_info->jt_id }}">{{ $jt_info->jt_job_title }}</option>
@@ -342,7 +340,7 @@ th{
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Employee Type</label>
-                                            <select name="u_employee_type" id="U_EMPLOYEE_TYPE" class="form-control m-select2" style="width:100%">
+                                            <select name="u_employee_type" id="U_EMPLOYEE_TYPE" class="form-select" data-control="select2" data-placeholder="Select Employee Type">
                                                 <option value="">--Select One--</option>
                                                     @foreach( $lst_employment_type as $key => $et_info)
                                                  <option value="{{ $et_info->et_id }}">{{ $et_info->et_type }}</option>
@@ -387,17 +385,19 @@ th{
                                         </div>
                                     </div>
                                     <div class="col-md-4" style="height: 40px;">
-                                    	<label class="col-12 col-form-label">
-											Has Insurance
-										</label>
-										<div class="col-12">
-											<span class="m-switch m-switch--icon m-switch--success">
-												<label>
-													<input type="checkbox" name="u_has_insurance" value='1' />
-													<span></span>
-												</label>
-											</span>
-										</div> 
+                                        <div class="form-group">
+
+
+                                              <br/>
+                                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                                  <input class="form-check-input" type="checkbox" name="u_has_insurance" value="1"  />
+                                                  <span class="form-check-label fw-semibold text-muted">
+                                                   Has Insurance
+                                                  </span>
+                                              </label> 
+
+
+                                        </div> 
                                     </div>
                                     <div class="col-md-4">
                                        <div class="form-group">

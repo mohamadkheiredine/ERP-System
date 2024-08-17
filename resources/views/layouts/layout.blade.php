@@ -247,6 +247,61 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
+                                                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-business-time fa-xl"></i>
+										</span>
+                                                                            Call Center Module
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="#">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Inbound Call</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="#">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Outbound Call</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="#">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title">Case Status</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+                                                                            
+                                                                              <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="#">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Maintenance Cases</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+									</div>
+									<!--end:Menu sub-->
+								</div>
 							@if($license_array->TIMESHEET_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -340,7 +395,7 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
-									@endif
+							@endif
 							@if($license_array->INVENTORY_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -725,6 +780,62 @@ Page Description :
 											<!--end:Menu sub-->
 										</div>
 										
+                                                                                
+                                                                                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+											<!--begin:Menu link-->
+											<span class="menu-link">
+												<span class="menu-icon">
+													<i class="fa-solid fa-money-bill"></i>
+												</span>
+												<span class="menu-title">Cost Center</span>
+												<span class="menu-arrow"></span>
+											</span>
+											<!--end:Menu link-->
+											<!--begin:Menu sub-->
+											<div class="menu-sub menu-sub-accordion">
+                                                                                            <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="{{ url('costcenters/categories') }}">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            <span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Categories</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                            <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="{{ url('costcenters') }}">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            <span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Cost Center Management</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                            <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="#">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            <span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Cost Center Budget</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                             <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="#">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            <span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Actual Expense</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                             <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="#">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            <span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Allocation Rules</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                                
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/dashboard') }}">

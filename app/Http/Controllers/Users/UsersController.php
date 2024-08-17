@@ -38,6 +38,7 @@ use App\models\System\Companies;
 use App\models\System\Languages;
 use App\models\Inventory\WareHouses;
 use App\models\Users\UserTeam;
+use App\models\Users\UserTypes;
 
 class UsersController extends Controller {
 
@@ -134,7 +135,7 @@ class UsersController extends Controller {
         $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
         $lst_langs = Languages::all();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
-        $lst_user_teams = UserTeam::whereUtIsDeleted(0)->get();
+        $lst_user_types = UserTypes::all();
 
         $rand = rand(9, 99999);
         $data = array(
@@ -146,7 +147,7 @@ class UsersController extends Controller {
             "lst_langs" => $lst_langs,
             "lst_warhouses" => $lst_warhouses,
             "lst_employment_type" => $lst_employment_type,
-            "lst_user_teams" => $lst_user_teams,
+            "lst_user_types" => $lst_user_types,
             "lst_companies" => $lst_companies
         );
         return Response()->view('users.adduser', $data);
@@ -167,7 +168,7 @@ class UsersController extends Controller {
         $lst_langs = Languages::all();
         $rand = rand(9, 99999);
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
-        $lst_user_teams = UserTeam::whereUtIsDeleted(0)->get();
+        $lst_user_types = UserTypes::all();
 
         $data = array(
             "lst_roles" => $lst_roles,
@@ -179,7 +180,7 @@ class UsersController extends Controller {
             "lst_warhouses" => $lst_warhouses,
             "rand" => $rand,
             "lst_employment_type" => $lst_employment_type,
-            "lst_user_teams" => $lst_user_teams,
+            "lst_user_types" => $lst_user_types,
             "lst_companies" => $lst_companies
         );
         return Response()->view('users.edituser', $data);

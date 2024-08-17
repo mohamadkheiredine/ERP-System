@@ -164,7 +164,56 @@ Page Description :
 		 		</div>
 		 	</div>
 		</div>
-		<!--end::Col-->
+		<div class="container mt-5">
+        <div class="row">
+            <!-- Sales Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Sales Overview
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Inventory Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Inventory Levels
+                    </div>
+                    <div class="card-body">
+                        <canvas id="inventoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <!-- Expenses Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Monthly Expenses
+                    </div>
+                    <div class="card-body">
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Revenue Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Revenue Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 	</div>
 	<!--end::Row-->
 @endsection

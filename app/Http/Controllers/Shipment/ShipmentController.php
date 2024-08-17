@@ -37,6 +37,10 @@ use App\models\Shipment\TransportationMode;
 use App\models\Shipment\OperationOrders;
 use App\models\Shipment\shippingOrders;
 use App\models\Inventory\Customers;
+use App\models\Shipment\OrderCategories;
+use League\Csv\Writer;
+use League\Csv\Reader;
+
 
 class ShipmentController extends Controller
 {
@@ -190,6 +194,7 @@ class ShipmentController extends Controller
         $so_operation_date          = $request->input("so_operation_date");
         $so_operation_time          = $request->input("so_operation_time");
         $so_warehouse_source        = $request->input("so_warehouse_source");
+        $so_delivery_date        = $request->input("so_delivery_date");
         $so_warehouse_destination   = $request->input("so_warehouse_destination");
         $so_operation_description   = $request->input("so_operation_description");
         $products                   = $request->input("products");
@@ -211,6 +216,7 @@ class ShipmentController extends Controller
         $shipmentOperation->so_operation_type           = $so_operation_type;
         $shipmentOperation->so_operation_status         = $so_operation_status;
         $shipmentOperation->so_operation_date           = $time;
+        $shipmentOperation->so_delivery_date            = $so_delivery_date;
         $shipmentOperation->so_operation_time           = $so_operation_time;
         $shipmentOperation->so_owner_id                 = Session("user_id");
         $shipmentOperation->so_warehouse_source         = $so_warehouse_source;
@@ -376,6 +382,62 @@ class ShipmentController extends Controller
         
         return Response()->json($result_array);
     }
+    
+    
+    
+    
+    
+    public function DownloadPackingList(Request $request)
+    {
+        $so_id = $request->input('so_id');
+        
+        $data = array();
+        $data[] = ['DATE', 'CODE','PACK #','KOLI #','PCS','TYPE OF GOODS','WEIGHT','REMARKS'];
+        
+        $lst_operation_orders = OperationOrders::whereFkOoOperationId($so_id)->get();
+        $customer_count = array();
+        
+        foreach ( $lst_operation_orders as $key => $order_info ) 
+        {
+            $so_id = $order_info->Order->so_id;
+            $total_weight = 0;
+            $lst_categories = OrderCategories::whereFkOrderId($so_id)->get();
+            foreach ($lst_categories as $key => $order_cat) 
+            {
+                $total_weight = $total_weight + floatval($order_cat->so_package_weight);
+            }
+            
+            foreach ($lst_categories as $key => $order_cat) 
+            {
+                if(isset($customer_count[$order_info->Order->Customer->ic_id]))
+                    $customer_count[$order_info->Order->Customer->ic_id]++;
+                else
+                    $customer_count[$order_info->Order->Customer->ic_id] = 1;
+
+                $data[] = [
+                    date("d/m/Y",strtotime($order_info->Operation->so_delivery_date)),
+                    $order_info->Order->Customer->ic_customer_code,
+                    $customer_count[$order_info->Order->Customer->ic_id],
+                    1,
+                    '-',
+                    $order_cat->Category->pc_category,
+                    $total_weight,
+                    ''
+                ]; 
+            }
+            
+            
+          
+        }
+        
+        
+        $csv = Writer::createFromFileObject(new \SplTempFileObject());
+
+        $csv->insertAll($data);
+
+       return $csv->output('data.csv');
+    }
+    
     
     /**
      * Map Tracker where you can track all operations running in the current time

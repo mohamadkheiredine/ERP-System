@@ -1,10 +1,10 @@
 <?php
 /***********************************************************
-shippingOrders.php
+CostCenterBudget.php
 Product :
 Version : 1.0
 Release : 1
-Date Created : Dec 8, 2019
+Date Created : Dec 14, 2019
 Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
@@ -12,9 +12,7 @@ Page Description :
 
 ***********************************************************/
 
-
-
-namespace App\models\Shipment;
+namespace App\models\CostCenter;
 
 use DB;
 use Illuminate\Http\Request;
@@ -22,20 +20,16 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class OperationOrders extends Model
+class CostCenterBudget extends Model
 {
-    protected   $table          = 'lg_operations_orders';
+    protected   $table          = 'acc_costcenter_budget';
     public      $timestamps     = false;
+    protected   $primaryKey     = "cb_id";
     
     
-    public function Order()
+    public function CostCenter()
     {
-        return $this->hasOne('App\models\Shipment\ShippingOrders', 'so_id','fk_oo_order_id');
+        return $this->hasOne('App\models\CostCenter\CostCenters', 'ac_id','fk_cost_center_id');
     }
     
-    
-     public function Operation()
-    {
-        return $this->hasOne('App\models\Logistics\ShipOperations', 'so_id','fk_oo_operation_id');
-    }
 }
