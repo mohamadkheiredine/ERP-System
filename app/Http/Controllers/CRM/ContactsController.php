@@ -116,7 +116,7 @@ class ContactsController extends Controller
             "lst_lead_contacts" => $lst_lead_contacts
         );
         $result_array['is_error'] = 0;
-        $result_array['display'] = view("Leads.leadcontacts",$data)->render();
+        $result_array['display'] = view("leads.leadcontacts",$data)->render();
         
         return Response()->json($result_array);
     }

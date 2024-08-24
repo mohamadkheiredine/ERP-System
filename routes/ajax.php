@@ -155,9 +155,9 @@ Route::post('/request/shipment/operations/displayformtype','Shipment\ShipmentCon
 Route::post('/request/shipment/operations/displayproducts','Shipment\ShipmentController@DisplayOperationProducts');
 Route::post('/request/shipment/operations/saveinfo','Shipment\ShipmentController@SaveShipmentOperationInfo');
 Route::post('/request/shipment/operations/deleteinfo','Shipment\ShipmentController@DeleteShipmentInfo');
-    Route::post('/request/shipment/operations/displaylistorders','Shipment\ShipmentController@Displaylistorders');
-    Route::post('/request/shipment/operations/addorder','Shipment\ShipmentController@LinkOperationOrder');
-    Route::post('/request/operations/downloadpackinglist','Shipment\ShipmentController@DownloadPackingList');
+Route::post('/request/shipment/operations/displaylistorders','Shipment\ShipmentController@Displaylistorders');
+Route::post('/request/shipment/operations/addorder','Shipment\ShipmentController@LinkOperationOrder');
+Route::post('/request/operations/downloadpackinglist','Shipment\ShipmentController@DownloadPackingList');
 
 
 Route::post('/request/operationstatuses/displaylist','Shipment\OperationStatusController@DisplayList');

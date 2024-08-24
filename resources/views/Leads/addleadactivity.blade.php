@@ -63,8 +63,8 @@ th{
                     <div class="row">
                         <div class="col-md-4">
                               <div class="form-group">
-                                    <label class="control-label"> Activity Lead <span class="required"> * </span> </label>
-                                     <select class="bs-select form-control" required="required" name="fk_lead_id" id="FK_LEAD_ID" data-actions-box="true">
+                                    <label class="control-label"> Activity Lead <span class="required"> * </span> </label> 
+                                         <select  name="fk_lead_id" id="FK_LEAD_ID"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Activity Lead">
                                             <option value=""> -- Lead -- </option>
                                             @foreach($lst_leads as $key => $lead_info)
                                                     <option value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</option>
@@ -75,7 +75,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Contact <span class="required"> * </span> </label>
-                                     <select class="bs-select form-control" required="required" name="fk_contact_id" id="FK_CONTACT_ID" data-actions-box="true">
+                                    <select  name="fk_contact_id" id="FK_CONTACT_ID"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Lead Contact">
                                             <option value=""> -- Contact -- </option>
                                             @foreach($lst_contacts as $key => $contact_info)
                                                     <option value="{{ $contact_info->cc_id }}">{{ $contact_info->cc_first_name . " " . $contact_info->cc_last_name }}</option>
@@ -85,8 +85,8 @@ th{
                         </div>
                         <div class="col-md-4">
                               <div class="form-group">
-                                    <label class="control-label"> Activity Type <span class="required"> * </span> </label>
-                                     <select class="bs-select form-control" required="required" name="ca_activity_type" id="CA_ACTIVITY_TYPE" data-actions-box="true">
+                                    <label class="control-label"> Activity Type <span class="required"> * </span> </label> 
+                                         <select  name="ca_activity_type" id="CA_ACTIVITY_TYPE"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Activity Type">
                                             <option value=""> -- Contact -- </option>
                                             @foreach($lst_activity_types as $key => $at_info)
                                                     <option value="{{ $at_info->at_id }}">{{ $at_info->at_activity_type }}</option>
@@ -97,7 +97,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Activity Purpose <span class="required"> * </span>  </label>
-                                     <select class="bs-select form-control" required="required" name="ca_activity_purpose" id="CA_ACTIVITY_PURPOSE" data-actions-box="true">
+                                    <select  name="ca_activity_purpose" id="CA_ACTIVITY_PURPOSE"   class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Activity Purpose">
                                             <option value=""> -- Contact -- </option>
                                             @foreach($lst_activity_purpose as $key => $ap_info)
                                                     <option value="{{ $ap_info->ap_id }}">{{ $ap_info->ap_purpose }}</option>
@@ -113,8 +113,8 @@ th{
                         </div>
                         <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label"> Activity Owner <span class="required"> * </span> </label><br/>
-                                <select class="bs-select form-control" required="required" name="fk_owner_id" id="FK_OWNER_ID" data-actions-box="true">
+                                <label class="control-label"> Activity Owner <span class="required"> * </span> </label><br/> 
+                                    <select  name="fk_owner_id" id="FK_OWNER_ID"   class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Activity Owner">
                                             <option value=""> -- Activity Owner -- </option>
                                             @foreach($lst_users as $key => $user_info)
                                                     <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>

@@ -62,7 +62,7 @@ class LeadActivitiesController extends Controller
         );
         
         $result_array['is_error']   = 0;
-        $result_array['display']    = view("Leads.leadactivities",$data)->render();
+        $result_array['display']    = view("leads.leadactivities",$data)->render();
         return Response()->json($result_array);
     }
     
@@ -84,7 +84,7 @@ class LeadActivitiesController extends Controller
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users
         );
-        return Response()->view('Leads.activities',$data);
+        return Response()->view('leads.activities',$data);
     }
     
     /**
@@ -111,7 +111,7 @@ class LeadActivitiesController extends Controller
             "lst_activity_types" => $lst_activity_types,
             "lst_activity_purpose" => $lst_activity_purpose,
         );
-        return view("Leads.editleadactivity",$data);
+        return view("leads.editleadactivity",$data);
     }
     
     public function AddForm()
@@ -129,7 +129,7 @@ class LeadActivitiesController extends Controller
             "lst_activity_types" => $lst_activity_types,
             "lst_activity_purpose" => $lst_activity_purpose,
         );
-        return view("Leads.addleadactivity",$data);
+        return view("leads.addleadactivity",$data);
     }
     
     
@@ -219,7 +219,7 @@ class LeadActivitiesController extends Controller
             "lst_activities" => $lst_activities
         );
         $result_array['is_error']   = 0;
-        $result_array['display']    = view("Leads.leadactivities",$data)->render();
+        $result_array['display']    = view("leads.leadactivities",$data)->render();
         return Response()->json($result_array);
         
     }

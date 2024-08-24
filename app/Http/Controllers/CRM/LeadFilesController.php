@@ -25,6 +25,7 @@ use Redirect;
 use Config;
 use Auth;
 use DB;
+use File;
 use Illuminate\Support\Facades\Hash;
 use App\models\CRM\CRMClientCategories;
 use App\models\CRM\CRMLeadStatus;
@@ -63,7 +64,7 @@ class LeadFilesController extends Controller
             "users_array" => $users_array
         );
         $result_array['is_error'] = 0;
-        $result_array['display'] = view("Leads.leadfiles",$data)->render();
+        $result_array['display'] = view("leads.leadfiles",$data)->render();
         
         return Response()->json($result_array);
     }
@@ -105,24 +106,24 @@ class LeadFilesController extends Controller
         $image_url = $image_url . $file_name . "." . $extention;
         if(move_uploaded_file($tmp_name, $file_path))
         {
-            $LeadFiles_obj = new CRMLeadFiles();
-            $LeadFiles_obj->fk_lead_id              = $lead_id;
-            $LeadFiles_obj->lf_uploaded_by          = session("user_id");
-            $LeadFiles_obj->lf_file_base_src        = $base_dir;
-            $LeadFiles_obj->lf_file_name            = $file_name;
-            $LeadFiles_obj->lf_file_extension       = $extention;
-            $LeadFiles_obj->lf_file_size            = filesize($file_path);
-            $LeadFiles_obj->lf_uploaded_date        = date("Y-m-d H:i:s");
-            $LeadFiles_obj->lf_file_mime_type       = $type;
-            $LeadFiles_obj->save();
+            $Leadfiles_obj = new CRMLeadFiles();
+            $Leadfiles_obj->fk_lead_id              = $lead_id;
+            $Leadfiles_obj->lf_uploaded_by          = session("user_id");
+            $Leadfiles_obj->lf_file_base_src        = $base_dir;
+            $Leadfiles_obj->lf_file_name            = $file_name;
+            $Leadfiles_obj->lf_file_extension       = $extention;
+            $Leadfiles_obj->lf_file_size            = filesize($file_path);
+            $Leadfiles_obj->lf_uploaded_date        = date("Y-m-d H:i:s");
+            $Leadfiles_obj->lf_file_mime_type       = $type;
+            $Leadfiles_obj->save();
             
             // add log for Upload lead File
-            $CRMLogs = new CRMLogsManager();
+            $crm_logs = new CRMLogsManager();
             $params_array = array(
                 'fk_lead_id' => $lead_id,
                 'log_type' => CRMLogsManager::LOG_TYPE_ADD_LEAD_FILES
             );
-            $CRMLogs->InsertCRMLog($params_array);
+            $crm_logs->InsertCRMLog($params_array);
             
         }
         

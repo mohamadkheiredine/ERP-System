@@ -60,7 +60,7 @@ class CRMLogsController extends Controller
         $data = array(
             'CRMLogs' => $CRMLogs
         );
-        $result_array['display'] = view("Leads.leadlogs",$data)->render();
+        $result_array['display'] = view("leads.leadlogs",$data)->render();
         
         return Response()->json($result_array);
     }

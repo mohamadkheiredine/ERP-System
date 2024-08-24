@@ -107,7 +107,7 @@ class LeadItemsController extends Controller
             "LeadService" => $LeadService
         );
         
-        return response()->view("Leads.editleaditeminfo",$data);
+        return response()->view("leads.editleaditeminfo",$data);
     }
     
     
@@ -184,7 +184,7 @@ class LeadItemsController extends Controller
         );
         
         $result_array['is_error'] = 0;
-        $result_array['display'] = view('Leads.displaylistservices',$data)->render();
+        $result_array['display'] = view('leads.displaylistservices',$data)->render();
         
         return response()->json($result_array);
     }

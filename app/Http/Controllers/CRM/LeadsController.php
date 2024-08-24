@@ -314,20 +314,25 @@ class LeadsController extends Controller
     }
     
     /**
-     * Quick function to create Lead 
+     * Quick function to create Lead from inbound call
+     * 
+     * @author Moe Mantach
+     * @access public 
      * @param Request $request
+     * 
+     * @return Response Response
      */
     public function QuickAddLead(Request $request)
     {
-        $cl_customer_id = $request->input('cl_customer_id');
-        $cl_agent_id    = $request->input('cl_agent_id');
-        $cl_mobile      = $request->input('cl_mobile');
-        $cl_phone      = $request->input('cl_phone');
-        $cl_email      = $request->input('cl_email');
-        $cl_salesman_id     = $request->input('cl_salesman_id');
-        $cl_first_name     = $request->input('cl_first_name');
-        $cl_last_name     = $request->input('cl_last_name');
-        $cl_lead_code     = $request->input('cl_lead_code');
+        $cl_customer_id         = $request->input('cl_customer_id');
+        $cl_agent_id            = $request->input('cl_agent_id');
+        $cl_mobile              = $request->input('cl_mobile');
+        $cl_phone               = $request->input('cl_phone');
+        $cl_email               = $request->input('cl_email');
+        $cl_salesman_id         = $request->input('cl_salesman_id');
+        $cl_first_name          = $request->input('cl_first_name');
+        $cl_last_name           = $request->input('cl_last_name');
+        $cl_lead_code           = $request->input('cl_lead_code');
         
         $lead_info = new CRMLeads();
         $lead_info->fk_lead_owner = $cl_salesman_id;

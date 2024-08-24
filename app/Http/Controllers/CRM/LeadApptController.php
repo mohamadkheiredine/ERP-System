@@ -70,7 +70,7 @@ class LeadApptController extends Controller
                     $data = array(
                         "LeadAppointments" => $LeadAppointments
                     );
-                    $result_array["display"] = view("Leads.lstappointments",$data)->render(); 
+                    $result_array["display"] = view("leads.lstappointments",$data)->render(); 
                 }
             break;
             case "calendar":
@@ -82,7 +82,7 @@ class LeadApptController extends Controller
                     $data = array(
                         "LeadAppointments" => $LeadAppointments
                     );
-                    $result_array["display"] = view("Leads.calendarappt",$data)->render(); 
+                    $result_array["display"] = view("leads.calendarappt",$data)->render(); 
                 }
             break;
         } 
@@ -106,7 +106,7 @@ class LeadApptController extends Controller
         $data = array(
             "calendar_path" => $calendar_path,
         );
-        return Response()->view("Leads.leadscalendarappt",$data); 
+        return Response()->view("leads.leadscalendarappt",$data); 
     }
     
     
@@ -150,7 +150,7 @@ class LeadApptController extends Controller
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users
         );
-        return response()->view("Leads.addappointment",$data);
+        return response()->view("leads.addappointment",$data);
     }
     
     
@@ -170,7 +170,7 @@ class LeadApptController extends Controller
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users
         );
-        return response()->view("Leads.editappointment",$data);
+        return response()->view("leads.editappointment",$data);
         
     }
     

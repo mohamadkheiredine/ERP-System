@@ -57,7 +57,7 @@ class LeadNotesController extends Controller
             "lst_notes" => $lst_notes
         );
         $result_array['is_error'] = 0;
-        $result_array['display'] = view("Leads.leadnotes",$data)->render();
+        $result_array['display'] = view("leads.leadnotes",$data)->render();
         
         return Response()->json($result_array);
     }
@@ -99,7 +99,7 @@ class LeadNotesController extends Controller
             "notes_data" => $notes_data
         );
         $result_array['is_error'] = 0;
-        $result_array['display'] = view("Leads.listnotes",$data)->render();
+        $result_array['display'] = view("leads.listnotes",$data)->render();
         
         return Response()->json($result_array);
     }

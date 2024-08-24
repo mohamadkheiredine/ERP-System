@@ -47,7 +47,7 @@ class LeadsStatusController extends Controller
     public function index()
     {
         $data = array();
-        return Response()->view('Leads.status',$data);
+        return Response()->view('leads.status',$data);
     }
     
     
@@ -71,7 +71,7 @@ class LeadsStatusController extends Controller
         );
         
         $result_array = array(); 
-        $result_array['display'] = view("Leads.displayliststatus",$data)->render();
+        $result_array['display'] = view("leads.displayliststatus",$data)->render();
         
         return Response()->json($result_array);
     }
@@ -92,7 +92,7 @@ class LeadsStatusController extends Controller
         $data = array(
             "lst_lead_status" => $lst_lead_status,
         );
-        return view('Leads.addstatus',$data);
+        return view('leads.addstatus',$data);
     }
     
     
@@ -154,7 +154,7 @@ class LeadsStatusController extends Controller
             "lst_lead_status" => $lst_lead_status,
             "status_info" => $status_info
         );
-        return view('Leads.editstatus',$data);
+        return view('leads.editstatus',$data);
     }
     
     
