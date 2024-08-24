@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-inboundcalls.blade.php
+casestatus.blade.php
 Product :
 Version : 1.0
 Release : 1
@@ -15,7 +15,7 @@ Cost Center Categories Management
 ?>
 
 
-@extends('layouts.layout',['page_title' => "Cost Center Management"])
+@extends('layouts.layout',['page_title' => "Call Center Management"])
 
 @section('themes')
 <style>
@@ -28,14 +28,14 @@ th{
 </style>
 @endsection
 @section('plugins')
-<script type="text/javascript" src="{{ url('js/modules/inboundcalls.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/callcenter/inboundcalls.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/modules/casestatus.module.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/callcenter/casestatus.js') }}"></script>
 @endsection
 
 @section('content')
 <div class="card shadow-sm">
 	<div class="card-header">
-		<h3 class="card-title">Inbound Calls Management</h3>
+		<h3 class="card-title">Case Status Management</h3>
 		<div class="card-toolbar">
 			<div class="btn-group">
 				<button type="button" class="btn btn-danger dropdown-toggle"
@@ -72,11 +72,11 @@ th{
 
 						</div>
 						<div class="col-md-4">
-                                                    <label class="control-label">Agent</label>
-                                                    <select name="fk_agent_id" id="FK_AGENT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
-                                                           <option value="">All Agents</option>
-                                                           @foreach ( $lst_users as $key => $user_info )
-                                                                   <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                    <label class="control-label">Case</label>
+                                                    <select name="fk_parent_status" id="FK_PARENT_STATUS"  class="form-control form-select" data-control="select2" data-placeholder="Select Parent Status">
+                                                           <option value="">No Parent</option>
+                                                           @foreach ( $lst_statuses as $key => $status_info )
+                                                                   <option value="{{ $status_info->cc_id }}">{{ $status_info->cc_status_title }}</option>
                                                            @endforeach
                                                    </select>
 						</div>
@@ -86,9 +86,9 @@ th{
 					</div>
 				</div>
 				<div class="col-xl-4 order-1 order-xl-2 align-right">
-					<a href="{{ url('/callcenter/inboundcall/addform') }}"
+					<a href="{{ url('/callcenter/casestatus/addform') }}"
 						class="btn btn-info"> <span> <i class="flaticon-grid-menu-v2"></i>
-							<span> New Call </span>
+							<span> New Status </span>
 					</span>
 					</a>
 				</div>
@@ -103,21 +103,18 @@ th{
 						class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
 						<th style="width: 2px;">#</th>
 						<th style="width: 2px;">ID</th>
-						<th>Agent</th>
-						<th>Customer</th>
-						<th>Date</th>
-						<th>Start Time</th>
-						<th>End Time</th>
+						<th>Parent Status</th>
+						<th>Status Label</th>
 						<th style="width: 2px;white-space: nowrap;">edit</th>
 						<th style="width: 2px;white-space: nowrap;">Delete</th>
 					</tr>
 				</thead>
-				<tbody class="LstInboundCalls" id="LstInboundCalls"></tbody>
+				<tbody class="LstCaseStatus" id="LstCaseStatus"></tbody>
 			</table>
 		</div>
 		<div class="row">
 			<div class="col-md-10" align="left">
-				<ul id="InboundCallsPagination" class="pagination-sm"></ul>
+				<ul id="CaseStatusPagination" class="pagination-sm"></ul>
 			</div>
 			<div class="col-md-2" align="right"></div>
 		</div>
@@ -128,9 +125,9 @@ th{
 				 
 			</div>
 			<div class="col-xl-2 order-3 order-xl-3 align-right">
-				<a href="{{ url('/callcenter/inboundcall/addform') }}"
+				<a href="{{ url('/callcenter/casestatus/addform') }}"
 					class="btn btn-info"> <span> <i class="flaticon-grid-menu-v2"></i>
-						<span> New Call </span>
+						<span> New Status </span>
 				</span>
 				</a> 
 			</div>

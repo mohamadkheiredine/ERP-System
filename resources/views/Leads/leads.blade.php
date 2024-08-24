@@ -74,7 +74,8 @@ th{
 												</div>
 												<div class="col-md-4">
                                                     <div class="mb-10">
-                                                    		<select class="bs-select form-control" id="LEAD_CATEGORY" name="lead_category">
+                                                        <label>&nbsp;</label>
+                                                        <select  id="LEAD_CATEGORY" name="lead_category" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Category">
                                                     			<option value="0">-- Select Category --</option>
                                                                 @foreach($lead_categories as $index => $cat_info)
                                                                   <option value="{{ $cat_info->cc_id }}">{{ $cat_info->cc_category_name }}</option>
@@ -84,7 +85,8 @@ th{
 												</div>
 												<div class="col-md-4">
                                                     <div class="mb-10">
-                                                    		<select class="bs-select form-control" id="LEAD_STATUS" name="lead_status">
+                                                        <label>&nbsp;</label>
+                                                                <select   id="LEAD_STATUS" name="lead_status" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Status">
                                                     			<option value="0">-- Select Status --</option>
                                                                 @foreach($lead_statuses as $index => $status_info)
                                                                   <option value="{{ $status_info->ls_id }}">{{ $status_info->ls_status_title }}</option>
@@ -94,7 +96,8 @@ th{
 												</div>
 												<div class="col-md-4" style="margin-top:10px;">
                                                     <div class="mb-10">
-                                                    		<select class="bs-select form-control" id="LEAD_USER" name="lead_user">
+                                                        <label>&nbsp;</label>
+                                                        <select   id="LEAD_USER" name="lead_user" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Assign To">
                                                     			<option value="0">--All Users--</option>
                                                                 @foreach($lst_users as $index => $user_info)
                                                                   <option {{ $user_info->id == session("user_id") ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>

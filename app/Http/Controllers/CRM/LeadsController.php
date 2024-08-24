@@ -313,6 +313,41 @@ class LeadsController extends Controller
 
     }
     
+    /**
+     * Quick function to create Lead 
+     * @param Request $request
+     */
+    public function QuickAddLead(Request $request)
+    {
+        $cl_customer_id = $request->input('cl_customer_id');
+        $cl_agent_id    = $request->input('cl_agent_id');
+        $cl_mobile      = $request->input('cl_mobile');
+        $cl_phone      = $request->input('cl_phone');
+        $cl_email      = $request->input('cl_email');
+        $cl_salesman_id     = $request->input('cl_salesman_id');
+        $cl_first_name     = $request->input('cl_first_name');
+        $cl_last_name     = $request->input('cl_last_name');
+        $cl_lead_code     = $request->input('cl_lead_code');
+        
+        $lead_info = new CRMLeads();
+        $lead_info->fk_lead_owner = $cl_salesman_id;
+        $lead_info->cl_lead_code = $cl_lead_code;
+        $lead_info->cl_company_name = "";
+        $lead_info->fk_assign_to = $cl_agent_id;
+        $lead_info->cl_referred_by = $cl_customer_id;
+        $lead_info->cl_first_name = $cl_first_name;
+        $lead_info->cl_last_name = $cl_last_name;
+        $lead_info->cl_mobile = $cl_mobile;
+        $lead_info->cl_email = $cl_email;
+        $lead_info->cl_phone = $cl_phone;
+        $lead_info->fk_lead_status_id = 1;
+        $lead_info->save();
+        
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = "Operation Complete Successfully";
+        return Response()->json($result_array);
+    }
+    
     
     /**
      * Add Lead Activity from lead page

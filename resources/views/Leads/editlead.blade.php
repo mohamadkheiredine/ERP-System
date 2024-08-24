@@ -60,11 +60,11 @@ Page Description :
                       <input type="hidden" name="cl_id" id="CL_ID" value="{{ $lead_info->cl_id }}" />
                     </span>
                     <div class="alert alert-success" style="display:none">
-            				<strong>Success!</strong> Lead Information is saved successfully!
-            			</div>
-            			<div class="alert alert-danger" style="display:none">
-            				<strong>Error!</strong> You have some form errors. Please check below.
-            			</div>
+                       <strong>Success!</strong> Lead Information is saved successfully!
+                    </div>
+                    <div class="alert alert-danger" style="display:none">
+                        <strong>Error!</strong> You have some form errors. Please check below.
+                    </div> 
                     <div class="row">
                         <div class="col-md-4">
                               <div class="form-group">

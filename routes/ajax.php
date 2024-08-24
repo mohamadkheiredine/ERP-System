@@ -186,6 +186,7 @@ Route::post('/request/leads/insertleaditems','CRM\LeadItemsController@InsertLead
 Route::post('/request/leads/saveleaditeminfo','CRM\LeadItemsController@SaveLeadItemInfo');
 Route::post('/request/leads/displayleadservicestab','CRM\LeadItemsController@DisplayLeadServicestab');
 Route::post('/request/leads/deleteleadserviceinfo','CRM\LeadItemsController@DeleteLeadServiceinfo');
+Route::post('/request/leads/quickaddlead','CRM\LeadsController@QuickAddLead');
 
 Route::post('/request/leadstatus/displaylist','CRM\LeadsStatusController@DisplayList');
 Route::post('/request/leadstatus/savestatusinfo','CRM\LeadsStatusController@SaveStatusInfo');
@@ -509,3 +510,18 @@ Route::delete('/request/costcenters/deletecategoryinfo','CostCenter\CostCenterCa
 Route::post('/request/costcenters/displaylist','CostCenter\CostCenterController@DisplayList');
 Route::post('/request/costcenters/saveinfo','CostCenter\CostCenterController@SaveCostCenterInfo');
 Route::delete('/request/costcenters/deleteinfo','CostCenter\CostCenterController@DeleteCostCenterInformation');
+
+
+
+Route::post('/request/inboundcall/displaylist','CallCenter\InboundController@DisplayList');
+Route::post('/request/inboundcall/saveinfo','CallCenter\InboundController@SaveInboundCallInfo');
+Route::delete('/request/inboundcall/deleteinfo','CallCenter\InboundController@DeleteInboundCallInformation');
+
+
+Route::post('/request/outboundcall/displaylist','CallCenter\OutboundController@DisplayList');
+Route::post('/request/outboundcall/saveinfo','CallCenter\OutboundController@SaveOutboundCallInfo');
+Route::delete('/request/outboundcall/deleteinfo','CallCenter\OutboundController@DeleteOutboundCallInformation');
+
+Route::get('/request/casestatus/displaylist','CallCenter\CaseStatusController@DisplayList');
+Route::post('/request/casestatus/saveinfo','CallCenter\CaseStatusController@SaveCaseStatusInfo');
+Route::delete('/request/casestatus/deleteinfo','CallCenter\CaseStatusController@DeleteCaseStatusInfo');

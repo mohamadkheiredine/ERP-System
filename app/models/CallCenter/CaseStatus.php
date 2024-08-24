@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-OutboundCall.php
+CaseStatus.php
 Product : titanerp
 Version : 1.0
 Release : 1
@@ -21,20 +21,15 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class OutboundCall extends Model
+class CaseStatus extends Model
 { 
-    protected   $table          = 'callcenter_outbound_calls';
+    protected   $table          = 'callcenter_case_status';
     public      $timestamps     = false;
-    protected   $primaryKey     = "oc_id";
+    protected   $primaryKey     = "cc_id";
 
-     public function Agent()
+     public function Status()
     {
-        return $this->hasOne('App\models\Users\Users', 'id','oc_agent_id');
+        return $this->hasOne('App\models\CallCenter\CaseStatus', 'cc_id','fk_parent_status');
     }
     
-    
-    public function Lead()
-    {
-        return $this->hasOne('App\models\CRM\CRMLeads', 'cl_id','oc_lead_id');
-    }
 }

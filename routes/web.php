@@ -401,4 +401,20 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/costcenters/addform','CostCenter\CostCenterController@AddForm');
     Route::get('/costcenters/editform/{ac_id}','CostCenter\CostCenterController@EditForm');
     
+    
+    
+    
+    Route::get('/callcenter/inboundcall','CallCenter\InboundController@index');
+    Route::get('/callcenter/inboundcall/addform','CallCenter\InboundController@AddForm');
+    Route::get('/callcenter/inboundcall/editform/{ic_id}','CallCenter\InboundController@EditForm');
+    
+     Route::get('/callcenter/outboundcall','CallCenter\OutboundController@index');
+    Route::get('/callcenter/outboundcall/addform','CallCenter\OutboundController@AddForm');
+    Route::get('/callcenter/outboundcall/editform/{oc_id}','CallCenter\OutboundController@EditForm');
+    
+    
+    Route::get('/callcenter/casestatus','CallCenter\CaseStatusController@index');
+    Route::get('/callcenter/casestatus/addform','CallCenter\CaseStatusController@AddForm');
+    Route::get('/callcenter/casestatus/editform/{oc_id}','CallCenter\CaseStatusController@EditForm');
+    
 });
