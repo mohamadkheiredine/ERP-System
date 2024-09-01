@@ -2,21 +2,10 @@
  * 
  */
 $(function(){
-	 $('.bs-select').select2();
 	 leads_module.DisplayListLeads();
-	 $("select[name=lead_status]").on("change",function(){
-		 $.lead_datatable.destroy();
-		 leads_module.DisplayListLeads();
-	 });
-	 $("select[name=lead_category]").on("change",function(){
-		 $.lead_datatable.destroy();
-		 leads_module.DisplayListLeads(); 
-	 });
-	 $("select[name=lead_user]").on("change",function(){
-		 $.lead_datatable.destroy();
-		 leads_module.DisplayListLeads(); 
-	 });
-	 $(".quickactions").on("click",leads_module.QuickActionLead);
+	 $("input[name=general_search]").on("keyup",leads_module.DisplayListLeads);
+	 $("select").on("change",leads_module.DisplayListLeads);
+	 $(".dropdown-item").on("click",leads_module.QuickActionLead);
 	 $("button[name=btn_change_status]").on("click",leads_module.SaveChangeLeadsStatus);
 	 $("button[name=btn_assign_lead_to]").on("click",leads_module.SaveAssignLeadTo);
 

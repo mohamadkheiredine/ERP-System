@@ -296,9 +296,9 @@ class AccountsController extends Controller
     
     
     
-    public function ConvertAccounts(Request $request)
+    public function ConvertLeadtoAccount(Request $request)
     {
-        $cl_ids = $request->input("cl_ids");
+        $cl_ids = $request->input("al_ids");
         $lead_ids_array = explode(",", $cl_ids);
         $result_array = array();
         $lst_leads_info = CRMLeads::whereIn('cl_id',$lead_ids_array)->get();

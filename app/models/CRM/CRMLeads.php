@@ -26,6 +26,25 @@ class CRMLeads extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "cl_id";
     
+    public function Salesman()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_assign_to');
+    }
     
+    public function Owner()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_lead_owner');
+    }
+    
+    public function referredby()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','cl_referred_by');
+    }
+    
+    
+    public function Status()
+    {
+        return $this->hasOne('App\models\CRM\CRMLeadStatus', 'ls_id','fk_lead_status_id');
+    }
     
 }

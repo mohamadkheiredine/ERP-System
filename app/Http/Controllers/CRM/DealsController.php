@@ -36,7 +36,9 @@ use App\models\CRM\CRMLeads;
 use App\models\CRM\CRMContacts;
 use App\models\Users\Users;
 use App\models\CRM\CRMDealStages;
-
+use App\models\Inventory\Products;
+use App\models\Users\UserTypes;
+use App\models\System\Currency;
 
 
 class DealsController extends Controller
@@ -68,22 +70,37 @@ class DealsController extends Controller
      * @param Request $request
      * @return View
      */
-    public function DisplayList(Request $request)
+   public function DisplayList(Request $request)
     {
         
-        $ca_id = $request->input("ca_id");
+        $ad_account             = $request->input("ad_account");
+        $general_search         = $request->input("general_search");
+        $page_number            = $request->input("page_number");
+        $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
             
-      
-        $lst_deals_obj = CRMDeals::whereAdIsDeleted(0);
         
-        if( $ca_id > 0 )
+         if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
+        
+        $lst_deals_cond = CRMDeals::whereAdIsDeleted(0);
+        
+        if( $ad_account > 0 )
         {
-            $lst_deals_obj = $lst_deals_obj->whereFkAccountId($ca_id);
+            $lst_deals_cond = $lst_deals_cond->whereFkAccountId($ad_account);
         }
         
-        $lst_account_deals = $lst_deals_obj->get();
+        $deals_count = $lst_deals_cond->count();
+       
         
-        $lst_accounts = CRMAccounts::whereCaIsDeleted(0)->get();
+         $total_pages = ceil( $deals_count/$nbr_rows_per_pages );
+         $total_pages = intval($total_pages);
+             
+         $lst_account_deals = $lst_deals_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+          $lst_accounts   = CRMAccounts::whereCaIsDeleted(0)->get();
+         
         $accounts_array   = array(); 
         
         foreach ( $lst_accounts as $key => $account_info ) 
@@ -98,10 +115,12 @@ class DealsController extends Controller
         $result_array = array();
          
         $result_array['display'] = view("accounts.listdeals",$data)->render();
+        $result_array['total_pages'] = $total_pages;
         
         return Response()->json($result_array);
     }
     
+     
     
     /**
      * Function of Adding a new Account Deals
@@ -117,12 +136,23 @@ class DealsController extends Controller
         $lst_contacts   = CRMContacts::whereCcIsDeleted(0)->get();
         $lst_users      = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_deal_stages = CRMDealStages::whereCsIsDeleted(0)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
+        
+        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        
+        
         
         $data = array(
             "lst_accounts" => $lst_accounts,
+            "lst_products" => $lst_products,
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users,
             "lst_deal_stages" => $lst_deal_stages,
+            "lst_user_telemarketing" => $lst_telemarketing,
+            "lst_user_sales" => $lst_sales,
+            "lst_currencies" => $lst_currencies,
             "lst_contacts" => $lst_contacts
         );
         return Response()->view('accounts.adddeals',$data);
@@ -156,6 +186,9 @@ class DealsController extends Controller
         $ad_deal_probability        = $request->input('ad_deal_probability');
         $ad_next_step               = $request->input('ad_next_step');
         $ad_expected_revenue        = $request->input('ad_expected_revenue');
+        $fk_sales_id                = $request->input('fk_sales_id');
+        $fk_telemarketing_id        = $request->input('fk_telemarketing_id');
+        $ad_currency_id        = $request->input('ad_currency_id');
         
         $result_array = array();
          
@@ -179,6 +212,9 @@ class DealsController extends Controller
         $AccountDeal->ad_deal_probability   =   $ad_deal_probability;
         $AccountDeal->ad_next_step          =   $ad_next_step;
         $AccountDeal->ad_expected_revenue   =   $ad_expected_revenue;
+        $AccountDeal->fk_sales_id           =   $fk_sales_id;
+        $AccountDeal->fk_telemarketing_id   =   $fk_telemarketing_id;
+        $AccountDeal->ad_currency_id        =   $ad_currency_id;
         
  
         $AccountDeal->save();
@@ -206,12 +242,21 @@ class DealsController extends Controller
         $deal_info      = CRMDeals::find($ad_id);
         $lst_users      = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_deal_stages = CRMDealStages::whereCsIsDeleted(0)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
+        
+        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         
         $data = array(
             "lst_accounts" => $lst_accounts,
             "lst_leads" => $lst_leads,
+            "lst_products" => $lst_products,
             "deal_info" => $deal_info,
             "lst_users" => $lst_users,
+            "lst_deal_stages" => $lst_deal_stages,
+            "lst_currencies" => $lst_currencies,
+            "lst_user_telemarketing" => $lst_telemarketing,
             "lst_deal_stages" => $lst_deal_stages,
             "lst_contacts" => $lst_contacts
         );

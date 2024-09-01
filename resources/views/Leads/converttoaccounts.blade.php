@@ -33,18 +33,23 @@ th{
 @endsection
 
 @section('content')
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			<div class="m-portlet__head-title">
-				<h3 class="m-portlet__head-text">
-					Leads Management > Convert Leads To Accounts
-				</h3>
-			</div>
-		</div>
-	</div>
-	<div class="m-portlet__body">
-		<span id="hidden_fields">
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Leads Management > Convert Leads To Accounts</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="col-md-12">
+            <span id="hidden_fields">
 			<input type="hidden" name="cl_ids" value="{{ $cl_ids }}" />
 			  {!! csrf_field() !!}
 		</span>
@@ -57,6 +62,7 @@ th{
 			</div>
 			<div class="col-md-2"></div>
 		</div>
-	</div>
+        </div>
+    </div>
 </div>
 @endsection

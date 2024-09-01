@@ -19,16 +19,28 @@ $(function(){
     }).catch( error => {
          console.error( error );
      });
-	 $('select').select2();
-	 $('#AD_CLOSING_DATE').datepicker({
-		 startDate :'+1d',
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
+     	 new tempusDominus.TempusDominus(document.getElementById('AD_CLOSING_DATE'),{
+		 display: {
+			  components: {
+			      calendar: true,
+			      date: true,
+			      month: true,
+			      year: true,
+			      decades: true, 
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
+			      useTwentyfourHour: undefined
+			    }
+		 },
+		 localization: {
+			 format : "yyyy-MM-dd"
+			 
 		 }
-	 });
+	});
 	 $("#BTN_SAVE_DEALS").on('click',deals_module.SaveDealsInfo);
+	 $("#BTN_ADD_PRODUCT").on('click',function() {
+             $('#ProductsDealModel').modal('toggle');
+         });
 })

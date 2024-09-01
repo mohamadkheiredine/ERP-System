@@ -225,7 +225,7 @@ Route::post('/request/deals/deletedealinfo','CRM\DealsController@DeleteDealsInfo
 Route::post('/request/clients/displaylist','CRM\AccountsController@DisplayList');
 Route::post('/request/clients/saveaccountinfo','CRM\AccountsController@SaveAccountInfo');
 Route::post('/request/clients/deleteaccountinfo','CRM\AccountsController@DeleteAccountInfo');
-Route::post('/request/leads/converttoaccounts','CRM\AccountsController@ConvertAccounts');
+Route::put('/request/leads/converttoaccounts','CRM\AccountsController@ConvertLeadtoAccount');
 
 Route::post('/request/services/displaylistcategory','CRM\ServiceCategoriesController@DisplayList');
 Route::post('/request/services/savecategoryinfo','CRM\ServiceCategoriesController@SaveServiceCategoryInfo');

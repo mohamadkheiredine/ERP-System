@@ -60,17 +60,17 @@ th{
 										<div class="col-xl-8 order-2 order-xl-1">
 											<div class="form-group row align-items-center">
 												<div class="col-md-4">
-														<div class="d-flex align-items-center">
-                											<!--begin::Input group-->
-                											<div class="position-relative w-md-400px me-md-2">
-                												<i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
-                													<span class="path1"></span>
-                													<span class="path2"></span>
-                												</i>
-                												<input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
-                											</div>
-                											<!--end::Input group-->
-                										</div>
+                                                                                                            <div class="d-flex align-items-center">
+                                                                                                                <!--begin::Input group-->
+                                                                                                                <div class="position-relative w-md-400px me-md-2">
+                                                                                                                        <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                                                                                <span class="path1"></span>
+                                                                                                                                <span class="path2"></span>
+                                                                                                                        </i>
+                                                                                                                        <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                                                                                                                </div>
+                                                                                                                <!--end::Input group-->
+                                                                                                            </div>
 												</div>
 												<div class="col-md-4">
                                                     <div class="mb-10">
@@ -125,13 +125,17 @@ th{
 								<div class="table-responsive">
 									<table class="table table-rounded table-striped border gy-7 gs-7">
                             		<thead>
-                						<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                				<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                             				<th title="#">#</th>
                             				<th title="Id"> ID </th>
+                            				<th title="Code"> Code </th>
                             				<th title="Lead name"> Lead Name </th>
-                            				<th title="Company"> Company </th>
+                            				<th title="Lead name"> Region </th>
+                            				<th title="Lead name"> Area </th>
+                            				<th title="Lead name"> Salesman </th>
+                            				<th title="Lead name"> Telemarketer </th>
                             				<th title="Mobile"> Mobile </th>
-                            				<th title="Email"> Email </th>
+                            				<th title="Mobile"> Referred by </th>
                             				<th style="width:2px;" nowrap title="#"> edit </th>
                             				<th style="width:2px;" nowrap title="#"> Delete </th>
                             			</tr>
@@ -185,7 +189,7 @@ th{
                                                             <select class="bs-select form-control" style="width:100%"  required="required" name="cs_lead_status_id" id="CS_LEAD_STATUS_ID" data-actions-box="true">
                                                                     <option value="">-- Select Status --</option>
                                                                     @foreach ($lead_statuses as $ls_index => $ls_info )
-                                                                            <option value="{{ $ls_info->ls_id }}">{{ $ls_info->ls_status }}</option>
+                                                                            <option value="{{ $ls_info->ls_id }}">{{ $ls_info->ls_status_title }}</option>
                                                                     @endforeach
                                                             </select>			
                                         

@@ -193,6 +193,8 @@ class LeadsController extends Controller
     { 
         
         $cl_id              = $request->input('cl_id');
+        $cl_region              = $request->input('cl_region');
+        $cl_area              = $request->input('cl_area');
         $fk_lead_owner      = $request->input('fk_lead_owner');
         $cl_company_name    = $request->input('cl_company_name');
         $fk_assign_to       = $request->input('fk_assign_to');
@@ -272,6 +274,8 @@ class LeadsController extends Controller
         $LeadInfo->cl_company_name      = $cl_company_name;
         $LeadInfo->cl_type_items        = $cl_type_items;
         $LeadInfo->cl_need_shipment     = $need_shipment;
+        $LeadInfo->cl_region            = $cl_region;
+        $LeadInfo->cl_area              = $cl_area;
         
         if($is_new == true)
         {
@@ -335,17 +339,17 @@ class LeadsController extends Controller
         $cl_lead_code           = $request->input('cl_lead_code');
         
         $lead_info = new CRMLeads();
-        $lead_info->fk_lead_owner = $cl_salesman_id;
-        $lead_info->cl_lead_code = $cl_lead_code;
-        $lead_info->cl_company_name = "";
-        $lead_info->fk_assign_to = $cl_agent_id;
-        $lead_info->cl_referred_by = $cl_customer_id;
-        $lead_info->cl_first_name = $cl_first_name;
-        $lead_info->cl_last_name = $cl_last_name;
-        $lead_info->cl_mobile = $cl_mobile;
-        $lead_info->cl_email = $cl_email;
-        $lead_info->cl_phone = $cl_phone;
-        $lead_info->fk_lead_status_id = 1;
+        $lead_info->fk_lead_owner       = $cl_agent_id;
+        $lead_info->cl_lead_code        = $cl_lead_code;
+        $lead_info->cl_company_name     = "";
+        $lead_info->fk_assign_to        = $cl_salesman_id;
+        $lead_info->cl_referred_by      = $cl_customer_id;
+        $lead_info->cl_first_name       = $cl_first_name;
+        $lead_info->cl_last_name        = $cl_last_name;
+        $lead_info->cl_mobile           = $cl_mobile;
+        $lead_info->cl_email            = $cl_email;
+        $lead_info->cl_phone            = $cl_phone;
+        $lead_info->fk_lead_status_id   = 1;
         $lead_info->save();
         
         $result_array['is_error']   = 0;

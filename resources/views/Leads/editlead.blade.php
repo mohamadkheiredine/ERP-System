@@ -69,7 +69,7 @@ Page Description :
                         <div class="col-md-4">
                               <div class="form-group">
                                 <label>Lead Owner</label><br/>
-                                <select class="bs-select form-control" name="fk_lead_owner" id="FK_LEAD_OWNER" data-actions-box="true">
+                                <select  name="fk_lead_owner" id="FK_LEAD_OWNER"  class="form-control form-select" data-control="select2" data-placeholder="Select Lead Owner">
                                         <option value="">-- Select Owner --</option>
                                         <?php foreach ( $lst_users as $key => $user_info ) { ?>
                                                 <option {{ $user_info->id == $lead_info->fk_lead_owner ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
@@ -79,8 +79,8 @@ Page Description :
                         </div>
                         <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Company <span class="required"> * </span></label>
-                                <input type="text" name="cl_company_name" id="CL_COMPANY_NAME" class="form-control" required="required" maxlength="255"  value="{{ $lead_info->cl_company_name }}" />
+                                <label class="control-label">Company</label>
+                                <input type="text" name="cl_company_name" id="CL_COMPANY_NAME" class="form-control" maxlength="255"  value="{{ $lead_info->cl_company_name }}" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -128,15 +128,15 @@ Page Description :
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Lead Source <span class="required"> * </span></label>
-                                <select class="bs-select form-control" required="required" name="fk_lead_source" id="FK_LEAD_SOURCE" data-actions-box="true">
-                                        <option value="">-- Select Owner --</option>
+                                <select  required="required" name="fk_lead_source" id="FK_LEAD_SOURCE"  class="form-control form-select" data-control="select2" data-placeholder="Select Lead Source">
+                                        <option value="">-- Select Lead Source --</option>
                                         @foreach ($lst_lead_source as $ls_index => $ls_info )
                                                 <option {{ $ls_info->ls_id == $lead_info->fk_lead_source_id ? "selected" : "" }} value="{{ $ls_info->ls_id }}">{{ $ls_info->ls_lead_source }}</option>
                                         @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+<!--                        <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Item Types<span class="required"> * </span></label>
                                 <select class="bs-select form-control" required="required" name="cl_type_items" id="CL_TYPE_ITEMS" data-actions-box="true">
@@ -145,11 +145,12 @@ Page Description :
                                         <option {{ $lead_info->cl_type_items == "2" ? "selected" : "" }} value="2">Services</option>
                                 </select>
                             </div>
-                        </div>
+                        </div>-->
+                        <input type="hidden" name="cl_type_items" id="CL_TYPE_ITEMS" value="1" />
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Lead Status <span class="required"> * </span></label>
-                                <select class="bs-select form-control" required="required" name="fk_lead_status_id" id="FK_LEAD_STATUS_ID"  data-actions-box="true">
+                                    <select required="required" name="fk_lead_status_id" id="FK_LEAD_STATUS_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Lead Status">
                                         <option value="">-- Select Status --</option>
                                         @foreach ($lead_statuses as $ls_index => $ls_info )
                                                 <option {{ $ls_info->ls_id == $lead_info->fk_lead_status_id ? "selected" : "" }} value="{{ $ls_info->ls_id }}">{{ $ls_info->ls_status_title }}</option>
@@ -160,8 +161,8 @@ Page Description :
                         </div>
                         <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Industry <span class="required"> * </span></label>
-                                <select class="bs-select form-control" name="fk_industry_id" id="FK_INDUSTRY_ID" required="required" data-actions-box="true">
+                                <label class="control-label">Industry</label>
+                                <select name="fk_industry_id" id="FK_INDUSTRY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Industry">
                                         <option value="">-- Select Industry --</option>
                                         @foreach ($lst_industries as $ind_index => $ind_info )
                                                 <option {{ $ind_info->si_id == $lead_info->fk_industry_id ? "selected" : "" }}  value="{{ $ind_info->si_id }}">{{ $ind_info->si_industry }}</option>
@@ -172,7 +173,7 @@ Page Description :
                         <div class="col-md-4">
                               <div class="form-group">
                                 <label>Lead Assign To <span class="required"> * </span> </label>
-                                <select class="bs-select form-control" name="fk_assign_to" required="required" id="FK_ASSIGN_TO" data-actions-box="true">
+                                <select name="fk_assign_to" required="required" id="FK_ASSIGN_TO"  class="form-control form-select" data-control="select2" data-placeholder="Select Industry">
                                         <option value="">-- Select User --</option>
                                         <?php foreach ( $lst_users as $key => $user_info ) { ?>
                                                 <option {{ $user_info->id == $lead_info->fk_assign_to ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
@@ -259,7 +260,7 @@ Page Description :
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Lead Country</label>
-                                <select class="bs-select form-control" name="cl_country_id" id="CL_COUNTRY_ID" data-actions-box="true">
+                                <select name="cl_country_id" id="CL_COUNTRY_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Country">
                                         <option value="">-- Select Country --</option>
                                         @foreach ($lst_countries as $c_index => $c_info )
                                                 <option {{ $c_info->id == $lead_info->cl_country_id ? "selected" : "" }} value="{{ $c_info->id }}">{{ $c_info->name }}</option>
@@ -277,6 +278,18 @@ Page Description :
                              <div class="form-group">
                                 <label class="control-label">State</label>
                                 <input type="text" name="cl_state" id="CL_STATE" class="form-control" maxlength="255" value="{{ $lead_info->cl_state }}" />
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Region</label>
+                                <input type="text" name="cl_region" id="CL_REGION" class="form-control" maxlength="255" value="{{ $lead_info->cl_region }}" />
+                            </div>
+                        </div>
+                          <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Area</label>
+                                <input type="text" name="cl_area" id="CL_AREA" class="form-control" maxlength="255" value="" />
                             </div>
                         </div>
                          <div class="col-md-4">

@@ -11,6 +11,7 @@
         "barryvdh/laravel-cors": "^3.0",
         "barryvdh/laravel-dompdf": "^2.0",
         "fideloper/proxy": "^4.4",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.2",
         "highideas/laravel-users-online": "^3.0",
         "laravel/fortify": "^1.13",

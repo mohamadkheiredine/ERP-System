@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenters/dashboard','Dashboard\DashboardController@CallcenterDashboard');
     Route::get('/accounting/dashboard','Dashboard\DashboardController@Accounting');
     Route::get('/services/dashboard','Dashboard\DashboardController@Services');
+    Route::get('/crm/dashboard','Dashboard\DashboardController@CrmDashboard');
     
     Route::get('/user/logout','Users\UsersController@LogOut');
     Route::get('/user/myprofile','Users\UsersController@MyProfile');

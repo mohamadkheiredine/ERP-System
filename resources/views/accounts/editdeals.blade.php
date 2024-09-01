@@ -75,7 +75,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Deal Owner </label>
-                                                        <select class="bs-select form-control" name="ad_deal_owner" id="AD_DEAL_OWNER" data-actions-box="true">
+                                                        <select name="ad_deal_owner" id="AD_DEAL_OWNER" class="form-control form-select" data-control="select2" data-placeholder="Select Deal Owner">
                                                                 <option value="0"> Owner </option>
                                                                 @foreach ($lst_users as $key => $user_info )
                                                                         <option {{ $deal_info->ad_deal_owner == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
@@ -86,7 +86,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Lead </label>
-                                                        <select class="bs-select form-control" name="fk_lead_id" id="FK_LEAD_ID" data-actions-box="true">
+                                                        <select name="fk_lead_id" id="FK_LEAD_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Deal Lead">
                                                                 <option value="0"> Lead </option>
                                                                 @foreach ($lst_leads as $key => $lead_info )
                                                                         <option value="{{ $lead_info->cl_id }}" {{ $deal_info->fk_lead_id  == $lead_info->cl_id ? "selected" : "" }} >{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name  }}</option>
@@ -97,7 +97,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Contact </label>
-                                                        <select class="bs-select form-control" name="fk_contact_id" id="FK_CONTACT_ID" data-actions-box="true">
+                                                        <select name="fk_contact_id" id="FK_CONTACT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Main Contact">
                                                                 <option value="0"> Contact </option>
                                                                 @foreach ($lst_contacts as $key => $cc_info )
                                                                         <option value="{{ $cc_info->cc_id }}" {{ $deal_info->fk_contact_id  == $cc_info->cc_id ? "selected" : "" }} >{{ $cc_info->cc_first_name . " " . $cc_info->cc_last_name  }}</option>
@@ -108,7 +108,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Account </label>
-                                                        <select class="bs-select form-control" name="fk_account_id" id="FK_ACCOUNT_ID" data-actions-box="true">
+                                                        <select name="fk_account_id" id="FK_ACCOUNT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Related Account">
                                                                 <option value="0"> Account </option>
                                                                 @foreach ($lst_accounts as $key => $account_info )
                                                                         <option value="{{ $account_info->ca_id }}"  {{ $deal_info->fk_account_id  ==  $account_info->ca_id ? "selected" : "" }}>{{ $account_info->ca_account_name }}</option>
@@ -122,6 +122,17 @@ th{
                                                         <input type="text" name="ad_deal_amount" id="AD_DEAL_AMOUNT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_deal_amount }}" />
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Currency </label>
+                                                            <select name="ad_currency_id" id="AD_CURRENCY_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                                                <option value="0"> Select Currency </option>
+                                                                @foreach ($lst_currencies as $key => $currency_info )
+                                                                        <option {{ $deal_info->ad_currency_id == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}&nbsp;-&nbsp;{{ $currency_info->cc_currency_name }}</option>
+                                                                @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
                                                         <label class="control-label">Deal Close Date <span class="required"> * </span></label>
@@ -131,7 +142,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Deal Stage </label>
-                                                        <select class="bs-select form-control" name="ad_deal_stage" id="AD_DEAL_STAGE" data-actions-box="true">
+                                                        <select name="ad_deal_stage" id="AD_DEAL_STAGE"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Stage">
                                                                 <option value="0"> Deal Stage </option>
                                                                 @foreach ($lst_deal_stages as $key => $ds_info )
                                                                         <option {{ $deal_info->ad_deal_stage == $ds_info->cs_id ? "selected" : "" }} value="{{ $ds_info->cs_id }}">{{ $ds_info->cs_stage_name }}</option>
@@ -142,14 +153,36 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Deal type </label>
-                                                        <select class="bs-select form-control" name="ad_deal_type" id="AD_DEAL_TYPE" data-actions-box="true">
+                                                        <select name="ad_deal_type" id="AD_DEAL_TYPE"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Type">
                                                                 <option value="0"> Deal Type </option>
                                                                 <option {{ $deal_info->ad_deal_type == 1 ? "selected" : "" }} value="1"> Existing Business </option>
                                                                 <option {{ $deal_info->ad_deal_type == 2 ? "selected" : "" }} value="2"> New Business  </option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                    <div class="col-md-4">
+                                                 <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Sales  </label>
+                                                            <select name="fk_sales_id" id="FK_SALES_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Sales">
+                                                                <option value="0"> Select Salesman </option>
+                                                                @foreach ($lst_user_sales as $key => $user_info )
+                                                                        <option {{ $user_info->id == $deal_info->fk_sales_id ? "selected" : "" }} value="{{ $user_info->id }}" >{{ $user_info->u_fullname }}</option>
+                                                                @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Telemarketer </label>
+                                                            <select name="fk_telemarketing_id" id="FK_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
+                                                                <option value="0"> Select Telemarketer </option>
+                                                                @foreach ($lst_user_telemarketing as $key => $user_info )
+                                                                        <option value="{{ $user_info->id }}" {{ $user_info->id == $deal_info->fk_telemarketing_id ? "selected" : "" }} >{{ $user_info->u_fullname }}</option>
+                                                                @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
                                                      <div class="form-group">
                                                         <label class="control-label">Probability (%)</label>
                                                         <input type="text" name="ad_deal_probability" id="AD_DEAL_PROBABILITY" class="form-control"  maxlength="5"  value="{{ $deal_info->ad_deal_probability }}" />

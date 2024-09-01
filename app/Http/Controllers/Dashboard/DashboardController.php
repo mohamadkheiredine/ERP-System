@@ -86,6 +86,16 @@ class DashboardController extends Controller
     }
     
     
+    /**
+     * Crm Dashboard
+     */
+    public function CrmDashboard()
+    {
+        $data = array( );
+        return Response()->view("dashboard.crm",$data);
+    }
+    
+    
     
     public function Services()
     {

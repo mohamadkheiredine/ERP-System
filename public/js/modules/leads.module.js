@@ -1,7 +1,6 @@
 /**
  * 
  */
-$.lead_datatable;
 leads_module = {
 		DisplayListLeads : function(){
 			var base_url 			= $('input[name=base_url]').val();
@@ -236,8 +235,23 @@ leads_module = {
 				ls_ids.push(ls_id);
 			}); 
 			var str_ls = ls_ids.join(",");
+                        let _token = $('input[name=_token]').val();
 			var base_url = $('#BASE_URL').val();
-			window.location.href = base_url + "/request/ConvertToAccounts/leads/" + str_ls;
+                        let url = base_url + '/request/leads/converttoaccounts'
+			 $.ajax
+		        ({
+		            url : url,
+		            data : { _token : _token , al_ids : str_ls },
+		            dataType : "Json",
+		            type : "PUT",
+		            success : function(response){
+		              if(response.is_error == 0)
+		              { 
+		            	  	leads_module.DisplayListLeads();
+		            		$('#AssignLeadModel').modal('toggle');
+		              }
+		            }
+		        });
 		},
 		QuickActionLead : function(){
 			var action_type = $(this).data('action_type');
@@ -282,7 +296,6 @@ leads_module = {
 				success : function(response){
 					if(response.is_error == 0)
 					{ 
-						$.lead_datatable.destroy();
 						leads_module.DisplayListLeads();
 						$('#ChangeStatusModel').modal('toggle');
 					}
@@ -301,7 +314,6 @@ leads_module = {
 		            success : function(response){
 		              if(response.is_error == 0)
 		              { 
-		            	  $.lead_datatable.destroy();
 		            	  	leads_module.DisplayListLeads();
 		            		$('#AssignLeadModel').modal('toggle');
 		              }

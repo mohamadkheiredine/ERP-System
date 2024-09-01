@@ -67,7 +67,7 @@ $(function(){
 			    }
 		 },
 		 localization: {
-			 format : "yyyy-m-d HH:mm:ss"
+			 format : "yyyy-MM-d HH:mm:ss"
 			 
 		 }
 	});

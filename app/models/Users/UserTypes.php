@@ -28,4 +28,16 @@ class UserTypes extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "ut_id";
     
+    const USER_TYPE_ADMIN = 1;
+    const USER_TYPE_RECEPTION = 2;
+    const USER_TYPE_AGENT = 3;
+    const USER_TYPE_ACCOUNTING = 4;
+    const USER_TYPE_TECHNICIAN = 5;
+    const USER_TYPE_CLEANER = 6;
+    const USER_TYPE_DRIVERS = 7;
+    const USER_TYPE_SECURITY = 8;
+    const USER_TYPE_TELEMARKETING = 9;
+    const USER_TYPE_MAINTAINER = 10;
+    const USER_TYPE_SALES = 11;
+    
 }

@@ -6,47 +6,41 @@ deals_module = {
 		displayListDeals : function(){
 			var base_url 	= $('input[name=base_url]').val();
 		    var _token 		= $('input[name=_token]').val();
+		    var ad_account 		= $('select[name=ad_account]').val();
+                var page_number 		= $('input[name=page_number]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/deals/displaylistdeals",
-		        data : { _token : _token },
+		        data : { _token : _token , ad_account : ad_account , page_number : page_number },
 	            method : 'post',
 	            dataType : "json",
 	            beforeSend : function(){
 	            },
 		        success : function(response){
 		        	$('#LstAccountDeals').html(response.display);
-		        	$.ad_datatable = $('.m_datatable').mDatatable({
-						
-						// layout definition
-						layout: {
-							theme: 'default', // datatable theme
-							class: '', // custom wrapper class
-							scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-							// height: 450, // datatable's body's fixed height
-							footer: false // display/hide footer
-						},
-						
-						// column sorting
-						sortable: true,
-						
-						pagination: true,
-						
-						search: {
-							input: $('#generalSearch')
-						},
-						
-						// inline and bactch editing(cooming soon)
-						// editable: false,
-					});
-					
-					$("a[id*=EDIT_DEAL_]").on('click',deals_module.EditDealInfo);
-					$("a[id*=DELETE_DEAL_]").on('click',deals_module.DeleteDealData);
+				 $('.group-checkable').change(function() {
+                                    var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                                    var checked = $(this).prop("checked");
+                                    $(set).each(function() {
+                                        $(this).prop("checked", checked);
+                                    });
+                                    $.uniform.update(set);
+                                }); 
+                                 if(response.total_pages > 0)
+                                 {
+                                         $('#DealsPagination').twbsPagination({
+                                            totalPages: response.total_pages,
+                                            visiblePages: 7,
+                                            onPageClick: function (event, page) {
+                                                 $('input[name=page_number]').val(page);
+                                                 deals_module.displayListDeals();
+                                            }
+                                        });
+                                 }	     
 		        }
 		    });
 	},
 	FilterDeals : function(){
-		$.ad_datatable.destroy();
 		deals_module.displayListDeals();
 	},
 	SaveDealsInfo : function(){
@@ -176,7 +170,6 @@ deals_module = {
 			            success : function(response){
 			              if(response.is_error == 0)
 			              {
-			            	  $.ad_datatable.destroy();
 			            	  deals_module.displayListDeals();
 			              }
 			            }

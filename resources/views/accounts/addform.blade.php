@@ -63,7 +63,7 @@ th{
                     	<div class="col-md-4">
                               <div class="form-group">
                                 <label>Account Responsible <span class="required"> * </span> </label>
-                                <select class="bs-select form-control" name="fk_account_owner_id" id="FK_ACCOUNT_OWNER_ID" data-actions-box="true">
+                                <select name="fk_account_owner_id" id="FK_ACCOUNT_OWNER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Account Owner">
                                         <option value="">-- Select Owner --</option>
                                         @foreach( $lst_users as $key => $user_info )
                                           <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
@@ -75,7 +75,7 @@ th{
                     	<div class="col-md-4">
                               <div class="form-group">
                                 <label>Lead </label>
-                                <select class="bs-select form-control" name="ca_lead_id" id="CA_LEAD_ID" data-actions-box="true">
+                                <select name="ca_lead_id" id="CA_LEAD_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Source">
                                         <option value="0">-- Select Lead --</option>
                                         @foreach( $lst_leads as $key => $lead_info )
                                           <option value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</option>
@@ -87,7 +87,7 @@ th{
                     	<div class="col-md-4">
                               <div class="form-group">
                                 <label>Parent Account</label>
-                                <select class="bs-select form-control" name="ca_parent_account" id="CA_PARENT_ACCOUNT" data-actions-box="true">
+                                <select name="ca_parent_account" id="CA_PARENT_ACCOUNT" class="form-control form-select" data-control="select2" data-placeholder="Select Parent Account">
                                         <option value="0">-- Select Account --</option>
                                         @foreach( $lst_accounts as $key => $acc_info )
                                           <option value="{{ $acc_info->ca_id }}">{{ $acc_info->ca_account_name }}</option>
@@ -99,7 +99,7 @@ th{
                         <div class="col-md-4">
                         <div class="form-group">
                          <label>Account Category<span class="required"> * </span> </label>
-                           <select class="bs-select form-control" id="CA_ACCOUNT_CATEGORY"  required="required" name="ca_account_category">
+                               <select name="ca_account_category" id="CA_ACCOUNT_CATEGORY" class="form-control form-select" data-control="select2" data-placeholder="Select Account Category">
                     			<option value="0">-- Select Category --</option>
                                 @foreach($lst_client_categories as $index => $cc_info)
                                   <option value="{{ $cc_info->cc_id }}">{{  $cc_info->cc_category_ref . " - " . $cc_info->cc_category_name }}</option>
@@ -110,7 +110,7 @@ th{
                         <div class="col-md-4">
                         <div class="form-group">
                          <label>Account Type&nbsp;<span class="required"> * </span> </label>
-                           <select class="bs-select form-control" id="CA_ACCOUNT_TYPE_ID" required="required" name="ca_account_type_id">
+                         <select name="ca_account_type_id" id="CA_ACCOUNT_TYPE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Account Type">
                     			<option value="0">-- Select Type --</option>
                                 @foreach($lst_account_types as $index => $at_info)
                                   <option value="{{ $at_info->at_id }}">{{  $at_info->at_account_type }}</option>
@@ -121,7 +121,7 @@ th{
                         <div class="col-md-4">
                         <div class="form-group">
                          <label>Ownership&nbsp; </label>
-                           <select class="bs-select form-control" id="CA_ACCOUNT_OWNERSHIP" name="ca_account_ownership">
+                         <select name="ca_account_ownership" id="CA_ACCOUNT_OWNERSHIP" class="form-control form-select" data-control="select2" data-placeholder="Select Account Ownership">
                     			<option value="0">-- Select Ownership --</option>
                     			<option value="1">Public</option>
                     			<option value="2">Private</option>
@@ -249,7 +249,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Country</label>
-                                <select class="bs-select form-control" name="ca_billing_country" id="CA_BILLING_COUNTRY" data-actions-box="true">
+                                <select name="ca_billing_country" id="CA_BILLING_COUNTRY" class="form-control form-select" data-control="select2" data-placeholder="Select Billing Country">
                                         <option value="">-- Select Country --</option>
                                         @foreach ($lst_countries as $c_index => $c_info )
                                                 <option value="{{ $c_info->id }}">{{ $c_info->name }}</option>
@@ -290,7 +290,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Country</label>
-                                <select class="bs-select form-control" name="ca_shipping_country" id="CA_SHIPPING_COUNTRY" data-actions-box="true">
+                                <select name="ca_shipping_country" id="CA_SHIPPING_COUNTRY" class="form-control form-select" data-control="select2" data-placeholder="Select Shipping Country">
                                         <option value="">-- Select Country --</option>
                                         @foreach ($lst_countries as $c_index => $c_info )
                                                 <option value="{{ $c_info->id }}">{{ $c_info->name }}</option>
