@@ -33,6 +33,9 @@ th{
 @endsection
 
 @section('content')
+<span id='hidden_fields'>
+    
+</span>
 <div class="card shadow-sm">
     <div class="card-header">
         <h3 class="card-title">Shipment Operations</h3>

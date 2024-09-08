@@ -301,7 +301,7 @@ Page Description :
                                                                             
                                                                               <div class="menu-item">
                                                                                     <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
+                                                                                    <a class="menu-link" href="{{  url('callcenter/maintenancecase') }}">
                                                                                             <span class="menu-bullet">
                                                                                                     <span class="bullet bullet-dot"></span>
                                                                                             </span>
@@ -312,7 +312,7 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
-							@if($license_array->TIMESHEET_MODULE == 1)
+                                                                @if($license_array->TIMESHEET_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -6354,6 +6354,11 @@ Page Description :
 
 		    return null; // Return null if the cookie is not found
 		}
+                $(function(){
+                     $("#BACK_FORM").on('click',function(){
+                        history.back();
+                    });
+                })
 		</script>
 		 @yield("plugins")
 		<!--end::Javascript-->

@@ -50,15 +50,15 @@ th{
     <form name="frm_save_deals" id="FORM_SAVE_DEALS">
                                         <div class="form-body">
                                              <span id="hidden_fields">
-                                              {!! csrf_field() !!}
-                                              <input type="hidden" name="deals" value="" />
+                                                {!! csrf_field() !!}
+                                                <input type="hidden" name="deals" value="" />
                                             </span>
                                             <div class="alert alert-success" style="display:none">
-                                    				<strong>Success!</strong> Account Deal Information is saved successfully!
-                                    			</div>
-                                    			<div class="alert alert-danger" style="display:none">
-                                    				<strong>Error!</strong> You have some form errors. Please check below.
-                                    			</div>
+                                               <strong>Success!</strong> Account Deal Information is saved successfully!
+                                            </div>
+                                            <div class="alert alert-danger" style="display:none">
+                                                <strong>Error!</strong> You have some form errors. Please check below.
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                       <div class="form-group">
@@ -120,6 +120,18 @@ th{
                                                      <div class="form-group">
                                                         <label class="control-label">Deal Amount <span class="required"> * </span></label>
                                                         <input type="text" name="ad_deal_amount" id="AD_DEAL_AMOUNT" class="form-control" required="required" maxlength="255"  value="" />
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-4">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Deal Down Payment <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_down_payment" id="AD_DOWN_PAYMENT" class="form-control" required="required" maxlength="255"  value="" />
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-4">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Deal Number of Payments <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_nbr_of_payments" id="AD_NBR_OF_PAYMENT" class="form-control" required="required" maxlength="255"  value="" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -188,11 +200,20 @@ th{
                                                         <input type="text" name="ad_deal_probability" id="AD_DEAL_PROBABILITY" class="form-control"  maxlength="5"  value="" />
                                                     </div>
                                                 </div>
-                                                    <div class="col-md-4">
+                                                <div class="col-md-4">
                                                      <div class="form-group">
                                                         <label class="control-label">Expected Revenue</label>
                                                         <input type="text" name="ad_expected_revenue" id="AD_EXPECTED_REVENUE" class="form-control"  maxlength="50"  value="" />
                                                     </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                      <br/>
+                                                    <label class="form-check form-switch form-check-custom form-check-solid">
+                                                          <input class="form-check-input" type="checkbox" name="ad_is_approved" id="AD_IS_APPROVED"  value="1"  />
+                                                          <span class="form-check-label fw-semibold text-muted">
+                                                            Deal Approved
+                                                          </span>
+                                                      </label> 
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">
@@ -299,7 +320,7 @@ th{
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                         Close
                                 </button>
-                                <button type="button" name="btn_assign_lead_to" class="btn btn-primary">
+                                <button type="button" name="btn_assign_product_deal" class="btn btn-primary">
                                         Submit
                                 </button>
                         </div>

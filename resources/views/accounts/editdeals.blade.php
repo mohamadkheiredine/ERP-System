@@ -122,6 +122,18 @@ th{
                                                         <input type="text" name="ad_deal_amount" id="AD_DEAL_AMOUNT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_deal_amount }}" />
                                                     </div>
                                                 </div>
+                                                  <div class="col-md-4">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Deal Down Payment <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_down_payment" id="AD_DOWN_PAYMENT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_down_payment }}" />
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-4">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Deal Number of Payments <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_nbr_of_payments" id="AD_NBR_OF_PAYMENT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_nbr_of_payments }}" />
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Currency </label>
@@ -193,6 +205,15 @@ th{
                                                         <label class="control-label">Expected Revenue</label>
                                                         <input type="text" name="ad_expected_revenue" id="AD_EXPECTED_REVENUE" class="form-control"  maxlength="50"  value="{{ $deal_info->ad_expected_revenue }}" />
                                                     </div>
+                                                </div>
+                                                   <div class="col-md-4">
+                                                      <br/>
+                                                    <label class="form-check form-switch form-check-custom form-check-solid">
+                                                          <input class="form-check-input" type="checkbox" name="ad_is_approved" id="AD_IS_APPROVED" {{ $deal_info->ad_is_approved == 1 ? "checked" : "" }}  value="1"  />
+                                                          <span class="form-check-label fw-semibold text-muted">
+                                                            Deal Approved
+                                                          </span>
+                                                      </label> 
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">

@@ -59,15 +59,15 @@ $(function(){
 			      month: true,
 			      year: true,
 			      decades: true, 
-			      clock: true,
-			      hours: true,
-			      minutes: true,
-			      seconds: true,
+			      clock: false,
+			      hours: false,
+			      minutes: false,
+			      seconds: false,
 			      useTwentyfourHour: undefined
 			    }
 		 },
 		 localization: {
-			 format : "yyyy-MM-d HH:mm:ss"
+			 format : "yyyy-MM-dd"
 			 
 		 }
 	});
@@ -77,10 +77,7 @@ $(function(){
 	 $("#BTN_SAVE_OPERATION").on("click",operations_module.SaveOperationInfo);
 	 $("#BTN_ADD_ORDER").on("click",operations_module.AddOperationOrder);
 	 $("#SO_OPERATION_TYPE").on("change",operations_module.DisplayOperationTypeFields);
+	 $(".LstOrdersBody").on("click",'a[id*=DELETE_ORDER_]',operations_module.DeleteOperationOrder);
 	 $(".dropdown-item").on("click",operations_module.QuickActions);
-//	 $("#OPERATION_INFO").on("change","#SO_WAREHOUSE_SOURCE",operations_module.DisplayListOperationProducts);
-//	 $("#OPERATION_INFO").on("click","#ADD_NEW_PRODUCT",operations_module.AddNewProductRow);
-//	 $("#OPERATION_INFO").on("click",".deleteRow",operations_module.DeleteProductRow);
-//	 $("#OPERATION_INFO").on("click","#SO_WAREHOUSE_SOURCE",operations_module.GetVehiculeDropdown);
-	 
+        
 })

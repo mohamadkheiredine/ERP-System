@@ -23,6 +23,7 @@ use Session;
 use Redirect;
 use Auth;
 use DB;
+use Config;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\WareHouses;
 use App\models\CRM\CRMAccounts;
@@ -77,14 +78,46 @@ class ShipmentController extends Controller
     {
         $account_id     = $request->input("account_id");
         $warehouse_id   = $request->input("warehouse_id");
+        $general_search   = $request->input("general_search");
+        $page_number           = $request->input('page_number');
+        $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+        if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
         $result_array   = array();
-        $lst_operations = ShipOperations::whereSoIsDeleted(0)->get();
+        
+        
+        $operations_cond = ShipOperations::whereSoIsDeleted(0);
+        
+        if(strlen($general_search) > 0)
+        {
+            $operations_cond = $operations_cond->where("so_operation_label","LIKE","%" . $general_search . "%");
+            $operations_cond = $operations_cond->orWhere("so_operation_description","LIKE","%" . $general_search . "%");
+        }
+        
+        
+        if($warehouse_id > 0)
+        {
+            $operations_cond = $operations_cond->where("so_warehouse_source","=",$warehouse_id);
+            $operations_cond = $operations_cond->orWhere("so_warehouse_source","=",$warehouse_id);
+        }
+        
+        $operations_count = $operations_cond->count();
+        
+         $total_pages = ceil( $operations_count/$nbr_rows_per_pages );
+         $total_pages = intval($total_pages);
+        
+        
+        $lst_operations = $operations_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('so_operation_date',"ASC")->get();
         
         $data = array(
             "lst_operations" => $lst_operations
         );
-        $result_array['display'] = view('shipment.displaylistoperations',$data)->render();
         
+        $result_array['display'] = view('shipment.displaylistoperations',$data)->render();
+          $result_array['total_pages'] = $total_pages;
+          
         return Response()->json($result_array);
     }
     
@@ -195,6 +228,7 @@ class ShipmentController extends Controller
         $so_operation_time          = $request->input("so_operation_time");
         $so_warehouse_source        = $request->input("so_warehouse_source");
         $so_delivery_date        = $request->input("so_delivery_date");
+        $so_delivery_date = date("Y-m-d", strtotime($so_delivery_date));
         $so_warehouse_destination   = $request->input("so_warehouse_destination");
         $so_operation_description   = $request->input("so_operation_description");
         $products                   = $request->input("products");
@@ -384,6 +418,41 @@ class ShipmentController extends Controller
     }
     
     
+    
+    
+     public function DeleteShipmentInfo(Request $request)
+    {
+        
+        $so_id	      = $request->input('so_id');
+        
+        $ship_operation   = ShipOperations::find( $so_id );
+        $ship_operation->so_is_deleted          = 1;
+        $ship_operation->so_deleted_by          = Session('user_id');
+        $ship_operation->save();
+        
+        
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = "Operation Complete Successfully";
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    
+    public function DeleteOrderShipmentInfo(Request $request)
+    {
+        
+        $shiping_id	      = $request->input('shiping_id');
+        $order_id	      = $request->input('order_id');
+        
+        $del_ship_operation   = OperationOrders::whereFkOoOperationId( $shiping_id )->whereFkOoOrderId($order_id)->delete();
+        
+        
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = "Operation Complete Successfully";
+        
+        return Response()->json($result_array);
+    }
     
     
     

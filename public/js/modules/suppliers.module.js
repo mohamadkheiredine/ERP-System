@@ -6,27 +6,62 @@ suppliers_module = {
 		DisplayListSuppliers : function(){
 			var base_url 			= $('input[name=base_url]').val(); 
 			var _token 			= $('input[name=_token]').val(); 
+			var general_search 			= $('input[name=general_search]').val(); 
+			var page_number 			= $('input[name=page_number]').val(); 
 			var supplier_category	 	= $('select[name=supplier_category]').val(); 
 			var supplier_status	 	= $('select[name=supplier_status]').val(); 
-		    var params = { _token : _token , supplier_category : supplier_category , supplier_status : supplier_status };
-		    $.ajax
-	        ({
-	            url : base_url + "/request/srm/displaylistsuppliers",
-	            data : params,
-	            dataType : "json",
-	            type : "POST",
-	            success : function(response){
-	            	$('#LstSuppliers').html(response.display);
-	            	 $('.group-checkable').change(function() {
-                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-                        var checked = $(this).prop("checked");
-                        $(set).each(function() {
-                            $(this).prop("checked", checked);
-                        });
-                        $.uniform.update(set);
-                    });
-	            }
-	        });
+		    var params = { _token : _token , supplier_category : supplier_category ,page_number : page_number, supplier_status : supplier_status , general_search : general_search };
+                    
+                    $.ajax
+			({
+				url : base_url + "/request/srm/displaylistsuppliers",
+				data : params,
+				method : 'post',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+					$('#LstSuppliers').html(response.display);
+					 $('.group-checkable').change(function() {
+                                            var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                                            var checked = $(this).prop("checked");
+                                            $(set).each(function() {
+                                                $(this).prop("checked", checked);
+                                            });
+                                            $.uniform.update(set);
+                                        }); 
+					 if(response.total_pages > 0)
+					 {
+						 $('#SuppliersPagination').twbsPagination({
+                                                    totalPages: response.total_pages,
+                                                    visiblePages: 7,
+                                                    onPageClick: function (event, page) {
+                                                         $('input[name=page_number]').val(page);
+                                                         suppliers_module.DisplayListSuppliers();
+                                                    }
+                                                });
+					 }
+				}
+			});
+                    
+//		    $.ajax
+//	        ({
+//	            url : base_url + "/request/srm/displaylistsuppliers",
+//	            data : params,
+//	            dataType : "json",
+//	            type : "POST",
+//	            success : function(response){
+//	            	$('#LstSuppliers').html(response.display);
+//	            	 $('.group-checkable').change(function() {
+//                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+//                        var checked = $(this).prop("checked");
+//                        $(set).each(function() {
+//                            $(this).prop("checked", checked);
+//                        });
+//                        $.uniform.update(set);
+//                    });
+//	            }
+//	        });
 		},
 		EditSupplierInfo : function(){
 			var ss_id 		= $(this).data("ss_id");

@@ -93,10 +93,16 @@ th{
                                 <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ date('d/m/Y',strtotime($supplier_quotation->sq_due_date)) }}" />
                             </div>
                         </div>
+                            <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Container Number</label>
+                                <input type="text" name="sq_container_number" id="SQ_CONTAINER_NUMBER" class="form-control"  maxlength="255"  value="{{ $supplier_quotation->sq_container_number }}" />
+                            </div>
+                        </div>
                          <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Currency  <span class="required"> * </span></label><br/>
-                                     <select class="bs-select form-control" name="sq_currency_id" id="SQ_CURRENCY_ID" required="required" data-actions-box="true">
+                                     <select  name="sq_currency_id" id="SQ_CURRENCY_ID"  class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Currency">
                                         <option value=""> Select Currency </option>
                                         @foreach ( $lst_currency as $key => $currency_info )
                                                 <option {{ $supplier_quotation->sq_currency_id == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name }}</option>
@@ -107,7 +113,7 @@ th{
                          <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Warehouse  <span class="required"> * </span></label>
-                                     <select class="bs-select form-control" name="sq_warehouse_id" id="SQ_WAREHOUSE_ID" required="required" data-actions-box="true">
+                                     <select  name="sq_warehouse_id" id="SQ_WAREHOUSE_ID" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Warehouse">
                                         <option value=""> Select Warehouse </option>
                                         @foreach ( $lst_warehouses as $key => $warehouse_info )
                                                 <option {{ $supplier_quotation->sq_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}" >{{ $warehouse_info->w_warehouse_name }}</option>

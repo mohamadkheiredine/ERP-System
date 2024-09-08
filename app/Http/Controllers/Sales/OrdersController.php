@@ -349,7 +349,8 @@ class OrdersController extends Controller
     {
         
         $rand_barcode       = rand(10000000,99999999999);
-        $bar_code_png       = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+         $barcode_obj = new DNS1D();
+       $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 ); 
         
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();

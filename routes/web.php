@@ -418,4 +418,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/casestatus/addform','CallCenter\CaseStatusController@AddForm');
     Route::get('/callcenter/casestatus/editform/{oc_id}','CallCenter\CaseStatusController@EditForm');
     
+    
+    Route::get('/callcenter/maintenancecase','CallCenter\MaintenanceCaseController@index');
+    Route::get('/callcenter/maintenancecase/addform','CallCenter\MaintenanceCaseController@AddForm');
+    Route::get('/callcenter/maintenancecase/editform/{oc_id}','CallCenter\MaintenanceCaseController@EditForm');
+    
 });

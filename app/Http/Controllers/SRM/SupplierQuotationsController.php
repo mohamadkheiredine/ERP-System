@@ -346,6 +346,7 @@ class SupplierQuotationsController extends Controller
         $product_id                 = $request->input('product_id');
         $currency_id                = $request->input('currency_id');
         $sq_warehouse_id            = $request->input('sq_warehouse_id');
+        $sq_container_number            = $request->input('sq_container_number');
         $sq_approve_quotation       = $request->has('sq_approve_quotation') ? 1 : 0;
         $warehouse_id               = session('warehouse_id');
         $todays_date = date('Y-m-d');
@@ -370,6 +371,7 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->sq_currency_id          = $sq_currency_id;
         $supplier_quotation->sq_quotation_approve    = $sq_approve_quotation;
         $supplier_quotation->sq_warehouse_id         = $sq_warehouse_id;
+        $supplier_quotation->sq_container_number         = $sq_container_number;
         $supplier_quotation->save();
         
         $sq_id = $supplier_quotation->sq_id;

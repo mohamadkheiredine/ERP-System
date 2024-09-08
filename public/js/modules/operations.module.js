@@ -4,21 +4,52 @@
 
 operations_module = {
 		DisplayListOperations : function(){
+                 
+                    
                     var base_url 			= $('input[name=base_url]').val();
-                    var _token	 			= $('input[name=_token]').val();
+			var _token 				= $('input[name=_token]').val();
+			var page_number 		= $('input[name=page_number]').val();
+			var general_search 		= $('input[name=general_search]').val();
                     var account_id	 		= $('select[id=FK_ACCOUNT_ID]').val();
 		    var warehouse_id	 	= $('select[id=FK_WAREHOUSE_ID]').val();
-		    var params = { _token : _token , account_id : account_id , warehouse_id : warehouse_id};
-		    $.ajax
-                    ({
-                        url : base_url + "/request/shipment/operations/displaylist",
-                        data : params,
-                        dataType : "json",
-                        type : "POST",
-                        success : function(response){
-                            $('#LstShipmentOperations').html(response.display);
-                        }
-                    });
+		    var params = { _token : _token , account_id : account_id , warehouse_id : warehouse_id , general_search : general_search , page_number : page_number};
+
+			$.ajax
+			({
+				url : base_url + "/request/shipment/operations/displaylist",
+				data : params,
+				method : 'post',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+					  $('#LstShipmentOperations').html(response.display);
+					 $('.group-checkable').change(function() {
+                                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                                        var checked = $(this).prop("checked");
+                                        $(set).each(function() {
+                                            $(this).prop("checked", checked);
+                                        });
+                                        $.uniform.update(set);
+                                    }); 
+					 if(response.total_pages > 0)
+					 {
+						 $('#OperationsPagination').twbsPagination({
+                                                    totalPages: response.total_pages,
+                                                    visiblePages: 7,
+                                                    onPageClick: function (event, page) {
+                                                         $('input[name=page_number]').val(page);
+                                                         operations_module.DisplayListOperations();
+                                                    }
+                                                });
+					 }
+					
+			
+				}
+			});
+                    
+                    
+                    
 		},
                 DisplayListOperationOrders : function(){
                      var base_url 			= $('input[name=base_url]').val();
@@ -229,7 +260,7 @@ operations_module = {
 		    window.location.href = base_url + "/shipments/shipmentoperations/editform/" + so_id;
 		},
 		DeleteOperationInfo : function(){
-			 var so_id = $(this).data('so_id');
+                                var so_id = $(this).data('so_id');
 				bootbox.confirm("Are you sure you want to delete ?", function(result){
 					//result
 					if(result == true)
@@ -257,6 +288,37 @@ operations_module = {
 					}
 				});
 		},
+                DeleteOperationOrder : function(){
+                    var shiping_id = $('input[name=so_id]').val();
+                    var order_id = $(this).data('so_id');
+
+                    bootbox.confirm("Are you sure you want to delete ?", function(result){
+                            //result
+                            if(result == true)
+                            {
+                                  var base_url = $('#BASE_URL').val();
+                                  var _token = $('input[name=_token]').val();
+                                    var params ={shiping_id : shiping_id , order_id : order_id , _token : _token};
+                                     $.ajax
+                                    ({
+                                        url : base_url + "/request/shipment/operations/deleteorderinfo",
+                                        data : params,
+                                        dataType : "Json",
+                                        type : "delete",
+                                        success : function(response){
+                                          if(response.is_error == 0)
+                                          {
+                                              operations_module.DisplayListOperationOrders();
+                                          }
+                                          else
+                                      {
+                                              bootbox.alert(response.error_msg);
+                                      }
+                                        }
+                                    });
+                            }
+                    });
+                },
 		DisplayOperationTypeFields : function(){
 			var base_url 			= $('input[name=base_url]').val();
 			var _token	 			= $('input[name=_token]').val();

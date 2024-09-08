@@ -155,6 +155,7 @@ Route::post('/request/shipment/operations/displayformtype','Shipment\ShipmentCon
 Route::post('/request/shipment/operations/displayproducts','Shipment\ShipmentController@DisplayOperationProducts');
 Route::post('/request/shipment/operations/saveinfo','Shipment\ShipmentController@SaveShipmentOperationInfo');
 Route::post('/request/shipment/operations/deleteinfo','Shipment\ShipmentController@DeleteShipmentInfo');
+Route::delete('/request/shipment/operations/deleteorderinfo','Shipment\ShipmentController@DeleteOrderShipmentInfo');
 Route::post('/request/shipment/operations/displaylistorders','Shipment\ShipmentController@Displaylistorders');
 Route::post('/request/shipment/operations/addorder','Shipment\ShipmentController@LinkOperationOrder');
 Route::post('/request/operations/downloadpackinglist','Shipment\ShipmentController@DownloadPackingList');
@@ -220,6 +221,7 @@ Route::post('/request/clients/deletecategoryinfo','CRM\ClientsCategoriesControll
 Route::post('/request/deals/displaylistdeals','CRM\DealsController@DisplayList');
 Route::post('/request/deals/savedealinfo','CRM\DealsController@SaveDealsInfo');
 Route::post('/request/deals/deletedealinfo','CRM\DealsController@DeleteDealsInfo');
+Route::get('/request/deals/getproductinfo','CRM\DealsController@GetProductInfo');
 
 
 Route::post('/request/clients/displaylist','CRM\AccountsController@DisplayList');
@@ -525,3 +527,7 @@ Route::delete('/request/outboundcall/deleteinfo','CallCenter\OutboundController@
 Route::get('/request/casestatus/displaylist','CallCenter\CaseStatusController@DisplayList');
 Route::post('/request/casestatus/saveinfo','CallCenter\CaseStatusController@SaveCaseStatusInfo');
 Route::delete('/request/casestatus/deleteinfo','CallCenter\CaseStatusController@DeleteCaseStatusInfo');
+
+Route::get('/request/maintenancecase/displaylist','CallCenter\MaintenanceCaseController@DisplayList');
+Route::post('/request/maintenancecase/saveinfo','CallCenter\MaintenanceCaseController@SaveMaintenanceCaseInfo');
+Route::delete('/request/maintenancecase/deleteinfo','CallCenter\MaintenanceCaseController@DeleteMaintenanceCaseInfo');

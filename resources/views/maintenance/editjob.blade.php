@@ -67,7 +67,7 @@ th{
                     <div class="row">
                         <div class="col-md-4">
                           	<div class="form-group">
-                                 <img id="BARCODE_IMG" src="data:image/png;base64,{{ $job_info->j_barecode_img }}" alt="barcode" height="50" width="150"   /><br/>
+                                 <img id="BARCODE_IMG" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150"   /><br/>
                                  <label class='lblbarcode'>{{ $job_info->j_job_barecode }}</label>
                             </div>
                         </div>

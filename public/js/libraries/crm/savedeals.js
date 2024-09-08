@@ -40,6 +40,7 @@ $(function(){
 		 }
 	});
 	 $("#BTN_SAVE_DEALS").on('click',deals_module.SaveDealsInfo);
+	 $("button[name=btn_assign_product_deal]").on('click',deals_module.AssignProductDeal);
 	 $("#BTN_ADD_PRODUCT").on('click',function() {
              $('#ProductsDealModel').modal('toggle');
          });

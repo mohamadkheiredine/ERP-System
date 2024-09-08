@@ -442,6 +442,7 @@ class ProductsController extends Controller
           $p_product_area_unit          = $request->input('p_product_area_unit');
           $p_product_selling_price      = $request->input('p_product_selling_price'); 
           $p_product_min_selling_price  = $request->input('p_product_min_selling_price'); 
+          $p_product_cost_price         = $request->input('p_product_cost_price'); 
           $p_product_tax_rate           = $request->input('p_product_tax_rate');
           $p_product_currency           = $request->input('p_product_currency');
           $p_sale_accounting_code       = $request->input('p_sale_accounting_code');
@@ -503,6 +504,7 @@ class ProductsController extends Controller
           $ProductInfo->p_product_area_unit           = $p_product_area_unit;
           $ProductInfo->p_product_selling_price       = $p_product_selling_price;
           $ProductInfo->p_product_min_selling_price   = $p_product_min_selling_price;
+          $ProductInfo->p_product_cost_price          = $p_product_cost_price;
           $ProductInfo->p_product_tax_rate            = $p_product_tax_rate;
           $ProductInfo->p_sale_accounting_code        = $p_sale_accounting_code;
           $ProductInfo->p_sale_export_accounting_code = $p_sale_export_accounting_code;

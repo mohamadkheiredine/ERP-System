@@ -5,7 +5,6 @@ $(function(){
 	suppliers_module.DisplayListSuppliers();
 	$("#SUPPLIER_CATEGORIES").on("change",suppliers_module.DisplayListSuppliers);
 	$("#generalSearch").on("keyup",suppliers_module.DisplayListSuppliers)
-	$("select").select2();
 	$("select").on('change',suppliers_module.DisplayListSuppliers);
 	$('#LstSuppliers').on("click","a[id*=EDIT_SUPPLIER_]",suppliers_module.EditSupplierInfo);
 	$('#LstSuppliers').on("click","a[id*=DELETE_SUPPLIER_]",suppliers_module.DeleteSupplierInfo);

@@ -246,6 +246,12 @@ Page Description :
                                                 <input type="text" maxlength="15" name="p_product_min_selling_price" id="P_PRODUCT_MIN_SELLING_PRICE" class="form-control" required="required"   value="{{ $product_info->p_product_min_selling_price }}" />
                                             </div>
                                     </div>
+                                    <div class="col-md-4">
+                                      	<div class="form-group">
+                                            <label class="control-label"> Product Cost Price&nbsp;<b class="CurrencyCode">{{ session('currency_symbol') }}</b> <span class="required"> * </span></label>
+                                            <input type="text" maxlength="15" name="p_product_cost_price" id="P_PRODUCT_COST_PRICE" class="form-control" required="required"   value="{{ $product_info->p_product_cost_price }}" />
+                                        </div>
+                                    </div>
                                      <div class="col-md-4">
                                         <div class="form-group">
                                             <label> Stock Currency </label> 

@@ -35,6 +35,9 @@ th{
 @endsection
 
 @section('content')
+<span id="hidden_fields">
+    <input type='hidden' name="page_number" value="1" />
+</span>
 <div class="card shadow-sm">
     <div class="card-header">
         <h3 class="card-title">Supplier Management</h3>
@@ -121,23 +124,26 @@ th{
                                 
                                 			</tbody>
                                 </table>
-								</div> 
-								<div class="row">
-									<div class="col-md-12" style="height: 9px"></div>
-								</div>
-								<div class="row">
-									<div class="col-md-9"></div>
-									<div class="col-md-3" align="right">
-										<a href="{{ url('srm/suppliers/addform') }}" class="btn btn-info">
-												<span>
-													<i class="fas fa-user"></i>
-													<span>
-														New Supplier
-													</span>
-												</span>
-											</a>
-									</div>
-								</div>
+                                </div> 
+                                <div class="row">
+                                        <div class="col-md-10" align="left">
+                                                <ul id="SuppliersPagination" class="pagination-sm"></ul>
+                                        </div>
+                                        <div class="col-md-2" align="right"></div>
+                                </div>
+                                <div class="row">
+                                        <div class="col-md-9"></div>
+                                        <div class="col-md-3" align="right">
+                                                <a href="{{ url('srm/suppliers/addform') }}" class="btn btn-info">
+                                                                <span>
+                                                                        <i class="fas fa-user"></i>
+                                                                        <span>
+                                                                                New Supplier
+                                                                        </span>
+                                                                </span>
+                                                        </a>
+                                        </div>
+                                </div>
     </div>
  </div>
 

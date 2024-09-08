@@ -234,7 +234,8 @@ class JobsController extends Controller
     public function AddForm()
     {
         $rand_barcode       = rand(10000000,99999999999);
-        $bar_code_png       = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
         
         
         $lst_job_status = JobStatus::whereJsIsDeleted(0)->get();
@@ -379,6 +380,8 @@ class JobsController extends Controller
         $lst_vendors    = Vendors::whereIvIsDeleted(0)->get();
         $job_info       = Jobs::find($j_id);
         $lst_job_items  = JobItems::whereFkJobId($j_id)->get();
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
         $job_items_array = array();
         
         foreach ($lst_job_items as $key => $item_info) 
@@ -426,6 +429,7 @@ class JobsController extends Controller
             "lst_users" => $lst_users,
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
+            "bar_code_png" => $bar_code_png,
             "lst_vendors" => $lst_vendors
         ); 
         return view('maintenance.editjob',$data);

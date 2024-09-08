@@ -162,15 +162,36 @@ class SuppliersController extends Controller
         } 
         $supplier_category = $request->input("supplier_category");
         $supplier_status = $request->input("supplier_status");
-        $lst_suppliers = Suppliers::whereSsIsDeleted(0);
+        $general_search = $request->input("general_search");
+        $page_number = $request->input("page_number");
+        $nbr_rows_per_pages           = Config::get('appconfig.max_rows_per_page');
+
+          if($page_number > 1)
+              $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+          else
+              $skip = 0;
+          
+        $suppliers_cond = Suppliers::whereSsIsDeleted(0);
+        
+        if(strlen($general_search) > 0)
+        {
+             $suppliers_cond = $suppliers_cond->where("ss_supplier_code","LIKE","%" . $general_search . "%");
+            $suppliers_cond = $suppliers_cond->orWhere("ss_supplier_name","LIKE","%" . $general_search . "%");
+        }
         
         if(strlen($supplier_category) > 0)
-            $lst_suppliers = $lst_suppliers->whereFkCategoryId($supplier_category);
+            $suppliers_cond = $suppliers_cond->whereFkCategoryId($supplier_category);
         
         if(strlen($supplier_status) > 0)
-            $lst_suppliers = $lst_suppliers->whereFkStatusId($supplier_status);
+            $suppliers_cond = $suppliers_cond->whereFkStatusId($supplier_status);
+
+        $supplier_count = $suppliers_cond->count();
         
-        $lst_suppliers = $lst_suppliers->get();
+          $total_pages = ceil( $supplier_count/$nbr_rows_per_pages );
+          $total_pages = intval($total_pages);
+         
+          
+        $lst_suppliers = $suppliers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
         $data = array(
             "supplier_categories_array" => $supplier_categories_array,
             "lst_suppliers" => $lst_suppliers
@@ -179,6 +200,7 @@ class SuppliersController extends Controller
         $result_array = array();
         
         $result_array['display'] = view("srm.displaylist",$data)->render();
+        $result_array['total_pages'] = $total_pages;
         
         return Response()->json($result_array);
     }

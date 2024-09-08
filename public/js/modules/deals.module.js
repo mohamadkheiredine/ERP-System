@@ -40,6 +40,49 @@ deals_module = {
 		        }
 		    });
 	},
+        AssignProductDeal : function(){
+            let selected_product = $("#P_PRODUCT_DEAL").val();
+            	var base_url 	= $('input[name=base_url]').val();
+		    var _token 		= $('input[name=_token]').val();
+             $.ajax
+		    ({
+		        url : base_url + "/request/deals/getproductinfo",
+		        data : { _token : _token , product_id : selected_product },
+	            method : 'get',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+                    success : function(response){
+                        if(response.is_error == 0)
+                        {
+                            let data_table = $("#LstProducts").html();
+                            
+                            data_table += "<tr>";
+                            data_table += "<td></td>";
+                            data_table += "<td>" + response.product_info.product_id + "</td>";
+                            data_table += "<td>" + response.product_info.reference + "</td>";
+                            data_table += "<td>" + response.product_info.p_product_name + "</td>";
+                            data_table += "<td>" + response.product_info.p_product_selling_price + " <b>" +  response.product_info.currency_code + "</b></td>";
+                            data_table += "<td></td>";
+                            data_table += "</tr>";
+                            
+                            $("#LstProducts").html(data_table);
+                        }
+                        
+                        
+                        //selected_product
+                        
+                       let deals = $("input[name=deals]").val();
+                       if(deals == "")
+                           deals = selected_product;
+                       else
+                           deals = deals + "," + selected_product;
+                       
+                       $("input[name=deals]").val(deals);
+                    }
+                })
+            
+        },
 	FilterDeals : function(){
 		deals_module.displayListDeals();
 	},
@@ -77,6 +120,14 @@ deals_module = {
 	             ad_deal_amount : {
 	            	 number : true
 	             },
+                     ad_down_payment : {
+                       number : true,
+                       required : true
+                     },
+                     ad_nbr_of_payments : {
+                         number : true,
+                         required : true
+                     },
 	             ad_deal_probability : {
 	            	 number : true
 	             },

@@ -149,6 +149,7 @@ class InboundController extends Controller
         $ic_call_duration             = $request->input('ic_call_duration');
         $ic_call_outcome             = $request->input('ic_call_outcome');
         $ic_issue_resolved             = $request->input('ic_issue_resolved');
+        $ic_call_subject             = $request->input('ic_call_subject');
         $ic_notes             = $request->input('ic_notes');
    
         
@@ -177,6 +178,7 @@ class InboundController extends Controller
         $inboundcall_info->ic_call_outcome               = $ic_call_outcome;
         $inboundcall_info->ic_issue_resolved               = $ic_issue_resolved;
         $inboundcall_info->ic_notes               = $ic_notes;
+        $inboundcall_info->ic_call_subject               = $ic_call_subject;
         
         $inboundcall_info->save();
         
