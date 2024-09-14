@@ -1,12 +1,12 @@
 <?php
 /***********************************************************
-PaymentVouchers.php
+InvoiceTemplateItems.php
 Product :
 Version : 1.0
 Release : 1
-Date Created : Mar 21, 2020
+Date Created : Sep 22, 2019
 Developed By  : Mohamad Mantach   PHP Department itm Solutions
-All Rights Reserved ,   itm Solutions COPYRIGHT 2020
+All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
 Page Description :
 
@@ -20,14 +20,16 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class PaymentVouchers extends Model
+class InvoiceTemplateItems extends Model
 {
-    protected   $table          = 'billing_payment_vouchers';
+    protected   $table          = 'billing_invoice_template_items';
     public      $timestamps     = false;
-    protected   $primaryKey     = "pv_id";   
+    protected   $primaryKey     = "ti_id";   
     
-    public function currency()
+    public function Template()
     {
-        return $this->hasOne('App\models\System\Currency', 'cc_id','pv_currency_id');
+        return $this->hasOne('App\models\Billing\InvoiceTemplateItems', 'it_id','fk_template_id');
     }
+
+    
 }

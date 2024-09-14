@@ -31,23 +31,23 @@ class CRMServicesPaymentTypes extends Model
     
     public function Services()
     {
-        return $this->hasOne('App\Models\CRM\CRMServicesPaymentTypes', 'cs_id','st_service_id');
+        return $this->hasOne('App\models\CRM\CRMServicesPaymentTypes', 'cs_id','st_service_id');
     }
     
     public function PaymentType()
     {
-        return $this->hasOne('App\Models\Billing\PaymentTypes', 'pt_id','st_payment_type_id');
+        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id','st_payment_type_id');
     }
     
     public function IncomeAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','st_account_income_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','st_account_income_id');
     }
     
     
     public function PurchaseAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','st_account_purchase_Id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','st_account_purchase_Id');
     }
     
 }

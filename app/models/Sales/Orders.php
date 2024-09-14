@@ -30,17 +30,17 @@ class Orders extends Model
     
     public function Users()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','so_assign_to');
+        return $this->hasOne('App\models\Users\Users', 'id','so_assign_to');
     }
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','so_order_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','so_order_currency');
     }
     
     public function Status()
     {
-        return $this->hasOne('App\Models\Sales\OrderStatus', 'os_id','so_order_status');
+        return $this->hasOne('App\models\Sales\OrderStatus', 'os_id','so_order_status');
     }
     
 }

@@ -30,11 +30,11 @@ class VoucherExtensions extends Model
     
     public function currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','ve_extension_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','ve_extension_currency');
     }
     
     public function Account()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','ve_extention_account_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','ve_extention_account_id');
     }
 }

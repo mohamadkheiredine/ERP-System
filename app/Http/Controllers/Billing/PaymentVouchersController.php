@@ -83,13 +83,13 @@ class PaymentVouchersController extends Controller
         $general_search             = $request->input("general_search");
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
-        
+   
         $strfirstday = 'first day of January ' . $fisical_year;
         $strlastday = 'last day of December ' . $fisical_year;
         
         $firstday = date("Y-m-d",strtotime($strfirstday));
         $lastday = date("Y-m-d",strtotime($strlastday));
-        
+         
         
         $voucher_cond       = PaymentVouchers::wherePvIsDeleted(0);
         
@@ -134,7 +134,7 @@ class PaymentVouchersController extends Controller
         
         $lst_currencies = Currency::all();
         $currency_array =  CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
-        
+        dd($lst_vouchers);
         $data = array(
             "lst_vouchers" => $lst_vouchers,
             "total_pages" => $total_pages,
@@ -351,7 +351,7 @@ class PaymentVouchersController extends Controller
             $payment_amount = $org_payment_amount;
              if(strlen($pv_sec_currency_id) > 0)
              {
-             $payment_amount = $org_payment_amount * math_eval($pv_exchange_rate);
+             $payment_amount = $org_payment_amount * $pv_exchange_rate;
              $payment_currency= $pv_sec_currency_id;
              }
             
@@ -528,8 +528,4 @@ class PaymentVouchersController extends Controller
         $result_array['error_msg'] = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-    
-    
 }

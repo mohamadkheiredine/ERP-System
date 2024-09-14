@@ -28,22 +28,22 @@ class Invoices extends Model
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','bi_invoice_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','bi_invoice_currency');
     }
     
     public function Account()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','fk_account_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','fk_account_id');
     }
     
     public function CreatedUser()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','bi_created_by');
+        return $this->hasOne('App\models\Users\Users', 'id','bi_created_by');
     }
     
     public function UpdatedUser()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','bi_last_updated_by');
+        return $this->hasOne('App\models\Users\Users', 'id','bi_last_updated_by');
     }
     
 }

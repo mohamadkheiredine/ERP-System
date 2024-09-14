@@ -29,17 +29,17 @@ class InternalTransfers extends Model
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','in_credit_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','in_credit_currency');
     }
     
     public function SenderAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','in_account_sender');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','in_account_sender');
     }
     
     public function ReceivableAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','in_account_receivable');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','in_account_receivable');
     }
     
 }

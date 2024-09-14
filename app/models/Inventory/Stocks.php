@@ -32,22 +32,22 @@ class Stocks extends Model
     
     public function products()
     { 
-        return $this->hasOne('App\Models\Inventory\Products', 'p_id','fk_product_id');
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','fk_product_id');
     }
     
     public function warehouses()
     { 
-        return $this->hasOne('App\Models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
     }
     
     public function Zones()
     {
-        return $this->hasOne('App\Models\Inventory\WareHouseZones', 'wz_id','fk_zone_id');
+        return $this->hasOne('App\models\Inventory\WareHouseZones', 'wz_id','fk_zone_id');
     }
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','is_price_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','is_price_currency');
     } 
 
 }

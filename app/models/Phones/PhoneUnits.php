@@ -30,7 +30,7 @@ class PhoneUnits extends Model
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','pu_currency_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','pu_currency_id');
     }
     
 }

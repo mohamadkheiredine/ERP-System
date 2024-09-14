@@ -64,9 +64,9 @@ th{
                     <div class="row">
                         <div class="col-md-4">
                               <div class="form-group">
-                                    <label class="control-label"> Agent <span class="required"> * </span> </label>
-                                     <select name="oc_agent_id" id="OC_AGENT_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Agent">
-                                            <option value=""> -- Select Agent -- </option>
+                                    <label class="control-label"> Telemarketer <span class="required"> * </span> </label>
+                                     <select name="oc_agent_id" id="OC_AGENT_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketer">
+                                            <option value=""> -- Select Telemarketer -- </option>
                                             @foreach($lst_agents as $key => $agent_info)
                                                     <option {{ $outboundcall_info->oc_agent_id  == $agent_info->id ? "selected" : "" }} value="{{ $agent_info->id }}">{{ $agent_info->u_fullname }}</option>
                                             @endforeach

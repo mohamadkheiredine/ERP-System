@@ -29,21 +29,21 @@ class CRMLeadActivities extends Model
     
     public function leads()
     {
-        return $this->hasOne('App\Models\CRM\CRMLeads', 'cl_id','fk_lead_id');
+        return $this->hasOne('App\models\CRM\CRMLeads', 'cl_id','fk_lead_id');
     }
    
     public function users()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','fk_owner_id');
+        return $this->hasOne('App\models\Users\Users', 'id','fk_owner_id');
     }
     
     public function contacts()
     {
-        return $this->hasOne('App\Models\CRM\CRMContacts', 'cc_id','fk_contact_id');
+        return $this->hasOne('App\models\CRM\CRMContacts', 'cc_id','fk_contact_id');
     }
     
     public function activitytypes()
     {
-        return $this->hasOne('App\Models\CRM\CRMActivityTypes', 'at_id','ca_activity_type');
+        return $this->hasOne('App\models\CRM\CRMActivityTypes', 'at_id','ca_activity_type');
     }
 }

@@ -80,3 +80,7 @@ th{
     float: left;
     position: relative;
 }
+
+.DashboardItem{
+    height:350px;
+}

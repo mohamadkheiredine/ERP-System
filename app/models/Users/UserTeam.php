@@ -17,6 +17,6 @@ class UserTeam extends Model
     
     public function TeamMembers()
     {
-        return $this->hasMany('App\Models\Users\TeamMembers', 'fk_team_id','ut_id');
+        return $this->hasMany('App\models\Users\TeamMembers', 'fk_team_id','ut_id');
     }
 }

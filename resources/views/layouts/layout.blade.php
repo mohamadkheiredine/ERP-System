@@ -258,16 +258,7 @@ Page Description :
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
 									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
-                                                                            <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="{{ url('callcenter/inboundcall') }}">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title"> Inbound Call</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-                                                                            </div> 
+                                                                           
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('callcenter/outboundcall') }}">
@@ -287,28 +278,7 @@ Page Description :
                                                                                             <span class="menu-title">Leads</span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div> 
-                                                                            <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="{{ url('/callcenter/casestatus') }}">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Case Status</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-                                                                            </div> 
-                                                                            
-                                                                              <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="{{  url('callcenter/maintenancecase') }}">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title"> Maintenance Cases</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-                                                                            </div> 
+                                                                            </div>  
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -899,6 +869,36 @@ Page Description :
     											</div>
     											<!--end:Menu content-->
     										</div>
+                                                                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+											<!--begin:Menu link-->
+											<span class="menu-link">
+												<span class="menu-icon">
+													<i class="fa-solid fa-money-bill"></i>
+												</span>
+												<span class="menu-title">Recurring Invoices</span>
+												<span class="menu-arrow"></span>
+											</span>
+											<!--end:Menu link-->
+											<!--begin:Menu sub-->
+											<div class="menu-sub menu-sub-accordion">
+                                                                                            <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="#">
+                                                                                                    <span class="menu-bullet">
+                                                                                                        &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Invoice Templates</span>
+                                                                                                </a> 
+                                                                                            </div>
+                                                                                            <div class="menu-item"> 
+                                                                                                <a class="menu-link" href="#">
+                                                                                                    <span class="menu-bullet">
+                                                                                                            &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
+                                                                                                    </span>
+                                                                                                    <span class="menu-title">Recurring Invoices</span>
+                                                                                                </a> 
+                                                                                            </div> 
+                                                                                        </div>
+                                                                                </div>
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/paymenttypes') }}">
@@ -1422,6 +1422,37 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="{{ url('callcenter/inboundcall') }}">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Inbound Call</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="{{ url('/callcenter/casestatus') }}">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title">Case Status</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
+                                                                            
+                                                                              <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="{{  url('callcenter/maintenancecase') }}">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Maintenance Cases</span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div> 
 										<!--end:Menu item-->  
 										 <div class="menu-item">
 											<!--begin:Menu link-->

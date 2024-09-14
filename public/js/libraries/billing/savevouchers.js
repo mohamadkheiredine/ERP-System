@@ -25,7 +25,7 @@ $(function(){
 			    }
 		 },
 		 localization: {
-			 format : "L"
+			 format : "yyyy-MM-dd"
 			 
 		 }
 	});

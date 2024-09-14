@@ -28,12 +28,12 @@ class Vendors extends Model
     
     public function warehouses()
     { 
-        return $this->hasOne('App\Models\Inventory\WareHouses', 'w_id','iv_warehouse_id');
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','iv_warehouse_id');
     }
 
     
     public function accounts()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','iv_vendor_account_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','iv_vendor_account_id');
     }
 }

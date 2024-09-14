@@ -435,10 +435,40 @@ class DashboardController extends Controller
         
     }
     
+    /**
+     * get product stock by categories
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GetStockByCategories( Request $request )
+    {
+        $lst_product_categories = DB::select("select cat.pc_category,SUM(inventory_products.p_product_quantity) as stock ,  sum(inventory_stocks.is_quanity) as stock_quantity from inventory_products left join inventory_stocks on inventory_stocks.fk_product_id = inventory_products.p_id left join inventory_product_categories as cat on cat.pc_id = inventory_products.fk_pc_id where 1 group by inventory_products.fk_pc_id;");
+        
+        $result_array = array();
+        
+        $stock_categories_array  = array();
+     
+        foreach ($lst_product_categories as $label => $info) {
+            $stock_categories_array[] = array(
+                'country' => $info->pc_category,
+                'value' => $info->stock + $info->stock_quantity 
+            );
+        }
+        
+        $result_array['is_error'] = 0;
+        $result_array['stock_categories_array'] = json_encode($stock_categories_array);
+         
+        
+        return Response()->json($result_array);
+        
+    }
+    
     
     public function GetStockProducts()
     {
-        $lst_products = DB::select("SELECT fk_product_id , ip.p_product_name as product_name , SUM(is_quanity) as total_quantity FROM icsolution_db.inventory_stocks as stocks Left join icsolution_db.inventory_products as ip on ip.p_id = stocks.fk_product_id group by fk_product_id;");
+        $lst_products = DB::select("SELECT fk_product_id , ip.p_product_name as product_name , SUM(is_quanity) as total_quantity FROM inventory_stocks as stocks Left join inventory_products as ip on ip.p_id = stocks.fk_product_id group by fk_product_id;");
         
         $result_array = array();
         

@@ -28,12 +28,12 @@ class Suppliers extends Model
     
     public function PurchaseAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','ss_purchase_account_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','ss_purchase_account_id');
     }
     
     public function SalesAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','ss_sale_account_id');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','ss_sale_account_id');
     }
     
 }

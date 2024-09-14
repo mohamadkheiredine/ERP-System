@@ -27,8 +27,7 @@ Page Description :
     <script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
-    <script src="{{ url('admin/assets/pages/scripts/dashboard.js') }}" type="text/javascript"></script>
-    <script src="{{ url('default/assets/app/js/service-dashboard.js') }}" type="text/javascript"></script> 
+    <script src="{{ url('default/assets/app/js/dashboard.js') }}" type="text/javascript"></script>
 @endsection
 @section('themes')
 <link href="{{ url('admin/assets/vendors/base/vendors.bundle.css') }}" rel="stylesheet" type="text/css" />
@@ -152,13 +151,7 @@ Page Description :
 		<div class="col-xl-8 ps-xl-12">
 		 	<div class="row">
 		 		<div class="col-md-6">
-                                    <div class="card card-stretch">
-                                        <h2>Stock Amount By Category</h2><br/>
-                                        <div id="StockAmountCategory">
-                                            
-                                            
-                                        </div>
-                                    </div>
+                                   
 		 		</div>
 		 		<div class="col-md-6">
 		 		</div>
@@ -170,10 +163,13 @@ Page Description :
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Sales Overview
+                           <h2>Stock Amount By Category</h2>
                     </div>
                     <div class="card-body">
-                        <canvas id="salesChart"></canvas>
+                           <div id="StockAmountCategory" class="DashboardItem">
+                                            
+                                            
+                          </div>
                     </div>
                 </div>
             </div>
@@ -181,10 +177,13 @@ Page Description :
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Inventory Levels
+                         <h2>Inventory Levels</h2>
                     </div>
                     <div class="card-body">
-                        <canvas id="inventoryChart"></canvas>
+                        <div id="InventoryLevels" class="DashboardItem">
+                                            
+                                            
+                          </div>
                     </div>
                 </div>
             </div>

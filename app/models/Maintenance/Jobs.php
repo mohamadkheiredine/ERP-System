@@ -30,22 +30,22 @@ class Jobs extends Model
     
     public function Users()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','j_user_id');
+        return $this->hasOne('App\models\Users\Users', 'id','j_user_id');
     }
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','j_currency_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','j_currency_id');
     }
     
     public function Status()
     {
-        return $this->hasOne('App\Models\Maintenance\JobStatus', 'js_id','j_job_status_id');
+        return $this->hasOne('App\models\Maintenance\JobStatus', 'js_id','j_job_status_id');
     }
     
     public function Customer()
     {
-        return $this->hasOne('App\Models\Inventory\Customers', 'ic_id','j_customer_id');
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','j_customer_id');
     }
     
 }

@@ -81,7 +81,8 @@ class ProductStocksController extends Controller
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
         $rand_barcode                 = rand(10000000,99999999999);
-        $bar_code_png                 = DNS1D::getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
         
         $data = array(
             "lst_warehouse" => $lst_warehouse,

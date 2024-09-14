@@ -31,22 +31,22 @@ class JournalVouchers extends Model
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','pj_currency_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','pj_currency_id');
     }
     
     public function CreditAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','pj_account_credit');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pj_account_credit');
     }
     
     public function DebitAccount()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','pj_account_debit');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pj_account_debit');
     }
     
     public function Journal()
     {
-        return $this->hasOne('App\Models\Accounting\Journaltypes', 'ty_id','pj_journal_id');
+        return $this->hasOne('App\models\Accounting\Journaltypes', 'ty_id','pj_journal_id');
     }
     
     

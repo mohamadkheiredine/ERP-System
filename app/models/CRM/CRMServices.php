@@ -33,6 +33,6 @@ class CRMServices extends Model
     
     public function currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','cs_currency_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','cs_currency_id');
     }
 }

@@ -30,12 +30,12 @@ class BOMItems extends Model
     
     public function products()
     {
-        return $this->hasOne('App\Models\Inventory\Products', 'p_id','bi_product_id');
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','bi_product_id');
     }
     
     
     public function currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','bi_price_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','bi_price_currency');
     }
 }

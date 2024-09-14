@@ -31,17 +31,17 @@ class TransactionMovements extends Model
     
     public function currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','tm_currency_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','tm_currency_id');
     }
     
     public function Payable()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','tm_ledger_account');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','tm_ledger_account');
     }
     
     public function Receivable()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','tm_sub_ledger_account');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','tm_sub_ledger_account');
     }
    
 }

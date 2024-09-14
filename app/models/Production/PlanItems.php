@@ -32,13 +32,13 @@ class PlanItems extends Model
     
     public function Products()
     {
-        return $this->hasOne('App\Models\Inventory\Products', 'p_id','pi_product_id');
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','pi_product_id');
     }
     
     
     public function Plan()
     {
-        return $this->hasOne('App\Models\Production\ProductionPlan', 'p_id','pi_product_id');
+        return $this->hasOne('App\models\Production\ProductionPlan', 'p_id','pi_product_id');
     }
     
 }

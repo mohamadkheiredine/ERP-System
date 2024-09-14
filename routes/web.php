@@ -246,6 +246,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/billing/vouchers/editform/{pv_id}','Billing\PaymentVouchersController@EditForm');
     
     
+    Route::get('/billing/invoicetemplates','Billing\InvoiceTemplatesController@index');
+    Route::get('/billing/invoicetemplates/addform','Billing\InvoiceTemplatesController@AddForm');
+    Route::get('/billing/invoicetemplates/editform/{it_id}','Billing\InvoiceTemplatesController@EditForm');
+    
+    
     Route::get('/billing/internaltransfers','Billing\InternalTransfersController@index');
     Route::get('/billing/internaltransfers/addform','Billing\InternalTransfersController@AddForm');
     Route::get('/billing/internaltransfers/editform/{in_id}','Billing\InternalTransfersController@EditForm');

@@ -15,11 +15,11 @@ class TeamMembers extends Model
     
     public function Users()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','fk_user_id');
+        return $this->hasOne('App\models\Users\Users', 'id','fk_user_id');
     }
     
     public function Team()
     {
-        return $this->hasOne('App\Models\Users\UserTeam', 'ut_id','fk_team_id');
+        return $this->hasOne('App\models\Users\UserTeam', 'ut_id','fk_team_id');
     }
 }

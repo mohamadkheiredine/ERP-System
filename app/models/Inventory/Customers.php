@@ -29,7 +29,7 @@ class Customers extends Model
     
     public function Account()
     {
-        return $this->hasOne('App\Models\Accounting\ChartAccounts', 'aa_id','ic_account_number');
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','ic_account_number');
     }
     
     

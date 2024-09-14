@@ -31,22 +31,22 @@ class OrderProducts extends Model
     
     public function Orders()
     {
-        return $this->hasOne('App\Models\Sales\Orders', 'so_id','fk_order_id');
+        return $this->hasOne('App\models\Sales\Orders', 'so_id','fk_order_id');
     }
     
     public function Products()
     {
-        return $this->hasOne('App\Models\Inventory\Products', 'p_id','fk_product_id');
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','fk_product_id');
     }
     
     public function stock()
     {
-        return $this->hasOne('App\Models\Inventory\Stocks', 'is_id','so_stock_id');
+        return $this->hasOne('App\models\Inventory\Stocks', 'is_id','so_stock_id');
     }
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','so_product_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','so_product_currency');
     }
     
 }

@@ -30,11 +30,11 @@ class Receipts extends Model
     
     public function Currency()
     {
-        return $this->hasOne('App\Models\System\Currency', 'cc_id','br_receipt_currency');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','br_receipt_currency');
     } 
     
     public function Invoice()
     {
-        return $this->hasOne('App\Models\Billing\Invoices', 'bi_id','fk_invoice_id');
+        return $this->hasOne('App\models\Billing\Invoices', 'bi_id','fk_invoice_id');
     } 
 }

@@ -15,6 +15,8 @@ Route::post('/request/dashboard/getservicesinvoicepercentage','Dashboard\Dashboa
 Route::post('/request/dashboard/services/servicespiechart','Dashboard\DashboardController@GetServicesPieChart');
 Route::post('/request/dashboard/displaylistaccountgroup','Dashboard\DashboardController@Displaylistaccounttotals');
 
+Route::post('/request/dashboard/getstockbycategories','Dashboard\DashboardController@GetStockByCategories');
+
 Route::post('/request/displayusersManagement','Users\UsersController@DisplayList');
 Route::post('/request/users/saveuserinfo','Users\UsersController@SaveUsersInfo');
 Route::post('/request/users/deleteuserinfo','Users\UsersController@DeleteUserInfo');
@@ -324,6 +326,12 @@ Route::post('/request/billing/generatecode','Utilities\ConfigurationController@G
 Route::post('/request/billing/displaylistinttransfers','Billing\InternalTransfersController@DisplayList');
 Route::post('/request/billing/saveinttransferinfo','Billing\InternalTransfersController@SaveINInfo');
 Route::post('/request/billing/deleteinttransferinfo','Billing\InternalTransfersController@DeleteINInfo');
+
+
+
+Route::get('/request/billing/displaylistinvoicetemplates','Billing\InvoiceTemplatesController@DisplayList');
+Route::post('/request/billing/saveinvoicetemplateinfo','Billing\InvoiceTemplatesController@SaveTemplateInfo');
+Route::delete('/request/billing/deleteinvoicetemplateinfo','Billing\InvoiceTemplatesController@DeleteTemplateInfo');
 
 
 Route::post('/request/journalvouchers/displaylist','Billing\JournalVouchersController@DisplayList');

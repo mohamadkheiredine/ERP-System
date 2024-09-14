@@ -73,9 +73,9 @@ th{
 
 						</div>
 						<div class="col-md-4">
-                                                    <label class="control-label">Agent</label>
+                                                    <label class="control-label">Telemarketer</label>
                                                     <select name="oc_agent_id" id="OC_AGENT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Agent">
-                                                           <option value="">All Agents</option>
+                                                           <option value="">All Telemarketer</option>
                                                            @foreach ( $lst_users as $key => $user_info )
                                                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                            @endforeach
@@ -104,7 +104,7 @@ th{
 						class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
 						<th style="width: 2px;">#</th>
 						<th style="width: 2px;">ID</th>
-						<th>Agent</th>
+						<th>Telemarketer</th>
 						<th>Lead</th>
 						<th>Date</th>
 						<th>Start Time</th>

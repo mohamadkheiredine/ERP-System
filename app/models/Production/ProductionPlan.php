@@ -30,19 +30,19 @@ class ProductionPlan extends Model
     
     public function Users()
     {
-        return $this->hasOne('App\Models\Users\Users', 'id','pp_production_manager');
+        return $this->hasOne('App\models\Users\Users', 'id','pp_production_manager');
     }
     
     
     public function Status()
     {
-        return $this->hasOne('App\Models\Production\PlanStatus', 'ps_id','pp_plan_status');
+        return $this->hasOne('App\models\Production\PlanStatus', 'ps_id','pp_plan_status');
     }
     
     
     public function Customer()
     {
-        return $this->hasOne('App\Models\Inventory\Customers', 'ic_id','pp_customer_id');
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','pp_customer_id');
     }
     
 }

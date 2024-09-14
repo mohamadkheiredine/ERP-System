@@ -29,6 +29,6 @@ class Categories extends Model
     
     public function Category()
     {
-        return $this->hasOne('App\Models\CostCenter\Categories', 'cca_id','fk_cca_id');
+        return $this->hasOne('App\models\CostCenter\Categories', 'cca_id','fk_cca_id');
     }
 }

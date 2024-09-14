@@ -13,7 +13,7 @@ Page Description :
 ***********************************************************/
 
 
-namespace App\Models\Roles;
+namespace App\models\Roles;
 
 use Illuminate\Database\Eloquent\Model;
 use Middleware;

@@ -30,13 +30,13 @@ class StockIds extends Model
     
     public function stock()
     { 
-        return $this->hasOne('App\Models\Inventory\Stocks', 'is_id','fk_stock_id');
+        return $this->hasOne('App\models\Inventory\Stocks', 'is_id','fk_stock_id');
     }
     
     
     
     public function Product()
     {
-        return $this->hasOne('App\Models\Inventory\Products', 'p_id','fk_product_id');
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','fk_product_id');
     }
 }
