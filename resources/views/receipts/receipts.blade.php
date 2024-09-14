@@ -76,17 +76,17 @@ th{
 						</div>
 						<div class="col-md-4">
                             <div class="m-input-icon m-input-icon--left">
-                            		<select class="bs-select form-control" id="RECEIPT_CUSTOMER" name="receipt_customer">
+                                <select id="RECEIPT_CUSTOMER" name="receipt_customer" class="form-control form-select" data-control="select2" data-placeholder="Select Receipt Customer">
                             			<option value="0">-- Select Customer --</option>
                                         @foreach($lst_customers as $index => $customer_info)
-                                          <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
+                                          <option value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }} ) &nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                         @endforeach
                                     </select>
                             </div>
 						</div>
 						 <div class="col-md-4">
 							 <div class="m-input-icon m-input-icon--left">
-                            		<select class="bs-select form-control" id="RECEIPT_INVOICE" name="receipt_invoice">
+                                                             <select id="RECEIPT_INVOICE" name="receipt_invoice" class="form-control form-select" data-control="select2" data-placeholder="Select Receipt Invoice">
                             			<option value="0">-- Select Invoice --</option>
                                         @foreach($lst_invoices as $index => $inv_info)
                                           <option value="{{ $inv_info->bi_id }}">{{ $inv_info->bi_invoice_code }}</option>

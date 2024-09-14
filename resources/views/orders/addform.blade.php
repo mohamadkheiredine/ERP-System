@@ -77,7 +77,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Assign To:&nbsp;</label><br/>
-                                <select class="bs-select form-control" name="so_assign_to" id="SO_ASSIGN_TO" data-actions-box="true"  tabindex="2" >
+                                 <select name="so_assign_to" id="SO_ASSIGN_TO"  class="form-control form-select" data-control="select2" data-placeholder="Select User Assign">
                                         <option value="">No Parent</option>
                                         @foreach ( $lst_users as $key => $user_info )
                                                 <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
@@ -88,7 +88,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Status:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_order_status" id="SO_ORDER_STATUS" data-actions-box="true"  tabindex="3">
+                                <select  name="so_order_status" id="SO_ORDER_STATUS"  class="form-control form-select" data-control="select2" data-placeholder="Select Order Status">
                                         <option value="">-- Status --</option>
                                         @foreach ( $lst_order_status as $key => $status_info )
                                                 <option value="{{ $status_info->os_id }}">{{ $status_info->os_status_title }}</option>
@@ -99,7 +99,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Warehouse :&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true"  tabindex="4">
+                                <select  name="fk_warehouse_id" id="FK_WAREHOUSE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Warehouse">
                                         <option value="">-- warehouse --</option>
                                         @foreach ( $lst_warehouses as $key => $warehouse_info )
                                                 <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
@@ -128,7 +128,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Currency:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_order_currency" id="SO_ORDER_CURRENCY" data-actions-box="true"  tabindex="8">
+                                <select  name="so_order_currency" id="SO_ORDER_CURRENCY" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                         <option value=""> -- Currency -- </option>
                                         @foreach ( $lst_currency as $key => $curr_info )
                                                 <option value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . "-" . $curr_info->cc_currency_name }}</option>
@@ -139,7 +139,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Tax:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_vat_id" id="SO_VAT_ID" data-actions-box="true"  tabindex="9">
+                                <select  name="so_vat_id" id="SO_VAT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Tax">
                                         <option value=""> -- Tax -- </option>
                                         @foreach ( $lst_vat_tax as $key => $tax_info )
                                                 <option value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_label }}&nbsp;(&nbsp;{{ $tax_info->av_vat_rate }}&nbsp;%&nbsp;)</option>
@@ -150,10 +150,10 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_order_customer" id="SO_ORDER_CUSTOMER" data-actions-box="true"  tabindex="10">
+                                <select  name="so_order_customer" id="SO_ORDER_CUSTOMER"  class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
                                         <option value=""> -- Customer -- </option>
                                         @foreach ( $lst_customers as $key => $customer_info )
-                                                <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_code }}&nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
+                                                <option value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }}) &nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                         @endforeach
                                 </select>
                             </div>
@@ -161,7 +161,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Product Type:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_product_type" id="SO_PRODUCT_TYPE" data-actions-box="true"  tabindex="11">
+                                <select  name="so_product_type" id="SO_PRODUCT_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Product Type">
                                         <option value=""> -- Product Type -- </option>
                                         <option value="1"> Products </option>
                                         <option value="2"> Services </option>
@@ -183,7 +183,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Vendor:&nbsp;</label><br/>
-                                 <select class="bs-select form-control" name="so_vendor_id" id="SO_VENDOR_ID" data-actions-box="true" disabled="disabled"  tabindex="13">
+                                <select name="so_vendor_id" id="SO_VENDOR_ID" class="form-control form-select" data-control="select2" disabled="disabled" data-placeholder="Select Vendor">
                                         <option value=""> -- Vendor -- </option>
                                         @foreach ( $lst_vendors as $key => $vendor_info )
                                                 <option value="{{ $vendor_info->iv_id }}">{{ $vendor_info->iv_vendor_name }}</option>

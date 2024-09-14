@@ -68,7 +68,7 @@ th{
                         <div class="col-md-4" >
                              <div class="form-group">
                                 <label class="control-label"> Account <span class="required"> * </span></label><br/>
-                                <select class="bs-select form-control" required="required" id="BR_ACCOUNT_ID" name="br_account_id">
+                                 <select required="required" id="BR_ACCOUNT_ID" name="br_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
                         			<option value="0">-- Select Account --</option>
                                     @foreach($lst_accounts as $index => $acc_info)
                                       <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account }}&nbsp;-&nbsp;{{ $acc_info->aa_account_label }}</option>
@@ -79,10 +79,10 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                             		<label class="control-label">Customer <span class="required"> * </span></label><br/>
-                            		<select class="bs-select form-control" id="BR_CUSTOMER_ID" name="br_customer_id">
+                                        <select required="required"  id="BR_CUSTOMER_ID" name="br_customer_id" class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
                             			<option value="0">-- Select Customer --</option>
                                         @foreach($lst_customers as $index => $customer_info)
-                                          <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
+                                          <option value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }}) &nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                         @endforeach
                                     </select>
                             </div>
@@ -102,7 +102,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Payment Type</label><br/>
-                                <select class="bs-select form-control" required="required" id="FK_PAYMENT_TYPE" name="fk_payment_type">
+                                <select required="required"  id="FK_PAYMENT_TYPE" name="fk_payment_type" class="form-control form-select" data-control="select2" data-placeholder="Select Payment Type">
                         			<option value="">-- Select Payment Type --</option>
                                     @foreach($lst_payment_types as $index => $paytype_info)
                                       <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
@@ -113,7 +113,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Invoice</label><br/>
-                                <select class="bs-select form-control" id="FK_INVOICE_ID" name="fk_invoice_id">
+                                <select  id="FK_INVOICE_ID" name="fk_invoice_id" class="form-control form-select" data-control="select2" data-placeholder="Select Invoice">
                         			<option value="0">-- Select Invoice --</option>
                                     @foreach($lst_invoices as $index => $inv_info)
                                       <option {{ $invoice_id ==  $inv_info->bi_id ? "selected" : ""  }} value="{{ $inv_info->bi_id }}">{{ $inv_info->bi_invoice_code }}</option>
@@ -130,7 +130,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Currency <span class="required"> * </span></label><br/>
-                                <select class="bs-select form-control" name="br_receipt_currency" required="required" id="BR_RECEIPT_CURRENCY" data-actions-box="true">
+                                <select name="br_receipt_currency" required="required" id="BR_RECEIPT_CURRENCY" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                         <option value="">-- Select Currency --</option>
                                         @foreach ( $lst_currencies as $key => $currency_info )
                                                 <option {{ session("company_currency") == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
@@ -147,7 +147,7 @@ th{
                          <div class="col-md-4">
                             <div class="form-group">
                                 <label> Second Currency</label><br/>
-                                <select class="bs-select form-control" name="br_second_currency_id" id="BR_SECOND_CURRENCY_ID" data-actions-box="true">
+                                <select name="br_second_currency_id" id="BR_SECOND_CURRENCY_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                         <option value="">-- Select Currency --</option>
                                         @foreach ( $lst_currencies as $key => $currency_info )
                                                 <option  value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
