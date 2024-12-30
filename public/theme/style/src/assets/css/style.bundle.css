@@ -37,3 +37,7 @@
   padding: 1px;
   background-color: #1aa89f !important;
 }
+
+.SelectedRow{
+    background-color:#FF0000 !important;
+}

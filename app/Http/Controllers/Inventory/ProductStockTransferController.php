@@ -72,6 +72,48 @@ class ProductStockTransferController extends Controller
         return Response()->view("stocks.stocktransfer",$data);
     }
     
+    /**
+     * Add Transfer Items to main array
+     * 
+     * @author Moe mantach
+     * @access public
+     * @param Request $request
+     */
+    public function AddTransferItems( Request $request )
+    {
+        $list_transfer_items            = $request->input('list_transfer_items');
+        $mp_product_id                  = $request->input('mp_product_id');
+        $mp_movement_quantity           = $request->input('mp_movement_quantity');
+        $mp_item_notes                  = $request->input('mp_item_notes');
+        $result_array = array();
+        $lst_items = array();
+        if($list_transfer_items != "")
+        {
+            $lst_items = json_decode($list_transfer_items);
+        }
+        
+        $product_info = Products::find($mp_product_id);
+        
+        $item = array(
+            'mp_product_id' => $mp_product_id,
+            'mp_movement_quantity' => $mp_movement_quantity,
+            'mp_item_notes' => $mp_item_notes,
+            'mp_product_name' => $product_info->p_product_name,
+            'mp_product_ref' => $product_info->p_product_ref
+        );
+        
+        $lst_items[] = $item;
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Add Item To list of Products";
+        $result_array['lst_items'] = json_encode($lst_items);
+        $data = array(
+            "lst_items" => $lst_items
+        );
+        $result_array['display'] = view('stocks.lstitems',$data)->render();
+        return Response()->json($result_array);
+    }
     
     
     /**

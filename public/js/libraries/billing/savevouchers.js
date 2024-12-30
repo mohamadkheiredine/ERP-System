@@ -1,5 +1,4 @@
 $(function(){
-	$('select').select2();
 	ClassicEditor
      .create( document.querySelector( '#PV_VOUCHER_DESCRIPTION' ) )
      .then( newEditor => {

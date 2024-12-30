@@ -33,11 +33,16 @@ class MaintenanceCase extends Model
     }
     
     
-    public function Agent()
+    public function Telemarketing()
     {
-        return $this->hasOne('App\models\Users\Users', 'id','cc_assigned_agent_id');
+        return $this->hasOne('App\models\Users\Users', 'id','cc_telemarketing_id');
     }
     
+    
+    public function Client()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','cc_client_id');
+    }
     
     public function Technician()
     {

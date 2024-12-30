@@ -24,6 +24,7 @@ use Redirect;
 use Auth;
 use Config;
 use DB;
+use PDF;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
@@ -42,6 +43,7 @@ use App\models\Accounting\TransactionMovements;
 use App\models\SRM\Suppliers;
 use App\models\Inventory\StockIds;
 use App\library\WarehouseManager;
+use App\models\Inventory\StockMovementItems;
 
 
 
@@ -682,75 +684,126 @@ class ProductStocksController extends Controller
         $p_id                   = $request->input("p_id");
         $warehouse_source       = $request->input("warehouse_source");
         $warehouse_destination  = $request->input("warehouse_destination");
-        $stock_quanity          = $request->input("stock_quanity");
+        $list_transfer_items          = $request->input("list_transfer_items");
+        $sm_movement_label          = $request->input("sm_movement_label");
         $result_array           = array();
+        $transfer_items = json_decode($list_transfer_items);
+       
+        $product_obj = new ProductManager();
         
-        $ProductInfo = Products::find($p_id);
+        $transfer_stock = new StockMovements();
+        $transfer_stock->sm_transfer_code = $product_obj->GenerateStockTransferCode();
+        $transfer_stock->fk_warehouse_from = $warehouse_source;
+        $transfer_stock->fk_warehouse_to   = $warehouse_destination;
+        $transfer_stock->sm_date_movement  = date("Y-m-d H:i:s");
+        $transfer_stock->sm_movement_label = $sm_movement_label;
+        $transfer_stock->sm_created_by     = session("user_id");
+        $transfer_stock->save();
+        $sm_id = $transfer_stock->sm_id;
         
-        $StockProductWarehouse = Stocks::whereFkProductId($p_id)->whereFkWarehouseId($warehouse_source)->get();
+        $total_quantity = 0;
+        $total_price = 0;
         
-        
-        $SourceWarehouse  = WareHouses::find($warehouse_source);
-        $destinationWarehouse  = WareHouses::find($warehouse_destination);
-        
-        
-        // if we dont have any stock in the warehouse we return a message about the not stock found
-        if( count($StockProductWarehouse) == 0 )
+        foreach ($transfer_items as $index => $item_info) 
         {
-            $result_array['is_error']  = 1;
-            $result_array['error_msg'] = "No Stock Found";
-            return Response()->json($result_array);
+            $product_info = Products::find($item_info->mp_product_id);
+            
+            $StockProductWarehouse = Stocks::whereFkProductId($item_info->mp_product_id)->whereFkWarehouseId($warehouse_source)->get();
+            
+            $transfer_stock_items = new StockMovementItems();
+            $transfer_stock_items->mp_movement_id = $sm_id;
+            $transfer_stock_items->mp_product_id = $item_info->mp_product_id;
+            $transfer_stock_items->mp_label = "Move Stock " . $item_info->mp_product_name;
+            $transfer_stock_items->mp_item_notes = $item_info->mp_item_notes;
+            $transfer_stock_items->mp_movement_quantity = $item_info->mp_movement_quantity;
+            $transfer_stock_items->mp_movement_cost = $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
+            $transfer_stock_items->mp_currency_id = $product_info->p_product_currency;
+            $transfer_stock_items->save();
+            
+            $total_quantity = $total_quantity + $item_info->mp_movement_quantity;
+            $total_price = $total_price + $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
+            
+            // add a minus stock in source warehouse
+            $source_stock = new Stocks();
+            $source_stock->fk_product_id = $item_info->mp_product_id;
+            $source_stock->fk_warehouse_id = $warehouse_source;
+            $source_stock->is_stock_label = "Minus stock for Product" . $product_info->p_product_name;
+            $source_stock->is_stock_lot_person_in_charge = session('user_id');
+            $source_stock->is_created_by = session('user_id');
+            $source_stock->is_quanity = -1 * $item_info->mp_movement_quantity;
+            $source_stock->is_creation_date = date("Y-m-d H:i:s");
+            $source_stock->is_price_currency = $product_info->p_product_currency;
+            $source_stock->is_stock_currency = $product_info->p_product_currency;
+            $source_stock->is_price_item = $product_info->p_product_cost_price;
+            $source_stock->is_price_stock = $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
+            $source_stock->save();
+            
+            // add stock in destination warehouse
+            $destination_stock = new Stocks();
+            $destination_stock->fk_product_id = $item_info->mp_product_id;
+            $destination_stock->fk_warehouse_id = $warehouse_destination;
+            $destination_stock->is_stock_label = "Add stock for Product" . $product_info->p_product_name;
+            $destination_stock->is_stock_lot_person_in_charge = session('user_id');
+            $destination_stock->is_created_by = session('user_id');
+            $destination_stock->is_quanity = $item_info->mp_movement_quantity;
+            $destination_stock->is_creation_date = date("Y-m-d H:i:s");
+            $destination_stock->is_price_currency = $product_info->p_product_currency;
+            $destination_stock->is_stock_currency = $product_info->p_product_currency;
+            $destination_stock->is_price_item = $product_info->p_product_cost_price;
+            $destination_stock->is_price_stock = $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
+            $destination_stock->save();
         }
         
-        $is_quanity         = $StockProductWarehouse[0]['is_quanity'];
-        $is_id              = $StockProductWarehouse[0]['is_id']; 
-        
-        // you dont have enought quantity to to make the transfer
-        if( $stock_quanity > $is_quanity )
-        {
-            $result_array['is_error']  = 1;
-            $result_array['error_msg'] = "Stock not enought for this product to make transfer please change the quantity";
-            return Response()->json($result_array);
-        }
-        
-        
-        $new_quantity = $is_quanity - $stock_quanity;
- 
-        $NewStock = Stocks::find($is_id);
-        $NewStock->is_quanity = $new_quantity;
-        $NewStock->is_updated_at =  date("Y-m-d H:i:s");
-        $NewStock->is_price_stock = $new_quantity * $ProductInfo->p_product_selling_price;
-        $NewStock->save();
-        
-        
-        // add transfer record
-        $TransferStock = new StockMovements();
-        $TransferStock->fk_warehouse_from = $warehouse_source;
-        $TransferStock->fk_warehouse_to   = $warehouse_destination;
-        $TransferStock->sm_date_movement  = date("Y-m-d H:i:s");
-        $TransferStock->sm_movement_label = "Transfer Stock " . $ProductInfo->p_product_name . " From Warehouse " . $SourceWarehouse->w_warehouse_name . " To " .  $destinationWarehouse->w_warehouse_name;
-        $TransferStock->sm_created_by     = session("user_id");
-        $TransferStock->fk_product_id     = $p_id;
-        $TransferStock->sm_stock_quantity = $stock_quanity;
-        $TransferStock->sm_stock_total_price = $stock_quanity * $ProductInfo->p_product_selling_price;
-        $TransferStock->save();
-        
-        
-        // save the stock warehouse 
-        $destitionStock =  new Stocks();
-        $destitionStock->fk_product_id      = $p_id;
-        $destitionStock->fk_warehouse_id    = $warehouse_destination;
-        $destitionStock->is_stock_label     = "Add Stock to " . $ProductInfo->p_product_name . " On " . date("Y-m-d H:i:s");
-        $destitionStock->is_created_by      = session("user_id");
-        $destitionStock->is_quanity         = $stock_quanity;
-        $destitionStock->is_creation_date   = date("Y-m-d H:i:s");
-        $destitionStock->is_price_stock     = $stock_quanity * $ProductInfo->p_product_selling_price;
-        $destitionStock->save();
+        // update quantity and price 
+        $transfer_stock = StockMovements::find($sm_id);
+        $transfer_stock->sm_stock_quantity = $total_quantity; 
+        $transfer_stock->sm_stock_total_price = $total_price; 
+        $transfer_stock->save();
         
         
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = "Operation Complete Successfully";
         return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * Generate Transfer Stock Voucher and download pdf file
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GenerateTransferVoucher(Request $request)
+    { 
+        $sm_id = $request->input('sm_id');
+        $stock_transfer = StockMovements::find($sm_id);
+        $company_logo   = session('company_logo');
+        
+        $lst_transfer_items = StockMovementItems::whereMpMovementId($sm_id)->whereMpIsDeleted(0)->get();
+        
+        $data = array(
+            "lst_transfer_items" => $lst_transfer_items
+        );
+        $lst_items = view('templates.liststocktransfer',$data)->render();
+        
+        
+        $display = view('templates.stock-transfer',array())->render();
+        
+       $display = str_replace("%COMPANY_LOGO%", $company_logo, $display);
+       $display = str_replace("%STOCK_TRANSFER_LABEL%", $stock_transfer->sm_movement_label, $display);
+       $display = str_replace("%STOCK_TRANSFER_CODE%", $stock_transfer->sm_transfer_code, $display);
+       $display = str_replace("%STOCK_TRANSFER_DATE%", $stock_transfer->sm_date_movement, $display);
+       $display = str_replace("%STOCK_TRANSFER_DESCRIPTION%", $stock_transfer->sm_transfer_description, $display);
+       $display = str_replace("%TOTAL_TRANSFER_QUANTITY%", $stock_transfer->sm_stock_quantity, $display);
+       $display = str_replace("%TRANSFER_LST_PRODUCTS%", $lst_items, $display);
+       $display = str_replace("%STOCK_SOURCE_WAREHOUSE%", $stock_transfer->SourceWarehouse->w_warehouse_name  . " ( ". $stock_transfer->SourceWarehouse->w_warehouse_ref . " )", $display);
+       $display = str_replace("%STOCK_DESTINATION_WAREHOUSE%", $stock_transfer->DestinationWarehouse->w_warehouse_name  . " ( ". $stock_transfer->DestinationWarehouse->w_warehouse_ref . " )", $display);
+        
+         return PDF::loadHTML($display)
+            ->setPaper('a4')
+            ->setOption('encoding', 'UTF-8')
+            ->download('stock-transfer-' . strtolower($stock_transfer->sm_transfer_code) . '.pdf');
     }
     
     
@@ -772,11 +825,16 @@ class ProductStocksController extends Controller
         
         $result_array['category_id']                = $product_info->fk_pc_id;
         $result_array['barcode']                    = $product_info->p_barcode;
-        $result_array['barcode_img']                = "data:image/png;base64," . DNS1D::getBarcodePNG( $result_array['barcode'], "C39+",150 , 50 );
+        
+         $barcode_obj = new DNS1D();
+          $bar_code_png = $barcode_obj->getBarcodePNG($product_info->p_barcode , "C39+",150 , 50 );
+        
+        $result_array['barcode_img']                = "data:image/png;base64," . $bar_code_png;
         $result_array['image_base_src']             = $product_info->p_product_profile_base_src;
         $result_array['image_file_name']            = $product_info->p_product_profile_file_name;
         $result_array['image_extention']            = $product_info->p_product_profile_extention;
         $result_array['p_product_ref']              = $product_info->p_product_ref;
+        $result_array['p_product_description']              = $product_info->p_product_description;
         $result_array['p_product_name']             = $product_info->p_product_name;
         $result_array['p_product_type']             = $product_info->p_product_type;
         $result_array['p_product_color']            = $product_info->p_product_color;

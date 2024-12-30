@@ -76,7 +76,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Voucher Date </label>
-                                    <input type="text" name="pj_creation_date" id="PJ_CREATION_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('d/m/Y') }}" />
+                                    <input type="text" name="pj_creation_date" id="PJ_CREATION_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('Y-m-d') }}" />
                                 </div>
                         </div>
                         <div class="col-md-4">

@@ -64,8 +64,6 @@ class DashboardController extends Controller
         
         $todays_date = date("Y-m-d");
         $count_rates   = CurrencyExchangeRates::whereErDateExchange($todays_date)->count();
-       
-        //
         
         $data = array(
             "count_orders" => $count_orders,
@@ -477,7 +475,7 @@ class DashboardController extends Controller
         foreach ($lst_products as $label => $info) {
             $stock_products_array[] = array(
                 'product' => $info->product_name,
-                'quantity' => $info->total_quantity
+                'value' => $info->total_quantity
             );
         }
         

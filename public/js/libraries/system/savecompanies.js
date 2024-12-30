@@ -38,8 +38,7 @@ $(function(){
 	        }
 	    });
 	 $("#BTN_SAVE_COMPANY").on('click',company_module.SaveCompanyInfo);
-	 $("select").select2();
-         new tempusDominus.TempusDominus(document.getElementById('CD_COMPANY_STARTING_DATE'),{
+         new tempusDominus.TempusDominus(document.getElementById('CD_STARTING_DATE'),{
 		 display: {
 			  components: {
 			      calendar: true,
@@ -55,7 +54,7 @@ $(function(){
 			    }
 		 },
 		 localization: {
-			 format : "L"
+			 format : "yyyy-MM-dd"
 			 
 		 }
 	});

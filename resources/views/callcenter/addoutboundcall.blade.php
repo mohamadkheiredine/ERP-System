@@ -67,7 +67,7 @@ th{
                                      <select name="oc_agent_id" id="OC_AGENT_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketer">
                                             <option value=""> -- Select Telemarketer -- </option>
                                             @foreach($lst_agents as $key => $agent_info)
-                                                    <option value="{{ $agent_info->id }}">{{ $agent_info->u_fullname }}</option>
+                                                    <option {{ $agent_info->id == session('user_id') ? "selected" : "" }} value="{{ $agent_info->id }}">{{ $agent_info->u_fullname }}</option>
                                             @endforeach
                                     </select>
                                 </div>

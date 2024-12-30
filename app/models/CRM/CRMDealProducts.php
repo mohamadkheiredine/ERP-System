@@ -25,4 +25,10 @@ class CRMDealProducts extends Model
 {
     protected   $table          = 'crm_deal_products';
     public      $timestamps     = false;
+        
+    
+    public function Product()
+    {
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','dp_product_id');
+    }
 }

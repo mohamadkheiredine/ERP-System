@@ -22,12 +22,12 @@ orders_module = {
 				success : function(response){
 					$('.LstOrdersBody').html(response.display);
 					 $('.group-checkable').change(function() {
-                         var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-                         var checked = $(this).prop("checked");
-                         $(set).each(function() {
-                             $(this).prop("checked", checked);
-                         });
-                         $.uniform.update(set);
+                                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                                        var checked = $(this).prop("checked");
+                                        $(set).each(function() {
+                                            $(this).prop("checked", checked);
+                                        });
+                                        $.uniform.update(set);
                      }); 
 					 if(response.total_pages > 0)
 					 {

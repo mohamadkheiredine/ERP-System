@@ -103,8 +103,7 @@ class JournalVouchersController extends Controller
         else
             $skip = 0;
                 
-        
-        
+         
         $lst_journal_vouchers       = JournalVouchers::wherePjIsDeleted(0);
         
         // filter items
@@ -115,18 +114,14 @@ class JournalVouchersController extends Controller
         if(strlen($jv_end_date) > 0)
             $lst_journal_vouchers= $lst_journal_vouchers->where('pj_creation_date','<',$jv_end_date);
         
-            if(strlen($jv_start_date) ==  0 && strlen($jv_end_date) ==  0)
-        {
-            $lst_journal_vouchers= $lst_journal_vouchers->whereBetween('pj_creation_date', [$jv_start_date, $jv_end_date]);
-        }
+  
             
         $jv_count =     $lst_journal_vouchers->count();
         $total_pages = ceil( $jv_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
         
         $lst_journal_vouchers   = $lst_journal_vouchers->skip($skip)->take($nbr_rows_per_pages)->get();
-        
-        
+ 
         $lst_currency           = Currency::all();
         $currency_array         = CreateDatabaseArrayByIndex($lst_currency,"cc_id");
         

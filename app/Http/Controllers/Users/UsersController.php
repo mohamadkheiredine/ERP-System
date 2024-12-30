@@ -233,9 +233,66 @@ class UsersController extends Controller {
 
         $result_array = array();
 
+        // check if username exist and return warning
+        if($user_id == null)
+        {
+            $count_users = Users::whereUIsDeleted(0)->where('u_username','LIKE','%' . $u_username . '%')->count();
+            if($count_users > 0 )
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "User Already Exist !!";
+                return Response()->json($result_array);
+            }
+        }
+        
         $Users = new Users();
         if ($user_id !== null) {
             $Users = Users::find($user_id);
+        }
+        else
+        {
+            $account_info   = ChartAccounts::where("aa_account_ref","=","6311")->get();
+            $account_info = $account_info[0];
+
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","6311%")->count();
+
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+
+
+             $AccAccounting = new ChartAccounts();
+             $AccAccounting->aa_parent_account   = $account_info->aa_id;
+             $AccAccounting->aa_account_ref      = $aa_account_ref;
+             $AccAccounting->aa_account          = $aa_account_ref;
+             $AccAccounting->aa_sub_account      = $account_info->aa_id;
+             $AccAccounting->aa_account_label    = $u_fullname;
+             $AccAccounting->fk_country_id       = 0;
+             $AccAccounting->save(); 
+             $aa_id = $AccAccounting->aa_id;
+             
+            $Users->u_account_id = $aa_id;
+            
+            
+            $parent_account   = ChartAccounts::where("aa_account_ref","=","6314")->get();
+            $parent_account = $parent_account[0];
+
+            $count_coms   = ChartAccounts::where("aa_account_ref","LIKE","6314%")->count();
+
+            $new_count_coms      = $count_coms + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count_coms;
+
+
+             $acc_accounting_info = new ChartAccounts();
+             $acc_accounting_info->aa_parent_account   = $parent_account->aa_id;
+             $acc_accounting_info->aa_account_ref      = $aa_account_ref;
+             $acc_accounting_info->aa_account          = $aa_account_ref;
+             $acc_accounting_info->aa_sub_account      = $parent_account->aa_id;
+             $acc_accounting_info->aa_account_label    = $u_fullname . " Fixed Comission";
+             $acc_accounting_info->fk_country_id       = 0;
+             $acc_accounting_info->save(); 
+             $Users->u_comission_account_id = $acc_accounting_info->aa_id;
+            
+            
         }
 
 
@@ -244,6 +301,9 @@ class UsersController extends Controller {
         if (strlen($u_password) > 0 && $u_password == $retype_u_password) {
             $Users->password = Hash::make($u_password);
         }
+        
+        
+        
 
 
         $UsersManager = new UsersManager();
@@ -296,6 +356,19 @@ class UsersController extends Controller {
         $Users->u_hourly_rate = $u_hourly_rate;
         $Users->u_is_active = $u_is_active;
         $Users->save();
+        
+        // if we add new warehouse 
+         if ($user_id == null && ( $u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES )  ) { 
+          $warehouse_info = new WareHouses();
+          $warehouse_info->w_warehouse_ref = $u_username;
+          $warehouse_info->w_warehouse_name = $u_fullname;
+          $warehouse_info->w_warehouse_adddress = $u_address;
+          $warehouse_info->w_owner_id = session('user_id');
+          $warehouse_info->w_linked_to = $Users->id;
+          $warehouse_info->w_warehouse_status = 1;
+          $warehouse_info->save();
+        }
+        
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Complete Successfully";

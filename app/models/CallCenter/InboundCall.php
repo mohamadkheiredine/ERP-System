@@ -27,14 +27,30 @@ class InboundCall extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "ic_id";
 
-     public function Agent()
+    public function Agent()
     {
         return $this->hasOne('App\models\Users\Users', 'id','fk_agent_id');
     }
     
-    
-    public function Customer()
+    public function Salesman()
     {
-        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','fk_customer_id');
+        return $this->hasOne('App\models\Users\Users', 'id','ic_sales_id');
     }
+    
+    public function Telemarketing()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','ic_telemarketing_id');
+    }
+    
+    public function Client()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','fk_customer_id');
+    }
+    
+     public function CallResult()
+    {
+        return $this->hasOne('App\models\CallCenter\CallResults', 'cr_id','ic_result_id');
+    }
+    
+    
 }

@@ -74,8 +74,9 @@ th{
     						</div>
 <br/>
 						</div>
-						<div class="col-md-4">
-                            <select class="bs-select form-control" id="INVOICE_CUSTOMER" name="invoice_customer">
+                                            @if($crm_telemarketing == 0)
+						<div class="col-md-4"> 
+                                <select  name="invoice_customer" id="INVOICE_CUSTOMER" class="form-select" data-control="select2" data-placeholder="Select Customer">
                             			<option value="0">-- Select Customer --</option>
                                         @foreach($list_customers as $index => $customer_info)
                                           <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
@@ -83,15 +84,17 @@ th{
                                     </select>
                                     <br/>
 						</div>
-						 <div class="col-md-4">
-							 <select class="bs-select form-control" id="INVOICE_BANK" name="invoice_bank">
-                            			<option value="0">-- Select Bank --</option>
-                                        @foreach($lst_banks_info as $index => $bank_info)
-                                          <option value="{{ $bank_info->ba_id }}">{{ $bank_info->ba_account_label }}</option>
-                                        @endforeach
-                                    </select>
-                                    <br/>
+                                            @else
+                                            <div class="col-md-4"> 
+                                                    <select  name="invoice_client" id="INVOICE_CLIENT" class="form-select" data-control="select2" data-placeholder="Select Client">
+                                                                <option value="0">-- Select Client --</option>
+                                                        @foreach($list_accounts as $index => $account_info)
+                                                          <option value="{{ $account_info->ca_id }}">{{ $account_info->ca_account_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <br/>
 						</div>
+                                            @endif 
 						<div class="col-md-4">
 							 <div class="form-group">
                                 <input type="text" placeholder=" From Date" name="start_date" id="START_DATE" value="" class="form-control" />
@@ -122,7 +125,7 @@ th{
             				<th  style="width:5%" title="Invoice Ref"> Invoice Ref </th>
             				<th  style="width:5%" title="Date"> Date </th>
             				<th  style="width:20%" title="Description"> Description </th>
-            				<th  style="width:12%" title="Customers"> Customers </th>
+            				<th  style="width:12%" title="Customers"> {{ Config::get('appconfig.crm_telemarketing') == 1 ? "Clients" : "Customers" }} </th>
             				<th  style="width:12%" title="Total Price"> Total Price </th>
             				<th  style="width:10%" title="Created User">Created User</th>
             				<th  style="width:10%" title="Updated User">Updated User</th>

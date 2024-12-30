@@ -26,6 +26,9 @@ class CRMAccounts extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "ca_id";
     
-    
+    public function Nationality()
+    {
+        return $this->hasOne('App\models\System\Countries', 'id','ca_nationality_id');
+    }
     
 }

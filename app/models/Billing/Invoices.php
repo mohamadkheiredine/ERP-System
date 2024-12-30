@@ -26,15 +26,23 @@ class Invoices extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "bi_id";   
     
+
+    public function Account()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','fk_account_id');
+    }
+    
+    
+    public function Client()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','bi_client_id');
+    }
+    
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','bi_invoice_currency');
     }
     
-    public function Account()
-    {
-        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','fk_account_id');
-    }
     
     public function CreatedUser()
     {

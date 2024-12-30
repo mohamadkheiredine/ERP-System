@@ -18,6 +18,7 @@ Page Description :
 namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
+use App;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -42,6 +43,16 @@ use App\models\System\Currency;
 use App\models\CRM\CRMDealProducts;
 use App\library\AccountingManager;
 use App\models\Billing\InvoicePayments;
+use App\models\Billing\InvoiceProducts;
+use App\models\CRM\CRMContractTypes;
+use App\models\Accounting\ChartAccounts;
+use App\models\Billing\Invoices; 
+use App\models\CallCenter\MaintenanceCase;
+use PDF; 
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\models\Billing\Receipts;
+use App\models\CallCenter\InboundCall;
+use App\models\CallCenter\MaintenanceTypes;
 
 class DealsController extends Controller
 {
@@ -122,6 +133,44 @@ class DealsController extends Controller
         return Response()->json($result_array);
     }
     
+    
+    /**
+     * Get Deal info and return deal info
+     * 
+     * @author Moe Mantach
+     * @param Request $request
+     */
+    public function GetDealInfo(Request $request)
+    {
+        $result_array = array();
+        $deal_code = $request->input('deal_code');
+        
+        $deal_info = CRMDeals::where('ad_deal_code','LIKE','%' .$deal_code . '%')->whereAdIsDeleted(0)->get();
+        
+        
+        if(count($deal_info) == 0)
+        {
+             $result_array['is_error'] = 0;
+             $result_array['error_msg'] = "No Contract with this Contract Code";
+             return Response()->json($result_array);
+        }
+        
+        $deal_info = $deal_info[0];
+    
+        $invoice_id = $deal_info->ad_invoice_id;
+        
+        $total_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->count();
+        $paid_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->whereBrReceiptPaid(1)->count();
+        
+        $result_array['is_error'] = 0;
+        $result_array['deal_info'] = array(
+            'fk_sales_id' => $deal_info->fk_sales_id,
+            'billing_situation' => $paid_count . "/" .$total_count,
+            'fk_telemarketing_id' => $deal_info->fk_telemarketing_id
+        );
+        
+        return Response()->json($result_array);
+    }
      
     
     /**
@@ -140,9 +189,11 @@ class DealsController extends Controller
         $lst_deal_stages = CRMDealStages::whereCsIsDeleted(0)->get();
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_currencies = Currency::all();
+        $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
         
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_supervisors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
         
         
         
@@ -153,6 +204,8 @@ class DealsController extends Controller
             "lst_users" => $lst_users,
             "lst_deal_stages" => $lst_deal_stages,
             "lst_user_telemarketing" => $lst_telemarketing,
+            "lst_contract_types" => $lst_contract_types,
+            "lst_supervisors" => $lst_supervisors,
             "lst_user_sales" => $lst_sales,
             "lst_currencies" => $lst_currencies,
             "lst_contacts" => $lst_contacts
@@ -160,6 +213,81 @@ class DealsController extends Controller
         return Response()->view('accounts.adddeals',$data);
     }
     
+    
+    /**
+     * Generate and Download Contract 
+     * 
+     * @author Moe mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GenerateAndDownloadContract(Request $request)
+    {
+        $ad_id = $request->input('ad_id');
+        $deal_info = CRMDeals::find($ad_id);
+        
+        $contract_document = view('templates.contractstatments')->render();
+        
+        $contract_document = str_replace("%FULLNAME%", $deal_info->Account->ca_account_name, $contract_document);
+        $contract_document = str_replace("%NATIONAL_ID%", $deal_info->Account->ca_national_id, $contract_document);
+        $contract_document = str_replace("%PHONE_NUMBER%", $deal_info->Account->ca_account_phone, $contract_document);
+        $contract_document = str_replace("%ADDRESS%", $deal_info->Account->ca_billing_address, $contract_document);
+        $contract_document = str_replace("%NUMBER_PAYMENTS%", $deal_info->ad_nbr_of_payments, $contract_document);
+        $contract_document = str_replace("%FIRSTINVOICE%", $deal_info->ad_first_bill_date, $contract_document);
+        $contract_document = str_replace("%TOTAL_PRICE%", $deal_info->ad_remaining_payment, $contract_document);
+        $contract_document = str_replace("%NATIONALITY%", ( $deal_info->Account->Nationality ? $deal_info->Account->Nationality->name : ""), $contract_document);
+        
+        // get list of payments 
+        //LST_PAYMENTS
+        
+         $deal_info = CRMDeals::find($ad_id);
+         $invoice_id =   $deal_info->ad_invoice_id;
+        
+         $lst_invoice_payments = InvoicePayments::whereFkInvoiceId($invoice_id)->get();
+         $data = array(
+             "lst_invoice_payments" => $lst_invoice_payments
+         );
+         $payments = view('deals.lsttemplatedproducts',$data)->render();  
+         
+         
+        $contract_document = str_replace("%LST_PAYMENTS%", $payments, $contract_document);
+      
+ 
+       $pdf = App::make('snappy.pdf.wrapper');
+        $pdf->loadHTML($contract_document);
+        return $pdf->inline();
+        
+    }
+    
+    
+    public function generatePDF(Request $request)
+    {
+        // Define the CSV headers
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="example.csv"',
+        ];
+
+        // Use a streamed response to send the CSV content
+        $callback = function() {
+            // Open the output stream in write mode
+            $handle = fopen('php://output', 'w');
+
+            // Add the CSV headers (column names)
+            fputcsv($handle, ['ID', 'Name', 'Email']);
+
+            // Add some sample data (this can be replaced with dynamic data)
+            fputcsv($handle, [1, 'John Doe', 'john@example.com']);
+            fputcsv($handle, [2, 'Jane Doe', 'jane@example.com']);
+            fputcsv($handle, [3, 'James Smith', 'james@example.com']);
+
+            // Close the file handle
+            fclose($handle);
+        };
+
+        // Return the response as a streamed download
+        return new StreamedResponse($callback, 200, $headers);
+    }
     
        public function GetProductInfo( Request $request )
     {
@@ -205,10 +333,10 @@ class DealsController extends Controller
         return Response()->json($result_array);
         
     }
-    
+   
     
     /**
-     * Save Client Category Info to the database
+     * Save Deal Category Info to the database
      *
      * @author Moe Mantach
      * @access public
@@ -234,35 +362,41 @@ class DealsController extends Controller
         $ad_deal_probability        = $request->input('ad_deal_probability');
         $ad_next_step               = $request->input('ad_next_step');
         $ad_expected_revenue        = $request->input('ad_expected_revenue');
-        $fk_sales_id                = $request->input('fk_sales_id');
-        $fk_telemarketing_id        = $request->input('fk_telemarketing_id');
+        $fk_sales_id                = $request->input('fk_sales_id'); 
         $ad_currency_id             = $request->input('ad_currency_id');
         $ad_down_payment            = $request->input('ad_down_payment');
         $ad_nbr_of_payments         = $request->input('ad_nbr_of_payments');
-        $ad_is_approved         = $request->has('ad_is_approved') ? 1 : 0;
+        $ad_first_bill_date         = $request->input('ad_first_bill_date');
+        $ad_warranty_date         = $request->input('ad_warranty_date');
+        $ad_deal_date         = $request->input('ad_deal_date');
+        $ad_is_approved             = $request->has('ad_is_approved') ? 1 : 0;
         $deals                      = $request->input('deals');
+        $fk_telemarketing_id                        = $request->input('fk_telemarketing_id');
+        $fk_collector_id                            = $request->input('fk_collector_id');
+        $fk_supervisor_id                           = $request->input('fk_supervisor_id');
+        $ad_sales_comm                              = $request->input('ad_sales_comm');
+        $ad_telemarketing_comm                      = $request->input('ad_telemarketing_comm');
+        $ad_supervisor_comm                         = $request->input('ad_supervisor_comm');
+        $ad_account_code                        = $request->input('ad_account_code');
+        $ad_serial_number                        = $request->input('ad_serial_number');
         
         $result_array = array();
         
         
         // validate that code exist 
-        
-        $count_deals = CRMDeals::whereAdIsDeleted(0)->whereAdDealCode($ad_deal_code)->count();
-        if($count_deals == 0)
-        {
-            $result_array['is_error'] = 0;
-            $result_array['error_msg'] ="CRM Deal Code Not Exist !!" ;
-            
-            return Response()->json($result_array);
-        }
+       
         
         // Validate 
-         
+         $action = "add";
         $account_deal = new CRMDeals();
         if($ad_id != null)
         {
             $account_deal= CRMDeals::find($ad_id);
+            $action = "edit";
         }
+        
+        $client_info = CRMAccounts::find($fk_account_id);
+        
          
         $account_deal->fk_account_id         =   $fk_account_id;
         $account_deal->fk_contact_id         =   $fk_contact_id;
@@ -280,15 +414,26 @@ class DealsController extends Controller
         $account_deal->ad_expected_revenue   =   $ad_expected_revenue;
         $account_deal->fk_sales_id           =   $fk_sales_id;
         $account_deal->fk_telemarketing_id   =   $fk_telemarketing_id;
+        $account_deal->fk_collector_id       =   $fk_collector_id;
+        $account_deal->fk_supervisor_id      =   $fk_supervisor_id;
+        $account_deal->ad_sales_comm         =   $ad_sales_comm;
+        $account_deal->ad_telemarketing_comm =   $ad_telemarketing_comm;
+        $account_deal->ad_supervisor_comm    =   $ad_supervisor_comm;
         $account_deal->ad_currency_id        =   $ad_currency_id;
         $account_deal->ad_down_payment       =   $ad_down_payment;
         $account_deal->ad_nbr_of_payments    =   $ad_nbr_of_payments;
+        $account_deal->ad_remaining_payment  =   ( $ad_deal_amount - $ad_down_payment );
+        $account_deal->ad_first_bill_date    =   $ad_first_bill_date;
         $account_deal->ad_is_approved        =   $ad_is_approved;
+        $account_deal->ad_account_code       =   $ad_account_code;
+        $account_deal->ad_serial_number      =   $ad_serial_number;
+        $account_deal->ad_deal_date      =   $ad_deal_date;
+        $account_deal->ad_warranty_date      =   $ad_warranty_date;
         
  
         $account_deal->save();
         $ad_id = $account_deal->ad_id;
-        
+        $account_deal= CRMDeals::find($ad_id);
         
         // save product deals
         if(strlen($deals) > 0)
@@ -306,13 +451,29 @@ class DealsController extends Controller
             }
         }
         
+
+        
+        
         // when approve create invoice and generate receipts and payment for all number of
         // payments
-        if($ad_is_approved > 0)
+//        if($ad_is_approved > 0)
         {
-            // Create Accounting Account
-            $crm_account = CRMAccounts::find($fk_account_id);
+            // delete old invoice and payments exist
+            $delete_invoice = Invoices::whereBiId($account_deal->ad_invoice_id)->delete();
+            $delete_payments = InvoicePayments::whereFkInvoiceId($account_deal->ad_invoice_id)->delete();
             
+            
+                if($fk_account_id == 0)
+                {
+                    $result_array['is_error'] = 1;
+                    $result_array['error_msg'] = "Please Select Account Before Save";
+                    
+                    return Response()->json($result_array);
+                }
+            
+                // Create Accounting Account
+                $crm_account = CRMAccounts::find($fk_account_id);
+
             
                 $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
                 $account_info = $account_info[0];
@@ -322,20 +483,20 @@ class DealsController extends Controller
                 $new_count      = $count + 1;
                 $aa_account_ref = $account_info->aa_account . (String)$new_count;
 
-                $AccAccounting = new ChartAccounts();
-                $AccAccounting->aa_parent_account   = $account_info->aa_id;
-                $AccAccounting->aa_account_ref      = $aa_account_ref;
-                $AccAccounting->aa_account          = $aa_account_ref;
-                $AccAccounting->aa_sub_account      = $account_info->aa_id;
-                $AccAccounting->aa_account_label    = $crm_account->ca_account_name;
-                $AccAccounting->fk_country_id       = 0;
-                $AccAccounting->save(); 
-                $aa_id = $AccAccounting->aa_id;
+                $acc_accounting = new ChartAccounts();
+                $acc_accounting->aa_parent_account   = $account_info->aa_id;
+                $acc_accounting->aa_account_ref      = $aa_account_ref;
+                $acc_accounting->aa_account          = $aa_account_ref;
+                $acc_accounting->aa_sub_account      = $account_info->aa_id;
+                $acc_accounting->aa_account_label    = $crm_account->ca_account_name;
+                $acc_accounting->fk_country_id       = 0;
+                $acc_accounting->save(); 
+                $aa_id = $acc_accounting->aa_id;
             
                 
                 $creation_date = date("Y-m-d H:i:s");
                 $company_id = Session('company_id');
-                $AccountingManager = AccountingManager();
+                $AccountingManager = new AccountingManager();
                 $params_array = array(
                     'company_id' => $company_id
                 );
@@ -343,8 +504,11 @@ class DealsController extends Controller
                 $invoice_info = new Invoices();
                 $invoice_info->bi_invoice_ref       = $invoice_code;
                 $invoice_info->bi_invoice_code      = $invoice_code;
+                $invoice_info->bi_contract_number      = $ad_deal_code;
+                $invoice_info->bi_account_number      = $client_info->ca_account_code;
                 $invoice_info->fk_account_id        = $aa_id;
                 $invoice_info->fk_customer_id       = 0;
+                $invoice_info->bi_client_id       = $fk_account_id;
                 $invoice_info->bi_invoice_date      = $creation_date;
                 $invoice_info->bi_due_date          = $creation_date;
                 $invoice_info->bi_payment_terms     = 1;
@@ -354,13 +518,18 @@ class DealsController extends Controller
                 $invoice_info->bi_vat_id            = 1;
                 $invoice_info->bi_discount          = 0;
                 $invoice_info->bi_total_price       = $ad_deal_amount;
+                $invoice_info->bi_invoice_type       = 1;
                 $invoice_info->bi_invoice_currency  = $ad_currency_id;
                 $invoice_info->bi_invoice_note      = "New Invoice #" . $invoice_code;
-                $invoice_info->bi_invoice_paid      = 1;
-                $invoice_info->bi_number_payments   = 1;
+                $invoice_info->bi_invoice_paid      = $ad_is_approved;
+                $invoice_info->bi_number_payments   = $ad_nbr_of_payments;
                 $invoice_info->save();
                 $bi_id = $invoice_info->bi_id;
-
+                // link deal to invoice
+                $deal_info = CRMDeals::find($ad_id);
+                $deal_info->ad_invoice_id = $bi_id;
+                $deal_info->save();
+                
                 $lst_deal_items = CRMDealProducts::whereDpDealId($ad_id)->get();
                 foreach ($lst_deal_items as $key => $item_info ) 
                 {
@@ -371,8 +540,8 @@ class DealsController extends Controller
                     $invoice_items->ii_item_id           = -1;
                     $invoice_items->ii_stock_id          = -1;
                     $invoice_items->ii_item_type         = 1;
-                    $invoice_items->ii_item_label        = $item_info->Product->p_product_name;
-                    $invoice_items->ii_item_price        = $item_info->Product->p_product_selling_price;
+                    $invoice_items->ii_item_label        = $item_info->Product ? $item_info->Product->p_product_name : "-";
+                    $invoice_items->ii_item_price        = $item_info->Product ? $item_info->Product->p_product_selling_price : 0;
                     $invoice_items->ii_item_qyt          = 1;
                     $invoice_items->ii_price_currency    = $ad_currency_id;
                     $invoice_items->save();
@@ -381,37 +550,123 @@ class DealsController extends Controller
                 
                 // Save invoice Payments 
                 $remaining_amount = $ad_deal_amount - $ad_down_payment;
-                $payment_amount = $remaining_amount / $ad_nbr_of_payments;
-                
+                $payment_amount = ceil($remaining_amount / $ad_nbr_of_payments);
                 $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
-                
+                $neareset_amount = round($payment_amount, -3);
+                $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
                 $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
                 
-                
+              $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payments - 1);
+              $last_payment = $payment_amount + $total;
+               
                 // create invoice down payment 
                 $invoice_payment = new InvoicePayments();
                 $invoice_payment->fk_invoice_id = $bi_id;
                 $invoice_payment->ip_payment_percentage = $downpayment_percentage;
                 $invoice_payment->ip_payment_amount = $ad_down_payment;
                 $invoice_payment->ip_payment_type = 1;
+                $invoice_payment->ip_billing_date = $ad_first_bill_date;
+                $invoice_payment->ip_billing_nbr = "001";
+                $invoice_payment->ip_billing_status = 0;
                 $invoice_payment->ip_payment_label = "Downpayment of Deal Code #" . $ad_deal_code;
                 $invoice_payment->save();
                 
-                for ($index = 1; $index < $ad_nbr_of_payments - 1; $index++) 
+                for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++) 
                 {
                     $invoice_payment = new InvoicePayments();
                     $invoice_payment->fk_invoice_id = $bi_id;
-                    $invoice_payment->ip_payment_percentage = $percentage_amount;
-                    $invoice_payment->ip_payment_amount = $percentage_amount;
-                    $invoice_payment->ip_payment_type = 1;
-                    $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
+                    $invoice_payment->ip_payment_percentage = $percentage_near_amount;
+                    $invoice_payment->ip_payment_amount = $neareset_amount;
+                    $invoice_payment->ip_payment_type = 2;
+                    $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
+                    $invoice_payment->ip_billing_nbr = "00" . $index;
+                    $invoice_payment->ip_billing_status = 0;
+                    $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
                     $invoice_payment->save();
                 }
                 
+                $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
+                $invoice_payment = new InvoicePayments();
+                $invoice_payment->fk_invoice_id = $bi_id;
+                $invoice_payment->ip_payment_percentage = $percentage_last_amount;
+                $invoice_payment->ip_payment_amount = $last_payment;
+                $invoice_payment->ip_payment_type = 2;
+                $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
+                $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
+                $invoice_payment->ip_billing_status = 0;
+                $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
+                $invoice_payment->save();
+                
+                
+        }
+        
+        if($action == "add")
+        {
+           // Create Instalation Date Pending Maintenance Call
+            $count_calls = InboundCall::whereIcIsDeleted(0)->count();
+            $index = $count_calls + 1;
+            $call_index = "CC" . sprintf('%05d', $index);
+
+            $call_info = new InboundCall();
+            $call_info->ic_call_index      = $call_index;  
+            $call_info->ic_sales_id      = $fk_sales_id;  
+            $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
+            $call_info->ic_client_code      = $client_info->ca_account_code;  
+            $call_info->ic_contract_code      = $ad_deal_code;  
+            $call_info->ic_serial_number      = $ad_serial_number;  
+            $call_info->ic_call_date      = $ad_first_bill_date;  
+            $call_info->ic_call_start_time      = "00:00";  
+            $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;  
+            $call_info->save();         
+        }
+
+        
+        
+        
+        // if deal approve create maintenance appointment next 3 month
+        if($ad_is_approved > 0)
+        {
+                $today = date('Y-m-d');
+                $three_maint_date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
+                $ro_date = date('Y-m-d', strtotime('+18 month', strtotime($today)));
+
+                $count_calls = InboundCall::whereIcIsDeleted(0)->count();
+                $index = $count_calls + 1;
+                $call_index = "CC" . sprintf('%05d', $index);
+                
+                $call_info = new InboundCall();
+                $call_info->ic_call_index      = $call_index;  
+                $call_info->ic_sales_id      = $fk_sales_id;  
+                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
+                $call_info->ic_client_code      = $client_info->ca_account_code;  
+                $call_info->ic_contract_code      = $ad_deal_code;  
+                $call_info->ic_serial_number      = $ad_serial_number;  
+                $call_info->ic_call_date      = $ro_date;  
+                $call_info->ic_call_start_time      = "00:00";  
+                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_RO;  
+                $call_info->save();
+                
+                
+                $count_calls = InboundCall::whereIcIsDeleted(0)->count();
+                $index = $count_calls + 1;
+                $call_index = "CC" . sprintf('%05d', $index);
+        
+                $call_info = new InboundCall();
+                $call_info->ic_call_index      = $call_index;  
+                $call_info->ic_sales_id      = $fk_sales_id;  
+                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
+                $call_info->ic_client_code      = $client_info->ca_account_code;  
+                $call_info->ic_contract_code      = $ad_deal_code;  
+                $call_info->ic_serial_number      = $ad_serial_number;  
+                $call_info->ic_call_date      = $three_maint_date;  
+                $call_info->ic_call_start_time      = "00:00";  
+                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN;  
+                $call_info->save();
         }
         
         
         $result_array['is_error']  = 0;
+        $result_array['ad_id']  = $ad_id;
         $result_array['error_msg'] = 'Account Deal Information Has been saved';
         
         return Response()->json($result_array);
@@ -436,9 +691,11 @@ class DealsController extends Controller
         $lst_deal_stages    = CRMDealStages::whereCsIsDeleted(0)->get();
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
+        $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
         
-        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_telemarketing  = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales          = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_supervisors    = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
         
         $data = array(
             "lst_accounts" => $lst_accounts,
@@ -449,11 +706,77 @@ class DealsController extends Controller
             "lst_deal_stages" => $lst_deal_stages,
             "lst_currencies" => $lst_currencies,
             "lst_user_telemarketing" => $lst_telemarketing,
+            "lst_contract_types" => $lst_contract_types,
+            "lst_supervisors" => $lst_supervisors,
             "lst_user_sales" => $lst_sales,
             "lst_deal_stages" => $lst_deal_stages,
             "lst_contacts" => $lst_contacts
         );
         return Response()->view('accounts.editdeals',$data);
+    }
+    
+    
+    /**
+     * Generate Deal Payments Preview to display it inside the deal added information
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GenerateDealPaymentsPreview(Request $request)
+    {
+        $ad_deal_amount     = $request->input('ad_deal_amount');
+        $ad_down_payment    = $request->input('ad_down_payment');
+        $ad_nbr_of_payment  = $request->input('ad_nbr_of_payment');
+        $ad_first_bill_date  = $request->input('ad_first_bill_date');
+        
+        $remaining_amount = $ad_deal_amount - $ad_down_payment;
+        $payment_amount = $remaining_amount / $ad_nbr_of_payment;
+
+        $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
+
+        $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
+        
+           $neareset_amount = round($payment_amount, -3);
+        $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
+
+      $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payment - 1);
+      $last_payment = $payment_amount + $total;
+        
+        
+        
+        $payments_array = array();
+        $result_array = array();
+
+
+        for ($index = 1; $index < $ad_nbr_of_payment; $index++) 
+        {
+            $bill_nbr = sprintf("%07d",$index);
+            $payments_array[] =array(
+                'bill_nbr' => $bill_nbr,
+                'value_date' => date("Y-m-d",strtotime($ad_first_bill_date ." + " . ( $index - 1 ) . " months")),
+                'bill_status' => "Pending",
+                'bill_amount' => $neareset_amount,
+            );
+        }
+        
+        $bill_nbr = sprintf("%07d",$index);
+        $payments_array[] =array(
+            'bill_nbr' => $bill_nbr,
+            'value_date' => date("Y-m-d",strtotime($ad_first_bill_date ." + " . ($ad_nbr_of_payment - 1) . " months")),
+            'bill_status' => "Pending",
+            'bill_amount' => $last_payment,
+        );
+        
+        
+        
+        $result_array['is_error'] = 0;
+        $data = array(
+          "payments_array"   => $payments_array
+        );
+        $result_array['display'] = view('deals.paymentpreview',$data)->render();
+        
+        return Response()->json($result_array);
     }
     
     

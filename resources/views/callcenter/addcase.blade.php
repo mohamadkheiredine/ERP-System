@@ -37,7 +37,7 @@ th{
 @section('content')
 <div class="card shadow-sm">
     <div class="card-header">
-        <h3 class="card-title">Add New Case Management</h3>
+        <h3 class="card-title">Add New Maintenance Schedule Case</h3>
         <div class="card-toolbar">
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -63,27 +63,87 @@ th{
                     <div class="row">
                          <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label"> Case Code <span class="required"> * </span></label><br/>
-                                <input type="text" name="cc_case_code" id="CC_CASE_CODE" maxlength="15" class="form-control" value="" />
+                                <label class="control-label"> Maintenance Number <span class="required"> * </span></label><br/>
+                                <input type="text" name="cc_case_code" id="CC_CASE_CODE" maxlength="15" class="form-control" value="{{ $case_code }}" />
                              </div>
                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label"> Case Label <span class="required"> * </span></label><br/>
-                                <input type="text" name="cc_case_label" id="CC_CASE_LABEL" maxlength="255" class="form-control" value="" />
+                                <label class="control-label"> Doc Number <span class="required"> * </span></label><br/>
+                                <input type="text" name="cc_doc_number" id="CC_DOC_NUMBER" maxlength="15" class="form-control" value="" />
                              </div>
+                        </div>
+                       <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Contract Code</label>
+                                <input type="text" name="cc_contract_code" id="CC_CONTRACT_CODE" class="form-control"  maxlength="15"  value="" /> 
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Client Code</label>
+                                <input type="text" name="cc_client_code" id="CC_CLIENT_CODE" class="form-control"  maxlength="15"  value="" />
+                                <input type="hidden" name="cc_client_id" id="CC_CLIENT_ID" class="form-control"  value="" />
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                  <label class="control-label"> Agent <span class="required"> * </span> </label>
-                                   <select name="cc_assigned_agent_id" id="CC_ASSIGNED_AGENT_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Assigned Agent">
-                                          <option value=""> -- Select Agent -- </option>
-                                          @foreach($lst_agents as $key => $agent_info)
-                                                  <option value="{{ $agent_info->id }}">{{ $agent_info->u_fullname }}</option>
-                                          @endforeach
-                                  </select>
-                              </div>
-                        </div> 
+                                <label class="control-label">Client Name</label>
+                                <input type="text" name="ca_account_name" id="CA_ACCOUNT_NAME" class="form-control" readonly="readonly"  maxlength="255"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Client Address</label>
+                                <input type="text" name="ca_account_address" id="CA_ACCOUNT_ADDRESS" class="form-control" readonly="readonly"  maxlength="255"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Phone Number</label>
+                                <input type="text" name="cc_phone_number" id="CC_PHONE_NUMBER" class="form-control"  maxlength="25"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Comission</label>
+                                <input type="text" name="cc_comission" id="CC_COMISSION" class="form-control"  maxlength="25"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Machine Serial Number</label>
+                                <input type="text" name="cc_serial_number" id="CC_SERIAL_NUMBER" class="form-control"  maxlength="255"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Visit Type</label>
+                                <input type="text" name="cc_visit_type" id="CC_VISIY_TYPE" class="form-control"  maxlength="255"  value="" />
+                            </div>
+                        </div>
+                      <div class="col-md-4">
+                            <div class="form-group">
+                              <label>Maintenance Type <span class="required"> * </span>  </label> 
+                                  <select name="cc_maint_type_id" id="CC_MAINT_TYPE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
+                                      <option value="">-- Select Maintenance Type --</option>
+                                      <?php foreach ( $lst_maint_types as $key => $type_info ) { ?>
+                                              <option value="{{ $type_info->mt_id }}">{{ $type_info->mt_type }}</option>
+                                      <?php  } ?>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                            <div class="form-group">
+                              <label>Telemarketing <span class="required"> * </span>  </label> 
+                                  <select name="cc_telemarketing_id" id="CC_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
+                                      <option value="">-- Select Telemarketing --</option>
+                                      <?php foreach ( $lst_telemarketing as $key => $user_info ) { ?>
+                                              <option {{ Session('user_id') == $user_info->id ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                      <?php  } ?>
+                              </select>
+                          </div>
+                      </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                   <label class="control-label"> Technician <span class="required"> * </span> </label>
@@ -118,29 +178,35 @@ th{
                                   </select>
                               </div>
                         </div> 
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                  <label class="control-label"> Case Inbound Call <span class="required"> * </span> </label>
-                                   <select name="cc_call_id" id="CC_CALL_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Case Call">
-                                          <option value=""> -- Select Call -- </option>
-                                          @foreach($lst_inbound_calls as $key => $call_info)
-                                                  <option value="{{ $call_info->ic_id }}">{{ $call_info->cc_case_label }}</option>
-                                          @endforeach
-                                  </select>
-                              </div>
-                        </div> 
                          <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label"> Case Deadline <span class="required"> * </span></label><br/>
-                                <input type="text" name="cc_case_deadline" required="required" id="CC_CASE_DEADLINE" class="form-control" value="" />
+                                <label class="control-label"> Case Date <span class="required"> * </span></label><br/>
+                                <input type="text" name="cc_case_date" required="required" id="CC_CASE_DATE" class="form-control" value="" />
+                             </div>
+                        </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label"> Case Time <span class="required"> * </span></label><br/>
+                                <input type="text" name="cc_case_time" required="required" id="CC_CASE_TIME" class="form-control" value="" />
+                             </div>
+                        </div>
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label"> Case Price Total</label><br/>
+                                <input type="text" name="cc_case_price" id="CC_CASE_PRICE" class="form-control" value="0" />
                              </div>
                         </div>
                          <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label"> Case Resolution Date <span class="required"> * </span></label><br/>
-                                <input type="text" name="cc_resolution_date" required="required" id="CC_RESOLUTION_DATE" class="form-control" value="" />
-                             </div>
-                        </div>  
+                                  <label class="control-label"> Currency <span class="required"> * </span> </label>
+                                   <select name="cc_currency_id" id="CC_CURRENCY_ID"   class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                          <option value=""> -- Select Currency -- </option>
+                                          @foreach($lst_currencies as $key => $curr_info)
+                                                  <option value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code }}&nbsp;{{ $curr_info->cc_currency_name }}</option>
+                                          @endforeach
+                                  </select>
+                              </div>
+                        </div> 
                         <div class="col-md-12">
                              <div class="form-group">
                                 <label class="control-label"> Case Description</label><br/>

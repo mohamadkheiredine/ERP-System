@@ -36,20 +36,20 @@ th{
 @section('content')
 <div class="card shadow-sm">
     <div class="card-header">
-        <h3 class="card-title">Edit Invoice Settings&nbsp;-&nbsp;{{ $invoice_info->bi_invoice_code }}&nbsp;-&nbsp;{!! $invoice_info->bi_invoice_status == 0 ? "<span class='m--font-info'>Draft</span>" : "<span class='m--font-primary'>Official</span>" !!}</h3>
+        <h3 class="card-title">Edit Invoice Settings&nbsp;-&nbsp;{{ $invoice_info->bi_invoice_code }}&nbsp;-&nbsp;{!! $invoice_info->bi_invoice_status == 0 ? "<span class='m--font-info'>Draft</span>" : "<span class='m--font-primary'>Official</span>" !!}&nbsp;--&nbsp;{!! number_format($invoice_info->bi_total_price) !!}&nbsp;&nbsp;</h3>
         <div class="card-toolbar">
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 Action
               </button>
               <ul class="dropdown-menu">
-              		@if( $invoice_info->bi_invoice_status == 0 )			
-					<li><a class="dropdown-item quickactions" data-action_type="CONVERT_TO_OFFICIAL" href="#">Convert to official Invoice</a></li>
-					@else
-					<li><a class="dropdown-item quickactions" data-action_type="REVERT_TO_DRAFT" href="#">Refert Back to draft Invoice</a></li>
-					@endif
-					<li><a class="dropdown-item quickactions" data-action_type="CREATE_RECEIPT" href="#">Create Receipt</a></li>
-					<li><a class="dropdown-item quickactions" data-action_type="PRINT_INVOICE" href="#">Print Invoice</a></li>
+                    @if( $invoice_info->bi_invoice_status == 0 )			
+                        <li><a class="dropdown-item quickactions" data-action_type="CONVERT_TO_OFFICIAL" href="#">Convert to official Invoice</a></li>
+                    @else
+                        <li><a class="dropdown-item quickactions" data-action_type="REVERT_TO_DRAFT" href="#">Refert Back to draft Invoice</a></li>
+                    @endif
+                    <li><a class="dropdown-item quickactions" data-action_type="CREATE_RECEIPT" href="#">Create Receipt</a></li>
+                    <li><a class="dropdown-item quickactions" data-action_type="PRINT_INVOICE" href="#">Print Invoice</a></li>
               </ul>
             </div>
         </div>
@@ -71,40 +71,52 @@ th{
             				<strong>Error!</strong> You have some form errors. Please check below.
             			</div>
                     <div class="row">
-                        <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Invoice Ref </label><br/>
-                                    <input type="text" name="bi_invoice_ref" id="BI_INVOICE_REF" class="form-control"  maxlength="15"  value="{{ $invoice_info->bi_invoice_ref }}" />
-                                </div>
-                        </div>
-                        <div class="col-md-4" style="display: none">
-                             <div class="form-group">
-                                <label class="control-label">Client <span class="required"> * </span></label><br/>
-                                <select class="bs-select form-control" id="INVOICE_ACCOUNT" name="invoice_account">
-                        			<option value="0">-- Select Client --</option>
-                                    @foreach($list_accounts as $index => $client_info)
-                                      <option {{ $invoice_info->bi_client_id == $client_info->ca_id ? "selected" : "" }} value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                            		<label class="control-label">Customer <span class="required"> * </span></label><br/>
-                            		<select class="bs-select form-control" id="FK_CUSTOMER_ID" name="fk_customer_id">
-                            			<option value="">-- Select Customer --</option>
-                                        @foreach($list_customers as $index => $customer_info)
-                                          <option {{ $invoice_info->fk_customer_id == $customer_info->ic_id ? "selected" : "" }} value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
-                                        @endforeach
-                                    </select>
-                            </div>
-						</div>
+                        
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Invoice Date </label><br/>
                                     <input type="text"  autocomplete="off" name="bi_invoice_date" id="BI_INVOICE_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('m/d/Y',strtotime($invoice_info->bi_invoice_date)) }}" />
                                 </div>
                         </div>
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Invoice Ref </label><br/>
+                                    <input type="text" name="bi_invoice_ref" id="BI_INVOICE_REF" class="form-control"  maxlength="15"  value="{{ $invoice_info->bi_invoice_ref }}" />
+                                </div>
+                        </div>
+                        <div class="col-md-4">
+                                <div class="form-group">
+                                  <label class="control-label"> Client Code </label><br/>
+                                  <input type="text" autocomplete="off" name="bi_account_number" id="BI_ACCOUNT_NUMBER" class="form-control"  maxlength="50" value="{{  $invoice_info->bi_account_number }}" />
+                              </div>
+                        </div>
+                         @if(Config::get("appconfig.crm_telemarketing") == 1)
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Account <span class="required"> * </span></label><br/>
+                                <select id="INVOICE_ACCOUNT_ID" readonly name="invoice_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
+                        			<option value="0">-- Select Account --</option>
+                                    @foreach($list_accounts as $index => $client_info)
+                                      <option {{ $invoice_info->bi_client_id == $client_info->ca_id ? "selected" : "" }} value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <input type="hidden" id="INVOICE_ACCOUNT" name="invoice_account" value="{{ $invoice_info->bi_client_id }}" />
+                        </div>
+                        @else
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            		<label class="control-label">Customer <span class="required"> * </span></label><br/>
+                            		<select class="bs-select form-control" id="FK_CUSTOMER_ID" readonly name="fk_customer_id">
+                            			<option value="">-- Select Customer --</option>
+                                        @foreach($list_customers as $index => $customer_info)
+                                          <option {{ $invoice_info->fk_customer_id == $customer_info->ic_id ? "selected" : "" }} value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
+                                        @endforeach
+                                    </select>
+                            </div>
+			</div>
+                         @endif
+                        @if(Config::get("appconfig.crm_telemarketing") == 0)
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Bank Account </label><br/>
@@ -116,17 +128,7 @@ th{
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
-                                <select class="bs-select form-control" required="required" id="FK_PAYMENT_TYPE" name="bi_payment_type">
-                        			<option value="">-- Select Payment Type --</option>
-                                    @foreach($lst_payment_types as $index => $paytype_info)
-                                      <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                        
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Payment Terms</label><br/>
@@ -134,6 +136,18 @@ th{
                         			<option value="0">-- Select Payment Terms --</option>
                                     @foreach($lst_payment_terms as $index => $payterms_info)
                                       <option {{ $invoice_info->bi_payment_terms == $payterms_info->pt_id ? "selected" : "" }} value="{{ $payterms_info->pt_id }}">{{ $payterms_info->pt_payment_terms }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                            @endif
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
+                                <select class="bs-select form-control" required="required" id="FK_PAYMENT_TYPE" name="bi_payment_type">
+                        			<option value="">-- Select Payment Type --</option>
+                                    @foreach($lst_payment_types as $index => $paytype_info)
+                                      <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -209,7 +223,7 @@ th{
                                     <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">{{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#tabPayments">Payments</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tabPayments">Bills</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#tabReceipts">Receipts</a>
@@ -235,25 +249,24 @@ th{
                                 </div>
                                 <div class="tab-pane fade" id="tabPayments" role="tabpanel">
                                    <div class="row">
-										<div class="col-md-12" id="LstPaymentSplits"></div>
-									</div>
-									@if($invoice_info->bi_invoice_status == 0)
-									<div class="row">
-										<div class="col-md-11" align="right">
-											 <button type="button" name="btn_create_rows" id="BTN_CREATE_ROWS" class="btn btn-info">Create Rows</button>
-											
-										</div>
-										<div class="col-md-1" align="right">
-											<input type="number" name="number_payments" id="NUMBER_PAYMENT" min="0" max="50" value="0" step="1" class="form-control" />
-										</div>
-									</div>
-									<div class="row" style="padding-top:10px;">
-										<div class="col-md-12" align="right">
-											 <button type="button" name="btn_save_rows" id="BTN_SAVE_ROWS" class="btn btn-focus">Save Rows</button>
-											
-										</div>
-									</div>
-									@endif
+                                            <div class="col-md-12" id="LstPaymentSplits"></div>
+                                    </div>
+                                    @if($invoice_info->bi_invoice_status == 0)
+                                    <div class="row">
+                                            <div class="col-md-11" align="right">
+                                                     <button type="button" name="btn_create_rows" id="BTN_CREATE_ROWS" class="btn btn-info">Create Rows</button>
+
+                                            </div>
+                                            <div class="col-md-1" align="right">
+                                                    <input type="number" name="number_payments" id="NUMBER_PAYMENT" min="0" max="50" value="0" step="1" class="form-control" />
+                                            </div>
+                                    </div>
+                                    <div class="row" style="padding-top:10px;">
+                                            <div class="col-md-12" align="right">
+                                                    <button type="button" name="btn_save_rows" id="BTN_SAVE_ROWS" class="btn btn-focus">Save Rows</button>
+                                            </div>
+                                    </div>
+                                    @endif
                                 </div>
                                 <div class="tab-pane fade" id="tabReceipts" role="tabpanel">
                                    <div class="row">
@@ -308,20 +321,27 @@ th{
 				 		<div class="col-md-12">
 				 			  <div class="form-group">
                                     <label class="control-label"> {{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }} </label><br/>
-                                     <select class="bs-select form-control" name="bi_product" id="bi_product"  style="width:100%" data-actions-box="true">
+                                    <select   name="bi_product" id="BI_PRODUCT"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
                                             <option value=""> -- Product -- </option>
                                             @foreach($lst_products as $key => $product_info)
-                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}&nbsp;-&nbsp;{{ $product_info->p_product_name }}</option>
                                             @endforeach
                                     </select>
                                 </div>
 				 		</div>
 				 		<div class="col-md-12">
-				 			  <div class="form-group">
-                                    <label class="control-label"> Quanity </label><br/>
-                                     <input type="number"  autocomplete="off" name="bi_quanity" class="form-control" max="99999999" min="1" step="1" value="1" />
-                                </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Quanity </label><br/>
+                                                         <input type="number"  autocomplete="off" name="bi_quanity" class="form-control" max="99999999" min="1" step="1" value="1" />
+                                                    </div>
 				 		</div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Price </label><br/>
+                                                         <input type="text"  autocomplete="off" name="bi_item_price" class="form-control" value="1" />
+                                                    </div>
+				 		</div>
+                                            <div class="col-md-12" style="height:10px">&nbsp;</div>
 				 		<div class="col-md-12">
 				 			<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
             					Close
@@ -339,8 +359,88 @@ th{
 		</div>
 	</div>
 </div>
-<!-- End Insert Product -->
-<!-- Insert Service -->
+
+<div class="modal fade" id="EditBills" tabindex="-1" aria-labelledby="ModalEditBills" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:800px">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalEditBills">Edit Bill</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form name="frm_save_bill" id="FRM_SAVE_BILL">
+              <span id="hidden_fields">
+                        {!! csrf_field() !!}
+                        <input type="hidden" name="ip_id" value="0" />
+              </span>
+              <div class="row">
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Receipt </label> 
+                           <input type="text"  autocomplete="off" required="required"  name="ip_billing_nbr" id="IP_BILLING_NBR" class="form-control"  maxlength="50" value="" />
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Date </label> 
+                           <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="" />
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Updated By </label> 
+                          <input type="text"  autocomplete="off" name="ip_updated_by" id="IP_UPDATED_BY" class="form-control" readonly="readonly"  maxlength="255" value="{{ session('user_fullname') }}" />
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Updated Date </label> 
+                          <input type="text"  autocomplete="off" name="ip_updated_date" id="IP_UPDATED_DATE" class="form-control" readonly="readonly"  maxlength="25" value="{{ date('Y-m-d') }}" />
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Doc Nbr </label> 
+                          <input type="text"  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="" />
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                       <div class="form-group">
+                          <label>Collector  </label> 
+                              <select name="ip_collector_id" required="required" id="IP_COLLECTOR_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Collector">
+                                  <option value="">-- Select Collector --</option>
+                                  <?php foreach ( $lst_collectors as $key => $tech_info ) { ?>
+                                          <option  value="<?php echo $tech_info->id;  ?>"><?php echo $tech_info->u_fullname;  ?></option>
+                                  <?php  } ?>
+                          </select>
+                      </div>
+                  </div>
+                   <div class="col-md-6">
+                             <div class="form-group">
+                                <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
+                                <select class="form-control" required="required" id="IP_PAYMENT_TYPE" name="ip_payment_type" data-control="select2" data-placeholder="Select Payment Type">
+                        			<option value="">-- Select Payment Type --</option>
+                                    @foreach($lst_payment_types as $index => $paytype_info)
+                                      <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                  <div class="col-md-12" style="text-align: right;height:10px;"></div>
+                  <div class="col-md-12" style="text-align: right">
+                      <button type="submit" id="BTN_SAVE_PAYMENT" name="btn_save_payment" class="btn btn-primary">Save changes</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div class="modal fade" id="InsertServices" tabindex="-1" role="dialog" aria-labelledby="InsertServicesModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">

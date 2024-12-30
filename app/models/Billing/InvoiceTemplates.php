@@ -20,16 +20,39 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class InvoiceTemplateItems extends Model
+class InvoiceTemplates extends Model
 {
-    protected   $table          = 'billing_invoice_template_items';
+    protected   $table          = 'billing_invoice_templates';
     public      $timestamps     = false;
-    protected   $primaryKey     = "ti_id";   
+    protected   $primaryKey     = "it_id";   
     
-    public function Template()
+
+        
+    public function Currency()
     {
-        return $this->hasOne('App\models\Billing\InvoiceTemplateItems', 'it_id','fk_template_id');
+        return $this->hasOne('App\models\System\Currency', 'cc_id','it_invoice_currency');
     }
+    
+    public function Accounts()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','it_account_id');
+    }
+    
+    public function Customers()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','it_customer_id');
+    }
+    
+    public function CreatedUser()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','it_created_by');
+    }
+    
+    public function UpdatedUser()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','it_last_updated_by');
+    }
+    
 
     
 }

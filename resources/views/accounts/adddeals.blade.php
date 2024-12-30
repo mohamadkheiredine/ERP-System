@@ -14,7 +14,7 @@ Page Description :
 
 
 ?>
-@extends('layouts.layout',['page_title' => "Deals Management > Add New Deal"])
+@extends('layouts.layout',['page_title' => "Contracts Management > Add New Contract"])
 
 @section('themes')
 <style>
@@ -35,7 +35,7 @@ th{
 @section('content')
 <div class="card shadow-sm">
     <div class="card-header">
-        <h3 class="card-title">Add Deal</h3>
+        <h3 class="card-title">Add Contract</h3>
         <div class="card-toolbar">
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -54,84 +54,70 @@ th{
                                                 <input type="hidden" name="deals" value="" />
                                             </span>
                                             <div class="alert alert-success" style="display:none">
-                                               <strong>Success!</strong> Account Deal Information is saved successfully!
+                                               <strong>Success!</strong> Account Contract Information is saved successfully!
                                             </div>
                                             <div class="alert alert-danger" style="display:none">
                                                 <strong>Error!</strong> You have some form errors. Please check below.
                                             </div>
                                             <div class="row">
+                                                <div class="col-md-4"></div>
+                                                <div class="col-md-4"></div>
+                                                <div class="col-md-4"></div>
+                                            </div>
+                                            <div class="row">
                                                 <div class="col-md-4">
                                                       <div class="form-group">
-                                                            <label class="control-label"> Deal Code <span class="required"> * </span></label>
-                                                            <input type="text" name="ad_deal_code" id="AD_DEAL_CODE" class="form-control" required="required" maxlength="15"  value="" />
+                                                            <label class="control-label">Date <span class="required"> * </span></label>
+                                                            <input type="text" name="ad_deal_date" id="AD_DEAL_DATE" class="form-control" required="required" maxlength="15"  value="{{ date('Y-m-d') }}" />
+                                                        </div>
+                                                </div> 
+                                                <div class="col-md-4">
+                                                      <div class="form-group">
+                                                            <label class="control-label">Client Code <span class="required"> * </span></label>
+                                                            <input type="text" name="ad_account_code" id="AD_ACCOUNT_CODE" class="form-control" required="required" maxlength="15"  value="" />
                                                         </div>
                                                 </div>
                                                 <div class="col-md-4">
-                                                     <div class="form-group">
-                                                        <label class="control-label">Deal Title <span class="required"> * </span></label>
-                                                        <input type="text" name="ad_deal_title" id="AD_DEAL_TITLE" class="form-control" required="required" maxlength="255"  value="" />
-                                                    </div>
+                                                      <div class="form-group">
+                                                            <label class="control-label">Contract Code <span class="required"> * </span></label>
+                                                            <input type="text" name="ad_deal_code" id="AD_DEAL_CODE" class="form-control" required="required" maxlength="15"  value="" />
+                                                        </div>
+                                                </div>  
+                                                <div class="col-md-4">
+                                                      <div class="form-group">
+                                                            <label class="control-label">Contract Type <span class="required"> * </span></label>
+                                                            <span id="ad_deal_types" class="control-label"></span>
+                                                        </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label> Deal Owner </label>
-                                                            <select name="ad_deal_owner" id="AD_DEAL_OWNER" class="form-control form-select" data-control="select2" data-placeholder="Select Deal Owner">
-                                                                <option value="0"> Owner </option>
-                                                                @foreach ($lst_users as $key => $user_info )
-                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
-                                                                @endforeach
-                                                        </select>
+                                                        <label class="control-label">Client Name</label>
+                                                        <input type="text" name="ad_client_name" id="AD_CLIENT_NAME" class="form-control" readonly="readonly" maxlength="255"  value="" />
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Lead </label>
-                                                        <select name="fk_lead_id" id="FK_LEAD_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Deal Lead">
-                                                                <option value="0"> Select Lead </option>
-                                                                @foreach ($lst_leads as $key => $lead_info )
-                                                                        <option value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name  }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Contact </label>
-                                                        <select name="fk_contact_id" id="FK_CONTACT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Main Contact">
-                                                                <option value="0"> Select Contact </option>
-                                                                @foreach ($lst_contacts as $key => $cc_info )
-                                                                        <option value="{{ $cc_info->cc_id }}">{{ $cc_info->cc_first_name . " " . $cc_info->cc_last_name  }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Account </label>
-                                                        <select name="fk_account_id" id="FK_ACCOUNT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Related Account">
-                                                                <option value="0"> Account </option>
-                                                                @foreach ($lst_accounts as $key => $account_info )
-                                                                        <option value="{{ $account_info->ca_id }}">{{ $account_info->ca_account_name }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
+                                                    <input type="hidden" name="fk_account_id" id="FK_ACCOUNT_ID" value="0" />
                                                 </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
-                                                        <label class="control-label">Deal Amount <span class="required"> * </span></label>
+                                                        <label class="control-label">Amount <span class="required"> * </span></label>
                                                         <input type="text" name="ad_deal_amount" id="AD_DEAL_AMOUNT" class="form-control" required="required" maxlength="255"  value="" />
                                                     </div>
                                                 </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
-                                                        <label class="control-label">Deal Down Payment <span class="required"> * </span></label>
+                                                        <label class="control-label">Down Payment <span class="required"> * </span></label>
                                                         <input type="text" name="ad_down_payment" id="AD_DOWN_PAYMENT" class="form-control" required="required" maxlength="255"  value="" />
                                                     </div>
                                                 </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
-                                                        <label class="control-label">Deal Number of Payments <span class="required"> * </span></label>
+                                                        <label class="control-label">Number of Payments <span class="required"> * </span></label>
                                                         <input type="text" name="ad_nbr_of_payments" id="AD_NBR_OF_PAYMENT" class="form-control" required="required" maxlength="255"  value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Remaining Payment <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_remaining_payment" id="AD_REMAINING_PAYMENT" class="form-control" required="required" maxlength="255"  value="" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -147,63 +133,82 @@ th{
                                                 </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
-                                                        <label class="control-label">Deal Close Date <span class="required"> * </span></label>
-                                                        <input type="text" name="ad_closing_date" id="AD_CLOSING_DATE" class="form-control" required="required" maxlength="15" readonly="readonly"  value="" />
+                                                        <label class="control-label">First Bill Date <span class="required"> * </span></label>
+                                                        <input type="text" name="ad_first_bill_date" id="AD_FIRST_BILL_DATE" class="form-control" required="required" maxlength="15" readonly="readonly"  value="" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Deal Stage </label>
-                                                        <select name="ad_deal_stage" id="AD_DEAL_STAGE"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Stage">
-                                                                <option value="0"> Deal Stage </option>
-                                                                @foreach ($lst_deal_stages as $key => $ds_info )
-                                                                        <option value="{{ $ds_info->cs_id }}">{{ $ds_info->cs_stage_name }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Sales  </label>
-                                                            <select name="fk_sales_id" id="FK_SALES_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Sales">
-                                                                <option value="0"> Select Salesman </option>
-                                                                @foreach ($lst_user_sales as $key => $user_info )
-                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Telemarketer </label>
-                                                            <select name="fk_telemarketing_id" id="FK_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
-                                                                <option value="0"> Select Telemarketer </option>
-                                                                @foreach ($lst_user_telemarketing as $key => $user_info )
-                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
-                                                                @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label> Deal type </label>
-                                                        <select name="ad_deal_type" id="AD_DEAL_TYPE"  class="form-control form-select" data-control="select2" data-placeholder="Select Deal Type">
-                                                                <option value="0"> Deal Type </option>
-                                                                <option value="1"> Existing Business </option>
-                                                                <option value="2"> New Business  </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                    <div class="col-md-4">
-                                                     <div class="form-group">
-                                                        <label class="control-label">Probability (%)</label>
-                                                        <input type="text" name="ad_deal_probability" id="AD_DEAL_PROBABILITY" class="form-control"  maxlength="5"  value="" />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                     <div class="form-group">
-                                                        <label class="control-label">Expected Revenue</label>
-                                                        <input type="text" name="ad_expected_revenue" id="AD_EXPECTED_REVENUE" class="form-control"  maxlength="50"  value="" />
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="col-md-6">
+                                                            <div class="row">
+                                                                 <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Salesman  </label>
+                                                                            <select name="fk_sales_id" id="FK_SALES_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Sales">
+                                                                                <option value="0"> Select Salesman </option>
+                                                                                @foreach ($lst_user_sales as $key => $user_info )
+                                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                     <div class="form-group">
+                                                                        <label> Salesman Comm. </label>
+                                                                        <input type="text" name="ad_sales_comm" class="form-control" value="" />
+                                                                     </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Telemarketer </label>
+                                                                            <select name="fk_telemarketing_id" id="FK_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
+                                                                                <option value="0"> Select Telemarketer </option>
+                                                                                @foreach ($lst_user_telemarketing as $key => $user_info )
+                                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                     <div class="form-group">
+                                                                        <label> Telemarketer Comm. </label>
+                                                                        <input type="text" name="ad_telemarketing_comm" class="form-control" value="" />
+                                                                     </div>
+                                                                </div>
+                                                                 <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Supervisor </label>
+                                                                            <select name="fk_supervisor_id" id="FK_SUPERVISOR_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Supervisor">
+                                                                                <option value="0"> Select Supervisor </option>
+                                                                                @foreach ($lst_supervisors as $key => $user_info )
+                                                                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                     <div class="form-group">
+                                                                        <label> Supervisor Comm. </label>
+                                                                        <input type="text" name="ad_supervisor_comm" class="form-control" value="" />
+                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label> S/N </label>
+                                                                    <input type="text" name="ad_serial_number" class="form-control" maxlength="255" value="" />
+                                                                </div> 
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label> Warranty Start Date </label>
+                                                                    <input type="text" name="ad_warranty_date" id="AD_WARRANTY_DATE" class="form-control" maxlength="255" value="" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -211,19 +216,19 @@ th{
                                                     <label class="form-check form-switch form-check-custom form-check-solid">
                                                           <input class="form-check-input" type="checkbox" name="ad_is_approved" id="AD_IS_APPROVED"  value="1"  />
                                                           <span class="form-check-label fw-semibold text-muted">
-                                                            Deal Approved
+                                                            Contract Approved
                                                           </span>
                                                       </label> 
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">
-                                                        <label class="control-label"> Deal Next Step </label><br/>
+                                                        <label class="control-label"> Contract Next Step </label><br/>
                                                         <textarea style="width:100%;height:250px;resize:none" id="AD_NEXT_STEP"  class="form-control" name="ad_next_step"  cols=""></textarea>
                                                      </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">
-                                                        <label class="control-label"> Deal Description</label><br/>
+                                                        <label class="control-label"> Contract Description</label><br/>
                                                         <textarea style="width:100%;height:250px;resize:none" id="AD_DEAL_DESCRIPTION"  class="form-control" name="ad_deal_description"  cols=""></textarea>
                                                      </div>
                                                 </div>
@@ -234,6 +239,9 @@ th{
                                                    <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                                                         <li class="nav-item">
                                                             <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_products">Products</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_payments">Payments Statement</a>
                                                         </li>
                                                     </ul>
                                                     <div class="tab-content" id="myTabContent">
@@ -258,15 +266,34 @@ th{
                                                                 </div>
                                                                 <div class="col-md-12" style="height:10px;"></div>
                                                                 <div class="col-md-12" align="right">
-                                                                    
+                                                                    <button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT"  class="btn btn-success">Add Product</button>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="tab-pane fade show" id="kt_tab_payments" role="tabpanel">
+                                                             <div class="row">
+                                                                 <div class="col-md-12">
+                                                                     <div class="table-responsive" id="LstPaymentsMain">
+                                                                        <table class="table table-striped gy-7 gs-7">
+                                                                            <thead>
+                                                                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                                                            <th title="Bill#"> Bill# </th>
+                                                                                            <th title="Value Date"> Value Date </th>
+                                                                                            <th title="Bill Status"> Bill Status </th>
+                                                                                            <th title="Bill Amount"> Bill Amount </th>
+                                                                                    </tr>
+                                                                            </thead>
+                                                                            <tbody  id="LstPaymentStatments" ></tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                 </div>
+                                                                 <div class="col-md-12" style="height:10px;"></div>
+                                                                <div class="col-md-12" align="right">
+                                                                    <button type="button" name="btn_generate_payments" id="BTN_GENERATE_PAYMENTS"  class="btn btn-success">Generate Payment</button>
+                                                                </div>
+                                                             </div>
+                                                        </div>
                                                     </div>
-                                               </div>
-                                               <div class="col-md-12"></div>
-                                               <div class="col-md-12" align="right">
-                                                   <button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT"  class="btn btn-success">Add Product</button>
                                                </div>
                                            </div>
                                            <div class="row" style="height:5px;"></div>
@@ -274,6 +301,7 @@ th{
                                                 <div class="col-md-9"></div>
                                                 <div class="col-md-3" align="right">
                                                      <button type="submit" name="btn_save_deal" id="BTN_SAVE_DEALS"  class="btn btn-info">Save</button>
+                                                     <button type="submit" name="btn_save_continue_deal" id="BTN_SAVE_CONTINUE_DEALS"  class="btn btn-success">Save & Continue</button>
                                                     <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
                                                 </div>
                                             </div>
@@ -287,7 +315,7 @@ th{
                 <div class="modal-content">
                         <div class="modal-header">
                                 <h5 class="modal-title" id="ProductsDealModelLabel">
-                                    Products Deal
+                                    Products Contract
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">

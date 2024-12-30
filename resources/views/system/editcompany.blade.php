@@ -102,6 +102,13 @@ Page Description :
                                     <input type="text"  name="cd_company_name" id="CD_COMPANY_NAME" class="form-control" required="required" maxlength="155"  value="{{ $company_info->cd_company_name }}" />
                                 </div>
                         </div>
+                        
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                    <label class="control-label"> Company Name Translation</label>
+                                    <input type="text" name="cd_company_name_translation" id="CD_COMPANY_NAME_TRANSLATION" class="form-control" required="required" maxlength="155"  value="{{ $company_info->cd_company_name_translation }}" />
+                                </div>
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Company Owner <span class="required"> * </span></label>
@@ -153,7 +160,13 @@ Page Description :
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Starting Date<span class="required"> * </span></label>
-                                <input type="text" name="cd_company_starting_date" id="CD_COMPANY_STARTING_DATE" class="form-control" required="required" maxlength="255"  value="{{ $company_info->cd_company_starting_date }}" />
+                                <input type="text" name="cd_starting_date" id="CD_STARTING_DATE" class="form-control" required="required" maxlength="255"  value="{{ $company_info->cd_starting_date }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Default Exchange Rate<span class="required"> * </span></label>
+                                <input type="text" name="cd_exchange_rate" id="CD_EXCHANGE_RATE" class="form-control" required="required" maxlength="255"  value="{{ $company_info->cd_exchange_rate }}" />
                             </div>
                         </div>
                         <div class="col-md-4">

@@ -29,38 +29,15 @@ $total_balance  = array();
 	</div>
 	<div class="col-md-6" align="left"></div>
 	<div class="col-md-4" align="right">
-		<div class="m-dropdown m-dropdown--inline  m-dropdown--arrow" data-dropdown-toggle="click">
-			<a href="#" class="m-dropdown__toggle btn btn-success dropdown-toggle">
-				Actions
-			</a>
-			<div class="m-dropdown__wrapper">
-				<span class="m-dropdown__arrow m-dropdown__arrow--left"></span>
-				<div class="m-dropdown__inner">
-					<div class="m-dropdown__body">
-						<div class="m-dropdown__content">
-							<ul class="m-nav"> 
-								<li class="m-nav__item">
-									<a href="#" id="EXPORT_CURRENCY" class="m-nav__link">
-										<i class="m-nav__link-icon flaticon-share"></i>
-										<span class="m-nav__link-text">
-											Export <span class="CurrencyLabel"> Save </span> As PDF
-										</span>
-									</a>
-								</li>
-								<li class="m-nav__item">
-									<a href="#" id="EXPORT_ALL" class="m-nav__link">
-										<i class="m-nav__link-icon flaticon-chat-1"></i>
-										<span class="m-nav__link-text">
-											Export All Currencies
-										</span>
-									</a>
-								</li> 
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                <div class="btn-group">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu">
+              	  <li><a class="dropdown-item" id="EXPORT_CURRENCY" href="#">Export <span class="CurrencyLabel"> Save </span> As PDF</a></li>
+                    <li><a class="dropdown-item"  id="EXPORT_ALL" data-action_type="EXPORT_AS_CSV" href="#">Export All Currencies</a></li>
+              </ul>
+            </div> 
 	 
 	</div>
 </div>
@@ -121,8 +98,8 @@ $total_balance  = array();
 		}
         else
         {
-            $total_income[ $balance_info['currency'] ] = $balance_info['credit'];
-            $total_balance[ $balance_info['currency'] ] = $balance['balance'];
+           // $total_income[ $balance_info['currency'] ] = $balance_info['credit'];
+           // $total_balance[ $balance_info['currency'] ] = $balance['balance'];
         } 
         
 		?>

@@ -41,15 +41,16 @@ th{
     <div class="card-header">
         <h3 class="card-title">Account Statment Details</h3>
         <div class="card-toolbar">
+            
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 Action
               </button>
               <ul class="dropdown-menu">
-              <li><a class="dropdown-item" data-action_type="PRINT" href="#">Print</a></li>
+              	  <li><a class="dropdown-item" data-action_type="PRINT" href="#">Print</a></li>
                     <li><a class="dropdown-item" data-action_type="EXPORT_AS_CSV" href="#">Export As CSV</a></li>
               </ul>
-            </div>
+            </div> 
         </div>
     </div>
     <div class="card-body">

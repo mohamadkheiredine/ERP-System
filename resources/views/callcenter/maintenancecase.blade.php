@@ -31,13 +31,13 @@ th{
 @endsection
 @section('plugins')
 <script type="text/javascript" src="{{ url('js/modules/mcases.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/callcenter/maintenancecase.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/callcenter/maintenancecases.js') }}"></script>
 @endsection
 
 @section('content')
 <div class="card shadow-sm">
 	<div class="card-header">
-		<h3 class="card-title">Cases Management</h3>
+		<h3 class="card-title">Pending Call's Management</h3>
 		<div class="card-toolbar">
 			<div class="btn-group">
 				<button type="button" class="btn btn-danger dropdown-toggle"
@@ -92,11 +92,20 @@ th{
                                                    </select>
 						</div>
                                                 <div class="col-md-4">
-                                                     <label class="control-label">Case Agent</label>
-                                                    <select name="cc_assigned_agent_id" id="CC_ASSIGNED_AGENT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Assigned Agent">
-                                                           <option value="">No Assigned Agent</option>
-                                                           @foreach ( $lst_agents as $key => $user_info )
+                                                     <label class="control-label">Telemarketing</label>
+                                                    <select name="cc_telemarketing_id" id="CC_TELEMARKETING_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
+                                                           <option value="">-</option>
+                                                           @foreach ( $lst_telemarketings as $key => $user_info )
                                                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                           @endforeach
+                                                   </select>
+						</div>
+                                                <div class="col-md-4">
+                                                     <label class="control-label">Maintenance Types</label>
+                                                    <select name="cc_maint_type_id" id="CC_MAIN_TYPE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Main Type">
+                                                           <option value="">-</option>
+                                                           @foreach ( $lst_maint_types as $key => $type_info )
+                                                                   <option value="{{ $type_info->mt_id }}">{{ $type_info->mt_type }}</option>
                                                            @endforeach
                                                    </select>
 						</div>
@@ -121,10 +130,10 @@ th{
 						<th style="width: 2px;">ID</th>
 						<th>Case Code</th>
 						<th>Status</th>
-						<th>Case Label</th>
-						<th>Case Creation Date</th>
-						<th>Case Resolution Date</th>
-						<th>Case Agent</th>
+						<th>Client Code</th>
+						<th>Contract Code</th>
+						<th>Case Date</th>
+						<th>Case Time</th>
 						<th>Case Technician</th>
 						<th style="width: 2px;white-space: nowrap;">edit</th>
 						<th style="width: 2px;white-space: nowrap;">Delete</th>

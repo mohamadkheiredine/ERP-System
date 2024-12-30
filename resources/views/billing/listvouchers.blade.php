@@ -16,8 +16,8 @@ Page Description :
 
 
 @foreach($lst_vouchers as $index => $voucher_info)
-<tr  class="odd gradeX" data-pv_id="{ $voucher_info->pv_id }}}">
-	<td><input type="checkbox" name="pv_checkbox_{ $voucher_info->pv_id }}" id="PV_CHECKBOX_{ $voucher_info->pv_id }}" class="checkboxes" value="{ $voucher_info->pv_id }}" /></td>
+<tr  class="odd gradeX" data-pv_id="{{ $voucher_info->pv_id }}">
+	<td><input type="checkbox" name="pv_checkbox_{{ $voucher_info->pv_id }}" id="PV_CHECKBOX_{}{ $voucher_info->pv_id }}" class="checkboxes" value="{{ $voucher_info->pv_id }}" /></td>
    <td>{{ $voucher_info->pv_id }}</td>
    <td>{{ $voucher_info->pv_creation_date }}</td>
    <td>{{ $voucher_info->pv_code }}</td>

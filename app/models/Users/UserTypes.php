@@ -39,5 +39,9 @@ class UserTypes extends Model
     const USER_TYPE_TELEMARKETING = 9;
     const USER_TYPE_MAINTAINER = 10;
     const USER_TYPE_SALES = 11;
+    const USER_TYPE_SUPERVISOR = 12;
+    const USER_TYPE_ASSISTANT = 13;
+    const USER_TYPE_ASSISTANT_DIRECTOR = 14;
+    const USER_TYPE_COLLECTOR = 15;
     
 }

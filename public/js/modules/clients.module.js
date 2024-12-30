@@ -7,7 +7,9 @@ clients_module = {
 			var base_url 			= $('input[name=base_url]').val();
 			var _token	 			= $('input[name=_token]').val();
 			var account_category	 	= $('select[name=account_category]').val(); 
-		    var params = { _token : _token , account_category : account_category };
+			var general_search	 	= $('input[name=general_search]').val(); 
+			var page_number	 	= $('input[name=page_number]').val(); 
+		    var params = { _token : _token , account_category : account_category , general_search : general_search , page_number : page_number };
 		    $.ajax
 	        ({
 	            url : base_url + "/request/clients/displaylist",
@@ -17,13 +19,24 @@ clients_module = {
 	            success : function(response){
 	            	$('#LstClients').html(response.display); 
 	            	 $('.group-checkable').change(function() {
-	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-	                        var checked = $(this).prop("checked");
-	                        $(set).each(function() {
-	                            $(this).prop("checked", checked);
-	                        });
-	                        $.uniform.update(set);
-	                    });
+                            var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                            var checked = $(this).prop("checked");
+                            $(set).each(function() {
+                                $(this).prop("checked", checked);
+                            });
+                            $.uniform.update(set);
+                        });
+                        if(response.total_pages > 0)
+                        {
+                            $('#AccountsPagination').twbsPagination({
+	                         totalPages: response.total_pages,
+	                         visiblePages: 7,
+	                         onPageClick: function (event, page) {
+	                              $('input[name=page_number]').val(page);
+	                              clients_module.DisplayListClients();
+	                         }
+	                     });
+			}
 	            }
 	        });
 		},
@@ -71,33 +84,9 @@ clients_module = {
 	             focusInvalid: false, // do not focus the last invalid input
 	             ignore: "", // validate all fields including form hidden input
 	             rules: {
-	            	 fk_account_owner_id : {
-	            		 required: true
-	            	 },
-	            	 ca_account_category : {
-	            		 required: true
-	            	 },
-	            	 ca_account_type_id : {
-	                     required: true
-	                 },
-	                 ca_company_name : {
-	                     required: true
-	                 },
-	                 ca_account_name : {
-	                     required: true
-	                 }, 
-	                 ca_account_phone : {
-	                	 required: true
-	                 },
-	                 ca_account_email : {
-	                	 required: true
-	                 },
-	                 ca_account_mobile : {
-	                	 required: true
-	                 },
-	                 ca_account_number : {
-	                	 required :true
-	                 }
+                         ca_nationality_id : {
+                             required : true
+                         }
 	             },
 
 	             messages: { // custom messages for radio buttons and checkboxes
@@ -153,6 +142,15 @@ clients_module = {
 	    	                        data.append(name, file);
 	    	                })
 	    	        });
+                        
+                        
+	    	        FormDataFields.find('input,select,textarea').each(function(){
+                            var name = $(this).attr('name');
+                            var val = $(this).val();
+                            data.append( name, val );
+	    	        	 
+	    	        });
+                        
 
 	    	         
 	    	        const ca_account_description = $.account_editor.getData();

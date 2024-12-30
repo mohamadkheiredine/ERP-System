@@ -41,6 +41,23 @@ mcases_module = {
 	    });
 	    
 	},
+        getAccountCaseInfo : function(){
+            var base_url 	= $('input[name=base_url]').val();
+            var _token 		= $('input[name=_token]').val();
+            var ad_account_code 	= $('#CC_CLIENT_CODE').val();
+            $.ajax
+            ({
+                url : base_url + "/request/account/getaccountinfobycode",
+                data : { _token : _token , ad_account_code : ad_account_code },
+                method : 'get',
+                dataType : "json",
+                success : function(response){
+                        $('#CA_ACCOUNT_NAME').val(response.account_info.ca_account_name);     
+                        $('#CC_CLIENT_ID').val(response.account_info.ca_id); 
+                        $('#CA_ACCOUNT_ADDRESS').val(response.account_info.ca_billing_address); 
+                }
+            });
+        },
 	SaveMaintenanceCaseInfo : function(){
 		return mcases_module.SaveMaintenanceCaseSubmitHandler();
 	},
@@ -59,9 +76,6 @@ mcases_module = {
             		required: true
             	 },
                   cc_case_label : {
-            		required: true
-            	 },
-                  cc_assigned_agent_id : {
             		required: true
             	 },
                   cc_technician_id : {

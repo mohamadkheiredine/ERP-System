@@ -14,10 +14,7 @@ $(function(){
 	            dataType : "json",
 	            type : "POST",
 	            success : function(response){
-	            	$.alert({
-	                    title: 'Alert!',
-	                    content: response.error_msg
-	                });
+	            	bootbox.alert(response.error_msg);
 	            }
 	        });
 	    });

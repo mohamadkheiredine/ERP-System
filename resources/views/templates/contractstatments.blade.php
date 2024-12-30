@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Document</title> 
+      <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .Payments th,.Payments td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+        .Payments th {
+            background-color: #f2f2f2;
+        }
+        .signature-section {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body dir="rtl">
+    <h2 style="text-align: center;">
+        إقرار و تعهد
+    </h2>
+    <p style="text-align: right;">أقر انا الموقع ادناه  %FULLNAME%  احمل بطاقة شخصية ذات الرقم المدني <span class="large-text">%NATIONAL_ID%</span> %NATIONALITY% الجنسية</p>
+    <p style="text-align: right;"> %ADDRESS% <span class="large-text">%PHONE_NUMBER%</span></p>
+    <p style="text-align: right;">بأني مدين لشركة عبداللطيف سويد و وسيم بدران و شريكهما و سأقوم بتسديد مبلغ و قدره <span class="large-text">%TOTAL_PRICE%</span> ليرة سورية و ألتزم بسداد هذا المبلغ على شكل أقساط شهرية لمدة %NUMBER_PAYMENTS% أشهر. يتم سداد القسط الأول في %FIRSTINVOICE% .</p>
+
+    <table class="Payments">
+        <thead>
+            <tr>
+                <th>رقم الدفعة</th>
+                <th>تسدد بتاريخ</th>
+                <th>قيمتها</th>
+                <th>ليرة سورية</th>
+            </tr>
+        </thead>
+        <tbody>
+           %LST_PAYMENTS%
+        </tbody>
+    </table>
+
+    <div class="spacer"></div>
+    <br/><br/>
+    <table dir="rtl" border="0">
+        <tr>
+            <td style="width:20%" dir="rtl">الاسم:</td>
+            <td style="width:80%"></td>
+        </tr>
+        <tr>
+            <td style="width:20%" dir="rtl">التوقيع:</td>
+            <td style="width:80%"></td>
+        </tr>
+        <tr>
+            <td style="width:20%" dir="rtl">ختم و توقيع الشركة:</td>
+            <td style="width:80%"></td>
+        </tr>
+        <tr>
+            <td style="width:20%" dir="rtl">التاريخ:</td>
+            <td style="width:80%"></td>
+        </tr>
+    </table>
+
+</body>
+</html>

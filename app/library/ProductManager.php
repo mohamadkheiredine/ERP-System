@@ -32,6 +32,8 @@ use App\models\Users\Users;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\ProductCategories;
 use App\models\Inventory\Products;
+use App\models\System\Companies;
+use App\models\Inventory\StockMovements;
 
 
 class ProductManager
@@ -116,6 +118,27 @@ class ProductManager
         if(file_exists($image_src_path) && strlen($p_avatar_base_src) > 0 && strlen($p_avatar_file_name) > 0 && strlen( $p_avatar_extension) > 0 ){/////Find the related image to the product
             unlink($image_src_path);
         }
+    }
+    
+    
+    
+        
+    public function GenerateStockTransferCode( $params_array = array() )
+    {
+        $company_id     = isset( $params_array['company_id'] ) ? $params_array['company_id'] : session('company_id');
+        $fyear     = isset( $params_array['fyear'] ) ? $params_array['fyear'] : date("Y");
+        $company_info   = Companies::find($company_id);
+        $cd_company_name = $company_info->cd_company_name;
+        $year           = $fyear;
+        $count_mov = StockMovements::whereSmIsDeleted(0)->count();
+        
+        $index = $count_mov + 1;
+    
+        
+        $invoice_code = "TRF" . sprintf('%05d', $index);
+        
+        return $invoice_code;
+        
     }
 
 }

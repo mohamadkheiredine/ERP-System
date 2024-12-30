@@ -32,6 +32,7 @@ th{
 <script type="text/javascript">
 $(function(){
 	products_module.DisplayAllStockMovement();
+	$(".DownloadTransferStock").on("click",products_module.DownloadTransferStock);
 })
 </script>
 @endsection
@@ -47,6 +48,7 @@ $(function(){
                 Action
               </button>
               <ul class="dropdown-menu">
+              		<li><a class="dropdown-item DownloadTransferStock" data-action_type="PRINT" href="#">Download Transfer Voucher</a></li>
               </ul>
             </div>
         </div>
@@ -101,11 +103,12 @@ $(function(){
                                 			<tr>
                                 				<th>#</th>
                                 				<th title="Id" style="width:50px;white-space: nowrap;"> ID </th>
-                                				<th title="Product" style="width:50px;white-space: nowrap;"> Product </th>
-                                				<th title="Warehouse" style="width:50px;white-space: nowrap;"> Warehouse Source  </th>
-                                				<th title="Warehouse" style="width:50px;white-space: nowrap;"> Warehouse Destination  </th>
-                                				<th title="Price" style="width:50px;white-space: nowrap;"> Price </th>
-                                				<th title="Quantity" style="width:50px;white-space: nowrap;"> Quantity </th>
+                                				<th title="Date" > Date </th>
+                                				<th title="User" > User </th>
+                                				<th title="Warehouse"> Warehouse Source  </th>
+                                				<th title="Warehouse" > Warehouse Destination  </th>
+                                				<th title="Total price" > Total price  </th>
+                                				<th title="Total Quantity" > Total Quantity  </th>
                                 			</tr>
                                 		</thead>
                                     	<tbody  id="LstTransferStocks" ></tbody>

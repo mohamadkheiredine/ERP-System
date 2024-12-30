@@ -30,4 +30,15 @@ class PaymentVouchers extends Model
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','pv_currency_id');
     }
+    
+     public function AccountPayable()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pv_account_payable');
+    }
+    
+    
+      public function AccountReceivable()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pv_account_receivable');
+    }
 }

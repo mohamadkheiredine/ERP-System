@@ -20,9 +20,9 @@ List Deals
 @foreach( $lst_account_deals as $key => $ad_info )
    <tr>
         <td>{{ $ad_info->ad_id }}</td>
-        <td>{{ $ad_info->ad_deal_code }}</td>
-        <td>{{ $ad_info->ad_deal_title }}</td>
-        <td>{{ $accounts_array[ $ad_info->fk_account_id ] }}</td>
+        <td>{{ $ad_info->ad_account_code }}</td> 
+        <td>{{ $ad_info->ad_deal_code }}</td> 
+        <td>{{ $ad_info->fk_account_id > 0 ? $accounts_array[ $ad_info->fk_account_id ] : "" }}</td>
         <td>{{ $ad_info->ad_deal_amount }}</td>
        <td style="width:2px;">
             <a  data-ad_id="{{ $ad_info->ad_id }}"  href="#"  id="EDIT_DEAL_{{ $ad_info->ad_id }}" ><i class="fa fa-pencil-square" aria-hidden="true" height="16" ></i></a>

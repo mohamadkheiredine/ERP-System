@@ -39,6 +39,9 @@ use App\models\CRM\CRMAccountTypes;
 use App\library\AccountsManager;
 use App\library\LeadsStatusManager;
 use App\models\CRM\CRMLeadSources;
+use App\models\CRM\CRMContractTypes;
+use App\models\Accounting\ChartAccounts;
+use App\models\CRM\CRMDeals;
 
 
 
@@ -63,18 +66,42 @@ class AccountsController extends Controller
      */
     public function DisplayList(Request $request)
     {
-        $account_category = $request->input("account_category"); 
+        $account_category       = $request->input("account_category"); 
+        $page_number            = $request->input('page_number');
+        $general_search         = $request->input('general_search');
+        $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
         
-        $lst_accounts_obj = CRMAccounts::whereCaIsDeleted(0);
+        $accounts_cond = CRMAccounts::whereCaIsDeleted(0);
+        
+        if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
         
         if( $account_category > 0 )
         {
-            $lst_accounts_obj = $lst_accounts_obj->whereCaAccountCategory($account_category);
+            $accounts_cond = $accounts_cond->whereCaAccountCategory($account_category);
+        }
+        
+        if( strlen($general_search)  > 0)
+        {
+              $accounts_cond = $accounts_cond->where('ca_contract_code','LIKE','%' . $general_search . '%');
+              $accounts_cond = $accounts_cond->orWhere('ca_account_name','LIKE','%' . $general_search . '%');
+              $accounts_cond = $accounts_cond->orWhere('ca_account_phone','LIKE','%' . $general_search . '%');
+              $accounts_cond = $accounts_cond->orWhere('ca_national_id','LIKE','%' . $general_search . '%');
+              $accounts_cond = $accounts_cond->orWhere('ca_account_mobile','LIKE','%' . $general_search . '%');
+              $accounts_cond = $accounts_cond->orWhere('ca_account_email','LIKE','%' . $general_search . '%');
         }
         
 
         
-        $lst_accounts = $lst_accounts_obj->get();
+          $accounts_count = $accounts_cond->count();
+       
+        
+         $total_pages = ceil( $accounts_count/$nbr_rows_per_pages );
+         $total_pages = intval($total_pages);
+        
+        $lst_accounts = $accounts_cond->skip($skip)->take($nbr_rows_per_pages)->get();
         
         
         $response_array = array();
@@ -83,10 +110,48 @@ class AccountsController extends Controller
             "lst_accounts" => $lst_accounts
         );
         $response_array['is_error'] = 0;
+        $response_array['total_pages'] = $total_pages;
         $response_array['display'] = view('accounts.displaylist',$data)->render();
         
         return Response()->json($response_array);
     }
+    
+    
+    
+    public function GetAccountInfoByCode(Request $request)
+    {
+        $ad_account_code = $request->input('ad_account_code'); 
+        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->where('ca_account_code','LIKE','%' . $ad_account_code . '%')->get();
+        $result_array = array();
+        
+        if(count($lst_account_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'No Account Exist for this Account Code';
+            return Response()->json($result_array);
+        }
+        
+        $deal_info = CRMDeals::whereFkAccountId($lst_account_info[0]->ca_id)->whereAdIsDeleted(0)->get();
+        
+        $contract_type = $lst_account_info[0]->ca_contract_type;
+        $ct_info = CRMContractTypes::find($contract_type);
+        
+        $result_array['is_error'] = 0;
+        $result_array['account_info'] = array(
+            'ca_account_name' => $lst_account_info[0]->ca_account_name,
+            'ca_id' => $lst_account_info[0]->ca_id,
+            'ca_billing_address' => $lst_account_info[0]->ca_billing_address,
+            'ct_contract_type' => $ct_info->ct_contract_type,
+        );
+        
+        if(count($deal_info) > 0)
+        {
+            $result_array['account_info']['ad_deal_code'] = $deal_info[0]->ad_deal_code;
+        }
+        
+        return Response()->json($result_array);
+    }
+    
     
     
     
@@ -105,18 +170,32 @@ class AccountsController extends Controller
         $lst_industry           = Industry::whereSiIsDeleted(0)->get();
         $lst_countries          = Countries::all();
         $lst_account_types      = CRMAccountTypes::whereAtIsDeleted(0)->get();
-         
+        $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
+        $crm_client_select_lead    = Config::get('appconfig.crm_client_select_lead');
+        $crm_telemarketing      = Config::get('appconfig.crm_telemarketing');
+        
+        $count_accounts = CRMAccounts::whereCaIsDeleted(0)->count();
+        $count = $count_accounts + 1;
+        $client_code = sprintf("%07d", $count);
         
         $data = array(
+            "crm_client_select_lead" => $crm_client_select_lead,
             "lst_client_categories" => $lst_client_categories,
             "lst_leads" => $lst_leads,
+            "client_code" => $client_code,
             "lst_industry" => $lst_industry,
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
             "lst_account_types" => $lst_account_types,
+            "lst_contract_types" => $lst_contract_types,
             "lst_users" => $lst_users
         );
-        return Response()->view("accounts.addform",$data);
+        
+        if($crm_telemarketing == '0')
+            return Response()->view("accounts.addform",$data);
+        else
+            return Response()->view("accounts.addtform",$data);
+            
     }
     
     
@@ -134,8 +213,12 @@ class AccountsController extends Controller
         $lst_countries          = Countries::all();
         $lst_accounts           = CRMAccounts::whereCaIsDeleted(0)->where('ca_id', '<>', $ca_id)->get();
         $lst_account_types      = CRMAccountTypes::whereAtIsDeleted(0)->get();
+        $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
+        $crm_client_select_lead     = Config::get('appconfig.crm_client_select_lead');
+        $crm_telemarketing          = Config::get('appconfig.crm_telemarketing');
         
         $data = array(
+            "crm_client_select_lead" => $crm_client_select_lead,
             "lst_client_categories" => $lst_client_categories,
             "account_info" => $account_info,
             "lst_leads" => $lst_leads,
@@ -143,9 +226,13 @@ class AccountsController extends Controller
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
             "lst_account_types" => $lst_account_types,
+            "lst_contract_types" => $lst_contract_types,
             "lst_users" => $lst_users
         );
-        return Response()->view("accounts.editform",$data);
+        if($crm_telemarketing == '0')
+            return Response()->view("accounts.editform",$data);
+        else
+            return Response()->view("accounts.edittform",$data);
     }
 
     
@@ -164,9 +251,6 @@ class AccountsController extends Controller
         $ca_lead_id             = $request->input("ca_lead_id");
         $ca_parent_account      = $request->input("ca_parent_account");
         $ca_account_category    = $request->input("ca_account_category");
-        $ca_account_type_id     = $request->input("ca_account_type_id");
-        $ca_account_ownership   = $request->input("ca_account_ownership");
-        $ca_account_rating      = $request->input("ca_account_rating");
         $ca_account_name        = $request->input("ca_account_name");
         $ca_company_name        = $request->input("ca_company_name");
         $ca_account_phone       = $request->input("ca_account_phone");
@@ -175,11 +259,7 @@ class AccountsController extends Controller
         $ca_account_email       = $request->input("ca_account_email");
         $ca_account_mobile      = $request->input("ca_account_mobile");
         $ca_account_site        = $request->input("ca_account_site");
-        $ca_account_number      = $request->input("ca_account_number");
-        $ca_ticker_symbol       = $request->input("ca_ticker_symbol");
-        $ca_nbr_of_employees    = $request->input("ca_nbr_of_employees");
-        $ca_annual_revenue      = $request->input("ca_annual_revenue");
-        $ca_account_sic_code    = $request->input("ca_account_sic_code");
+        $ca_nbr_of_employees    = $request->input("ca_nbr_of_employees"); 
         $ca_billing_country     = $request->input("ca_billing_country");
         $ca_billing_city        = $request->input("ca_billing_city");
         $ca_billing_state       = $request->input("ca_billing_state");
@@ -191,6 +271,16 @@ class AccountsController extends Controller
         $ca_shipping_code       = $request->input("ca_shipping_code");
         $ca_shipping_street     = $request->input("ca_shipping_street");
         $ca_account_description = $request->input("ca_account_description");
+        $ca_contract_code = $request->input("ca_contract_code");
+        $ca_contract_type = $request->input("ca_contract_type");
+        $ca_ticker_symbol = $request->input("ca_ticker_symbol");
+        $ca_national_id             = $request->input("ca_national_id");
+        $ca_nationality_id             = $request->input("ca_nationality_id");
+        $ca_billing_area            = $request->input("ca_billing_area");
+        $ca_billing_house           = $request->input("ca_billing_house");
+        $ca_billing_address         = $request->input("ca_billing_address");
+        $ca_account_code          = $request->input("ca_account_code");
+        $ca_billing_region          = $request->input("ca_billing_region");
         
         $ca_image_base_src      = "";
         $ca_image_file_name     = "";
@@ -202,8 +292,29 @@ class AccountsController extends Controller
         {
             $AccountInfo = CRMAccounts::find($ca_id); 
         }
-     
         
+        if($ca_id == null)
+        {
+            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info = $account_info[0];
+
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+
+            $new_count      = $count + 1;
+            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+
+
+             $AccAccounting = new ChartAccounts();
+             $AccAccounting->aa_parent_account   = $account_info->aa_id;
+             $AccAccounting->aa_account_ref      = $aa_account_ref;
+             $AccAccounting->aa_account          = $aa_account_ref;
+             $AccAccounting->aa_sub_account      = $account_info->aa_id;
+             $AccAccounting->aa_account_label    = $ca_account_name;
+             $AccAccounting->fk_country_id       = 0;
+             $AccAccounting->save(); 
+             $aa_id = $AccAccounting->aa_id;
+             $AccountInfo->ca_accounting_id = $aa_id; 
+        }
         
         // upload file to the CRM photo
         if(count($_FILES) > 0 )
@@ -220,9 +331,6 @@ class AccountsController extends Controller
         $AccountInfo->ca_lead_id                = $ca_lead_id;
         $AccountInfo->ca_parent_account         = $ca_parent_account;
         $AccountInfo->ca_account_category       = $ca_account_category;
-        $AccountInfo->ca_account_type_id        = $ca_account_type_id;
-        $AccountInfo->ca_account_ownership      = $ca_account_ownership;
-        $AccountInfo->ca_account_rating         = $ca_account_rating;
         $AccountInfo->ca_account_name           = $ca_account_name;
         $AccountInfo->ca_company_name           = $ca_company_name;
         $AccountInfo->ca_account_phone          = $ca_account_phone;
@@ -231,11 +339,8 @@ class AccountsController extends Controller
         $AccountInfo->ca_account_email          = $ca_account_email;
         $AccountInfo->ca_account_mobile         = $ca_account_mobile;
         $AccountInfo->ca_account_site           = $ca_account_site;
-        $AccountInfo->ca_account_number         = $ca_account_number;
         $AccountInfo->ca_ticker_symbol          = $ca_ticker_symbol;
         $AccountInfo->ca_nbr_of_employees       = $ca_nbr_of_employees;
-        $AccountInfo->ca_annual_revenue         = $ca_annual_revenue;
-        $AccountInfo->ca_account_sic_code       = $ca_account_sic_code;
         $AccountInfo->ca_billing_country        = $ca_billing_country;
         $AccountInfo->ca_billing_city           = $ca_billing_city;
         $AccountInfo->ca_billing_state          = $ca_billing_state;
@@ -247,6 +352,15 @@ class AccountsController extends Controller
         $AccountInfo->ca_shipping_code          = $ca_shipping_code;
         $AccountInfo->ca_shipping_street        = $ca_shipping_street;
         $AccountInfo->ca_account_description    = $ca_account_description;
+        $AccountInfo->ca_contract_code          = $ca_contract_code;
+        $AccountInfo->ca_contract_type          = $ca_contract_type;
+        $AccountInfo->ca_national_id            = $ca_national_id;
+        $AccountInfo->ca_billing_area            = $ca_billing_area;
+        $AccountInfo->ca_billing_region            = $ca_billing_region;
+        $AccountInfo->ca_billing_house            = $ca_billing_house;
+        $AccountInfo->ca_billing_address            = $ca_billing_address;
+        $AccountInfo->ca_account_code            = $ca_account_code;
+        $AccountInfo->ca_nationality_id            = $ca_nationality_id;
         $AccountInfo->save();
        
         

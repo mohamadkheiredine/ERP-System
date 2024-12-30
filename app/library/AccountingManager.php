@@ -44,6 +44,7 @@ use App\models\Billing\DebitNotes;
 use App\models\Billing\InternalTransfers;
 use App\models\Billing\JournalVouchers;
 use App\models\Accounting\TransactionMovements;
+use App\models\Billing\InvoiceTemplates;
 
 
 class AccountingManager
@@ -201,7 +202,7 @@ class AccountingManager
        $index = 0;
        $cumulative_credit = array();
        $cumulative_debit =  array();
-       $$ck_include_before = $params_arrays['$ck_include_before'];
+       $ck_include_before = $params_arrays['ck_include_before'];
        
        
         
@@ -353,6 +354,24 @@ class AccountingManager
      * @return string  $invoice_code
      * 
      */
+    public function GenerateInvoiceTemplateCode( $params_array = array() )
+    {
+        $company_id     = isset( $params_array['company_id'] ) ? $params_array['company_id'] : session('company_id');
+        $fyear     = isset( $params_array['fyear'] ) ? $params_array['fyear'] : date("Y");
+        $company_info   = Companies::find($company_id);
+        $cd_company_name = $company_info->cd_company_name;
+        $year           = $fyear;
+        $count_invoices = InvoiceTemplates::whereItIsDeleted(0)->count();
+        
+        $index = $count_invoices + 1;
+    
+        
+        $invoice_code = "tmp" . sprintf('%07d', $index);
+        
+        return $invoice_code;
+        
+    }
+    
     public function GenerateInvoiceCode( $params_array = array() )
     {
         $company_id     = isset( $params_array['company_id'] ) ? $params_array['company_id'] : session('company_id');
@@ -360,12 +379,12 @@ class AccountingManager
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
         $year           = $fyear;
-        $count_invoices = Invoices::whereYear('bi_invoice_date' , $year)->count();
+        $count_invoices = Invoices::whereBiIsDeleted(0)->count();
         
         $index = $count_invoices + 1;
     
         
-        $invoice_code = "inv" . $cd_company_name[0] . $year . "-" . sprintf('%04d', $index);
+        $invoice_code = "INV" . sprintf('%05d', $index);
         
         return $invoice_code;
         
@@ -414,13 +433,14 @@ class AccountingManager
         $company_id     = session('company_id');
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
-        $year           = $fyear != "" ? $fyear : date("Y");
+        $year           = ($fyear != "1970" && $fyear != "") ? $fyear : date("Y");
+                
         $count_vouchers = PaymentVouchers::where('pv_is_deleted' , 0)->whereYear('pv_creation_date' , $year)->count();
         
         $index = $count_vouchers + 1;
     
         
-        $vouchers_code = "PV" . strtoupper($cd_company_name[0])  . "-" . $year . "-" . sprintf('%04d', $index);
+        $vouchers_code = "PV" . " " .  sprintf('%04d', $index);
         
         return $vouchers_code;
         
@@ -446,7 +466,7 @@ class AccountingManager
         $index = $count_journal_vouchers+ 1;
         
         
-        $vouchers_code = "JV" . strtoupper($cd_company_name[0])  . sprintf('%04d', $index);
+        $vouchers_code = "JV" . sprintf('%04d', $index);
         
         return $vouchers_code;
         
@@ -462,8 +482,9 @@ class AccountingManager
      * @return string  $receipt_code
      */
     public function GenerateReceiptCode( $bi_id = 0 , $fyear = "")
-    {
-        $fyear          = ($fyear != "") ? $fyear : date("Y");
+    { 
+        $fyear          = ($fyear != "1970") ? $fyear : date("Y");
+                
         $company_id     = session('company_id');
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
@@ -473,7 +494,7 @@ class AccountingManager
         $index = $count_receipts + 1;
         
         
-        $receipt_code = "rec" . $cd_company_name[0] . $year . "-" . sprintf('%04d', $index);
+        $receipt_code = "RV " . sprintf('%04d', $index);
         
         return $receipt_code;
         
@@ -532,10 +553,11 @@ class AccountingManager
                 case 1:
                     {
                         $product_info = Products::find($ii_item_id);
-                        $items_array[$index]['id']          = $item_info->ii_id;
-                        $items_array[$index]['p_id']       = $product_info->p_id;
-                        $items_array[$index]['label']       = $product_info->p_product_name;
-                        $items_array[$index]['quantity']    = $item_info->ii_item_qyt;
+                        $items_array[$index]['id']                  = $item_info->ii_id;
+                        $items_array[$index]['p_id']                = $product_info ? $product_info->p_id : 0;
+                        $items_array[$index]['p_product_ref']       = $product_info ? $product_info->p_product_ref : "-";
+                        $items_array[$index]['label']               = $product_info ? $product_info->p_product_name : "-";
+                        $items_array[$index]['quantity']            = $item_info->ii_item_qyt;
                         $items_array[$index]['price']       = $item_price;
                         $items_array[$index]['cost']        = $item_cost;
                         $items_array[$index]['currency']    = $currencies_array[$invoice_currency]['cc_currency_code'];

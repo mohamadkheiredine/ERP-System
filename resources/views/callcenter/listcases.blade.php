@@ -10,6 +10,8 @@ All Rights Reserved ,   itm Solutions COPYRIGHT
 
 Page Description :
 {Enter page description Here}
+ * 
+ * 
 ***********************************************************/
 
 
@@ -20,10 +22,12 @@ Page Description :
 	<td><input type="checkbox" name="ck_cc_{{ $case_info->cc_id }}" id="CK_CC_{{ $case_info->cc_id }}" class="checkboxes" value="{{ $case_info->cc_id }}" /></td>
    <td>{{ $case_info->cc_id }}</td>
    <td>{{ $case_info->cc_case_code }}</td>
-   <td>{{ $case_info->cc_case_label }}</td>
    <td>{{ $case_info->Status ? $case_info->Status->cc_status_title : "N/A" }}</td>
-   <td>{{ $case_info->cc_created_at }}</td>
-   <td>{{ $case_info->cc_resolution_date }}</td>
+   <td>{{ $case_info->Client->ca_account_code }}</td>
+   <td>{{ $case_info->cc_contract_code }}</td>
+   <td>{{ $case_info->cc_case_date }}</td>
+   <td>{{ $case_info->cc_case_time }}</td>
+   <td>{{ $case_info->Telemarketing ? $case_info->Telemarketing->u_fullname : "-" }}</td>
     <td><a href="#" data-cc_id="{{ $case_info->cc_id }}" id="EDIT_CASE_{{ $case_info->cc_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td> 
     <td><a href="#" data-cc_id="{{ $case_info->cc_id }}"  id="DELETE_CASE_{{ $case_info->cc_id }}" ><i class="fa-solid fa-trash"></i></a></td> 
 </tr>

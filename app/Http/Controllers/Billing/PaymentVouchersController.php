@@ -40,7 +40,9 @@ use App\models\Users\Users;
 use App\models\Accounting\Transactions;
 use App\models\Accounting\TransactionMovements;
 use App\models\Billing\VoucherExtensions;
-
+use App\models\System\Companies;
+use Dompdf\Dompdf;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 
 class PaymentVouchersController extends Controller
@@ -57,11 +59,21 @@ class PaymentVouchersController extends Controller
     public function index()
     {
         $lst_chart_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
-        
+               $lst_currencies     = Currency::all();
+        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $data = array(
             "lst_chart_accounts" => $lst_chart_accounts,
+            "lst_users" => $lst_users,
+            "lst_currencies" => $lst_currencies,
         );
-        return Response()->view('billing.paymentvouchers',$data);
+        //billing_pv_one_page
+        
+        $billing_pv_one_page = Config::get('appconfig.billing_pv_one_page');
+        
+        if($billing_pv_one_page == 0)
+            return Response()->view('billing.paymentvouchers',$data);
+        else
+            return Response()->view('billing.pvmanagement',$data);
     }
     
     
@@ -134,7 +146,6 @@ class PaymentVouchersController extends Controller
         
         $lst_currencies = Currency::all();
         $currency_array =  CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
-        dd($lst_vouchers);
         $data = array(
             "lst_vouchers" => $lst_vouchers,
             "total_pages" => $total_pages,
@@ -148,6 +159,238 @@ class PaymentVouchersController extends Controller
         $result_array['total_pages'] = $total_pages;
         
         return Response()->json($result_array);
+    }
+    
+    
+    public static function numberToWords($number) {
+    $hyphen      = '-';
+    $conjunction = ' and ';
+    $separator   = ', ';
+    $negative    = 'negative ';
+    $decimal     = ' point ';
+    $dictionary  = [
+        0 => 'zero',
+        1 => 'one',
+        2 => 'two',
+        3 => 'three',
+        4 => 'four',
+        5 => 'five',
+        6 => 'six',
+        7 => 'seven',
+        8 => 'eight',
+        9 => 'nine',
+        10 => 'ten',
+        11 => 'eleven',
+        12 => 'twelve',
+        13 => 'thirteen',
+        14 => 'fourteen',
+        15 => 'fifteen',
+        16 => 'sixteen',
+        17 => 'seventeen',
+        18 => 'eighteen',
+        19 => 'nineteen',
+        20 => 'twenty',
+        30 => 'thirty',
+        40 => 'forty',
+        50 => 'fifty',
+        60 => 'sixty',
+        70 => 'seventy',
+        80 => 'eighty',
+        90 => 'ninety',
+        100 => 'hundred',
+        1000 => 'thousand',
+        1000000 => 'million',
+        1000000000 => 'billion',
+        1000000000000 => 'trillion'
+    ];
+
+    if (!is_numeric($number)) {
+        return false;
+    }
+
+    if ($number < 0) {
+        return $negative . self::numberToWords(abs($number));
+    }
+
+    $string = '';
+
+    if ($number < 21) {
+        $string = $dictionary[$number];
+    } elseif ($number < 100) {
+        $tens = ((int) ($number / 10)) * 10;
+        $units = $number % 10;
+        $string = $dictionary[$tens];
+        if ($units) {
+            $string .= $hyphen . $dictionary[$units];
+        }
+    } elseif ($number < 1000) {
+        $hundreds = (int) ($number / 100);
+        $remainder = $number % 100;
+        $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+        if ($remainder) {
+            $string .= $conjunction . self::numberToWords($remainder);
+        }
+    } else {
+        foreach ([1000, 1000000, 1000000000, 1000000000000] as $unit) {
+            if ($number < $unit * 1000) {
+                $baseUnit = (int) ($number / $unit);
+                $remainder = $number % $unit;
+                $string = self::numberToWords($baseUnit) . ' ' . $dictionary[$unit];
+                if ($remainder) {
+                    $string .= $separator . self::numberToWords($remainder);
+                }
+                break;
+            }
+        }
+    }
+
+    return $string;
+}
+
+    
+    public function DownloadPaymentVoucher($pv_id)
+    {
+        $voucher_info = PaymentVouchers::find( $pv_id );
+        $br_company_id  = Session('company_id');
+        
+        $company_info = Companies::find($br_company_id);
+
+        $lst_currencies = Currency::all();
+        $currencies_array = CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
+        
+     
+        $display = view("templates.pvoucher",array())->render();
+        
+        
+        $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+        $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
+        $display = str_replace("%account_to%",$voucher_info->AccountReceivable->aa_account_ref, $display);
+        $display = str_replace("%account_ledger_to%",$voucher_info->AccountReceivable->aa_account_label, $display);
+        $display = str_replace("%voucher_from%",$voucher_info->AccountPayable->aa_account_label, $display);
+        $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
+        $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
+        $display = str_replace("%voucher_code%",$voucher_info->pv_code, $display);
+        $display = str_replace("%payment_date%",$voucher_info->pv_creation_date, $display);
+        $display = str_replace("%voucher_description%",$voucher_info->pv_voucher_label, $display);
+        $display = str_replace("%voucher_amount%",$voucher_info->pv_payment_amount, $display);
+        $display = str_replace("%voucher_amount_letters%",self::numberToWords($voucher_info->pv_payment_amount), $display);
+        $display = str_replace("%voucher_currency%",$voucher_info->currency->cc_currency_code, $display);
+         
+        
+        return PDF::loadHTML($display)
+                 ->setPaper('a4')->setOption('encoding', 'UTF-8')
+                 ->download("voucher-" . strtolower($voucher_info->pv_code) . ".pdf");
+    }
+    
+    public function DisplayListOnepage(Request $request)
+    {
+        $pv_account_payable         = $request->input('account_payable');
+        $pv_account_receivable      = $request->input('account_receivable');
+        $pv_start_date              = $request->input('start_date');
+        $pv_end_date                = $request->input('end_date');
+        $page_number                = $request->input("page_number");
+        $general_search             = $request->input("general_search");
+        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+        $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
+   
+        $strfirstday = 'first day of January ' . $fisical_year;
+        $strlastday = 'last day of December ' . $fisical_year;
+        
+        $firstday = date("Y-m-d",strtotime($strfirstday));
+        $lastday = date("Y-m-d",strtotime($strlastday));
+         
+        
+        $voucher_cond       = PaymentVouchers::wherePvIsDeleted(0);
+        
+        // filter items
+        if($pv_account_payable  > 0)
+            $voucher_cond= $voucher_cond->wherePvAccountPayable($pv_account_payable);
+        if($pv_account_receivable > 0)
+            $voucher_cond= $voucher_cond->wherePvAccountReceivable($pv_account_receivable);
+        if(strlen($pv_start_date) > 0)
+            $voucher_cond= $voucher_cond->where('pv_creation_date','>=',$pv_start_date);
+        if(strlen($pv_end_date) > 0)
+            $voucher_cond= $voucher_cond->where('pv_creation_date','<',$pv_end_date);
+        
+        if(strlen($pv_start_date) ==  0 && strlen($pv_end_date) ==  0)
+        {
+            $voucher_cond= $voucher_cond->whereBetween('pv_creation_date', [$firstday, $lastday]);
+        }
+            
+        if(strlen($general_search) > 0)
+        {
+            $voucher_cond= $voucher_cond->where('pv_code','LIKE','%' . $general_search. '%');
+            $voucher_cond= $voucher_cond->orWhere('pv_voucher_label','LIKE','%' . $general_search. '%');
+            $voucher_cond= $voucher_cond->orWhere('pv_voucher_description','LIKE','%' . $general_search. '%');
+        }
+        
+        
+        if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+       
+        $count_vouchers =     $voucher_cond->count();
+        $total_pages = ceil( $count_vouchers/$nbr_rows_per_pages );
+        $total_pages = intval($total_pages);
+        
+        $lst_vouchers= $voucher_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('pv_creation_date','ASC')->get();
+         
+             
+        //->orderBy('pv_id', 'asc')->get()
+        $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
+        $accounts_array     = CreateDatabaseArrayByIndex($lst_accounts , "aa_id");
+        
+        $lst_currencies = Currency::all();
+        $currency_array =  CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
+        $data = array(
+            "lst_vouchers" => $lst_vouchers,
+            "total_pages" => $total_pages,
+            "accounts_array" => $accounts_array,
+            "currency_array" => $currency_array
+        );
+        
+        $result_array = array();
+        
+        $result_array['display'] = view("billing.listpagervouchers",$data)->render();
+        $result_array['total_pages'] = $total_pages;
+        
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * Get Information for selected voucher
+     * 
+     * @author Moe Mantach
+     * @param Request $request
+     */
+    public function GetSelectedVoucher(Request $request)
+    {
+        $pv_id = $request->input('pv_id');
+        
+        $result_array = array();
+        $voucher_info = PaymentVouchers::find($pv_id);
+        
+        $result_array['is_error'] = 0;
+        $result_array['voucher_obj'] = array(
+            'pv_id' => $voucher_info->pv_id,
+            'pv_code' => $voucher_info->pv_code,
+            'pv_voucher_label' => $voucher_info->pv_voucher_label,
+            'pv_creation_date' => $voucher_info->pv_creation_date,
+            'pv_account_payable' => $voucher_info->pv_account_payable,
+            'pv_account_receivable' => $voucher_info->pv_account_receivable,
+            'pv_payment_amount' => $voucher_info->pv_payment_amount,
+            'pv_currency_id' => $voucher_info->pv_currency_id,
+            'pv_sec_currency_id' => $voucher_info->pv_sec_currency_id,
+            'pv_exchange_rate' => $voucher_info->pv_exchange_rate,
+            'pv_amount_secondary_amount' => $voucher_info->pv_amount_secondary_amount,
+            'pv_voucher_description' => $voucher_info->pv_voucher_description,
+        );
+        
+        
+        return Response()->json($result_array);
+        
     }
     
     
@@ -170,6 +413,28 @@ class PaymentVouchersController extends Controller
         
         return Response()->json($result_array);
     }
+    
+    /**
+     * Generate Voucher Code
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return type
+     */
+    public function GenerateVoucherCode(Request $request)
+    {
+         $account_management = new AccountingManager();
+        $voucher_code       = $account_management->GetVoucherCode();
+        $result_array = array();
+        
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['voucher_code'] = $voucher_code;
+        return Response()->json($result_array);
+    }
+    
     
     /**
      * Open form of add new Bank Account
@@ -292,6 +557,7 @@ class PaymentVouchersController extends Controller
         $pv_account_payable         = $request->input('pv_account_payable');
         $pv_account_receivable      = $request->input('pv_account_receivable');
         $pv_creation_date           = $request->input('pv_creation_date');
+        $pv_amount_secondary_amount           = $request->input('pv_amount_secondary_amount');
         $pv_creation_date           = date("Y-m-d",strtotime($pv_creation_date));
         
         $pv_payment_amount          = $request->input('pv_payment_amount');
@@ -321,6 +587,7 @@ class PaymentVouchersController extends Controller
         $payment_vouchers->pv_creation_date         = $pv_creation_date;
         $payment_vouchers->pv_sec_currency_id       = $pv_sec_currency_id;
         $payment_vouchers->pv_exchange_rate         = $pv_exchange_rate;
+        $payment_vouchers->pv_amount_secondary_amount   = $pv_amount_secondary_amount;
         
         
         

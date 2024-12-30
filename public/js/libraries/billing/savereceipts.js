@@ -11,7 +11,6 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 $('select').select2();
 	new tempusDominus.TempusDominus(document.getElementById('BR_RECEIPT_DATE'),{
 		 display: {
 			  components: {
@@ -28,7 +27,7 @@ $(function(){
 			    }
 		 },
 		 localization: {
-			 format : "L"
+			 format : "yyyy-MM-dd"
 			 
 		 }
 	});
@@ -38,5 +37,5 @@ $(function(){
 	   
 	   receipts_module.GenerateReceiptCode(current_date);
 	});
-	$("#BTN_SAVE_RECEIPT").on("click",receipts_module.SaveReceiptInfo);
+	$("#BTN_SAVE_RECEIPT").on("click",receipts_module.QuickSaveReceiptInfo);
 })

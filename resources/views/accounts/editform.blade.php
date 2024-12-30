@@ -53,7 +53,8 @@ th{
                 <div class="form-body">
                      <span id="hidden_fields">
                       {!! csrf_field() !!}
-                      <input type="hidden" name="ca_id" id="CA_ID" value="" />
+                      <input type="hidden" name="ca_id" id="CA_ID" value="{{ $account_info->ca_id }}" />
+                      <input type="hidden" name="fk_account_owner_id" value="{{ $account_info->fk_account_owner_id }}" />
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Client Information is saved successfully!
@@ -62,18 +63,7 @@ th{
             				<strong>Error!</strong> You have some form errors. Please check below.
             			</div>
                     <div class="row">
-                    	<div class="col-md-4">
-                              <div class="form-group">
-                                <label>Account Responsible <span class="required"> * </span> </label>
-                                <select name="fk_account_owner_id" id="FK_ACCOUNT_OWNER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Account Owner">
-                                        <option value="">-- Select Owner --</option>
-                                        @foreach( $lst_users as $key => $user_info )
-                                          <option {{ $account_info->fk_account_owner_id  ==  $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
-                                        @endforeach
-                                    
-                                </select>
-                            </div>
-                        </div> 
+                         @if($crm_client_select_lead == 1)
                     	<div class="col-md-4">
                               <div class="form-group">
                                 <label>Lead </label>
@@ -86,6 +76,9 @@ th{
                                 </select>
                             </div>
                         </div> 
+                        @else
+                        <input type="hidden" name="ca_lead_id" value="0" />
+                        @endif
                     	<div class="col-md-4">
                               <div class="form-group">
                                 <label>Parent Account</label>
@@ -100,7 +93,7 @@ th{
                         </div>
                         <div class="col-md-4">
                         <div class="form-group">
-                         <label>Account Category<span class="required"> * </span> </label>
+                         <label>Category<span class="required"> * </span> </label>
                            <select name="ca_account_category" id="CA_ACCOUNT_CATEGORY" class="form-control form-select" data-control="select2" data-placeholder="Select Account Category">
                     			<option value="0">-- Select Category --</option>
                                 @foreach($lst_client_categories as $index => $cc_info)
@@ -120,27 +113,9 @@ th{
                             </select>
                         </div>
     					</div> 
-                        <div class="col-md-4">
-                        <div class="form-group">
-                         <label>Ownership&nbsp; </label>
-                           <select name="ca_account_ownership" id="CA_ACCOUNT_OWNERSHIP" class="form-control form-select" data-control="select2" data-placeholder="Select Account Ownership">
-                    			<option value="0">-- Select Ownership --</option>
-                    			<option {{ $account_info->ca_account_ownership == 1 ? "selected" : "" }} value="1">Public</option>
-                    			<option {{ $account_info->ca_account_ownership == 2 ? "selected" : "" }} value="2">Private</option>
-                    			<option {{ $account_info->ca_account_ownership == 3 ? "selected" : "" }} value="3">Other</option>
-                    			<option {{ $account_info->ca_account_ownership == 4 ? "selected" : "" }} value="4">Subsidiary</option>
-                            </select>
-                        </div>
-    					</div> 
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Rating</label>
-                                <input type="number" min="1" max="5" name="ca_account_rating" id="CA_ACCOUNT_RATING" class="form-control" value="{{ $account_info->ca_account_rating }}" />
-                            </div>
-                        </div>
-                    	<div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Account Name <span class="required"> * </span></label>
+                                <label class="control-label">Name <span class="required"> * </span></label>
                                 <input type="text" name="ca_account_name" id="CA_ACCOUNT_NAME" class="form-control" required="required" maxlength="255"  value="{{ $account_info->ca_account_name }}" />
                             </div>
                         </div>
@@ -152,50 +127,38 @@ th{
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Phone <span class="required"> * </span></label>
+                                <label class="control-label">Phone <span class="required"> * </span></label>
                                 <input type="text" name="ca_account_phone" id="CA_ACCOUNT_PHONE" class="form-control" required="required" maxlength="255"  value="{{ $account_info->ca_account_phone }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Website</label>
+                                <label class="control-label">Website</label>
                                 <input type="url" name="ca_account_website" id="CA_ACCOUNT_WEBSITE" class="form-control" maxlength="255"  value="{{ $account_info->ca_account_website }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Fax</label>
+                                <label class="control-label">Fax</label>
                                 <input type="text" name="ca_account_fax" id="CA_ACCOUNT_FAX" class="form-control"  maxlength="255"  value="{{ $account_info->ca_account_fax }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Email <span class="required"> * </span></label>
+                                <label class="control-label">Email <span class="required"> * </span></label>
                                 <input type="text" name="ca_account_email" id="CA_ACCOUNT_EMAIL" class="form-control"  maxlength="255"  value="{{ $account_info->ca_account_email }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Mobile <span class="required"> * </span></label>
+                                <label class="control-label"> Mobile <span class="required"> * </span></label>
                                 <input type="text" name="ca_account_mobile" id="CA_ACCOUNT_MOBILE" class="form-control"  maxlength="255"  value="{{ $account_info->ca_account_mobile }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Account Site</label>
+                                <label class="control-label">Site</label>
                                 <input type="text" name="ca_account_site" id="CA_ACCOUNT_SITE" class="form-control"  maxlength="255"  value="{{ $account_info->ca_account_site }}" />
-                            </div>
-                        </div>
-                    	<div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Account Number <span class="required"> * </span> </label>
-                                <input type="text" name="ca_account_number" id="CA_ACCOUNT_NUMBER" class="form-control"  required="required"  maxlength="15"  value="{{ $account_info->ca_account_number }}" />
-                            </div>
-                        </div>
-                    	<div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Ticker Symbol</label>
-                                <input type="text" name="ca_ticker_symbol" id="CA_TICKER_SYMBOL" class="form-control"   maxlength="25"  value="{{ $account_info->ca_ticker_symbol }}" />
                             </div>
                         </div>
                     	<div class="col-md-4">
@@ -203,19 +166,7 @@ th{
                                 <label class="control-label">Number of Employees</label>
                                 <input type="number" min="1" max="100" name="ca_nbr_of_employees" id="CA_NBR_OF_EMPLOYEES" class="form-control" value="{{ $account_info->ca_nbr_of_employees }}" />
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Annual Revenue</label>
-                                <input type="text" name="ca_annual_revenue" id="CA_ANNUAL_REVENUE" class="form-control"  maxlength="255"  value="{{ $account_info->ca_annual_revenue }}" />
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">SIC Code</label>
-                                <input type="text" name="ca_account_sic_code" id="CA_ACCOUNT_SIC_CODE" class="form-control"  maxlength="45"  value="{{ $account_info->ca_account_sic_code }}" />
-                            </div>
-                        </div>
+                        </div> 
                     </div>
                     <div class="row" style="height:50px;"></div>
                     <div class="row">

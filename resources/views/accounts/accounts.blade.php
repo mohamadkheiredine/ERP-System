@@ -38,6 +38,9 @@ Page Description :
         </div>
     </div>
     <div class="card-body">
+                <span id="hidden_fields">
+            <input type="hidden" name="page_number" value="1" />
+        </span>
     				<div class="col-md-12">
 									<div class="row align-items-center">
 										<div class="col-xl-8 order-2 order-xl-1">
@@ -58,12 +61,14 @@ Page Description :
 												<div class="col-md-4">
 												</div>
 												<div class="col-md-4">
-                                                   <select class="bs-select form-control" id="ACCOUNT_CATEGORIES" name="account_category">
-                                            			<option value="0">-- Select Category --</option>
-                                                        @foreach($lst_client_categories as $index => $cc_info)
-                                                          <option value="{{ $cc_info->cc_id }}">{{  $cc_info->cc_category_ref . " - " . $cc_info->cc_category_name }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                                                                     @if(Config::get('appconfig.crm_telemarketing') == '0')
+                                                                                                    <select class="bs-select form-control" id="ACCOUNT_CATEGORIES" name="account_category">
+                                                                                                                 <option value="0">-- Select Category --</option>
+                                                                                                         @foreach($lst_client_categories as $index => $cc_info)
+                                                                                                           <option value="{{ $cc_info->cc_id }}">{{  $cc_info->cc_category_ref . " - " . $cc_info->cc_category_name }}</option>
+                                                                                                         @endforeach
+                                                                                                     </select>
+                                                                                                     @endif
 												</div>
 											</div>
 										</div>
@@ -87,10 +92,11 @@ Page Description :
                                                                             <tr class="fw-bold fs-6 text-gray-800">
                                                                                     <th title="#">#</th>
                                                                                     <th title="Id"> ID </th>
+                                                                                    <th title="Client name"> Client Code </th>
                                                                                     <th title="Client name"> Client Name </th>
-                                                                                    <th title="Company"> Company </th>
                                                                                     <th title="Mobile"> Mobile </th>
                                                                                     <th title="Email"> Email </th>
+                                                                                    <th title="Email"> Full Address </th>
                                                                                     <th style="width:2px;" nowrap title="#"> edit </th>
                                                                                     <th style="width:2px;" nowrap title="#"> Delete </th>
                                                                             </tr>
@@ -100,6 +106,19 @@ Page Description :
                                                                     </tbody>
                                                         </table>
 								</div> 
+        
+                      <div class="row">
+                  <div class="col-md-12" style="height:50px" align="right"></div>
+              </div>
+            <div class="row">
+                <div class="col-md-10 col-lg-10 col-xs-10" align="left">
+                    <ul id="AccountsPagination" class="pagination-sm"></ul>
+                </div>
+                  <div class="col-md-2 col-lg-2 col-xs-2" align="right"></div>
+              </div>
+              <div class="row">
+                  <div class="col-md-12" style="height:50px" align="right"></div>
+              </div>
     </div>
 </div>
  <div id="ImportClientsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ImportModalLabel" aria-hidden="true">

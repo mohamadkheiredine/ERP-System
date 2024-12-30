@@ -46,6 +46,9 @@ company_module = {
                    cd_company_owner : {
                 	   required: true
                    },
+                   cd_exchange_rate : {
+                     number : true  
+                   },
                    cd_company_email : {
                        required: true,
                        email : true
@@ -111,7 +114,7 @@ company_module = {
     	                })
     	        });
 
-    	        FormDataFields.find('input,select').each(function(){
+    	        FormDataFields.find('input,select,textarea').each(function(){
     	        		if($(this).attr('name') == "cd_primary_company")
 	        			{
     	        			var cd_primary_company = 0;

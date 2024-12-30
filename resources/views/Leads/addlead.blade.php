@@ -15,7 +15,6 @@ Page Description :
 ?>
 @extends('layouts.layout',['page_title' => "Leads Management"])
 
-
 @section('plugins')
 <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>

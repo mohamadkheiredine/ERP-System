@@ -37,4 +37,15 @@ class Receipts extends Model
     {
         return $this->hasOne('App\models\Billing\Invoices', 'bi_id','fk_invoice_id');
     } 
+    
+     public function AccountPayable()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','br_account_from');
+    }
+    
+    
+      public function AccountReceivable()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','br_account_id');
+    }
 }

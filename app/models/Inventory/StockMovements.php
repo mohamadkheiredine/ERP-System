@@ -26,6 +26,21 @@ class StockMovements extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "sm_id";
 
-
+    public function CreatedBy()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','sm_created_by');
+    }
+    
+    
+    public function SourceWarehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_from');
+    }
+    
+    
+    public function DestinationWarehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_to');
+    }
 
 }

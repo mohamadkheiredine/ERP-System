@@ -28,23 +28,29 @@ class CRMLeads extends Model
     
     public function Salesman()
     {
-        return $this->hasOne('App\models\Users\Users', 'id','fk_assign_to');
+        return $this->hasOne('App\models\Users\Users', 'id','cl_sales_id');
     }
     
-    public function Owner()
+    public function Telemarketing()
     {
-        return $this->hasOne('App\models\Users\Users', 'id','fk_lead_owner');
+        return $this->hasOne('App\models\Users\Users', 'id','cl_telemarketing_id');
     }
     
-    public function referredby()
+    public function AppResult()
     {
-        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','cl_referred_by');
+        return $this->hasOne('App\models\CallCenter\ApptResults', 'ar_id','cl_lead_results');
     }
     
     
     public function Status()
     {
         return $this->hasOne('App\models\CRM\CRMLeadStatus', 'ls_id','fk_lead_status_id');
+    }
+    
+    
+        public function LeadType()
+    {
+        return $this->hasOne('App\models\CRM\CRMLeadTypes', 'lt_id','cl_lead_type_id');
     }
     
 }

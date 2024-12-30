@@ -21,6 +21,7 @@ List of Payments in selected invoice
 			<th style="width:30%">Section Payment Type </th>
 			<th style="width:15%">Section Percentage</th>
 			<th style="width:10%">Total</th>
+			<th style="width:5%;white-space: nowrap;">Edit</th>
 			<th style="width:5%;white-space: nowrap;">Actions</th>
 		</tr>
 	</thead>
@@ -38,6 +39,7 @@ List of Payments in selected invoice
 			</td>
 			<td><input <?php echo ($invoice_info->bi_invoice_status == 1 ? "readonly='readonly'" : ""); ?>  type="number" step="0.1" min="0" max="100" name="ip_payment_percentage[]"  style="width:100%" class="form-control" value="{{ $pi_info->ip_payment_percentage }}" /></td>
 			<td>{{ $invoice_info->bi_total_cost * ($pi_info->ip_payment_percentage / 100) }}&nbsp;&nbsp;<b>{{  $currency }}</b></td>
+                        <td>&nbsp;&nbsp;<a href="#" data-ip_id="{{ $pi_info->ip_id }}" class="EditPayment" ><i class="fa-regular fa-pen-to-square"></i></a>&nbsp;&nbsp;</td>
 			<td>&nbsp;&nbsp;<?php if($invoice_info->bi_invoice_status == 1){ ?><a href="#" class="DeleteRow" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a><?php } ?>&nbsp;&nbsp;</td>
 		</tr>
 		@endforeach
@@ -53,6 +55,7 @@ List of Payments in selected invoice
 			</td>
 			<td><input type="number" step="0.1" min="0" max="100" name="ip_payment_percentage[]"  style="width:100%" class="form-control" value="" /></td> 
 			<td class="PaymentValue"></td>
+                        <td></td>
 			<td>&nbsp;&nbsp;<a href="#" class="DeleteRow" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a>&nbsp;&nbsp;</td>
 		</tr>
 	</tbody>

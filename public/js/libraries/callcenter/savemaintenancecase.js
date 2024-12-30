@@ -19,7 +19,7 @@ $(function(){
     } );
     
     
-     new tempusDominus.TempusDominus(document.getElementById('CC_CASE_DEADLINE'),{
+     new tempusDominus.TempusDominus(document.getElementById('CC_CASE_DATE'),{
 		 display: {
 			  components: {
 			      calendar: true,
@@ -40,26 +40,27 @@ $(function(){
 		 }
 	});
        
-       new tempusDominus.TempusDominus(document.getElementById('CC_RESOLUTION_DATE'),{
+       new tempusDominus.TempusDominus(document.getElementById('CC_CASE_TIME'),{
 		 display: {
 			  components: {
-			      calendar: true,
-			      date: true,
-			      month: true,
-			      year: true,
-			      decades: true, 
-			      clock: false,
-			      hours: false,
-			      minutes: false,
-			      seconds: false,
-			      useTwentyfourHour: undefined
+			      calendar: false,
+			      date: false,
+			      month: false,
+			      year: false,
+			      decades: false, 
+			      clock: true,
+			      hours: true,
+			      minutes: true,
+			      seconds: true,
+			      useTwentyfourHour: true
 			    }
 		 },
 		 localization: {
-			 format : "yyyy-MM-dd"
+			 format : "HH:mm:ss"
 			 
 		 }
 	});
 	
 	$('#BTN_SAVE_CASE').on('click',mcases_module.SaveMaintenanceCaseInfo); 
+	$('#CC_CLIENT_CODE').on('change',mcases_module.getAccountCaseInfo); 
 });

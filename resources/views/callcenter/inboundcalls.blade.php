@@ -15,7 +15,7 @@ Cost Center Categories Management
 ?>
 
 
-@extends('layouts.layout',['page_title' => "Cost Center Management"])
+@extends('layouts.layout',['page_title' => "Pending Calls Management"])
 
 @section('themes')
 <style>
@@ -26,8 +26,11 @@ th{
 	width:800px;
 }
 </style>
+<link href="{{ url('default/assets/plugins/tablesorter/dist/css/theme.default.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('plugins')
+<script type="text/javascript" src="{{ url('default/assets/plugins/tablesorter/dist/js/jquery.tablesorter.js') }}"></script>
+<script type="text/javascript" src="{{ url('default/assets/plugins/tablesorter/dist/js/jquery.tablesorter.widgets.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/inboundcalls.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/callcenter/inboundcalls.js') }}"></script>
 @endsection
@@ -35,12 +38,15 @@ th{
 @section('content')
 <div class="card shadow-sm">
 	<div class="card-header">
-		<h3 class="card-title">Inbound Calls Management</h3>
+		<h3 class="card-title">Call's Management</h3>
 		<div class="card-toolbar">
 			<div class="btn-group">
 				<button type="button" class="btn btn-danger dropdown-toggle"
 					data-bs-toggle="dropdown" aria-expanded="false">Action</button>
 				<ul class="dropdown-menu">
+                                   <li><a class="dropdown-item" data-action_type="ADD_MAINTENANCE_VOUCHER" href="#">Add Maintenance Voucher</a></li>
+                                   <li><a class="dropdown-item" data-action_type="DOWNLOAD_PDF_REPORT" href="#">Download PDF Report</a></li>
+                                   <li><a class="dropdown-item" data-action_type="ADD_RESULT" href="#">Add Call Result</a></li>
 				</ul>
 			</div>
 		</div>
@@ -71,17 +77,37 @@ th{
 							</div>
 
 						</div>
-						<div class="col-md-4">
-                                                    <label class="control-label">Agent</label>
-                                                    <select name="fk_agent_id" id="FK_AGENT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
-                                                           <option value="">All Agents</option>
-                                                           @foreach ( $lst_users as $key => $user_info )
+                                                <div class="col-md-4">
+                                                    <label class="control-label">Technician</label>
+                                                    <select name="ic_technician_id" id="IC_TECHNICIAN_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
+                                                           <option value="">-- Select Technician --</option>
+                                                           @foreach ( $lst_technicians as $key => $user_info )
                                                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                            @endforeach
                                                    </select>
+                                                </div>
+						<div class="col-md-4"> 
+                                                    <label class="control-label">Maintenance Type</label>
+                                                    <select name="ic_maintenance_type" id="IC_MAINTENANCE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
+                                                           <option value="">-- Select Maintenance Type --</option>
+                                                            <?php foreach ( $lst_maint_types as $key => $type_info ) { ?>
+                                                                    <option value="{{ $type_info->mt_id }}">{{ $type_info->mt_type }}</option>
+                                                            <?php  } ?>
+                                                   </select>
 						</div>
-						<div class="col-md-4">
-                                                    
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                       <label class="control-label"> Date</label><br/>
+                                                       <input type="text" name="ic_call_date"  id="IC_CALL_DATE" class="form-control" value="" />
+                                                    </div>
+                                               </div>
+                                            <div class="col-md-4"> 
+                                                    <label class="control-label">Archived Call</label>
+                                                    <select name="ic_archived_call" id="IC_ARCHIVED_CALL"  class="form-control form-select" data-control="select2" data-placeholder="Select Archived Call">
+                                                           <option value="">-- Select Archived Call --</option>
+                                                            <option value="0">Pending</option>
+                                                           <option value="1">Archived</option>
+                                                   </select>
 						</div>
 					</div>
 				</div>
@@ -97,17 +123,20 @@ th{
 		<!--end: Search Form -->
 		<!--begin: Datatable -->
 		<div class="table-responsive">
-			<table class="table table-striped gy-7 gs-7">
+			<table id="tablPendingCalls" class="table table-striped gy-7 gs-7">
 				<thead>
 					<tr
 						class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
 						<th style="width: 2px;">#</th>
 						<th style="width: 2px;">ID</th>
-						<th>Agent</th>
-						<th>Customer</th>
 						<th>Date</th>
-						<th>Start Time</th>
-						<th>End Time</th>
+						<th>Time</th>
+						<th>Client</th>
+						<th>Address</th>
+						<th>Phone</th>
+						<th>Contract Code</th>
+						<th>Result</th>
+						<th>Problem</th>
 						<th style="width: 2px;white-space: nowrap;">edit</th>
 						<th style="width: 2px;white-space: nowrap;">Delete</th>
 					</tr>
@@ -138,4 +167,162 @@ th{
 	</div>
 </div>
 
+
+<div class="modal fade" id="CallResultManagement" tabindex="-1" aria-labelledby="ModalCallResultManagement" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:800px">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalEditBills">Manage Call Results</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form name="frm_save_results" id="FRM_SAVE_RESULTS">
+              <span id="hidden_fields">
+                        {!! csrf_field() !!}
+                        <input type="hidden" name="ic_call_ids" id="IC_CALL_IDS" value="0" />
+              </span>
+                <div class="col-md-6">
+                    <div class="form-group">
+                       <label class="control-label"> Date</label><br/>
+                       <input type="text" name="cw_creation_date"  id="CW_CREATION_DATE" class="form-control" value="{{ date('Y-m-d') }}" />
+                    </div>
+               </div>
+                <div class="col-md-4">
+                        <div class="form-group">
+                          <label>Result </label>
+                          <select name="cw_result_id" required="required" id="CW_RESULT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Result">
+                                  <option value="">-- Select Result --</option>
+                                  <?php foreach ( $lst_results as $key => $result_info ) { ?>
+                                          <option value="<?php echo $result_info->cr_id;  ?>"><?php echo $result_info->cr_result_title;  ?></option>
+                                  <?php  } ?>
+                          </select>
+                      </div>
+                  </div>
+               <div class="col-md-6">
+                    <div class="form-group CallBack" style="display:none">
+                       <label class="control-label"> Callback Date</label><br/>
+                       <input type="text" name="cw_callback_date"  id="CW_CALLBACK_DATE" class="form-control" value="{{ date('Y-m-d') }}" />
+                    </div>
+               </div>
+               <div class="col-md-6">
+                   <div class="form-group">
+                    <label class="control-label">Technician</label>
+                    <select name="cw_assigned_to" id="CW_ASSIGNED_TO"  class="form-control form-select" data-control="select2" data-placeholder="Select Assigned To">
+                           <option value="">-- Select Technician --</option>
+                           @foreach ( $lst_technicians as $key => $user_info )
+                                   <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                           @endforeach
+                   </select>
+                   </div>
+                </div>
+                <div class="col-md-12"> 
+                    <div class="form-group">
+                          <label class="control-label">Note</label>
+                        <input type="text" name="cw_result_note"  id="CW_RESULT_NOTE" maxlength="500"  class="form-control" value="" />                    
+                    </div>
+                </div>
+               <div class="col-md-12" style="text-align:right;padding-top:10px">
+                   <button type="submit" name="btn_save_result" id="BTN_SAVE_RESULT" class="btn btn-info">Save changes</button>
+                </div>
+              <div class="col-md-12" style="text-align:right;height:700px;overflow: scroll">
+                <div class="table-responsive">
+                    <table id="TableCallResults" class="table table-striped gy-7 gs-7">
+                        <thead>
+                                <tr
+                                        class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                        <th>Date</th>
+                                        <th>Note</th>
+                                        <th>Result</th>
+                                        <th>Assign To</th>
+                                </tr>
+                        </thead>
+                        <tbody class="LstCallWResults" id="LstCallWResults"></tbody>
+                    </table>
+		</div> 
+               </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="AddMainVoucher" tabindex="-1" aria-labelledby="ModalAddMainVoucher" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:800px">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalEditBills">Add Maintenance Voucher</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form name="frm_save_voucher" id="FRM_SAVE_VOUCHER">
+              <span id="hidden_fields">
+                        {!! csrf_field() !!}
+                        <input type="hidden" name="ic_ids" value="0" />
+              </span>
+              <div class="row">
+                   <div class="col-md-6">
+                        <div class="form-group">
+                           <label class="control-label"> Date</label><br/>
+                           <input type="text" name="ic_resolution_date"  required="required"  id="IC_RESOLUTION_DATE" class="form-control" value="" />
+                        </div>
+                   </div>
+                   <div class="col-md-6">
+                        <div class="form-group">
+                           <label class="control-label"> Doc Number </label><br/>
+                           <input type="text" name="ic_doc_number"  required="required" id="IC_DOC_NUMBER" maxlength="25" class="form-control" value="" />
+                        </div>
+                   </div>
+                   <div class="col-md-6">
+                        <div class="form-group">
+                           <label class="control-label"> Maintenance Number </label><br/>
+                           <input type="text" name="ic_call_index"  required="required" id="IC_CALL_INDEX" maxlength="25" class="form-control" value="" />
+                        </div>
+                   </div>
+                   <div class="col-md-6">
+                        <div class="form-group">
+                           <label class="control-label"> Comission </label><br/>
+                           <input type="text" name="ic_comission"  required="required" id="IC_COMISSION" maxlength="25" class="form-control" value="" />
+                        </div>
+                   </div>
+                   <div class="col-md-6">
+                        <div class="form-group">
+                           <label class="control-label"> Visit Price </label><br/>
+                           <input type="text" name="ic_visit_price"  required="required" id="IC_VISIT_PRICE" maxlength="25" class="form-control" value="" />
+                        </div>
+                   </div>
+                    <div class="col-md-4">
+                       <div class="form-group">
+                           <label> Currency <span class="required"> * </span></label><br/>
+                           <select class="bs-select form-control" name="ic_currency_id" required="required" id="IC_CURRENCY_ID" data-actions-box="true">
+                                   <option value="">-- Select Currency --</option>
+                                   @foreach ( $lst_currencies as $key => $currency_info )
+                                           <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
+                                   @endforeach
+                           </select>
+                       </div>
+                   </div>
+                   <div class="col-md-6">
+                             <div class="form-group">
+                                <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
+                                <select class="form-control" required="required" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
+                        			<option value="">-- Select Payment Type --</option>
+                                    @foreach($lst_payment_types as $index => $paytype_info)
+                                      <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                  <div class="col-md-12" style="text-align: right">
+                      <button type="submit" name="btn_save_mv" id="BTN_SAVE_MV" class="btn btn-primary">Save changes</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection

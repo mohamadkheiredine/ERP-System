@@ -50,6 +50,7 @@ use App\models\Billing\Receipts;
 use App\models\System\Companies;
 use App\models\Inventory\Customers;
 use Dompdf\Dompdf;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 
 
@@ -66,13 +67,155 @@ class ReceiptsController extends Controller
     {
         $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
         $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $lst_clients = CRMAccounts::whereCaIsDeleted(0)->get();
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
+        $lst_payment_types = PaymentTypes::all();
+        $lst_currencies= Currency::all();
         
         $params_array = array(
             "lst_invoices" => $lst_invoices,
+            "lst_clients" => $lst_clients,
+            "lst_payment_types" => $lst_payment_types,
+            "lst_accounts" => $lst_accounts,
+            "lst_currencies" => $lst_currencies,
             "lst_customers" => $lst_customers
         );
         
-        return Response()->view("receipts.receipts",$params_array);
+        if( Config::get('appconfig.billing_rv_one_page') == 1)
+            return Response()->view("receipts.receiptsmanagement",$params_array);
+        else
+            return Response()->view("receipts.receipts",$params_array);
+        
+    }
+    
+    
+    public function DisplayActiveList(Request $request)
+    {
+        $page_number            = $request->input('page_number');
+        $search_query           = $request->input('search_query');
+        $receipt_customer       = $request->input('receipt_customer');
+        $receipt_invoice        = $request->input('receipt_invoice');
+        $start_date             = $request->input('start_date');
+        $end_date               = $request->input('end_date');
+        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+      
+        $strfirstday = 'first day of January ' . $fisical_year;
+        $strlastday = 'last day of December ' . $fisical_year;
+        
+        $firstday = date("Y-m-d",strtotime($strfirstday));
+        $lastday = date("Y-m-d",strtotime($strlastday));
+      
+        
+        $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+        if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        else
+            $skip = 0;
+        
+        $receipts_cond = Receipts::whereBrIsDeleted(0);
+        
+        if(strlen($search_query) > 0)
+        {
+            $receipts_cond = $receipts_cond->where('br_receipt_label' , 'LIKE' , '%' . $search_query . '%');
+            $receipts_cond = $receipts_cond->orWhere('br_receipt_note' , 'LIKE' , '%' . $search_query . '%');
+        }
+          
+        if( $receipt_customer > 0 )
+        {
+            $receipts_cond = $receipts_cond->whereBrCustomerId($receipt_customer);
+        }
+        
+        if( $receipt_invoice > 0 )
+        {
+            $receipts_cond = $receipts_cond->whereFkInvoiceId($receipt_invoice);
+        }
+        
+        if( strlen($start_date) > 0 )
+        {
+            $receipts_cond = $receipts_cond->where('br_receipt_date', '>=' , $start_date);
+        }
+        
+        if( strlen($end_date) > 0 )
+        {
+            $receipts_cond = $receipts_cond->where('br_receipt_date', '<' , $end_date);
+        } 
+         
+         
+        $receipts_count= $receipts_cond->count();
+        
+        $total_pages = ceil( $receipts_count/$nbr_rows_per_pages );
+        $total_pages = intval($total_pages);
+        
+        $receipts   = new Receipts();
+      
+            
+        $receipts= $receipts_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('br_id', 'ASC')->get(); 
+        
+        $data = array(
+            "receipts" => $receipts
+        );
+
+        $result_array = array();
+
+        $result_array['total_pages'] = $total_pages;
+        $result_array['display'] = view("receipts.displayactivelist",$data)->render();
+
+        return Response()->json($result_array);
+    }
+    
+    /**
+     * generate Receipt Code to put in one page receipt management
+     * 
+     * @author Moe mantach
+     * @access public
+     * @param Request $request
+     * @return type
+     */
+    public function GenerateReceiptcode(Request $request)
+    {
+        $receipt_code = $AccountingManager->GenerateReceiptCode();
+        $result_array = array();
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['receipt_code'] = $receipt_code;
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * find exising receipt and greturn information in array to put 
+     * it in new Receipt
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GetSelectedReceipt(Request $request)
+    {
+        $br_id = $request->input('br_id');
+        
+        $result_array = array();
+        $receipt_info = Receipts::find($br_id);
+        
+        $result_array['is_error'] = 0;
+        $result_array['receipt_obj'] = array(
+            'br_id' => $receipt_info->br_id,
+            'br_receipt_number' => $receipt_info->br_receipt_number,
+            'br_account_id' => $receipt_info->br_account_id,
+            'br_client_id' => $receipt_info->br_client_id,
+            'br_receipt_label' => $receipt_info->br_receipt_label,
+            'br_receipt_date' => $receipt_info->br_receipt_date,
+            'br_payment_type' => $receipt_info->br_payment_type,
+            'br_payment_value' => $receipt_info->br_payment_value,
+            'br_receipt_currency' => $receipt_info->br_receipt_currency,
+            'br_second_currency_id' => $receipt_info->br_second_currency_id,
+            'br_exchange_rate' => $receipt_info->br_exchange_rate,
+            'br_receipt_note' => $receipt_info->br_receipt_note
+        );
+        
+        
+        return Response()->json($result_array);
     }
     
     
@@ -133,11 +276,6 @@ class ReceiptsController extends Controller
             $receipts_cond = $receipts_cond->where('br_receipt_date', '<' , $end_date);
         } 
         
-//        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
-//        { 
-//            $receipts_cond= $receipts_cond->whereBetween('br_receipt_date', [$firstday, $lastday]);
-//        }
-//        
         
          
         $receipts_count= $receipts_cond->count();
@@ -285,6 +423,7 @@ class ReceiptsController extends Controller
         $br_receipt_number          = $request->input("br_receipt_number");
         $br_account_id              = $request->input("br_account_id");
         $br_customer_id             = $request->input("br_customer_id");
+        $br_client_id               = $request->input("br_client_id");
         $br_receipt_label           = $request->input("br_receipt_label");
         $br_receipt_date            = $request->input("br_receipt_date");
         $br_receipt_date            = date("Y-m-d",strtotime($br_receipt_date));
@@ -295,6 +434,8 @@ class ReceiptsController extends Controller
         $br_receipt_note            = $request->input("br_receipt_note");
         $br_second_currency_id      = $request->input("br_second_currency_id");
         $br_exchange_rate           = $request->input("br_exchange_rate");
+        $br_account_from           = $request->input("br_account_from");
+        $br_amount_secondary_amount           = $request->input("br_amount_secondary_amount");
         $br_receipt_paid            = $request->has("br_receipt_paid") ? 1 : 0;
          $at_id = 0;
         if($br_id > 0)
@@ -311,6 +452,7 @@ class ReceiptsController extends Controller
         $receipt_info->br_receipt_number = $br_receipt_number;
         $receipt_info->br_account_id        = $br_account_id;
         $receipt_info->br_customer_id       = $br_customer_id;
+        $receipt_info->br_customer_id       = $br_customer_id;
         $receipt_info->br_receipt_label     = $br_receipt_label;
         $receipt_info->br_receipt_date      = $br_receipt_date;
         $receipt_info->br_creation_date     = date("Y-m-d");
@@ -321,6 +463,8 @@ class ReceiptsController extends Controller
         $receipt_info->br_receipt_note      = $br_receipt_note;
         $receipt_info->br_receipt_paid      = $br_receipt_paid;
         $receipt_info->br_second_currency_id= $br_second_currency_id;
+        $receipt_info->br_amount_secondary_amount= $br_amount_secondary_amount;
+        $receipt_info->br_account_from      = $br_account_from;
         $receipt_info->br_exchange_rate     = $br_exchange_rate;
         $receipt_info->br_company_id        = Session("company_id");
         $receipt_info->save();
@@ -359,8 +503,15 @@ class ReceiptsController extends Controller
             $AccTransaction->fk_acc_journal_id      = 3;
             $AccTransaction->save();
             $at_id = $AccTransaction->at_id;
-            
+            $crm_telemarketing    = Config::get('appconfig.crm_telemarketing');
             $customer_info  = Customers::find($br_customer_id);
+            $client_info  = Customers::find($br_client_id);
+            /*
+             * check if telemarketing enable we get accoutn from client
+             * if client not selected we get account from account from dropdown 
+             * selected in form
+             */
+            $account_number = ($crm_telemarketing == '0') ?  $customer_info->ic_account_number : ($br_client_id != 0 ? $client_info->ca_accounting_id : $br_account_from ) ;
             $payment_info   = PaymentTypes::find($fk_payment_type);
             
             $pt_payment_account = $payment_info->pt_payment_account;
@@ -370,7 +521,7 @@ class ReceiptsController extends Controller
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+            $TransactionMovement->tm_sub_ledger_account = $account_number;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $br_payment_value;
@@ -392,22 +543,22 @@ class ReceiptsController extends Controller
             $TransactionMovement->save();
           
             $receipt_info = Receipts::find($br_id); 
-			if($at_id != null)
-			{
-				$receipt_info->br_trans_id = $at_id;
-			}
-			$receipt_info->save();
+        if($at_id != null)
+        {
+                $receipt_info->br_trans_id = $at_id;
         }
-		else
-		{
-			$trans_id = $receipt_info->br_trans_id;
+        $receipt_info->save();
+        }
+        else
+        {
+            $trans_id = $receipt_info->br_trans_id;
             if( $trans_id > 0 )
             {
                 $delete_trans = Transactions::where('at_id',$trans_id)->delete();
                 $delete_mov = TransactionMovements::where('fk_tran_id',$trans_id)->delete();
                 
             }
-		}
+        }
 		
         
 
@@ -476,8 +627,8 @@ class ReceiptsController extends Controller
             $invoiceReceipts->br_customer_id        = $invoice_info->fk_customer_id;
             $invoiceReceipts->br_payment_type       = $payment_info->ip_payment_type;
             $invoiceReceipts->br_receipt_number     = $AccountingManager->GenerateReceiptCode($bi_id); 
-            $invoiceReceipts->br_creation_date      = date('Y-m-d');
-            $invoiceReceipts->br_receipt_date       = date('Y-m-d');
+            $invoiceReceipts->br_creation_date      = $payment_info->ip_billing_date;
+            $invoiceReceipts->br_receipt_date       = $payment_info->ip_billing_date;
             $invoiceReceipts->br_company_id         = session('company_id');
             $invoiceReceipts->br_receipt_label      = $payment_info->ip_payment_label;
             $invoiceReceipts->br_payment_value      = ( $payment_info->ip_payment_percentage / 100 ) * $invoice_info->bi_total_price;
@@ -490,6 +641,92 @@ class ReceiptsController extends Controller
         $result_array['error_msg'] = "Operation Completed Successfully";
         return Response()->json($result_array);
     }
+    
+    
+    public static function numberToWords($number) {
+    $hyphen      = '-';
+    $conjunction = ' and ';
+    $separator   = ', ';
+    $negative    = 'negative ';
+    $decimal     = ' point ';
+    $dictionary  = [
+        0 => 'zero',
+        1 => 'one',
+        2 => 'two',
+        3 => 'three',
+        4 => 'four',
+        5 => 'five',
+        6 => 'six',
+        7 => 'seven',
+        8 => 'eight',
+        9 => 'nine',
+        10 => 'ten',
+        11 => 'eleven',
+        12 => 'twelve',
+        13 => 'thirteen',
+        14 => 'fourteen',
+        15 => 'fifteen',
+        16 => 'sixteen',
+        17 => 'seventeen',
+        18 => 'eighteen',
+        19 => 'nineteen',
+        20 => 'twenty',
+        30 => 'thirty',
+        40 => 'forty',
+        50 => 'fifty',
+        60 => 'sixty',
+        70 => 'seventy',
+        80 => 'eighty',
+        90 => 'ninety',
+        100 => 'hundred',
+        1000 => 'thousand',
+        1000000 => 'million',
+        1000000000 => 'billion',
+        1000000000000 => 'trillion'
+    ];
+
+    if (!is_numeric($number)) {
+        return false;
+    }
+
+    if ($number < 0) {
+        return $negative . self::numberToWords(abs($number));
+    }
+
+    $string = '';
+
+    if ($number < 21) {
+        $string = $dictionary[$number];
+    } elseif ($number < 100) {
+        $tens = ((int) ($number / 10)) * 10;
+        $units = $number % 10;
+        $string = $dictionary[$tens];
+        if ($units) {
+            $string .= $hyphen . $dictionary[$units];
+        }
+    } elseif ($number < 1000) {
+        $hundreds = (int) ($number / 100);
+        $remainder = $number % 100;
+        $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+        if ($remainder) {
+            $string .= $conjunction . self::numberToWords($remainder);
+        }
+    } else {
+        foreach ([1000, 1000000, 1000000000, 1000000000000] as $unit) {
+            if ($number < $unit * 1000) {
+                $baseUnit = (int) ($number / $unit);
+                $remainder = $number % $unit;
+                $string = self::numberToWords($baseUnit) . ' ' . $dictionary[$unit];
+                if ($remainder) {
+                    $string .= $separator . self::numberToWords($remainder);
+                }
+                break;
+            }
+        }
+    }
+
+    return $string;
+}
     
     
     /**
@@ -521,25 +758,30 @@ class ReceiptsController extends Controller
         $receipt_table= view("billing.receiptpayment",$data)->render();
         
         
-        $display = view("templates.receipts",array())->render();
+        $display = view("templates.receipt",array())->render();
         
         
         $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+        $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
+        $display = str_replace("%account_to%",$receipt_info->AccountReceivable->aa_account_label, $display);
+        $display = str_replace("%account_ledger_to%",$receipt_info->AccountReceivable->aa_account_ref, $display);
+        $display = str_replace("%paied_account%",$receipt_info->AccountPayable->aa_account_label, $display);
         $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
         $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
-        if($fk_invoice_id > 0)
-            $display = str_replace("%invoice_number%",$invoice_info->bi_invoice_ref, $display);
-        else 
-            $display = str_replace("%invoice_number%","", $display);
-        $display = str_replace("%receipt_number%",$receipt_info->br_receipt_number, $display);
-        $display = str_replace("%receipt_date%",$receipt_info->br_receipt_date, $display);
-        $display = str_replace("%receipt_description%",$receipt_info->br_receipt_note, $display);
-        $display = str_replace("%receipt_table%",$receipt_table, $display);
+        $display = str_replace("%receipt_code%",$receipt_info->br_receipt_number, $display);
+        $display = str_replace("%payment_date%",$receipt_info->br_receipt_date, $display);
+        $display = str_replace("%receipt_description%",$receipt_info->br_receipt_label, $display);
+        $display = str_replace("%receipt_amount%",$receipt_info->br_payment_value, $display);
+        $display = str_replace("%receipt_amount_letters%",self::numberToWords($receipt_info->br_payment_value), $display);
+        $display = str_replace("%receipt_currency%",$receipt_info->Currency->cc_currency_code, $display);
         
-        $pdf = new Dompdf();
-        $pdf->loadHTML($display);
-        $pdf->render();
-        return $pdf->stream('receipt-' . strtolower($receipt_info->br_receipt_number) . '.pdf');
+       
+        
+ 
+        
+        return PDF::loadHTML($display)
+                 ->setPaper('a4')->setOption('encoding', 'UTF-8')
+                 ->download('receipt-' . strtolower($receipt_info->br_receipt_number) . '.pdf');
     }
     
     

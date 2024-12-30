@@ -51,9 +51,11 @@ use App\models\System\Companies;
 use App\models\Inventory\Customers;
 use App\models\CRM\CRMServices;
 use App\models\SRM\Suppliers;
+use App\models\Users\Users;
+use App\models\Users\UserTypes;
 use Dompdf\Dompdf;
 use App\models\CRM\CRMServicesPaymentTypes;
-
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 
 class InvoicesController extends Controller
@@ -72,9 +74,11 @@ class InvoicesController extends Controller
         $list_customers     = Customers::whereIcIsDeleted(0)->get();
         $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
         
+        $crm_telemarketing    = Config::get('appconfig.crm_telemarketing');
         $data = array(
             "list_accounts"     => $list_accounts,
             "list_customers"    => $list_customers,
+            "crm_telemarketing"    => $crm_telemarketing,
             "lst_banks_info"    => $lst_banks_info
         );
         return Response()->view("billing.invoices",$data);
@@ -109,7 +113,8 @@ class InvoicesController extends Controller
             "total_discount" => $total_array['total_discount'],
             "total_tax" => $total_array['total_tax'],
             "total_price" => $total_array['total_price'],
-            "currency" => $total_array['currency']
+            "currency" => $total_array['currency'],
+            "invoice_info" => $invoice_info
         );
         $result_array['display'] = view('billing.listproducts',$data)->render();
         
@@ -117,6 +122,32 @@ class InvoicesController extends Controller
         return Response()->json($result_array);
     }
     
+    
+    /**
+     * get product data information
+     * @param Request $request
+     */
+    public function GetProductDataInfo(Request $request)
+    {
+        $product_id = $request->input('product_id');
+        
+        $product_info = Products::find($product_id);
+        $result_array = array();
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['product_data'] = array(
+            "p_product_selling_price" => $product_info->p_product_selling_price,
+            "p_id" => $product_info->p_id,
+            "p_product_ref" => $product_info->p_product_ref,
+            "p_product_name" => $product_info->p_product_name,
+            "p_product_description" => $product_info->p_product_description,
+            "p_product_selling_price" => $product_info->p_product_selling_price,
+            "p_product_cost_price" => $product_info->p_product_cost_price,
+        );
+        
+        return Response()->json($result_array);
+    }
     
     /**
      *
@@ -254,98 +285,231 @@ class InvoicesController extends Controller
         
         if($bi_client_id != 0) $crm_account    = CRMAccounts::find($bi_client_id);
         if($fk_customer_id != 0) $crm_customer = Customers::find($fk_customer_id);
+         
+        $crm_telemarketing     = Config::get('appconfig.crm_telemarketing');
+        $display = "";
         
-        $data = array();
-        $display = view("templates.invoices",$data)->render();
-        
-        $AccountingManager = new AccountingManager();
-        $params_array = array(
-            "invoice_info" => $invoice_info
-        );
-        $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
-        
-        
-        
-        $data = array(
-            "items_array" => $total_array['items_array'],
-            "total_cost" => $total_array['total_cost'],
-            "total_discount" => $total_array['total_discount'],
-            "total_tax" => $total_array['total_tax'],
-            "total_price" => $total_array['total_price'],
-            "currency" => $total_array['currency']
-        );
-        $item_table = view('billing.invoiceproducts',$data)->render();
-        
-        
-        
-        
-        $profile_path     = public_path().'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
-        $profile_url = url('/').'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
-        if(!is_file($profile_path))
+        if($crm_telemarketing == "0")
         {
-            $profile_url= url('images/NoImageAvailable.jpg');
-        }
-        
-        $display = str_replace("%company_url%", $company_info->cd_company_website, $display);
-        $display = str_replace("%logo_image_url%",$profile_url, $display);
-        $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
-        $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
-        $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
-        $display = str_replace("%company_email%",$company_info->cd_company_email, $display);
-        $display = str_replace("%invoice_code%",$invoice_info->bi_invoice_ref, $display);
-        $display = str_replace("%invoice_description%",$invoice_info->bi_invoice_note, $display);
-        $display = str_replace("%creation_date%",$invoice_info->bi_invoice_date, $display);
-        $display = str_replace("%due_date%",$invoice_info->bi_due_date, $display);
-        if($bank_id != 0 )
-        {
-            $display = str_replace("%bank_name%",$bank_info->ba_bank_name, $display);
-            $display = str_replace("%bank_address%",$bank_info->ba_account_address, $display);
-            $display = str_replace("%bank_account_number%",$bank_info->ba_account_number, $display);
-            $display = str_replace("%bank_swift_code%",$bank_info->ba_account_swift, $display);
-            $display = str_replace("%bank_account_name%",$bank_info->ba_account_owner_name, $display);
-            $display = str_replace("%bank_iban%",$bank_info->ba_account_iban, $display);
-            
+            $data = array();
+            $display = view("templates.invoices",$data)->render();
+
+            $AccountingManager = new AccountingManager();
+            $params_array = array(
+                "invoice_info" => $invoice_info
+            );
+            $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+
+            $data = array(
+                "items_array" => $total_array['items_array'],
+                "total_cost" => $total_array['total_cost'],
+                "total_discount" => $total_array['total_discount'],
+                "total_tax" => $total_array['total_tax'],
+                "total_price" => $total_array['total_price'],
+                "currency" => $total_array['currency']
+            );
+            $item_table = view('billing.invoiceproducts',$data)->render();
+
+
+
+
+            $profile_path     = public_path().'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+            $profile_url = url('/').'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+            if(!is_file($profile_path))
+            {
+                $profile_url= url('images/NoImageAvailable.jpg');
+            }
+
+            $display = str_replace("%company_url%", $company_info->cd_company_website, $display);
+            $display = str_replace("%logo_image_url%",$profile_url, $display);
+            $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+            $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
+            $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
+            $display = str_replace("%company_email%",$company_info->cd_company_email, $display);
+            $display = str_replace("%invoice_code%",$invoice_info->bi_invoice_ref, $display);
+            $display = str_replace("%invoice_description%",$invoice_info->bi_invoice_note, $display);
+            $display = str_replace("%creation_date%",$invoice_info->bi_invoice_date, $display);
+            $display = str_replace("%due_date%",$invoice_info->bi_due_date, $display);
+            if($bank_id != 0 )
+            {
+                $display = str_replace("%bank_name%",$bank_info->ba_bank_name, $display);
+                $display = str_replace("%bank_address%",$bank_info->ba_account_address, $display);
+                $display = str_replace("%bank_account_number%",$bank_info->ba_account_number, $display);
+                $display = str_replace("%bank_swift_code%",$bank_info->ba_account_swift, $display);
+                $display = str_replace("%bank_account_name%",$bank_info->ba_account_owner_name, $display);
+                $display = str_replace("%bank_iban%",$bank_info->ba_account_iban, $display);
+
+            }
+            else
+            {
+                $display = str_replace("%bank_name%","", $display);
+                $display = str_replace("%bank_address%","", $display);
+                $display = str_replace("%bank_account_number%","", $display);
+                $display = str_replace("%bank_swift_code%","", $display);
+                $display = str_replace("%bank_account_name%","", $display);
+                $display = str_replace("%bank_iban%","", $display);
+            }
+
+
+            $display = str_replace("%item_table%",$item_table, $display);
+
+            if($bi_client_id != 0)
+            {
+                $display = str_replace("%client_name%",$crm_account->ca_account_name, $display);
+                $display = str_replace("%client_address%",$crm_account->ca_billing_city . " " . $crm_account->ca_billing_street, $display);
+                $display = str_replace("%client_email%",$crm_account->ca_account_email, $display);
+                $display = str_replace("%client_phone%",$crm_account->ca_account_phone, $display);
+            }
+            else if($fk_customer_id != 0)
+            {
+                $display = str_replace("%client_name%",$crm_customer->ic_customer_name , $display);
+                $display = str_replace("%client_address%",$crm_customer->ic_customer_address, $display);
+                $display = str_replace("%client_email%",$crm_customer->ic_customer_email, $display);
+                $display = str_replace("%client_phone%",$crm_customer->ic_customer_phone, $display);
+            }
+
+
+            $display = str_replace("%contact_name%",$company_info->cd_contact_name, $display);
+            $display = str_replace("%contact_phone%",$company_info->cd_contact_mobile, $display);
+            $display = str_replace("%contact_email%",$company_info->cd_contact_email, $display);
         }
         else
         {
-            $display = str_replace("%bank_name%","", $display);
-            $display = str_replace("%bank_address%","", $display);
-            $display = str_replace("%bank_account_number%","", $display);
-            $display = str_replace("%bank_swift_code%","", $display);
-            $display = str_replace("%bank_account_name%","", $display);
-            $display = str_replace("%bank_iban%","", $display);
+             $data = array();
+            $display = view("templates.contractinvoice",$data)->render();
+            
+                        $params_array = array(
+                "invoice_info" => $invoice_info
+            );
+            $AccountingManager = new AccountingManager();
+            $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+            
+             $data_array = array(
+                "items_array" => $total_array['items_array'],
+                "total_cost" => $total_array['total_cost'],
+                "total_discount" => $total_array['total_discount'],
+                "total_tax" => $total_array['total_tax'],
+                "total_price" => $total_array['total_price'],
+                "currency" => $total_array['currency']
+            );
+            $item_table = view('billing.invoicecontractproducts',$data_array)->render();
+            
+             
+            $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+            $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
+            $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
+            $display = str_replace("%INVOICE_NUMBER%",$invoice_info->bi_invoice_ref, $display);  
+            $display = str_replace("%INVOICE_DATE%",$invoice_info->bi_invoice_date, $display);
+            $display = str_replace("%LST_CONTRACT_INVOICES%",$item_table, $display);
+            $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
+            
+            
+            $display = str_replace("%CLIENT_NAME%",$crm_account->ca_account_name, $display);
+            $display = str_replace("%CLIENT_ADDRESS%",$crm_account->ca_billing_address, $display);
+            $display = str_replace("%CLIENT_PHONE%",$crm_account->ca_account_mobile, $display);
+            $display = str_replace("%INVOICE_CURRENCY%",$invoice_info->Currency->cc_currency_code, $display);
+            $display = str_replace("%ACCOUNT_NUMBER%",$invoice_info->Account->aa_account_ref, $display);
+            $display = str_replace("%INVOICE_COST%",$invoice_info->bi_total_cost, $display);
+            $display = str_replace("%INVOICE_TOTAL%",$invoice_info->bi_total_price, $display);
+            $display = str_replace("%INVOICE_TOTAL_LETTERS%",self::numberToWords($invoice_info->bi_total_price), $display);
+            $display = str_replace("%CONTRACT_TYPE%",($crm_account->ca_contract_type == 1 ? "WTS" : "RK"), $display);
+            
         }
         
         
-        $display = str_replace("%item_table%",$item_table, $display);
-        
-        if($bi_client_id != 0)
-        {
-            $display = str_replace("%client_name%",$crm_account->ca_account_name, $display);
-            $display = str_replace("%client_address%",$crm_account->ca_billing_city . " " . $crm_account->ca_billing_street, $display);
-            $display = str_replace("%client_email%",$crm_account->ca_account_email, $display);
-            $display = str_replace("%client_phone%",$crm_account->ca_account_phone, $display);
-        }
-        else if($fk_customer_id != 0)
-        {
-            $display = str_replace("%client_name%",$crm_customer->ic_customer_name , $display);
-            $display = str_replace("%client_address%",$crm_customer->ic_customer_address, $display);
-            $display = str_replace("%client_email%",$crm_customer->ic_customer_email, $display);
-            $display = str_replace("%client_phone%",$crm_customer->ic_customer_phone, $display);
-        }
         
         
-        $display = str_replace("%contact_name%",$company_info->cd_contact_name, $display);
-        $display = str_replace("%contact_phone%",$company_info->cd_contact_mobile, $display);
-        $display = str_replace("%contact_email%",$company_info->cd_contact_email, $display);
-        
-        $pdf = new Dompdf();
-        $pdf->loadHTML($display);
-        $pdf->render();
-        return $pdf->stream('invoice-' . strtolower($invoice_info->bi_invoice_ref) . '.pdf');
-        //return $display;
+        return PDF::loadHTML($display)
+            ->setPaper('a4')
+            ->setOption('encoding', 'UTF-8')
+            ->download('invoice-' . strtolower($invoice_info->bi_invoice_ref) . '.pdf');
     }
     
+    
+        public static function numberToWords($number) {
+    $hyphen      = '-';
+    $conjunction = ' and ';
+    $separator   = ', ';
+    $negative    = 'negative ';
+    $decimal     = ' point ';
+    $dictionary  = [
+        0 => 'zero',
+        1 => 'one',
+        2 => 'two',
+        3 => 'three',
+        4 => 'four',
+        5 => 'five',
+        6 => 'six',
+        7 => 'seven',
+        8 => 'eight',
+        9 => 'nine',
+        10 => 'ten',
+        11 => 'eleven',
+        12 => 'twelve',
+        13 => 'thirteen',
+        14 => 'fourteen',
+        15 => 'fifteen',
+        16 => 'sixteen',
+        17 => 'seventeen',
+        18 => 'eighteen',
+        19 => 'nineteen',
+        20 => 'twenty',
+        30 => 'thirty',
+        40 => 'forty',
+        50 => 'fifty',
+        60 => 'sixty',
+        70 => 'seventy',
+        80 => 'eighty',
+        90 => 'ninety',
+        100 => 'hundred',
+        1000 => 'thousand',
+        1000000 => 'million',
+        1000000000 => 'billion',
+        1000000000000 => 'trillion'
+    ];
+
+    if (!is_numeric($number)) {
+        return false;
+    }
+
+    if ($number < 0) {
+        return $negative . self::numberToWords(abs($number));
+    }
+
+    $string = '';
+
+    if ($number < 21) {
+        $string = $dictionary[$number];
+    } elseif ($number < 100) {
+        $tens = ((int) ($number / 10)) * 10;
+        $units = $number % 10;
+        $string = $dictionary[$tens];
+        if ($units) {
+            $string .= $hyphen . $dictionary[$units];
+        }
+    } elseif ($number < 1000) {
+        $hundreds = (int) ($number / 100);
+        $remainder = $number % 100;
+        $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+        if ($remainder) {
+            $string .= $conjunction . self::numberToWords($remainder);
+        }
+    } else {
+        foreach ([1000, 1000000, 1000000000, 1000000000000] as $unit) {
+            if ($number < $unit * 1000) {
+                $baseUnit = (int) ($number / $unit);
+                $remainder = $number % $unit;
+                $string = self::numberToWords($baseUnit) . ' ' . $dictionary[$unit];
+                if ($remainder) {
+                    $string .= $separator . self::numberToWords($remainder);
+                }
+                break;
+            }
+        }
+    }
+
+    return $string;
+}
     
     /**
      * Display List of invoices saved in the database
@@ -357,6 +521,7 @@ class InvoicesController extends Controller
     public function DisplayListInvoices(Request $request)
     {
         
+        $general_search     = $request->input("general_search");
         $invoice_customer   = $request->input("invoice_customer");
         $invoice_bank       = $request->input("invoice_bank");
         $start_date         = $request->input("start_date");
@@ -402,6 +567,8 @@ class InvoicesController extends Controller
             if(strlen($general_search) > 0)
             {
                 $lst_invoices = $lst_invoices->where('bi_invoice_note','LIKE',"%" . $general_search. "%");
+                $lst_invoices = $lst_invoices->orWhere('bi_contract_number','LIKE',"%" . $general_search. "%");
+                $lst_invoices = $lst_invoices->orWhere('bi_account_number','LIKE',"%" . $general_search. "%");
             }
             
             $count_invoices =     $lst_invoices->count();
@@ -502,6 +669,9 @@ class InvoicesController extends Controller
         $list_customers     = Customers::whereIcIsDeleted(0)->get();
         $list_services      = CRMServices::whereCsIsDeleted(0)->get();
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_collectors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
+        
         
         $data = array(
             "invoice_info" => $invoice_info,
@@ -515,11 +685,80 @@ class InvoicesController extends Controller
             "list_customers" => $list_customers,
             "list_services" => $list_services,
             "lst_suppliers" => $lst_suppliers,
+            "lst_technicians" => $lst_technicians,
+            "lst_collectors" => $lst_collectors,
             "lst_vat_accounts" => $lst_vat_accounts
         );
         return Response()->view("billing.editinvoice",$data);
     }
     
+    /**
+     * Get Payment Bills Information
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function GetPaymentBillsInfo(Request $request)
+    {
+        $ip_id = $request->input('ip_id');
+        
+        $payment_info = InvoicePayments::find($ip_id);
+        
+        $result_array = array();
+        
+        $result_array['is_error'] = 0;
+        $result_array['payment_info'] = array(
+            'ip_id' => $payment_info->ip_id,
+            'ip_billing_nbr' => $payment_info->ip_billing_nbr,
+            'ip_billing_date' => $payment_info->ip_billing_date,
+            'ip_updated_by' => $payment_info->ip_updated_by,
+            'ip_updated_date' => $payment_info->ip_updated_date,
+            'ip_payment_doc' => $payment_info->ip_payment_doc,
+            'ip_collector_id' => $payment_info->ip_collector_id,
+            'ip_payment_type' => $payment_info->ip_payment_type,
+        );
+        
+        return Response()->json($result_array);
+        
+    }
+    
+    
+    /**
+     * Save Invoice Bill Record
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     */
+    public function SaveInvoicePayment(Request $request)
+    {
+        $ip_id = $request->input('ip_id');
+        $ip_billing_nbr = $request->input('ip_billing_nbr');
+        $ip_billing_date = $request->input('ip_billing_date');
+        $ip_updated_date = $request->input('ip_updated_date');
+        $ip_payment_doc = $request->input('ip_payment_doc');
+        $ip_collector_id = $request->input('ip_collector_id');
+        $ip_payment_type = $request->input('ip_payment_type');
+        $ip_updated_by = session('user_id');
+        
+         $payment_info = InvoicePayments::find($ip_id);
+        
+        $result_array = array();
+        
+        $payment_info->ip_billing_nbr = $ip_billing_nbr;
+        $payment_info->ip_billing_date = $ip_billing_date;
+        $payment_info->ip_updated_date = $ip_updated_date;
+        $payment_info->ip_payment_doc = $ip_payment_doc;
+        $payment_info->ip_collector_id = $ip_collector_id;
+        $payment_info->ip_payment_type = $ip_payment_type;
+        $payment_info->ip_updated_by = session('user_id');
+        $payment_info->save();
+        
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'Operation Completed Successfully';
+        return Response()->json($result_array);
+        
+    }
     
     /**
      * Insert Invoice items and save it into the database
@@ -536,6 +775,7 @@ class InvoicesController extends Controller
         $bi_quanity         = $request->input("bi_quanity");
         $invoice_type_item  = $request->input("invoice_type_item");
         $ii_payment_type    = $request->input("ii_payment_type");
+        $bi_item_price    = $request->input("bi_item_price");
         $product_info       = Products::find($bi_product);
         $invoice_info       = Invoices::find($invoice_id);
         $result_array       = array();
@@ -551,8 +791,8 @@ class InvoicesController extends Controller
                 $invoice_product->ii_price_currency = $product_info->p_product_currency;
                 $invoice_product->ii_item_qyt       = $bi_quanity;
                 $invoice_product->ii_payment_type   = $ii_payment_type;
-                $invoice_product->ii_item_price     = $product_info->p_product_selling_price;
-                $invoice_product->ii_total_price    = $product_info->p_product_selling_price * $bi_quanity;
+                $invoice_product->ii_item_price     = $bi_item_price;
+                $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
                 $invoice_product->save();
                 
                 // save total invoice value in the database
@@ -704,9 +944,9 @@ class InvoicesController extends Controller
         $bi_invoice_date        = $request->input("bi_invoice_date");
         $bi_invoice_date        = date("Y-m-d",strtotime($bi_invoice_date));
         $cyear                  = date('Y', strtotime($bi_invoice_date));
-  
+ 
         
-        $fk_bankaccount_id      = $request->input("fk_bankaccount_id");
+      //  $fk_bankaccount_id      = $request->input("fk_bankaccount_id");
         $bi_payment_type        = $request->input("bi_payment_type");
         $bi_payment_terms       = $request->input("bi_payment_terms");
         $bi_invoice_note        = $request->input("bi_invoice_note");
@@ -723,6 +963,8 @@ class InvoicesController extends Controller
         $fk_customer_id         = $request->input("fk_customer_id");
         $bi_second_currency     = $request->input("bi_second_currency");
         $bi_exchange_rate       = $request->input("bi_exchange_rate");
+        $bi_contract_number       = $request->input("bi_contract_number");
+        $bi_account_number       = $request->input("bi_account_number");
         $invoice_info           =  new Invoices();
         $result_array           = array();
         $action = "add";
@@ -752,12 +994,16 @@ class InvoicesController extends Controller
             $invoice_info->bi_created_by        = session('user_id');
         }
         
+        $client_info = CRMAccounts::find($invoice_account);
+        
+        
         $invoice_info->bi_invoice_ref       = $bi_invoice_ref;
         $invoice_info->bi_invoice_code      = $bi_invoice_code;
-        $invoice_info->fk_account_id        = $invoice_account;
+        $invoice_info->bi_client_id         = $invoice_account;
+        $invoice_info->fk_account_id         = $client_info->ca_accounting_id;
         $invoice_info->fk_customer_id       = $fk_customer_id;
         $invoice_info->bi_invoice_date      = $bi_invoice_date;
-        $invoice_info->fk_bankaccount_id    = $fk_bankaccount_id;
+        //$invoice_info->fk_bankaccount_id    = $fk_bankaccount_id;
         $invoice_info->bi_payment_type      = $bi_payment_type;
         $invoice_info->bi_payment_terms     = $bi_payment_terms;
         $invoice_info->bi_invoice_note      = $bi_invoice_note;
@@ -767,6 +1013,8 @@ class InvoicesController extends Controller
         $invoice_info->bi_discount          = $bi_discount;
         $invoice_info->bi_second_currency   = $bi_second_currency;
         $invoice_info->bi_exchange_rate     = $bi_exchange_rate;
+        $invoice_info->bi_contract_number     = $bi_contract_number;
+        $invoice_info->bi_account_number     = $bi_account_number;
         $invoice_info->save();
         
         
@@ -852,7 +1100,10 @@ class InvoicesController extends Controller
                 if(is_numeric($total_price))
                 {
                     //get information of the customer
-                    $customer_info = Customers::find( $invoice_info->fk_customer_id );
+                    if($invoice_account != null)
+                        $customer_info = CRMAccounts::find( $invoice_info->bi_client_id );
+                    else
+                        $customer_info = Customers::find( $invoice_info->fk_customer_id );
                     
                     $invoice_payment_type   = $invoice_info->bi_payment_type;
                     $payment_type_info      = PaymentTypes::find($invoice_payment_type);
@@ -880,8 +1131,9 @@ class InvoicesController extends Controller
                             
                         }
                         
-                        
-                        $sales_account_id    = $service_info->cs_sale_accounting_code;
+                        if($service_info != null)
+                        {
+                            $sales_account_id    = $service_info->cs_sale_accounting_code;
                         $purchase_account_id = $service_info->cs_purchase_accounting_code;
                         
                         // check if the user has a record by payment type to get account else we get the default
@@ -933,6 +1185,9 @@ class InvoicesController extends Controller
                         $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
                         $TransactionMovement->save();
                         $total_price += $ii_info->ii_item_price;
+                        }
+                        
+                        
                       
                     }
                  
@@ -960,6 +1215,47 @@ class InvoicesController extends Controller
         $result_array['bi_id'] = $bi_id;
         $result_array['action'] = $action;
         $result_array['error_msg'] = "Operation Completed Successfully";
+        return Response()->json($result_array);
+    }
+    
+    
+    /**
+     * get account information and return in the result_arrray
+     * 
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * 
+     * @return Response $result_array
+     * $result_array['is_error']
+     * $result_array['account_info']
+     * $result_array['error_msg']
+     */
+    public function GetAccountInfo(Request $request)
+    {
+        $result_array = array();
+        $bi_account_number = $request->input('bi_account_number');
+        
+        $client_info = CRMAccounts::where('ca_account_code','LIKE','%' . $bi_account_number . '%')->where('ca_is_deleted',0)->get();
+        
+        if(count($client_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'Client Information Not Exist';
+            
+            return Response()->json($result_array);
+        }
+        
+        
+        $result_array['is_error'] = 0;
+        $result_array['account_info'] = array(
+            'account_id' => $client_info[0]->ca_id,
+            'ca_account_name' => $client_info[0]->ca_account_name,
+            'ca_account_phone' => $client_info[0]->ca_account_phone,
+            'ca_account_mobile' => $client_info[0]->ca_account_mobile,
+            'ca_client_address' => $client_info[0]->ca_billing_address
+        );
+
         return Response()->json($result_array);
     }
     

@@ -54,7 +54,7 @@ Page Description :
             <div class="row">
                 <div class="text-center">
                     <h1>Paid</h1>
-                    %receipt_table%
+                    %voucher_description%
                 </div> 
                 	
             </div>

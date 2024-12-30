@@ -26,4 +26,21 @@ class CRMDeals extends Model
     protected   $table          = 'crm_account_deals';
     public      $timestamps     = false;
     protected   $primaryKey     = "ad_id";
+    
+    public function Account()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','fk_account_id');
+    }
+   
+    
+    public function Salesman()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_sales_id');
+    }
+    
+    public function Telemarketing()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_telemarketing_id');
+    }
+    
 }

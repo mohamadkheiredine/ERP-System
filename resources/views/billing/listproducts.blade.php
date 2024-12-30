@@ -43,7 +43,7 @@ Display Table  list of all products
 	</tbody>
 	<tr style="background-color: #5656ff;color:white;">
 		<th colspan="6" align="center">Cost</th>
-		<th>{{ $total_cost }}&nbsp;&nbsp;{{ $currency }}</th>
+		<th>{{ Config::get('appconfig.crm_telemarketing') == 1 ? number_format($invoice_info->bi_total_cost) : number_format($total_cost) }}&nbsp;&nbsp;{{ $currency }}</th>
 	</tr>
 	<tr style="background-color: #7673ff;color:white;">
 		<th colspan="6" align="center">Tax</th>
@@ -55,6 +55,6 @@ Display Table  list of all products
 	</tr>
 	<tr style="background-color: #1200ff;color:white;">
 		<th colspan="6" align="center"> Total Cost </th>
-		<th>{{ $total_price }}&nbsp;&nbsp;{{ $currency }}</th>
+		<th>{{ Config::get('appconfig.crm_telemarketing') == 1 ? number_format($invoice_info->bi_total_price) : number_format($total_price) }}&nbsp;&nbsp;{{ $currency }}</th>
 	</tr>
 </table>

@@ -59,7 +59,7 @@ Route::post('/request/products/deleteproductinfo','Inventory\ProductsController@
 Route::post('/request/products/displayliststocks','Inventory\ProductsController@DisplayListStocks');
 Route::post('/request/products/displayliststockmovements','Inventory\ProductsController@DisplayListStockMovements');
 Route::post('/request/products/addstock','Inventory\ProductStocksController@AddStock');
-Route::post('/request/products/stocktransfer','Inventory\ProductStocksController@StockTransfer');
+Route::put('/request/products/stocktransfer','Inventory\ProductStocksController@StockTransfer');
 Route::post('/request/products/displaymetricsection','Inventory\ProductsController@DisplayMetricSection');
 Route::post('/request/products/generatebarcode','Inventory\ProductsController@GenerateBarCode');
 Route::post('/request/products/duplicateproducts','Inventory\ProductsController@Duplicateproducts');
@@ -67,10 +67,12 @@ Route::post('/request/products/getzonesdropdown','Inventory\ProductsController@G
 Route::post('/request/products/getfloorsdropdown','Inventory\ProductsController@GetFloorsDropdown');
 Route::get('/request/products/downloadtemplate','Inventory\ProductsController@DownloadTemplate');
 Route::post('/request/products/uploadlistproducts','Inventory\ProductsController@Uploadlistproducts');
+Route::post('/request/movements/additems','Inventory\ProductStockTransferController@AddTransferItems');
 
 Route::post('/request/productcategories/displaylistitems','Inventory\ProductCategoriesController@DisplayListItems');
 
 Route::post('/request/stock/getproductinfo','Inventory\ProductStocksController@GetProductinfo');
+Route::post('/request/stocktransfer/generatetransfervoucher','Inventory\ProductStocksController@GenerateTransferVoucher');
 
 
 Route::post('/request/displayliststock','Inventory\ProductStocksController@DisplayList');
@@ -190,6 +192,21 @@ Route::post('/request/leads/saveleaditeminfo','CRM\LeadItemsController@SaveLeadI
 Route::post('/request/leads/displayleadservicestab','CRM\LeadItemsController@DisplayLeadServicestab');
 Route::post('/request/leads/deleteleadserviceinfo','CRM\LeadItemsController@DeleteLeadServiceinfo');
 Route::post('/request/leads/quickaddlead','CRM\LeadsController@QuickAddLead');
+Route::post('/request/leads/addleadresult','CRM\LeadsController@Addleadresult');
+Route::post('/request/deals/generatecontract','CRM\DealsController@GenerateAndDownloadContract');
+Route::get('/request/leads/displaylistleadresults','CRM\LeadsController@GetDisplayListLeadResults');
+Route::post('/request/leads/checkleadexistbymobile','CRM\LeadsController@CheckLeadExistByMobile');
+Route::get('/request/callcenter/displaylistappointments','CallCenter\AppointmentsController@DisplayListApp');
+Route::post('/request/leads/saveappointmentinfo','CallCenter\AppointmentsController@SaveAppointmentInfo');
+Route::delete('/request/callcenter/deleteleadapp','CallCenter\AppointmentsController@DeleteAppointmentInfo');
+Route::get('/request/callcenter/listappointmentsbydate','CallCenter\AppointmentsController@ListAppointmentsByDate');
+Route::get('/request/callcenter/displayclosuresalesmanapp','CallCenter\AppointmentsController@DisplayClosureSalesmanApp');
+Route::get('/request/callcenter/downloadclosuresalesapp','CallCenter\AppointmentsController@DownloadClosureSalesApp');
+Route::get('/request/deals/getdealinfo','CRM\DealsController@GetDealInfo');
+Route::get('/request/callcenter/getappointmentinformation','CallCenter\AppointmentsController@GetAppointmentInformation');
+Route::post('/request/appointments/generateappointmentsreport','CallCenter\AppointmentsController@GenerateAppointmentsReport');
+
+Route::get('/generate-pdf', [App\Http\Controllers\CRM\DealsController::class, 'generatePDF']);
 
 Route::post('/request/leadstatus/displaylist','CRM\LeadsStatusController@DisplayList');
 Route::post('/request/leadstatus/savestatusinfo','CRM\LeadsStatusController@SaveStatusInfo');
@@ -230,6 +247,8 @@ Route::post('/request/clients/displaylist','CRM\AccountsController@DisplayList')
 Route::post('/request/clients/saveaccountinfo','CRM\AccountsController@SaveAccountInfo');
 Route::post('/request/clients/deleteaccountinfo','CRM\AccountsController@DeleteAccountInfo');
 Route::put('/request/leads/converttoaccounts','CRM\AccountsController@ConvertLeadtoAccount');
+Route::get('/request/account/getaccountinfobycode','CRM\AccountsController@GetAccountInfoByCode');
+Route::post('/request/account/generatedealpaymentspreview','CRM\DealsController@GenerateDealPaymentsPreview');
 
 Route::post('/request/services/displaylistcategory','CRM\ServiceCategoriesController@DisplayList');
 Route::post('/request/services/savecategoryinfo','CRM\ServiceCategoriesController@SaveServiceCategoryInfo');
@@ -319,6 +338,10 @@ Route::post('/request/billing/insertinvoiceservice','Billing\InvoicesController@
 Route::post('/request/billing/deleteinvoiceitems','Billing\InvoicesController@DeleteInvoiceItems');
 Route::post('/request/billing/getinvoiceitem','Billing\InvoicesController@GetInvoiceItemInfo');
 Route::post('/request/billing/savesplitpayments','Billing\InvoicesController@SaveSplitPayments');
+Route::get('/request/billing/getaccountinfo','Billing\InvoicesController@GetAccountInfo');
+Route::get('/request/billing/getproductdata','Billing\InvoicesController@GetProductDataInfo');
+Route::get('/request/bills/getpaymentinfo','Billing\InvoicesController@GetPaymentBillsInfo');
+Route::post('/request/billing/savebillinfo','Billing\InvoicesController@SaveInvoicePayment');
 
 Route::post('/request/billing/generatecode','Utilities\ConfigurationController@GenerateVoucherCode');
 
@@ -327,11 +350,20 @@ Route::post('/request/billing/displaylistinttransfers','Billing\InternalTransfer
 Route::post('/request/billing/saveinttransferinfo','Billing\InternalTransfersController@SaveINInfo');
 Route::post('/request/billing/deleteinttransferinfo','Billing\InternalTransfersController@DeleteINInfo');
 
+Route::get('/request/voucher/getselectedvoucher','Billing\PaymentVouchersController@GetSelectedVoucher');
 
 
+Route::get('/request/billing/displaylistbills','Billing\InvoicePaymentsController@DisplayList');
+Route::put('/request/billing/savebillsinfo','Billing\InvoicePaymentsController@SavePaymentBillInfo');
+Route::delete('/request/billing/deletebillsinfo','Billing\InvoicePaymentsController@DeleteBillInfo');
+
+
+Route::get('/request/billing/displaylisttemplateitems','Billing\InvoiceTemplatesController@DisplayListTemplateItems');
 Route::get('/request/billing/displaylistinvoicetemplates','Billing\InvoiceTemplatesController@DisplayList');
 Route::post('/request/billing/saveinvoicetemplateinfo','Billing\InvoiceTemplatesController@SaveTemplateInfo');
+Route::put('/request/billing/saveinvtemplateitem','Billing\InvoiceTemplatesController@SaveInvoiceTemplateItemInfo');
 Route::delete('/request/billing/deleteinvoicetemplateinfo','Billing\InvoiceTemplatesController@DeleteTemplateInfo');
+Route::delete('/request/request/billing/deletetemplateitem','Billing\InvoiceTemplatesController@DeleteTemplateInvoiceItem');
 
 
 Route::post('/request/journalvouchers/displaylist','Billing\JournalVouchersController@DisplayList');
@@ -346,12 +378,22 @@ Route::post('/request/vouchers/saveextensionrow','Billing\PaymentVouchersControl
 
 
 Route::post('/request/receipts/displaylist','Billing\ReceiptsController@DisplayList');
+Route::post('/request/receipts/displayactivelist','Billing\ReceiptsController@DisplayActiveList');
 Route::post('/request/billing/savereceiptinfo','Billing\ReceiptsController@SaveReceiptInfo');
 Route::post('/request/billing/deletereceiptinfo','Billing\ReceiptsController@DeleteReceiptInfo');
+Route::post('/request/billing/generatereceiptcode','Billing\ReceiptsController@GenerateReceiptcode');
+Route::get('/request/receipts/getselectedreceipt','Billing\ReceiptsController@GetSelectedReceipt');
 
 Route::post('/request/billing/displaylistpayments','Billing\PaymentVouchersController@DisplayList');
+Route::post('/request/billing/displaylistonepagerpayments','Billing\PaymentVouchersController@DisplayListOnepage');
 Route::post('/request/billing/savepayvoucherinfo','Billing\PaymentVouchersController@SavePaymentVoucherInfo');
 Route::post('/request/billing/deletepayvoucherinfo','Billing\PaymentVouchersController@DeleteVoucherInfo');
+Route::get('/request/billing/getvouchercode','Billing\PaymentVouchersController@GenerateVoucherCode');
+
+
+Route::get('/request/billing/displaylistrecurring','Billing\RecurringInvoicesController@DisplayList');
+Route::post('/request/billing/saverecurringinvoice','Billing\RecurringInvoicesController@SaveRecurringInvoice');
+Route::delete('/request/billing/deleterecurringinvoice','Billing\RecurringInvoicesController@DeleteRecurringInvoiceInfo');
 
 
 Route::post('/request/creditnotes/displaylist','Billing\CreditNotesController@DisplayList');
@@ -396,6 +438,11 @@ Route::post('/request/srm/displaylistquotations','SRM\SupplierQuotationsControll
 Route::post('/request/srm/savequotationinfo','SRM\SupplierQuotationsController@SaveSupplierQuotationInfo');
 Route::post('/request/srm/deletequotationinfo','SRM\SupplierQuotationsController@DeleteSupplierQuotationInfo');
 Route::post('/request/srm/approvequotation','SRM\SupplierQuotationsController@Approvequotation');
+
+
+Route::get('/request/payrollsperiod/displaylist','PayRoll\PayRollsPeriodController@DisplayList');
+Route::post('/request/payrollsperiod/saveinfo','PayRoll\PayRollsPeriodController@SavePayRollPeriodInfo');
+Route::delete('/request/payrollsperiod/deleteinfo','PayRoll\PayRollsPeriodController@DeletePayRollPeriodInfo');
 
 
 Route::post('/request/displaylistorderstatus','Sales\OrderStatusController@DisplayList');
@@ -526,7 +573,10 @@ Route::delete('/request/costcenters/deleteinfo','CostCenter\CostCenterController
 Route::post('/request/inboundcall/displaylist','CallCenter\InboundController@DisplayList');
 Route::post('/request/inboundcall/saveinfo','CallCenter\InboundController@SaveInboundCallInfo');
 Route::delete('/request/inboundcall/deleteinfo','CallCenter\InboundController@DeleteInboundCallInformation');
-
+Route::put('/request/inboundcall/savemv','CallCenter\InboundController@SaveMaintenanceVoucherInfo');
+Route::post('/request/inboundcall/generateanddownloadlist','CallCenter\InboundController@GenerateAndDownloadList');
+Route::get('/request/call/getlistcallresults','CallCenter\InboundController@GetListCallResul');
+Route::post('/request/inboundcall/savecallresult','CallCenter\InboundController@SaveCallResultInfo');
 
 Route::post('/request/outboundcall/displaylist','CallCenter\OutboundController@DisplayList');
 Route::post('/request/outboundcall/saveinfo','CallCenter\OutboundController@SaveOutboundCallInfo');

@@ -22,7 +22,11 @@ Page Description :
    <td>{{ $invoice_info->bi_invoice_ref }}</td>
     <td>{{ $invoice_info->bi_invoice_date }}</td>
     <td><span style=" display: inline-block;width: 180px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;">{{ strip_tags($invoice_info->bi_invoice_note) }}</span></td> 
-   <td>{{ ($invoice_info->fk_customer_id != 0 ) ?  $customers_array[$invoice_info->fk_customer_id]['ic_customer_name'] : "N/A" }}</td>
+    @if(Config::get('appconfig.crm_telemarketing') == 0)
+    <td>{{ ($invoice_info->fk_customer_id != 0 ) ?  $customers_array[$invoice_info->fk_customer_id]['ic_customer_name'] : "N/A" }}</td>
+    @else
+    <td>{{ ($invoice_info->bi_client_id != 0 ) ?  $invoice_info->Client->ca_account_name : "-" }}</td>
+    @endif
    <td>{{	number_format($invoice_info->bi_total_price,2) }}&nbsp;&nbsp;<b>{{ $currency_array[ $invoice_info->bi_invoice_currency ]['cc_currency_code'] }}</b></td>
    <td>{{ ($invoice_info->CreatedUser != null) ? $invoice_info->CreatedUser->u_fullname : "N/A" }}</td>
    <td>{{ ($invoice_info->UpdatedUser != null) ? $invoice_info->UpdatedUser->u_fullname : "N/A" }}</td>

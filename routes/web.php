@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function() {
     
     Route::get('/user/logout','Users\UsersController@LogOut');
     Route::get('/user/myprofile','Users\UsersController@MyProfile');
+    Route::get('/user/myprofile/accountsettings','Users\UsersController@AccountSettings');
 
     Route::get('/administrator/users','Users\UsersController@UserManagement');
     
@@ -168,6 +169,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/crm/leads/leaditemconfigurations/{ci_id}','CRM\LeadItemsController@LeadItemConfigurations');
     Route::get('/request/ConvertToAccounts/leads/{cl_ids}','CRM\AccountsController@ConvertToAccounts');
     Route::get('/appointments/mycalendar','CRM\LeadApptController@MyCalendar');
+    Route::get('/crm/appointments/closureapp','CallCenter\AppointmentsController@ClosureAppointmentReport');
     
     Route::get('/leads/status','CRM\LeadsStatusController@index');
     Route::get('/leads/status/addform','CRM\LeadsStatusController@AddForm');
@@ -233,7 +235,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/accounting/vataccounts/addform','Accounting\VatAccountsController@AddForm');
     Route::get('/accounting/vataccounts/editform/{av_id}','Accounting\VatAccountsController@EditForm');
     
-    
+    Route::get('/billing/recurringinvoices','Billing\RecurringInvoicesController@index');
+    Route::get('/billing/recurringinvoices/addform','Billing\RecurringInvoicesController@AddForm');
+    Route::get('/billing/recurringinvoices/editform/{ri_id}','Billing\RecurringInvoicesController@EditForm');
     
     Route::get('/billing/receipts','Billing\ReceiptsController@index');
     Route::get('/billing/receipts/addform','Billing\ReceiptsController@AddForm');
@@ -280,6 +284,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/billing/ireceipts/editform/{bi_id}','Billing\InvoicesController@EditIReceiptForm');
     Route::get('/billing/invoices/downloadinvoice/{bi_id}','Billing\InvoicesController@DownloadInvoice');
     Route::get('/billing/invoices/downloadreceipt/{br_id}','Billing\ReceiptsController@DownloadReceipt');
+    Route::get('/billing/downloadvoucher/{pv_id}','Billing\PaymentVouchersController@DownloadPaymentVoucher');
+    
+    Route::get('/billing/bills','Billing\InvoicePaymentsController@index');
+    Route::get('/billing/bills/addform','Billing\InvoicePaymentsController@addform');
+    Route::get('/billing/bills/editform/{ip_id}','Billing\InvoicePaymentsController@editform');
     
     Route::get('/srm/suppliercategories','SRM\SuppliersCategoriesController@index');
     Route::get('/srm/suppliers/addcategory','SRM\SuppliersCategoriesController@AddForm');
@@ -372,7 +381,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/projects/statuses/addform','PM\ProjectStatusesController@AddForm');
     Route::get('/projects/statuses/editform/{ps_id}','PM\ProjectStatusesController@EditForm');
     
-    
+    Route::get('/hr/payrollsperiods','PayRolls\PayRollsPeriodController@index');
+    Route::get('/hr/payrollsperiods/addform','PayRolls\PayRollsPeriodController@AddForm');
+    Route::get('/hr/payrollsperiods/editform/{pp_id}','PayRolls\PayRollsPeriodController@EditForm');
     
     
     Route::get('/phones/lines','Phones\PhoneLinesController@index');
@@ -427,5 +438,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/maintenancecase','CallCenter\MaintenanceCaseController@index');
     Route::get('/callcenter/maintenancecase/addform','CallCenter\MaintenanceCaseController@AddForm');
     Route::get('/callcenter/maintenancecase/editform/{oc_id}','CallCenter\MaintenanceCaseController@EditForm');
+    
+    
+    
+    
+    Route::get('/leads/createappointment/{lead_id}','CallCenter\AppointmentsController@CreateLeadAppointment');
+    Route::get('/callcenter/appointments','CallCenter\AppointmentsController@index');
+    Route::get('/callcenter/appointments/todaysappointment','CallCenter\AppointmentsController@TodaysAppointments');
     
 });

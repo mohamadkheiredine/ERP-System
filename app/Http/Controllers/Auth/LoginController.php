@@ -162,7 +162,8 @@ class LoginController extends Controller
             session()->put('company_transportation_fees' , $company_info->cd_transportation_fees);
             session()->put('company_logo' ,$company_logo); 
             session()->put('company_homepage' ,$company_info->cd_company_homepage);
-            session()->put('company_starting_year' ,date("Y",strtotime($company_info->cd_company_starting_date))); 
+            session()->put('company_starting_year' ,date("Y",strtotime($company_info->cd_starting_date))); 
+            session()->put('cd_exchange_rate' ,$company_info->cd_exchange_rate); 
         }
         
         //$role_info = RolePrivileges::getPrivileges($role_id);

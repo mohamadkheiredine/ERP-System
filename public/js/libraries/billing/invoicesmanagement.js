@@ -4,27 +4,9 @@
 $(function(){
 	var fisical_year = getCookie('fisical_year');
 	$('input[name=fisical_year]').val(fisical_year);
-	
-	$('select').select2();
+
 	invoices_module.DisplayListInvoices();
-	$('input[name=start_date]').datepicker({ 
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
-	});
-	 $('input[name=end_date]').datepicker({ 
-		 todayHighlight: true,
-		 orientation: "bottom left",
-		 format : "yyyy-mm-dd",
-		 templates: {
-			 leftArrow: '<i class="la la-angle-left"></i>',
-			 rightArrow: '<i class="la la-angle-right"></i>'
-		 }
-	 });
+
 	 $('select').on("change",function(){
 		 $('input[name=page_number]').val(1);
 		 if( $.pagination != null)
@@ -50,6 +32,46 @@ $(function(){
 		 invoices_module.DisplayListInvoices();
 	 });
 	 
-	 
+        new tempusDominus.TempusDominus(document.getElementById('START_DATE'),{
+           display: {
+                    components: {
+                        calendar: true,
+                        date: true,
+                        month: true,
+                        year: true,
+                        decades: true, 
+                        clock: false,
+                        hours: false,
+                        minutes: false,
+                        seconds: false,
+                        useTwentyfourHour: undefined
+                      }
+           },
+           localization: {
+                   format : "yyyy-MM-dd"
 
-})
+           }
+	});
+
+
+        new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
+           display: {
+                    components: {
+                        calendar: true,
+                        date: true,
+                        month: true,
+                        year: true,
+                        decades: true, 
+                        clock: false,
+                        hours: false,
+                        minutes: false,
+                        seconds: false,
+                        useTwentyfourHour: undefined
+                      }
+           },
+           localization: {
+                   format : "yyyy-MM-dd"
+
+           }
+	});
+});

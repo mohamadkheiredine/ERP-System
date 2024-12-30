@@ -3,13 +3,18 @@
  */
 leads_module = {
 		DisplayListLeads : function(){
-			var base_url 			= $('input[name=base_url]').val();
-			var _token	 			= $('input[name=_token]').val();
-			var lead_category	 	= $('select[name=lead_category]').val();
-			var lead_status	 		= $('select[name=lead_status]').val();
-		    var lead_user	 		= $('select[name=lead_user]').val();
-		    var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , lead_user : lead_user };
-		    $.ajax
+		var base_url 			= $('input[name=base_url]').val();
+		var _token	 			= $('input[name=_token]').val();
+		var lead_category	 	= $('select[name=lead_category]').val();
+		var lead_status	 		= $('select[name=lead_status]').val();
+		var cl_sales_id	 		= $('select[name=cl_sales_id]').val(); 
+                if(cl_sales_id == '')
+                {
+                    return false;
+                }
+                
+		var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , cl_sales_id : cl_sales_id };
+		$.ajax
 	        ({
 	            url : base_url + "/request/leads/displaylist",
 	            data : params,
@@ -17,17 +22,59 @@ leads_module = {
 	            type : "POST",
 	            success : function(response){
 	            	$('#LstLeads').html(response.display);
-	            	 $('.group-checkable').change(function() {
-	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-	                        var checked = $(this).prop("checked");
-	                        $(set).each(function() {
-	                            $(this).prop("checked", checked);
-	                        });
-	                        $.uniform.update(set);
-	                    });
+                        $('.group-checkable').change(function() {
+                                           var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                                           var checked = $(this).prop("checked");
+                                           $(set).each(function() {
+                                               $(this).prop("checked", checked);
+                                           });
+                                           $.uniform.update(set);
+                        }); 
+                        if(response.total_pages > 0)
+                        {
+                            $('#LeadsPagination').twbsPagination({
+	                         totalPages: response.total_pages,
+	                         visiblePages: 7,
+	                         onPageClick: function (event, page) {
+	                              $('input[name=page_number]').val(page);
+	                              leads_module.DisplayListLeads();
+	                         }
+	                     });
+			}
 	            }
 	        });
 		},
+                DisplayListLeadResults : function(){
+                    var base_url 			= $('input[name=base_url]').val();
+                    var _token	 			= $('input[name=_token]').val();
+                    var lr_ids = [];
+			$(".checkboxes:checked").each(function(){
+				var lr_id = $(this).val();
+				lr_ids.push(lr_id);
+			}); 
+			var str_lr = lr_ids.join(",");
+		    var params = { _token : _token ,lead_id : str_lr };
+		    $.ajax
+                    ({
+                        url : base_url + "/request/leads/displaylistleadresults",
+                        data : params,
+                        dataType : "json",
+                        type : "get",
+                        success : function(response){
+                            $("#LstLeadResults").html(response.display);
+                        }
+                    });
+                },
+                SelectLeadRecord : function(){
+                    $('#LstLeads tr').each((index,item) => {
+                       $(item).find('input[type=checkbox]').removeAttr('checked');
+                       $(item).removeClass('SelectedRow');
+                    })
+                    $(this).find('input[type=checkbox]').attr('checked',true);
+                    $(this).addClass('SelectedRow');
+                    $("input[name=lr_lead_ids]").val($(this).find('input[type=checkbox]').val());
+                    leads_module.DisplayListLeadResults();
+                },
 		SaveLeadsInfo : function(){
 			return leads_module.SaveLeadsInfoSubmitHandler();
 		},
@@ -42,32 +89,26 @@ leads_module = {
 	             focusInvalid: false, // do not focus the last invalid input
 	             ignore: "", // validate all fields including form hidden input
 	             rules: {
-	            	 fk_lead_owner : {
+	                 cl_full_name : {
 	                     required: true
 	                 },
-	                 cl_company_name : {
-	                     required: true
-	                 },
-	                 cl_first_name : {
-	                     required: true
-	                 },
-	                 cl_last_name : {
-	                	 required: true
-	                 },
-	                 so_operation_date : {
-	                	 required: true
-	                 },
-	                 fk_lead_source : {
-	                	 required: true
-	                 },
-	                 fk_lead_status_id : {
-	                	 required: true
-	                 },
-	                 fk_assign_to : {
-	                	 required :true
-	                 }
+                         cl_referred_by : {
+                             required : true
+                         },
+                         cl_full_name : {
+                             required : true
+                         },
+                         cl_sheet_number : {
+                             required : true
+                         },
+                         cl_telemarketing_id : {
+                             required : true
+                         },
+                         cl_mobile : {
+                             minlength: 10,
+                             required:true
+                         }
 	             },
-
 	             messages: { // custom messages for radio buttons and checkboxes
 
 	             },
@@ -115,29 +156,13 @@ leads_module = {
 	    	        var data = new FormData();
 	    	        var index = 0;
 
-	    	        $.each($("input[type=file]"), function(i, obj) {
-	    	                var name = $(this).attr('name');
-	    	                $.each(obj.files,function(j,file){
-	    	                        data.append(name, file);
-	    	                })
-	    	        });
-
 	    	        FormDataFields.find('input,select').each(function(){
-	    	        	var name = $(this).attr('name');
-	    	        	if(name == "need_shipment")
-    	        		{
-	    	        		var val = $("input[name=need_shipment]:checked").val();
-	    	        		 data.append( name, val );
-    	        		}
-	    	        	else
-    	        		{
-	    	        		var val = $(this).val();
-	    	        		data.append( name, val );
-    	        		}
+                            var name = $(this).attr('name');
+                            var val = $(this).val();
+                            data.append( name, val );
 	    	        	 
 	    	        });
-	    	        const cl_lead_description = $.editor.getData();
-	    	        data.append("cl_lead_description", cl_lead_description ); 
+                        
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveleadinfo",
@@ -153,7 +178,45 @@ leads_module = {
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
 	    	              {
-	    	                 window.location.href = base_url + "/crm/leads";
+                                  if($('input[name=cl_id]').length > 0)
+                                  {
+                                       window.location.href = base_url + "/crm/leads";
+                                  }
+                                  else
+                                  {
+                                      
+                                      let cl_sheet_number = $('input[name=cl_sheet_number]').val();
+                                      let cl_full_name = $('input[name=cl_full_name]').val();
+                                      let cl_region = $('input[name=cl_region]').val();
+                                      let cl_area = $('input[name=cl_area]').val();
+                                      let cl_sales_id = $('select[name=cl_sales_id] option:selected').text();
+                                      let cl_telemarketing_id = $('select[name=cl_telemarketing_id] option:selected').text();
+                                      let cl_lead_type_id = $('select[name=cl_lead_type_id]').text();
+                                      let cl_referred_by = $('input[name=cl_referred_by]').val();
+                                      let cl_mobile = $('input[name=cl_mobile]').val();
+                                      
+                                      let leads = $('#LstLeads').html();
+                                      var length = $('#LstLeads tr').length;
+                                      var index = parseInt(length) + 1;
+                                      leads += "<tr>"; 
+                                      leads += "<td>" + index + "</td>"; 
+                                      leads += "<td>" + cl_sheet_number + "</td>"; 
+                                      leads += "<td>" + cl_full_name + "</td>"; 
+                                      leads += "<td>" + cl_area + "</td>"; 
+                                      leads += "<td>" + cl_sales_id + "</td>"; 
+                                      leads += "<td>" + cl_telemarketing_id + "</td>"; 
+                                      leads += "<td>" + cl_mobile + "</td>"; 
+                                      leads += "<td>" + cl_referred_by + "</td>"; 
+                                      leads += "</tr>"; 
+                                      
+                                      $('#LstLeads').html(leads);
+                                      
+                                      $('#CL_FULL_NAME').val('');
+                                      $('#CL_MOBILE').val('');
+                                      $('#CL_REGION').val('');
+                                      $('#CL_AREA').val('');
+                                  }
+	    	                
 	    	              }
 	    	            }
 	    	        });
@@ -162,6 +225,31 @@ leads_module = {
 
 	         });
 		},
+                DisplayExistingRecordLead : function(){
+                    var cl_mobile = $("#CL_MOBILE").val();
+                    var base_url =  $('input[name=base_url]').val();
+                    var _token =  $('input[name=_token]').val();
+                     $.ajax
+                    ({
+                        url : base_url + "/request/leads/checkleadexistbymobile",
+                        data : { _token : _token , cl_mobile : cl_mobile },
+                        method : 'post',
+                        dataType : "json",
+                        success : function(response){
+                            if(response.is_error == 1)
+                            {
+                                alert(response.is_error );
+                                $("#LstExistingLeads").html(response.display);
+                                $(".ExistingLeadTabs").css('display','');
+                            }
+                            else
+                            {
+                                $(".ExistingLeadTabs").css('display','none');
+                            }
+                            
+                        }
+                    });
+                },
 		DeleteLeadInfo : function(){
 			 var cl_id = $(this).data('cl_id');
 			bootbox.confirm("Are you sure you want to delete ?", function(result){
@@ -218,6 +306,16 @@ leads_module = {
 			$("input[name=la_lead_ids]").val(str_ls);
 			$('#AssignLeadModel').modal('toggle');
 		},
+                AddCallResult : function(){
+                    var ls_ids = [];
+                    $(".checkboxes:checked").each(function(){
+                            var ls_id = $(this).val();
+                            ls_ids.push(ls_id);
+                    }); 
+                    var str_ls = ls_ids.join(",");
+                    $("input[name=la_lead_ids]").val(str_ls);
+                    $('#AddResultModel').modal('toggle');
+                },
 		ExportAsCsv : function(){
 			var ls_ids = [];
 			$(".checkboxes:checked").each(function(){
@@ -254,36 +352,56 @@ leads_module = {
 		        });
 		},
 		QuickActionLead : function(){
-			var action_type = $(this).data('action_type');
-			if($(".checkboxes:checked").length == 0)
-			{
-				bootbox.alert("Please select a Leads to do any action");
-				return false;
-			}
-			switch(action_type)
-			{
-				case "CHANGE_STATUS":
-				{
-					leads_module.ChangeLeadsStatus();
-				}
-				break;
-				case "ASSIGN_LEAD":
-				{
-					leads_module.AssignLead();
-				}
-				break;
-				case "EXPORT_AS_CSV":
-				{
-					leads_module.ExportAsCsv();
-				}
-				break;
-				case "CONVERT_LEAD_ACCOUNT":
-				{
-					leads_module.ConvertLeadstoAccounts();
-				}
-				break;
-			}
+                    var action_type = $(this).data('action_type');
+                    if($(".checkboxes:checked").length == 0)
+                    {
+                            bootbox.alert("Please select a Leads to do any action");
+                            return false;
+                    }
+                    switch(action_type)
+                    {
+                        case "CHANGE_STATUS":
+                        {
+                            leads_module.ChangeLeadsStatus();
+                        }
+                        break;
+                        case "ASSIGN_LEAD":
+                        {
+                                leads_module.AssignLead();
+                        }
+                        break;
+                        case "ADD_CALL_RESULT":
+                        {
+                            leads_module.AddCallResult();
+                        }
+                        break;
+                        case "EXPORT_AS_CSV":
+                        {
+                                leads_module.ExportAsCsv();
+                        }
+                        break;
+                        case "CONVERT_LEAD_ACCOUNT":
+                        {
+                                leads_module.ConvertLeadstoAccounts();
+                        }
+                        break;
+                        case "ADD_APPOINTMENT":
+                        {
+                                leads_module.CreateLeadAppointment();
+                        }
+                        break;
+                    }
 		},
+                CreateLeadAppointment : function(){
+                     var ls_ids = [];
+                    $(".checkboxes:checked").each(function(){
+                            var ls_id = $(this).val();
+                            ls_ids.push(ls_id);
+                    }); 
+                    var str_ls = ls_ids.join(",");
+                    var base_url = $('input[name=base_url').val();
+                    window.location.href = base_url + "/leads/createappointment/" + str_ls;
+                },
 		SaveChangeLeadsStatus : function(){
 			var base_url = $('#BASE_URL').val();
 			var frm_str = $("form[name=frm_change_status]").serialize();
@@ -298,6 +416,25 @@ leads_module = {
 					{ 
 						leads_module.DisplayListLeads();
 						$('#ChangeStatusModel').modal('toggle');
+					}
+				}
+			});
+		},
+		SaveAddLeadResult : function(){
+			var base_url = $('#BASE_URL').val();
+			var frm_str = $("form[name=frm_add_result]").serialize();
+			$.ajax
+			({
+				url : base_url + "/request/leads/addleadresult",
+				data : frm_str,
+				dataType : "Json",
+				type : "POST",
+				success : function(response){
+					if(response.is_error == 0)
+					{ 
+						leads_module.DisplayListLeadResults();
+                                                leads_module.DisplayListLeads();
+						$('#AddResultModel').modal('toggle');
 					}
 				}
 			});

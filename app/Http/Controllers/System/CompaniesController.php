@@ -120,6 +120,7 @@ class CompaniesController extends Controller
         $cd_company_email           = $request->input("cd_company_email");
         $cd_company_website         = $request->input("cd_company_website");
         $cd_company_currency        = $request->input("cd_company_currency");
+        $cd_company_name_translation        = $request->input("cd_company_name_translation");
         $cd_company_country         = $request->input("cd_company_country");
         $cd_primary_company         = $request->input("cd_primary_company");
         $cd_company_address         = $request->input("cd_company_address");
@@ -130,6 +131,8 @@ class CompaniesController extends Controller
         $cd_company_tax             = $request->input('cd_company_tax'); 
         $cd_default_item            = $request->input('cd_default_item');
         $cd_secondary_currency      = $request->input('cd_secondary_currency');
+        $cd_starting_date      = $request->input('cd_starting_date');
+        $cd_exchange_rate      = $request->input('cd_exchange_rate');
         $cd_company_homepage        = $request->input('cd_company_homepage');
        
         $result_array = array(); 
@@ -195,6 +198,9 @@ class CompaniesController extends Controller
         $CompanyDetails->cd_secondary_currency      = $cd_secondary_currency;
         $CompanyDetails->cd_default_item            = $cd_default_item;
         $CompanyDetails->cd_company_homepage        = $cd_company_homepage;
+        $CompanyDetails->cd_exchange_rate        = $cd_exchange_rate;
+        $CompanyDetails->cd_starting_date        = $cd_starting_date;
+        $CompanyDetails->cd_company_name_translation        = $cd_company_name_translation;
         
         if(strlen($cd_logo_base_src) > 0)
         {

@@ -48,6 +48,108 @@ vouchers_module = {
 	        }
 	    });
 	},
+        displayListOnepagerPayments : function(){
+		var base_url 	= $('input[name=base_url]').val();
+		var _token 		= $('input[name=_token]').val();
+		var pv_account_payable 		= $('select[name=account_payable]').val();
+		var pv_account_receivable 	= $('select[name=account_receivable]').val();
+		var pv_start_date 	= $('input[name=start_date]').val();
+		var pv_end_date 	= $('input[name=end_date]').val();
+		var page_number 	= $('input[name=page_number]').val();
+	    var general_search 	= $('input[name=general_search]').val();
+		var fisical_year 			= $('input[name=fisical_year]').val();
+	    $.ajax
+	    ({
+	        url : base_url + "/request/billing/displaylistonepagerpayments",
+	        data : { _token : _token , page_number : page_number ,fisical_year : fisical_year , general_search : general_search ,  pv_account_payable : pv_account_payable , pv_account_receivable : pv_account_receivable , pv_start_date : pv_start_date , pv_end_date : pv_end_date },
+            method : 'post',
+            dataType : "json",
+            beforeSend : function(){
+            },
+	        success : function(response){
+	        	$('#LstPaymentVouchers').html(response.display);
+	        	  $('.group-checkable').change(function() {
+                      var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                      var checked = $(this).prop("checked");
+                      $(set).each(function() {
+                          $(this).prop("checked", checked);
+                      });
+                      $.uniform.update(set);
+                  }); 
+	        	  if(response.total_pages > 0)
+        		  {
+	        		  $.pagination = $('#VouchersPagination').twbsPagination({
+	                       totalPages: response.total_pages,
+	                       visiblePages: 7,
+	                       onPageClick: function (event, page) {
+	                            $('input[name=page_number]').val(page);
+	                            vouchers_module.displayListOnepagerPayments();
+	                       }
+	                   });
+        		  }
+                
+                 
+				$('#LstPaymentVouchers').on('click',"a[id*=EDIT_PV_]",vouchers_module.EditPaymentVoucherInfo);
+				$('#LstPaymentVouchers').on('click',"a[id*=DELETE_PV_]",vouchers_module.DeletePaymentVoucherData);
+	        }
+	    });
+	},
+         GetSelectedVoucherInfo : function(){
+                var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val();
+        var pv_id = $(this).parent().data('pv_id');
+        bootbox.confirm('are you sure you want to get this Payment Voucher info ? ',
+        function(result) {
+            if(result == true)
+            {
+                 $.ajax
+            ({
+                url : base_url + "/request/voucher/getselectedvoucher",
+                data : { _token : _token , pv_id : pv_id },
+            method : 'get',
+            dataType : "json",
+            beforeSend : function(){
+            },
+                success : function(response){
+                    $('form[name=frm_save_voucher]').find('input[name=pv_id]').val(response.voucher_obj.pv_id);
+                    $('form[name=frm_save_voucher]').find('input[name=pv_code]').val(response.voucher_obj.pv_code);
+                    $('form[name=frm_save_voucher]').find('input[name=pv_voucher_label]').val(response.voucher_obj.pv_voucher_label);
+                    $('form[name=frm_save_voucher]').find('input[name=pv_creation_date]').val(response.voucher_obj.pv_creation_date);
+                    $('form[name=frm_save_voucher]').find('input[name=pv_payment_amount]').val(response.voucher_obj.pv_payment_amount);
+                    $('form[name=frm_save_voucher]').find('input[name=pv_exchange_rate]').val(response.voucher_obj.pv_exchange_rate);
+                    $('form[name=frm_save_voucher]').find('textarea[name=pv_voucher_description]').val(response.voucher_obj.pv_voucher_description);
+                    $('form[name=frm_save_voucher]').find('select[name=pv_account_payable]').val(response.voucher_obj.pv_account_payable).trigger('change');
+                    $('form[name=frm_save_voucher]').find('select[name=pv_account_receivable]').val(response.voucher_obj.pv_account_receivable).trigger('change');
+                    $('form[name=frm_save_voucher]').find('select[name=pv_currency_id]').val(response.voucher_obj.pv_currency_id).trigger('change');
+                    $('form[name=frm_save_voucher]').find('select[name=pv_sec_currency_id]').val(response.voucher_obj.pv_sec_currency_id).trigger('change');
+                }
+            }); 
+            }
+
+        });
+    },
+        CalculateSecondaryAmountValue : function(){
+            var pv_payment_amount = $('input[name=pv_payment_amount]').val();
+            var pv_exchange_rate = $('input[name=pv_exchange_rate]').val();
+            var secondary_currency_amount = pv_payment_amount / pv_exchange_rate;
+            $('input[name=pv_amount_secondary_amount]').val(secondary_currency_amount.toFixed(2))
+        },
+        GenerateVoucherCode : function(){ 
+             var _token 	= $("input[name=_token]").val();
+		var base_url 	= $('input[name=base_url]').val(); 
+		$.ajax
+		({
+                    url : base_url + "/request/billing/getvouchercode",
+                    data : { _token : _token},
+                    method : 'get',
+                    dataType : "json",
+                    beforeSend : function(){
+                    },
+                    success : function(response){ 
+                        $("#PV_CODE").val(response.voucher_code);
+                    }
+		});
+        },
 	AddVoucherExtension : function(){
 		var base_url 	= $('input[name=base_url]').val();
 		var _token 		= $('input[name=_token]').val();  
@@ -69,6 +171,31 @@ vouchers_module = {
 	DeleteExtRow : function(){
 		$(this).parents('tr').remove();
 	},
+        QuickAction : function(){
+            let action_type = $(this).data('action_type');
+            
+            switch(action_type)
+            {
+                case "DOWNLOAD":
+                {
+	                            vouchers_module.DownloadPaymentVoucher();
+                      
+                }
+                break;
+            }
+        },
+        DownloadPaymentVoucher : function(){
+            var pv_ids = [];
+			$(".checkboxes:checked").each(function(){
+				var pv_id = $(this).val();
+				pv_ids.push(pv_id);
+			}); 
+			var str_pv = pv_ids.join(",");
+		var base_url 	= $('input[name=base_url]').val();
+		var _token 		= $('input[name=_token]').val();
+                let url = base_url + "/billing/downloadvoucher/" + str_pv;
+                window.open(url, '_blank').focus();
+        },
 	EditExtRow : function(){
 		var ve_id = $(this).data('ve_id');
 		var base_url 	= $('input[name=base_url]').val();
@@ -108,27 +235,6 @@ vouchers_module = {
 				$("a[id*=DELETE_EXTENSION_]").on('click',vouchers_module.DeleteVoucherExtension);
 	        }
 	    });
-	},
-	GenerateVoucherCode : function(selected_date){
-		var _token 		= $("input[name=_token]").val();
-		var base_url 	= $('input[name=base_url]').val();
-		 var pv_id 		= $('input[name=pv_id]').val();
-		 
-		 if(pv_id != undefined)
-			 return false;
-		$.ajax
-		({
-			url : base_url + "/request/billing/generatecode",
-			data : { _token : _token , selected_date : selected_date , type : "vouchers" },
-			method : 'post',
-			dataType : "json",
-			beforeSend : function(){
-			},
-			success : function(response){ 
-				$("#PV_CODE").val(response.code);
-			}
-		});
-		
 	},
 	SaveVoucherExtension :function(){
 		var ve_id = $(this).parents('tr').find('input[name=ve_id]').val();

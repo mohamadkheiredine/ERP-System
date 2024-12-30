@@ -34,6 +34,136 @@ products_module = {
 				}
 			});
 		},
+                AddTransferItems : function(){
+                    products_module.AddTransferItemsSubmitHandler();
+                },
+                AddTransferItemsSubmitHandler : function(){
+                    	 var SaveTransferItems = $('#FORM_TRANSFER_ITEMS');
+	         var error3 = $('.alert-danger', SaveTransferItems);
+	         var success3 = $('.alert-success', SaveTransferItems);
+
+	         SaveTransferItems.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	                 mp_product_id : {
+	                     required: true
+	                 },
+                         mp_movement_quantity : {
+                             required : true,
+                             number : true
+                         },
+                         mp_item_notes : {
+                             required : true
+                         }
+	             },
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	                 success3.hide();
+	                 error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                success3.show();
+	                error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       
+	                var FormDataFields = $("form[id=FORM_TRANSFER_ITEMS]");
+
+	    	        var data = new FormData();
+	    	        var index = 0;
+
+	    	        FormDataFields.find('input,select,textarea').each(function(){
+                            var name = $(this).attr('name');
+                            var val = $(this).val();
+                            data.append( name, val );
+	    	        	 
+	    	        });
+                        let list_transfer_items = $('input[name=list_transfer_items]').val();
+                        data.append( "list_transfer_items", list_transfer_items );
+                        
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/movements/additems",
+	    	            data : data,
+	    	            async: false,
+	    	            cache: false,
+	    	            method : 'post',
+	    	            contentType: false,
+	    	            processData: false,
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              {
+                                 $("#LST_TRANSFER_ITEMS").val(response.lst_items); 
+                                 $("#LstTransferItems").html(response.display); 
+                                 
+                                 $("#MP_PRODUCT_ID").val(0);
+                                 $("#MP_MOVEMENT_QUANTITY").val("");
+                                 $("#MP_ITEM_NOTES").val("");
+                                 
+	    	              }
+	    	            }
+	    	        });
+	                
+	             }
+
+	         });
+                },
+                DisplayProductDescriptionInStockTransfer : function(){
+                    let  base_url 			= $('input[name=base_url]').val();
+			let _token 				= $('input[name=_token]').val();
+			let p_id 				= $('select[name=mp_product_id]').val();
+                        
+                        $.ajax
+		    ({
+		        url : base_url + "/request/stock/getproductinfo",
+		        data : {p_id : p_id ,_token : _token },
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){ 
+		        	$('#MP_ITEM_NOTES').val(response.p_product_description);
+		        	
+		        }
+		    });
+                },
 		CalculateDiscountedPrice : function(){
 			var $this = $(this);
 			var discount = $this.val();
@@ -157,34 +287,87 @@ products_module = {
 				case "DOWNLOAD_TEMPLATE":
 				{
 					$.ajax({
-			            url: base_url + "/request/products/downloadtemplate?_token=" + _token,
-			            method: "GET", 
-			            success: function(data) {
+                                            url: base_url + "/request/products/downloadtemplate?_token=" + _token,
+                                            method: "GET", 
+                                            success: function(data) {
 
-			            	const blob = new Blob([data]);
-			                // Create a Blob URL for the binary data
-			                var blobUrl = window.URL.createObjectURL(blob);
-			                // Create a temporary anchor element
-			                var a = document.createElement('a');
-			                a.href = blobUrl;
-			                a.download = 'products-template.csv'; // Set the desired file name
+                                                const blob = new Blob([data]);
+                                                // Create a Blob URL for the binary data
+                                                var blobUrl = window.URL.createObjectURL(blob);
+                                                // Create a temporary anchor element
+                                                var a = document.createElement('a');
+                                                a.href = blobUrl;
+                                                a.download = 'products-template.csv'; // Set the desired file name
 
-			                // Programmatically trigger a click on the anchor to start the download
-			                document.body.appendChild(a);
-			                a.click();
+                                                // Programmatically trigger a click on the anchor to start the download
+                                                document.body.appendChild(a);
+                                                a.click();
 
-			                // Clean up resources
-			                window.URL.revokeObjectURL(blobUrl);
-			                document.body.removeChild(a);
-			            },
-			            error: function(xhr, status, error) {
-			                console.error("Error downloading file:", error);
-			            }
-			        });
+                                                // Clean up resources
+                                                window.URL.revokeObjectURL(blobUrl);
+                                                document.body.removeChild(a);
+                                            },
+                                            error: function(xhr, status, error) {
+                                                console.error("Error downloading file:", error);
+                                            }
+                                        });
 				}
 				break;
 			}
 		},
+                DownloadTransferStock : function(){
+                    var base_url 	= $('input[name=base_url]').val();
+		    var _token 		= $('input[name=_token]').val();
+                     var sm_ids = [];
+                    $(".checkboxes:checked").each(function(){
+                            var sm_id = $(this).val();
+                            sm_ids.push(sm_id);
+                    }); 
+                    var str_smIds = sm_ids.join(",");
+                    $.ajax
+                    ({
+                        url : base_url + "/request/stocktransfer/generatetransfervoucher",
+                        data : { _token : _token , sm_id : str_smIds },
+                        method : 'post',
+                         xhrFields: {
+                            responseType: 'blob' // Set the response type to blob
+                        },
+                        success: function(blob, status, xhr) {
+                            // Get the filename from the Content-Disposition header if available
+                            var filename = "";
+                            var disposition = xhr.getResponseHeader('Content-Disposition');
+                            if (disposition && disposition.indexOf('attachment') !== -1) {
+                                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                                var matches = filenameRegex.exec(disposition);
+                                if (matches != null && matches[1]) {
+                                    filename = matches[1].replace(/['"]/g, '');
+                                }
+                            }
+
+                            // Fallback filename if none is provided
+                            if (!filename) {
+                                filename = "stock_transfer_voucher.pdf";
+                            }
+
+                            // Create a temporary link element
+                            var link = document.createElement('a');
+                            var url = window.URL.createObjectURL(blob);
+                            link.href = url;
+                            link.download = filename;
+
+                            // Append link to the body
+                            document.body.appendChild(link);
+                            link.click();
+
+                            // Remove the link and revoke the object URL
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("File download failed:", error);
+                        }
+                });
+                },
                 ImportProducts : function(e){
                     e.preventDefault();
                     var FormDataFields = $("form[id=FRM_IMPORT_PRODUCTS]");
@@ -424,29 +607,7 @@ products_module = {
             },
 	        success : function(response){
 	            $('#LstTransferStocks').html(response.display);
-	            var datatable = $('.m_datatable').mDatatable({
-
-        			// layout definition
-        			layout: {
-        				theme: 'default', // datatable theme
-        				class: '', // custom wrapper class
-        				scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-        				// height: 450, // datatable's body's fixed height
-        				footer: false // display/hide footer
-        			},
-
-        			// column sorting
-        			sortable: true,
-
-        			pagination: true,
-
-        			search: {
-        				input: $('#generalSearch')
-        			},
-
-        			// inline and bactch editing(cooming soon)
-        			// editable: false,
-        		});
+	            
 	        }
 	    });
 	},
@@ -543,10 +704,7 @@ products_module = {
             	},
             	warehouse_destination  : {
              	required: true
-              },
-              is_quanity : {
-                    required: true
-	           },
+              }
             },
 
             messages: { // custom messages for radio buttons and checkboxes
@@ -596,20 +754,20 @@ products_module = {
    	        ({
    	            url : base_url + "/request/products/stocktransfer",
    	            data : str_params,
-   	            method : 'post',
+   	            method : 'put',
    	            dataType : "json",
    	            success : function(response){
    	             
    	             var main_transfer = $("#MAIN_TRANSFER").val();
    	             var url;
    	             if(main_transfer == 1)
-            	 {
-   	            	url = base_url + "/inventory/stocktransfer";
-            	 }
-   	             else
-            	 {
-            	 	url = base_url + "/inventory/editproduct/" + p_id;
-            	 }
+                        {
+                               url = base_url + "/inventory/stocktransfer";
+                        }
+                            else
+                        {
+                               url = base_url + "/inventory/editproduct/" + p_id;
+                        }
                  
    	              if(response.is_error == 0)
    	              {

@@ -31,7 +31,10 @@ use App\models\CallCenter\CaseStatus;
 use App\models\Users\Users;
 use App\models\Users\UserTypes;
 use App\models\CallCenter\MaintenanceCase;
+use App\models\CallCenter\MaintenanceTypes;
 use App\models\CallCenter\InboundCall;
+use App\models\Inventory\Products;
+use App\models\System\Currency;
 
 
 class MaintenanceCaseController extends Controller
@@ -48,13 +51,15 @@ class MaintenanceCaseController extends Controller
     {
         
         $lst_statuses = CaseStatus::whereCcIsDeleted(0)->get();
+        $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TECHNICIAN))->get();
-        $lst_agents = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_AGENT))->get();
+        $lst_telemarketings = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TELEMARKETING))->get();
         
         $data = array(
             "lst_statuses" => $lst_statuses,
             "lst_technicians" => $lst_technicians,
-            "lst_agents" => $lst_agents,
+            "lst_maint_types" => $lst_maint_types,
+            "lst_telemarketings" => $lst_telemarketings,
         );
         return Response()->view('callcenter.maintenancecase',$data);
     }
@@ -87,6 +92,8 @@ class MaintenanceCaseController extends Controller
         {
             $maintenancecases_cond = $maintenancecases_cond->where('cc_case_label','LIKE','%' . $general_search . '%');
             $maintenancecases_cond = $maintenancecases_cond->orWhere('cc_case_description','LIKE','%' . $general_search . '%');
+            $maintenancecases_cond = $maintenancecases_cond->orWhere('cc_case_code','LIKE','%' . $general_search . '%');
+            $maintenancecases_cond = $maintenancecases_cond->orWhere('cc_serial_number','LIKE','%' . $general_search . '%');
         }
         
         if($cc_assigned_agent_id > 0)
@@ -131,15 +138,24 @@ class MaintenanceCaseController extends Controller
      */
     public function AddForm()
     {
+        
+        $count_cases = MaintenanceCase::whereCcIsDeleted(0)->count();
+        $index = $count_cases + 1;
+        $case_code = "CC" . sprintf('%05d', $index);
+        
+        //$cc_case_code
         $lst_statuses = CaseStatus::whereCcIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TECHNICIAN))->get();
-        $lst_agents = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_AGENT))->get();
-        $lst_inbound_calls = InboundCall::whereIcIsDeleted(0)->get();
+        $lst_telemarketing = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TELEMARKETING))->get();
+        $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
         $data = array(
             "lst_statuses" => $lst_statuses,
-            "lst_inbound_calls" => $lst_inbound_calls,
+            "case_code" => $case_code,
+            "lst_maint_types" => $lst_maint_types,
+            "lst_currencies" => $lst_currencies,
             "lst_technicians" => $lst_technicians,
-            "lst_agents" => $lst_agents,
+            "lst_telemarketing" => $lst_telemarketing,
         );
         return view('callcenter.addcase',$data);
     }
@@ -156,17 +172,27 @@ class MaintenanceCaseController extends Controller
     public function SaveMaintenanceCaseInfo(Request $request)
     {
         $cc_id                                      = $request->input('cc_id');
-        $cc_call_id                                 = $request->input('cc_call_id');
         $cc_case_code                                = $request->input('cc_case_code');
-        $cc_case_label                              = $request->input('cc_case_label');
+        $cc_case_date                                = $request->input('cc_case_date');
+        $cc_case_time                                = $request->input('cc_case_time');
+        $cc_contract_code                              = $request->input('cc_contract_code');
+        $cc_client_code                              = $request->input('cc_client_code');
+        $cc_client_id                              = $request->input('cc_client_id');
+        $cc_phone_number                             = $request->input('cc_phone_number');
         $cc_case_description                        = $request->input('cc_case_description');
         $cc_priority_level                          = $request->input('cc_priority_level');
-        $cc_assigned_agent_id                       = $request->input('cc_assigned_agent_id');
         $cc_technician_id                           = $request->input('cc_technician_id');
         $cc_case_status                             = $request->input('cc_case_status');
         $cc_case_deadline                           = $request->input('cc_case_deadline');
         $cc_resolution_date                         = $request->input('cc_resolution_date');
         $cc_resolution_notes                        = $request->input('cc_resolution_notes');
+        $cc_maint_type_id                        = $request->input('cc_maint_type_id');
+        $cc_doc_number                        = $request->input('cc_doc_number');
+        $cc_serial_number                        = $request->input('cc_serial_number');
+        $cc_visit_type                       = $request->input('cc_visit_type');
+        $cc_case_price                       = $request->input('cc_case_price');
+        $cc_currency_id                       = $request->input('cc_currency_id'); 
+        $cc_comission                       = $request->input('cc_comission'); 
         
         $result_array = array();
  
@@ -177,17 +203,28 @@ class MaintenanceCaseController extends Controller
             $cases_info = MaintenanceCase::find($cc_id);
         }
          
-        $cases_info->cc_call_id                     = $cc_call_id; 
+        $cases_info->cc_call_id                     = 0; 
         $cases_info->cc_case_code                   = $cc_case_code; 
-        $cases_info->cc_case_label                  = $cc_case_label; 
+        $cases_info->cc_doc_number                   = $cc_doc_number; 
+        $cases_info->cc_contract_code                  = $cc_contract_code; 
+        $cases_info->cc_comission                  = $cc_comission; 
+        $cases_info->cc_client_code                  = $cc_client_code; 
+        $cases_info->cc_client_id                  = $cc_client_id; 
+        $cases_info->cc_case_date                  = $cc_case_date; 
+        $cases_info->cc_case_time                  = $cc_case_time; 
         $cases_info->cc_case_description            = $cc_case_description; 
         $cases_info->cc_priority_level              = $cc_priority_level; 
-        $cases_info->cc_assigned_agent_id           = $cc_assigned_agent_id; 
         $cases_info->cc_technician_id               = $cc_technician_id; 
         $cases_info->cc_case_status                 = $cc_case_status; 
         $cases_info->cc_case_deadline               = $cc_case_deadline; 
         $cases_info->cc_resolution_date             = $cc_resolution_date; 
         $cases_info->cc_resolution_notes            = $cc_resolution_notes; 
+        $cases_info->cc_maint_type_id               = $cc_maint_type_id; 
+        $cases_info->cc_phone_number               = $cc_phone_number; 
+        $cases_info->cc_serial_number               = $cc_serial_number; 
+        $cases_info->cc_visit_type               = $cc_visit_type; 
+        $cases_info->cc_case_price               = $cc_case_price; 
+        $cases_info->cc_currency_id               = $cc_currency_id; 
         
         
         
@@ -211,13 +248,15 @@ class MaintenanceCaseController extends Controller
         $case_info = MaintenanceCase::find($cc_id); 
         $lst_statuses = CaseStatus::whereCcIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TECHNICIAN))->get();
-        $lst_agents = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_AGENT))->get();
-         $lst_inbound_calls = InboundCall::whereIcIsDeleted(0)->get();
+        $lst_telemarketing = Users::whereUIsDeleted(0)->whereUIsActive(0)->whereIn('u_user_type',array(UserTypes::USER_TYPE_TELEMARKETING))->get();
+        $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
         $data = array(
             "lst_statuses" => $lst_statuses,
             "lst_technicians" => $lst_technicians,
-            "lst_inbound_calls" => $lst_inbound_calls,
-            "lst_agents" => $lst_agents,
+            "lst_maint_types" => $lst_maint_types,
+            "lst_currencies" => $lst_currencies,
+            "lst_telemarketing" => $lst_telemarketing,
             "case_info" => $case_info,
         );
         return view('callcenter.editcase',$data);

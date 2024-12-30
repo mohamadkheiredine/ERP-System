@@ -7,6 +7,7 @@ invoices_module = {
 			var base_url 			= $('input[name=base_url]').val();
 			var _token 				= $('input[name=_token]').val();
 			var invoice_customer 	= $('#INVOICE_CUSTOMER').val();
+			var invoice_client 	= $('select[name=invoice_client]').val();
 			var invoice_bank 		= $('#INVOICE_BANK').val();
 			var start_date 			= $('input[name=start_date]').val();
 			var end_date 			= $('input[name=end_date]').val();
@@ -16,7 +17,7 @@ invoices_module = {
 			$.ajax
 			({
 				url : base_url + "/request/billing/displaylistinvoices",
-				data : { _token : _token , general_search : general_search , fisical_year : fisical_year , invoice_customer : invoice_customer , start_date : start_date , end_date : end_date , invoice_bank : invoice_bank , page_number : page_number },
+				data : { _token : _token , general_search : general_search , invoice_client : invoice_client, fisical_year : fisical_year , invoice_customer : invoice_customer , start_date : start_date , end_date : end_date , invoice_bank : invoice_bank , page_number : page_number },
 				method : 'post',
 				dataType : "json",
 				beforeSend : function(){
@@ -45,6 +46,33 @@ invoices_module = {
 				}
 			});
 		},
+                GetAccountInformation : function(){
+                    	var base_url        = $('input[name=base_url]').val();
+			var _token          = $('input[name=_token]').val();
+			var bi_account_number          = $('input[name=bi_account_number]').val();
+                        var params = { bi_account_number : bi_account_number , _token : _token };
+                        
+                        $.ajax
+			({
+				url : base_url + "/request/billing/getaccountinfo",
+				data : params,
+				method : 'get',
+				dataType : "json",
+				beforeSend : function(){
+				},
+				success : function(response){
+                                    if(response.is_error == 0)
+                                    {
+                                        $("#INVOICE_ACCOUNT").val(response.account_info.account_id);
+                                        $("#INVOICE_ACCOUNT").attr('value',response.account_info.account_id);
+                                        $("#INVOICE_ACCOUNT_ID").val(response.account_info.account_id).trigger('change');
+                                    }
+                                    
+                                }
+                            });
+                        
+                        
+                },
 		ShowPaymentType : function() {
 			var selected = $(this).val();
 			var statusvalidate = $(this).find('option:selected').data('validatept');
@@ -211,6 +239,34 @@ invoices_module = {
 			$(this).parents('tr').fadeOut('fast',function(){
 				$(this).remove();
 			})
+		},
+                EditPaymentInfo : function(){
+                    var ip_id = $(this).data('ip_id');
+                    $('input[name=ip_id]').val(ip_id);
+                   $('#EditBills').modal('toggle'); // Opens the modal 
+                },
+                GetPaymentBillInfo : function(){
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 				= $('input[name=_token]').val(); 
+			var ip_id 				= $('input[name=ip_id]').val(); 
+		    $.ajax
+		    ({
+		        url : base_url + "/request/bills/getpaymentinfo",
+		        data : { _token : _token , ip_id : ip_id},
+	            method : 'post',
+	            dataType : "json",
+	            beforeSend : function(){
+	            },
+		        success : function(response){
+                            $('input[name=ip_id]').val(response.payment_info.ip_id);
+                            $('input[name=ip_billing_nbr]').val(response.payment_info.ip_billing_nbr);
+                            $('input[name=ip_billing_date]').val(response.payment_info.ip_billing_date);
+                            $('input[name=ip_updated_date]').val(response.payment_info.ip_updated_date);
+                            $('input[name=ip_payment_doc]').val(response.payment_info.ip_payment_doc);
+                            $('select[name=ip_collector_id]').val(response.payment_info.ip_collector_id).trigger('change');
+                            $('select[name=ip_payment_type]').val(response.payment_info.ip_payment_type).trigger('change');
+		        }
+		    });
 		},
 		SaveNewRowsInfo : function(){
 			var ip_payment_label = $("input[name='ip_payment_label[]']").map(function(){return $(this).val();}).get();
@@ -393,6 +449,84 @@ invoices_module = {
 					}
 				});
 		},
+		SavePaymentInvoiceInfo : function(){
+			return invoices_module.SavePaymentInvoiceSubmitHandler();
+		},
+                SavePaymentInvoiceSubmitHandler : function(){
+                    var InvoiceBillForm = $('#FRM_SAVE_BILL');
+	        
+			InvoiceBillForm.validate({
+	             errorElement: 'span', //default input error message container
+	             errorClass: 'help-block help-block-error', // default input error message class
+	             focusInvalid: false, // do not focus the last invalid input
+	             ignore: "", // validate all fields including form hidden input
+	             rules: {
+	             },
+
+	             messages: { // custom messages for radio buttons and checkboxes
+
+	             },
+	             errorPlacement: function (error, element) { // render error placement for each input type
+	                 if (element.parent(".input-group").length > 0) {
+	                     error.insertAfter(element.parent(".input-group"));
+	                 } else if (element.attr("data-error-container")) {
+	                     error.appendTo(element.attr("data-error-container"));
+	                 } else if (element.parents('.radio-list').length > 0) {
+	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+	                 } else if (element.parents('.radio-inline').length > 0) {
+	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-list').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+	                 } else if (element.parents('.checkbox-inline').length > 0) {
+	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+	                 } else {
+	                     error.insertAfter(element); // for other inputs, just perform default behavior
+	                 }
+	             },
+	             invalidHandler: function (event, validator) { //display error alert on form submit
+	               //  success3.hide();
+	                // error3.show();
+	             },
+	             success: function (label) {
+	                 label
+	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
+	             },
+	             highlight: function (element) { // hightlight error inputs
+	                 $(element)
+	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
+	             },
+
+	             unhighlight: function (element) { // revert the change done by hightlight
+	                 $(element)
+	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
+	             },
+	             submitHandler: function (form) {
+	                //success3.show();
+	                //error3.hide();
+	                var base_url = $('#BASE_URL').val();
+	    	       // var _token = $('input[name=_token]').val();
+	    	         
+	    	        var str_params = $("#FRM_SAVE_BILL").serialize();
+	    	         $.ajax
+	    	        ({
+	    	            url : base_url + "/request/billing/savebillinfo",
+	    	            data : str_params,
+	    	            method : 'post',
+	    	            dataType : "json",
+	    	            beforeSend : function(){
+	    	            },
+	    	            success : function(response){
+	    	              if(response.is_error == 0)
+	    	              {
+	    	            	  invoices_module.DisplayListInvoicePayments();
+	    	            	  $("#EditBills").modal('toggle');
+	    	              }
+	    	            }
+	    	        });
+	             }
+
+	         });
+                },
 		SaveServiceInfo : function(){
 			return invoices_module.SaveServiceSubmitHandler();
 		},
@@ -485,6 +619,25 @@ invoices_module = {
 
 	         });
 		},
+                DisplayProductInfo : function(){
+                    var product_id = $("#BI_PRODUCT").val();
+                    var base_url = $('#BASE_URL').val();
+                    var _token = $('input[name=_token]').val();
+                    $.ajax({
+                        url : base_url + "/request/billing/getproductdata",
+                        data : { _token : _token , product_id },
+                        method : 'get',
+                        dataType : "json",
+                        beforeSend : function(){
+                        },
+                        success : function(response){
+                          if(response.is_error == 0)
+                          {
+                               $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
+                          }
+                        }
+                    });
+                },
 		RevertBacktodraft : function(){
 			 var bi_id = $("input[name=bi_id]").val();
 			 var base_url = $('#BASE_URL').val();
@@ -526,7 +679,12 @@ invoices_module = {
 	                     required: true
 	                 },
 	                 bi_quanity : {
-	                     required: true
+	                     required: true,
+                             number : true
+	                 },
+	                 bi_item_price : {
+	                     required: true,
+                             number : true
 	                 }
 	             },
 

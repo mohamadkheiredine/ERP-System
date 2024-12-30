@@ -18,10 +18,11 @@ Page Description :
 <tr  class="odd gradeX" data-ca_id="{{ $account_info->ca_id }}">
 	<td><input type="checkbox" name="ck_ca_{{ $account_info->ca_id }}" id="CK_CA_{{ $account_info->ca_id }}" class="checkboxes" value="{{ $account_info->ca_id }}" /></td>
    <td>{{ $account_info->ca_id }}</td>
-   <td>{{ $account_info->ca_account_name }}</td>
-   <td>{{ $account_info->ca_company_name }}</td>
+   <td>{{ $account_info->ca_account_code }}</td> 
+   <td>{{ $account_info->ca_account_name }}</td> 
    <td>{{ $account_info->ca_account_mobile }}</td>
    <td>{{ $account_info->ca_account_email }}</td>
+   <td>{{ $account_info->ca_billing_address }}</td>
     <td><a href="#" data-ca_id="{{  $account_info->ca_id }}" id="EDIT_ACCOUNT_{{  $account_info->ca_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
     <td><a href="#" data-ca_id="{{  $account_info->ca_id }}"  id="DELETE_ACCOUNT_{{  $account_info->ca_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>

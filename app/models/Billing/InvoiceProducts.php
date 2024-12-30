@@ -25,5 +25,5 @@ class InvoiceProducts extends Model
 {
     protected   $table          = 'billing_invoice_items';
     public      $timestamps     = false;
-    protected   $primaryKey     = "ii_id";   
+    protected   $primaryKey     = "ii_id";
 }
