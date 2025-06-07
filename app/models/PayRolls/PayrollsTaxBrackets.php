@@ -25,13 +25,13 @@ class PayrollsTaxBrackets extends Model
 {
     protected   $table          = 'payrolls_tax_brackets';
     public      $timestamps     = false;
-    protected   $primaryKey     = "tb_id";
-    
-    
+    protected   $primaryKey     = "tb_bracket_id";
+
+
     public function Company()
     {
         return $this->hasOne('App\models\System\Companies', 'cd_id','tb_company_id');
     }
-    
-    
+
+
 }

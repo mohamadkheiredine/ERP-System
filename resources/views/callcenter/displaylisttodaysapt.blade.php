@@ -24,11 +24,11 @@ Page Description :
                             <th title="Area"> Address </th>
                             <th title="Mobile"> Mobile </th>
                             <th title="Salesman"> Salesman </th>
-                            <th title="Result"> Result </th> 
-                            <th title="Telemarketing"> Telemarketing </th> 
-                            <th title="Lead Type"> Lead Type </th> 
-                            <th title="Reffered By"> Reffered By </th> 
-                            <th title="Confirmed"> Confirmed </th> 
+                            <th title="Result"> Result </th>
+                            <th title="Telemarketing"> Telemarketing </th>
+                            <th title="Lead Type"> Lead Type </th>
+                            <th title="Reffered By"> Reffered By </th>
+                            <th title="Confirmed"> Confirmed </th>
                             <th></th>
                     </tr>
             </thead>
@@ -44,10 +44,10 @@ Page Description :
    <td>{{ $app_info->Salesman ? $app_info->Salesman->u_fullname : "-" }}</td>
    <td>{{ $app_info->AppResult ? $app_info->AppResult->ar_app_result : "Pending" }}</td>
    <td>{{ $app_info->Telemarketing ? $app_info->Telemarketing->u_fullname : "-" }}</td>
-   <td>{{ $app_info->LeadType ? $app_info->LeadType->lt_deal_type : "-"  }}</td>
-   <td>{{ $app_info->cl_referred_by  }}</td>
+   <td>{{ $app_info->Lead->LeadType ? $app_info->Lead->LeadType->lt_deal_type : "-"  }}</td>
+   <td>{{ $app_info->Lead->cl_referred_by  }}</td>
    <td>{{ $app_info->ca_lead_confirm  == 1? "Confirmed" : "Pending"  }}</td>
-    <td><a href="#" data-ca_id="{{ $app_info->ca_id }}"   id="DELETE_APP_{{ $app_info->ca_id }}" ><i class="fa-solid fa-trash"></i></a></td> 
+    <td><a href="#" data-ca_id="{{ $app_info->ca_id }}"   id="DELETE_APP_{{ $app_info->ca_id }}" ><i class="fa-solid fa-trash"></i></a></td>
 </tr>
 @endforeach
             </tbody>

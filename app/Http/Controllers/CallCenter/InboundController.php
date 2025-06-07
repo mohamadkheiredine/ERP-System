@@ -45,8 +45,8 @@ use App\models\CallCenter\CallResultsWorkflow;
 
 class InboundController extends Controller
 {
-    
-  
+
+
     /**
      * Page to control Inbound Calls Management
      *
@@ -56,14 +56,14 @@ class InboundController extends Controller
      */
     public function index()
     {
-        
+
         $lst_telemarketings = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_currencies = Currency::all();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
-        
+
         $data = array(
             "lst_telemarketings" => $lst_telemarketings,
             "lst_technicians" => $lst_technicians,
@@ -74,8 +74,8 @@ class InboundController extends Controller
         );
         return Response()->view('callcenter.inboundcalls',$data);
     }
-    
-    
+
+
     /**
      * Display list of Inbound call saved in the database
      *
@@ -85,7 +85,7 @@ class InboundController extends Controller
      */
     public function DisplayList(Request $request)
     {
-   
+
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $ic_technician_id           = $request->input('ic_technician_id');
@@ -93,16 +93,16 @@ class InboundController extends Controller
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-            
+
         $inboundcall_cond = InboundCall::whereIcIsDeleted(0);
 
-       
-        
+
+
         if(strlen($general_search) > 0)
         {
             $inboundcall_cond = $inboundcall_cond->where('ic_call_outcome','LIKE','%' . $general_search . '%');
@@ -111,28 +111,28 @@ class InboundController extends Controller
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_client_code','LIKE','%' . $general_search . '%');
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_contract_code','LIKE','%' . $general_search . '%');
         }
-        
+
         if(strlen($ic_technician_id) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_technician_id','=',$ic_technician_id);
         }
-        
+
         if(strlen($ic_maintenance_type) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_maintenance_type','=',$ic_maintenance_type);
         }
-        
+
         if(strlen($ic_call_date) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_call_date','<=',$ic_call_date);
         }
-         
-            
+
+
         if(strlen($ic_archived_call) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_issue_resolved','=',$ic_archived_call);
         }
-         
+
         $inboundcall_count = $inboundcall_cond->count();
 
 
@@ -153,8 +153,8 @@ class InboundController extends Controller
 
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * get list of current call result and display it inside pop
      * @param type $request
@@ -163,7 +163,7 @@ class InboundController extends Controller
     {
         $ic_id = $request->input('ic_id');
         $result_array = array();
-        
+
         $lst_result_workflow = CallResultsWorkflow::whereCwIsDeleted(0)->whereCwCallId($ic_id)->orderBy('cw_creation_date','DESC')->get();
         $data = array(
             "lst_result_workflow" => $lst_result_workflow
@@ -172,8 +172,8 @@ class InboundController extends Controller
         $result_array['display'] = view('callcenter.listcallresults',$data)->render();
         return Response()->json($result_array);
     }
-    
-    
+
+
     public function SaveCallResultInfo(Request $request)
     {
         $ic_call_id           = $request->input('ic_call_ids');
@@ -182,7 +182,7 @@ class InboundController extends Controller
         $cw_callback_date           = $request->input('cw_callback_date');
         $cw_assigned_to           = $request->input('cw_assigned_to');
         $cw_result_note           = $request->input('cw_result_note');
-       
+
         $result_array = array();
         $result_info = new CallResultsWorkflow();
         $result_info->cw_call_id = $ic_call_id;
@@ -193,17 +193,17 @@ class InboundController extends Controller
         if($cw_result_id == 1)
             $result_info->cw_callback_date = $cw_callback_date;
         $result_info->save();
-        
-        
+
+
         $call_info = InboundCall::find($ic_call_id);
         $call_info->ic_result_id = $cw_result_id;
         $call_info->save();
-        
+
         $result_array['is_error'] = 0;
-        
+
         return Response()->json($result_array);
     }
-    
+
     public function GenerateAndDownloadList(Request $request)
     {
        $general_search         = $request->input('general_search');
@@ -211,11 +211,11 @@ class InboundController extends Controller
         $ic_maintenance_type           = $request->input('ic_maintenance_type');
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
-            
+
         $inboundcall_cond = InboundCall::whereIcIsDeleted(0);
 
-       
-        
+
+
         if(strlen($general_search) > 0)
         {
             $inboundcall_cond = $inboundcall_cond->where('ic_call_outcome','LIKE','%' . $general_search . '%');
@@ -224,28 +224,28 @@ class InboundController extends Controller
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_client_code','LIKE','%' . $general_search . '%');
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_contract_code','LIKE','%' . $general_search . '%');
         }
-        
+
         if(strlen($ic_technician_id) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_technician_id','=',$ic_technician_id);
         }
-        
+
         if(strlen($ic_maintenance_type) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_maintenance_type','=',$ic_maintenance_type);
         }
-        
+
         if(strlen($ic_call_date) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_call_date','<=',$ic_call_date);
         }
-        
+
         if(strlen($ic_archived_call) > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_issue_resolved','=',$ic_archived_call);
         }
-         
-       
+
+
 
 
         $inboundcall_count = $inboundcall_cond->count();
@@ -257,19 +257,19 @@ class InboundController extends Controller
         $data = array(
             "lst_inboundcall_info" => $lst_inboundcall_info
         );
-        
+
         $contract_document = view('templates.lstcalls',$data)->render();
-        
-         
-      
- 
+
+
+
+
        $pdf = App::make('snappy.pdf.wrapper');
         $pdf->loadHTML($contract_document);
         return $pdf->inline();
     }
-    
-    
-    
+
+
+
     /**
      * Function of Adding a new Cost Center category
      *
@@ -278,17 +278,17 @@ class InboundController extends Controller
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
     public function AddForm()
-    { 
+    {
         $lst_clients = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
-        
+
         $count_calls = InboundCall::whereIcIsDeleted(0)->count() + 1;
         $ic_call_index = str_pad($count_calls, 7, '0', STR_PAD_LEFT);
-        
+
         $data = array(
             "lst_clients" => $lst_clients,
             "lst_products" => $lst_products,
@@ -300,11 +300,24 @@ class InboundController extends Controller
         );
         return view('callcenter.addinboundcall',$data);
     }
-    
-    
+
+
+    public function GetNewMaintenanceNumber(Request $request)
+    {
+        $count_calls = InboundCall::whereIcIsDeleted(0)->count() + 1;
+        $result_array = array();
+
+        $result_array['is_error'] = 0;
+        $result_array['maintenance_number'] = $count_calls;
+
+
+        return Response()->json($result_array);
+    }
+
+
     /**
      * Save Maintenance Voucher Information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -320,7 +333,7 @@ class InboundController extends Controller
         $ic_payment_type = $request->input('ic_payment_type');
         $ic_visit_price = $request->input('ic_visit_price');
         $ic_currency_id = $request->input('ic_currency_id');
-        
+
         $voucher_info = InboundCall::find($ic_ids);
         $voucher_info->ic_resolution_date = $ic_resolution_date;
         $voucher_info->ic_doc_number = $ic_doc_number;
@@ -330,15 +343,15 @@ class InboundController extends Controller
         $voucher_info->ic_visit_price = $ic_visit_price;
         $voucher_info->ic_currency_id = $ic_currency_id;
         $voucher_info->ic_issue_resolved = 1;
-        
+
         $voucher_info->save();
-        
-        // add new maintenance call on save 
-        if($call_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_RO || $call_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN)
+
+        // add new maintenance call on save
+        if($voucher_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_RO || $voucher_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN)
         {
            $today = date('Y-m-d');
            $call_date = "";
-           if($call_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_RO)
+           if($voucher_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_RO)
                $call_date = date('Y-m-d', strtotime('+18 month', strtotime($today)));
            else
                $call_date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
@@ -348,24 +361,24 @@ class InboundController extends Controller
            $call_index = "CC" . sprintf('%05d', $index);
 
            $call_info = new InboundCall();
-           $call_info->ic_call_index           = $call_index;  
-           $call_info->ic_sales_id             = $voucher_info->fk_sales_id;  
-           $call_info->ic_telemarketing_id     = $voucher_info->fk_telemarketing_id;  
-           $call_info->ic_client_code          = $voucher_info->ic_client_code;  
-           $call_info->ic_contract_code        = $voucher_info->ic_contract_code;  
-           $call_info->ic_serial_number        = $voucher_info->ic_serial_number;  
-           $call_info->ic_call_date            = $call_date;  
-           $call_info->ic_call_start_time      = "08:00";  
-           $call_info->ic_maintenance_type     = $voucher_info->ic_maintenance_type;  
-           $call_info->save();           
+           $call_info->ic_call_index           = $call_index;
+           $call_info->ic_sales_id             = $voucher_info->fk_sales_id;
+           $call_info->ic_telemarketing_id     = $voucher_info->fk_telemarketing_id;
+           $call_info->ic_client_code          = $voucher_info->ic_client_code;
+           $call_info->ic_contract_code        = $voucher_info->ic_contract_code;
+           $call_info->ic_serial_number        = $voucher_info->ic_serial_number;
+           $call_info->ic_call_date            = $call_date;
+           $call_info->ic_call_start_time      = "08:00";
+           $call_info->ic_maintenance_type     = $voucher_info->ic_maintenance_type;
+           $call_info->save();
         }
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Save Cost Center Category Info to the database
      *
@@ -391,31 +404,31 @@ class InboundController extends Controller
         $ic_customer_product             = $request->input('ic_customer_product');
         $ic_product_machine_id             = $request->input('ic_product_machine_id');
         $ic_under_warranty             = $request->has('ic_under_warranty') ? 1 : 0;
-        $ic_warranty_expiry             = $request->input('ic_warranty_expiry'); 
+        $ic_warranty_expiry             = $request->input('ic_warranty_expiry');
         $ic_notes                   = $request->input('ic_notes');
         $ic_item_problem                  = $request->input('ic_item_problem');
         $ic_bill_situation                  = $request->input('ic_bill_situation');
         $ic_technician_id                  = $request->input('ic_technician_id');
         $ic_result_id                  = $request->input('ic_result_id');
         $ic_maintenance_type                  = $request->input('ic_maintenance_type');
-   
-        
+
+
         $result_array = array();
- 
-        
+
+
         $inboundcall_info = new InboundCall();
         if( $ic_id != null )
         {
             $inboundcall_info = InboundCall::find($ic_id);
-            $inboundcall_info->ic_last_updated_by = session('user_id'); 
-            $inboundcall_info->ic_last_updated_date = date('Y-m-d'); 
+            $inboundcall_info->ic_last_updated_by = session('user_id');
+            $inboundcall_info->ic_last_updated_date = date('Y-m-d');
         }
         else
         {
-            $inboundcall_info->ic_created_by = session('user_id'); 
+            $inboundcall_info->ic_created_by = session('user_id');
             $inboundcall_info->ic_created_at = date('Y-m-d');
         }
-         
+
         $inboundcall_info->fk_customer_id               = $fk_customer_id;
         $inboundcall_info->ic_sales_id               = $ic_sales_id;
         $inboundcall_info->ic_client_code               = $ic_client_code;
@@ -436,17 +449,17 @@ class InboundController extends Controller
         $inboundcall_info->ic_technician_id               = $ic_technician_id;
         $inboundcall_info->ic_result_id                     = $ic_result_id;
         $inboundcall_info->ic_maintenance_type                     = $ic_maintenance_type;
-        
+
         $inboundcall_info->save();
-        
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Inbound Call Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Display Edit Cost Center category Form Page
      *
@@ -463,8 +476,8 @@ class InboundController extends Controller
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
-        
-        
+
+
         $data = array(
             "inboundcall_info" => $inboundcall_info,
             "lst_sales" => $lst_sales,
@@ -477,11 +490,11 @@ class InboundController extends Controller
         );
         return view('callcenter.editinboundcall',$data);
     }
-    
-    
+
+
     /**
      * Delete Cost Center information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -491,16 +504,16 @@ class InboundController extends Controller
     {
         $result_array = array();
         $ic_id= $request->input('ic_id');
-         
+
         $inboundcall_info = InboundCall::find( $ic_id );
         $inboundcall_info->ic_is_deleted          = 1;
         $inboundcall_info->ic_deleted_by          = Session('user_id');
         $inboundcall_info->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
 }

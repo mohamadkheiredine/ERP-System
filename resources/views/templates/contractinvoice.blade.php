@@ -22,7 +22,7 @@ Page Description :
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
     <style>
-        
+
         * {
     margin: 0;
     padding: 0;
@@ -31,14 +31,11 @@ Page Description :
 
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
 }
 
 .invoice-container {
-    max-width: 800px;
+    min-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #000;
 }
 
 .invoice-header {
@@ -68,7 +65,7 @@ body {
     margin-bottom: 20px;
 }
 
-.invoice-table th, 
+.invoice-table th,
 .invoice-table td {
     border: 1px solid #000;
     padding: 10px;
@@ -102,7 +99,7 @@ body {
         }
 
 
-   
+
     </style>
 </head>
 <body>
@@ -117,30 +114,30 @@ body {
             </div>
             <div style="width:100%;text-align:center"><h3>INVOICE</h3></div>
             <div style='height:10px;'></div>
-            
+
             <div style="width:100%;position: relative;height:120px;">
                 <div style='width:60%;text-align:left;float: left;left:0px;position: absolute;height:60px;'>
                       <div class="invoice-info">
-                        <p><strong>Number:</strong> %INVOICE_NUMBER%</p>
-                        <p><strong>Date:</strong> %INVOICE_DATE%</p>
-                        <p><strong>Curr:</strong> %INVOICE_CURRENCY%</p>
-                        <p><strong>Sales</strong></p>
+                        <p style="font-size: 20px"><strong>Number:</strong> %INVOICE_NUMBER%</p>
+                        <p style="font-size: 20px"><strong>Date:</strong> %INVOICE_DATE%</p>
+                        <p style="font-size: 20px"><strong>Curr:</strong> %INVOICE_CURRENCY%</p>
+                        <p style="font-size: 20px"><strong>Sales</strong></p>
                     </div>
                 </div>
                 <div style='width:35%;text-align:left;left:61%;float: right;position: absolute;height:60px;'>
                       <section class="client-info">
-                        <p><strong>Number:</strong> %ACCOUNT_NUMBER%</p>
-                        <p><strong>Client Name:</strong> %CLIENT_NAME%</p>
-                        <p><strong>Client:</strong>  %CONTRACT_TYPE%</p>
-                        <p><strong>Address:</strong> %CLIENT_ADDRESS%</p>
-                        <p><strong>Phone:</strong> %CLIENT_PHONE%</p>
+                        <p style="font-size: 20px"><strong>Number:</strong> %ACCOUNT_NUMBER%</p>
+                        <p style="font-size: 20px"><strong>Client Name:</strong> %CLIENT_NAME%</p>
+                        <p style="font-size: 20px"><strong>Client:</strong>  %CONTRACT_TYPE%</p>
+                        <p style="font-size: 20px"><strong>Address:</strong> %CLIENT_ADDRESS%</p>
+                        <p style="font-size: 20px"><strong>Phone:</strong> %CLIENT_PHONE%</p>
                     </section>
                 </div>
             </div>
             <div style='clear:both;height:20px;'></div>
         </header>
-        
-       
+
+
 
         <table class="invoice-table">
             <thead>
@@ -155,7 +152,7 @@ body {
             </thead>
             <tbody>
                 %LST_CONTRACT_INVOICES%
-                <tr style="height:450px">
+                <tr style="height:950px">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -188,7 +185,7 @@ body {
             <div>Manager: ______________<br></div>
             <div>Client: _______________<br></div>
         </div>
-            
+
         </footer>
     </div>
 </body>

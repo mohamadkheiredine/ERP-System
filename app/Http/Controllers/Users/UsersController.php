@@ -16,6 +16,8 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\models\PayRolls\PayrollsPaymentMethods;
+use App\models\Accounting\ChartAccounts;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -43,7 +45,7 @@ use App\models\Users\UserTypes;
 class UsersController extends Controller {
 
     public function Login() {
-        
+
     }
 
     public function LogOut() {
@@ -170,6 +172,12 @@ class UsersController extends Controller {
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
 
+        $payroll_paymentmethod = PayrollsPaymentMethods::where('pm_company_id', $user_info->fk_company_id)->where('pm_employee_id', $user_info->fk_company_id)->get();
+
+        if($payroll_paymentmethod->count() > 0) {
+            $payroll_paymentmethod = $payroll_paymentmethod[0];
+        }
+
         $data = array(
             "lst_roles" => $lst_roles,
             "user_info" => $user_info,
@@ -181,6 +189,7 @@ class UsersController extends Controller {
             "rand" => $rand,
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,
+            "payroll_paymentmethod" => $payroll_paymentmethod,
             "lst_companies" => $lst_companies
         );
         return Response()->view('users.edituser', $data);
@@ -188,7 +197,7 @@ class UsersController extends Controller {
 
     /**
      * Save User information based on data received from Add/Edit User Form
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -230,6 +239,9 @@ class UsersController extends Controller {
         $u_number_of_dependencies = $request->input('u_number_of_dependencies');
         $u_hourly_rate = $request->input('u_hourly_rate');
         $u_is_active = $request->input('u_is_active');
+        $pm_id              = $request->input('pm_id');
+        $pm_account_number  = $request->input('pm_account_number');
+        $pm_payment_method  = $request->input('pm_payment_method');
 
         $result_array = array();
 
@@ -244,7 +256,7 @@ class UsersController extends Controller {
                 return Response()->json($result_array);
             }
         }
-        
+
         $Users = new Users();
         if ($user_id !== null) {
             $Users = Users::find($user_id);
@@ -267,12 +279,12 @@ class UsersController extends Controller {
              $AccAccounting->aa_sub_account      = $account_info->aa_id;
              $AccAccounting->aa_account_label    = $u_fullname;
              $AccAccounting->fk_country_id       = 0;
-             $AccAccounting->save(); 
+             $AccAccounting->save();
              $aa_id = $AccAccounting->aa_id;
-             
+
             $Users->u_account_id = $aa_id;
-            
-            
+
+
             $parent_account   = ChartAccounts::where("aa_account_ref","=","6314")->get();
             $parent_account = $parent_account[0];
 
@@ -289,10 +301,10 @@ class UsersController extends Controller {
              $acc_accounting_info->aa_sub_account      = $parent_account->aa_id;
              $acc_accounting_info->aa_account_label    = $u_fullname . " Fixed Comission";
              $acc_accounting_info->fk_country_id       = 0;
-             $acc_accounting_info->save(); 
+             $acc_accounting_info->save();
              $Users->u_comission_account_id = $acc_accounting_info->aa_id;
-            
-            
+
+
         }
 
 
@@ -301,9 +313,9 @@ class UsersController extends Controller {
         if (strlen($u_password) > 0 && $u_password == $retype_u_password) {
             $Users->password = Hash::make($u_password);
         }
-        
-        
-        
+
+
+
 
 
         $UsersManager = new UsersManager();
@@ -356,9 +368,9 @@ class UsersController extends Controller {
         $Users->u_hourly_rate = $u_hourly_rate;
         $Users->u_is_active = $u_is_active;
         $Users->save();
-        
-        // if we add new warehouse 
-         if ($user_id == null && ( $u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES )  ) { 
+
+        // if we add new warehouse
+         if ($user_id == null && ( $u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES )  ) {
           $warehouse_info = new WareHouses();
           $warehouse_info->w_warehouse_ref = $u_username;
           $warehouse_info->w_warehouse_name = $u_fullname;
@@ -368,7 +380,16 @@ class UsersController extends Controller {
           $warehouse_info->w_warehouse_status = 1;
           $warehouse_info->save();
         }
-        
+
+         $payroll_paymentmethod = new PayrollsPaymentMethods();
+         if($pm_id != null && $pm_id > 0)
+         {
+             $payroll_paymentmethod = PayrollsPaymentMethods::find($pm_id);
+         }
+
+        $payroll_paymentmethod->pm_company_id = $fk_company_id;
+        $payroll_paymentmethod->pm_employee_id = $Users->id;
+        $payroll_paymentmethod->save();
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Complete Successfully";
@@ -377,7 +398,7 @@ class UsersController extends Controller {
 
     /**
      * Set the is_deleted flag to 1 in the user table
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -400,7 +421,7 @@ class UsersController extends Controller {
 
     /**
      * Display My Profile Page to show information about current user
-     * 
+     *
      * @author Moe mantach
      * @access public
      */
@@ -411,7 +432,7 @@ class UsersController extends Controller {
 
     /**
      * Display profile Tabs for current session user
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -445,7 +466,7 @@ class UsersController extends Controller {
 
     /**
      * Save Main Profile Information to the database
-     * 
+     *
      * @author Moe mantach
      * @access public
      * @param Request $request
@@ -492,7 +513,7 @@ class UsersController extends Controller {
 
     /**
      * Upload image profile and chang einfo in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -534,7 +555,7 @@ class UsersController extends Controller {
 
     /**
      * Change Profile Password and saveit to the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request

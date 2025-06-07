@@ -72,7 +72,7 @@
                             <label class="control-label"> Order Code :&nbsp;</label><br/>
                             <input type="text" name="so_order_code" id="SO_ORDER_CODE" class="form-control" readonly="readonly" required="required" maxlength="25"  tabindex="1" value="{{ $order_info->so_order_code != null ? $order_info->so_order_code : $order_code }}" />
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Assign To :&nbsp;</label><br/>
@@ -111,20 +111,32 @@
                             <label class="control-label"> Order Label :&nbsp;<span class="required"> * </span></label><br/>
                             <input type="text" name="so_order_label" id="SO_ORDER_LABEL" class="form-control" required="required" maxlength="255"  value="{{ $order_info->so_order_label }}"  tabindex="5" />
                         </div>
-                    </div> 
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Delivery Fees :&nbsp;<span class="required"> * </span></label><br/>
+                            <input type="text" name="so_delivery_fees" id="SO_DELIVERY_FEES" class="form-control" required="required" maxlength="255"  value="{{ $order_info->so_delivery_fees }}"  tabindex="6" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Extra Fees :&nbsp;<span class="required"> * </span></label><br/>
+                            <input type="text" name="so_extra_fees" id="SO_EXTRA_FEES" class="form-control" required="required" maxlength="255"  value="{{ $order_info->so_extra_fees }}"  tabindex="7" />
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label"> Order Date :&nbsp;</label><br/>
                             <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_order_date)) }}"  tabindex="6" />
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label"> Delivery Date :&nbsp;</label><br/>
                             <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_delivery_date)) }}" tabindex="7" />
                         </div>
-                    </div> 
-                    
+                    </div>
+
                         <div class="col-md-4">
                              <div class="form-group">
                                    <label class="control-label"> Customer Payment:&nbsp;</label><br/>
@@ -169,7 +181,7 @@
                             <label class="control-label"> Order Note :&nbsp;</label>
                             <textarea class="form-control" style="width:100%;height: 250px;" name="so_order_note" id="SO_ORDER_NOTE"  tabindex="12">{{ $order_info->so_order_note }}</textarea>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="row" style="height:5px;"></div>
                 <div class="row">
@@ -234,7 +246,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form name="frm_add_packing" id="FRM_ADD_PACKING"  method="post"  enctype="multipart/form-data"> 
+                        <form name="frm_add_packing" id="FRM_ADD_PACKING"  method="post"  enctype="multipart/form-data">
                             {!! csrf_field() !!}
                             <input type="hidden" name="order_id" id="ORDER_ID" value="{{ $order_info->so_id }}" />
                             <input type="hidden" name="currency_id" id="CURRENCY_ID" value="0" />
@@ -283,12 +295,12 @@
                     </div>
                     <div class="modal-footer">
                         <button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
-                            Close 
+                            Close
                         </button>
                     </div>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
 </div>
 

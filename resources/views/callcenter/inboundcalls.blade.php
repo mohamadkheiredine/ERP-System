@@ -9,7 +9,7 @@ Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2024
 
 Page Description :
-Cost Center Categories Management 
+Cost Center Categories Management
 ***********************************************************/
 
 ?>
@@ -52,7 +52,7 @@ th{
 		</div>
 	</div>
 	<div class="card-body">
-		<span id="hidden_fields"> 
+		<span id="hidden_fields">
 			<input type="hidden" name="page_number" value="1" />
 		</span>
 		<!--begin: Search Form -->
@@ -86,7 +86,7 @@ th{
                                                            @endforeach
                                                    </select>
                                                 </div>
-						<div class="col-md-4"> 
+						<div class="col-md-4">
                                                     <label class="control-label">Maintenance Type</label>
                                                     <select name="ic_maintenance_type" id="IC_MAINTENANCE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
                                                            <option value="">-- Select Maintenance Type --</option>
@@ -101,7 +101,7 @@ th{
                                                        <input type="text" name="ic_call_date"  id="IC_CALL_DATE" class="form-control" value="" />
                                                     </div>
                                                </div>
-                                            <div class="col-md-4"> 
+                                            <div class="col-md-4">
                                                     <label class="control-label">Archived Call</label>
                                                     <select name="ic_archived_call" id="IC_ARCHIVED_CALL"  class="form-control form-select" data-control="select2" data-placeholder="Select Archived Call">
                                                            <option value="">-- Select Archived Call --</option>
@@ -134,9 +134,7 @@ th{
 						<th>Client</th>
 						<th>Address</th>
 						<th>Phone</th>
-						<th>Contract Code</th>
 						<th>Result</th>
-						<th>Problem</th>
 						<th style="width: 2px;white-space: nowrap;">edit</th>
 						<th style="width: 2px;white-space: nowrap;">Delete</th>
 					</tr>
@@ -154,14 +152,14 @@ th{
 		<div class="row">
 			<div class="col-xl-8 order-1 order-xl-1 align-right"></div>
 			<div class="col-xl-2 order-2 order-xl-2 align-right">
-				 
+
 			</div>
 			<div class="col-xl-2 order-3 order-xl-3 align-right">
 				<a href="{{ url('/callcenter/inboundcall/addform') }}"
 					class="btn btn-info"> <span> <i class="flaticon-grid-menu-v2"></i>
 						<span> New Call </span>
 				</span>
-				</a> 
+				</a>
 			</div>
 		</div>
 	</div>
@@ -215,10 +213,10 @@ th{
                    </select>
                    </div>
                 </div>
-                <div class="col-md-12"> 
+                <div class="col-md-12">
                     <div class="form-group">
                           <label class="control-label">Note</label>
-                        <input type="text" name="cw_result_note"  id="CW_RESULT_NOTE" maxlength="500"  class="form-control" value="" />                    
+                        <input type="text" name="cw_result_note"  id="CW_RESULT_NOTE" maxlength="500"  class="form-control" value="" />
                     </div>
                 </div>
                <div class="col-md-12" style="text-align:right;padding-top:10px">
@@ -238,7 +236,7 @@ th{
                         </thead>
                         <tbody class="LstCallWResults" id="LstCallWResults"></tbody>
                     </table>
-		</div> 
+		</div>
                </div>
           </form>
       </div>
@@ -294,7 +292,7 @@ th{
                     <div class="col-md-4">
                        <div class="form-group">
                            <label> Currency <span class="required"> * </span></label><br/>
-                           <select class="bs-select form-control" name="ic_currency_id" required="required" id="IC_CURRENCY_ID" data-actions-box="true">
+                           <select name="ic_currency_id" required="required" id="IC_CURRENCY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Currency" style="width:100%">
                                    <option value="">-- Select Currency --</option>
                                    @foreach ( $lst_currencies as $key => $currency_info )
                                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
@@ -305,7 +303,7 @@ th{
                    <div class="col-md-6">
                              <div class="form-group">
                                 <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
-                                <select class="form-control" required="required" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
+                                <select class="form-control form-select" required="required" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
                         			<option value="">-- Select Payment Type --</option>
                                     @foreach($lst_payment_types as $index => $paytype_info)
                                       <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>

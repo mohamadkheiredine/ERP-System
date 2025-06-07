@@ -10,7 +10,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2023
 
 Page Description :
 {Enter page description Here}
-***********************************************************/
+ ***********************************************************/
 
 
 
@@ -27,7 +27,7 @@ class UserTypes extends Model
     protected   $table          = 'usr_users_type';
     public      $timestamps     = false;
     protected   $primaryKey     = "ut_id";
-    
+
     const USER_TYPE_ADMIN = 1;
     const USER_TYPE_RECEPTION = 2;
     const USER_TYPE_AGENT = 3;
@@ -39,9 +39,9 @@ class UserTypes extends Model
     const USER_TYPE_TELEMARKETING = 9;
     const USER_TYPE_MAINTAINER = 10;
     const USER_TYPE_SALES = 11;
-    const USER_TYPE_SUPERVISOR = 12;
-    const USER_TYPE_ASSISTANT = 13;
-    const USER_TYPE_ASSISTANT_DIRECTOR = 14;
-    const USER_TYPE_COLLECTOR = 15;
-    
+    const USER_TYPE_SUPERVISOR = 13;
+    const USER_TYPE_ASSISTANT = 14;
+    const USER_TYPE_ASSISTANT_DIRECTOR = 15;
+    const USER_TYPE_COLLECTOR = 16;
+
 }

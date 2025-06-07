@@ -73,11 +73,11 @@ th{
                                     <label class="control-label">Voucher Label</label>
                                     <input type="text" name="pv_voucher_label" id="PV_VOUCHER_LABEL" class="form-control"  maxlength="255"  value="{{ $payment_vouchers->pv_voucher_label }}" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Voucher Date </label>
-                                    <input type="text" name="pv_creation_date" id="PV_CREATION_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('d/m/Y',strtotime($payment_vouchers->pv_creation_date)) }}" />
+                                    <input type="text" name="pv_creation_date" id="PV_CREATION_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ $payment_vouchers->pv_creation_date }}" />
                                 </div>
                         </div>
                          <div class="col-md-4">
@@ -90,7 +90,7 @@ th{
                                         @endforeach
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                <label> Account Receivable <span class="required"> * </span></label>

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 products_module = {
 		DisplayListStock : function(){
@@ -100,7 +100,7 @@ products_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FORM_TRANSFER_ITEMS]");
 
 	    	        var data = new FormData();
@@ -110,11 +110,11 @@ products_module = {
                             var name = $(this).attr('name');
                             var val = $(this).val();
                             data.append( name, val );
-	    	        	 
+
 	    	        });
                         let list_transfer_items = $('input[name=list_transfer_items]').val();
                         data.append( "list_transfer_items", list_transfer_items );
-                        
+
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/movements/additems",
@@ -130,17 +130,17 @@ products_module = {
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
 	    	              {
-                                 $("#LST_TRANSFER_ITEMS").val(response.lst_items); 
-                                 $("#LstTransferItems").html(response.display); 
-                                 
+                                 $("#LST_TRANSFER_ITEMS").val(response.lst_items);
+                                 $("#LstTransferItems").html(response.display);
+
                                  $("#MP_PRODUCT_ID").val(0);
                                  $("#MP_MOVEMENT_QUANTITY").val("");
                                  $("#MP_ITEM_NOTES").val("");
-                                 
+
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -149,7 +149,7 @@ products_module = {
                     let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let p_id 				= $('select[name=mp_product_id]').val();
-                        
+
                         $.ajax
 		    ({
 		        url : base_url + "/request/stock/getproductinfo",
@@ -158,9 +158,9 @@ products_module = {
 	            dataType : "json",
 	            beforeSend : function(){
 	            },
-		        success : function(response){ 
+		        success : function(response){
 		        	$('#MP_ITEM_NOTES').val(response.p_product_description);
-		        	
+
 		        }
 		    });
                 },
@@ -170,9 +170,9 @@ products_module = {
 			if(discount =='')
 				discount = 0;
 			var purchase_price = $('input[name=is_selling_price]').val();
-			
+
 			var new_price = purchase_price - ( purchase_price * discount/100);
-			 
+
 			let whole_sales = $('input[name=is_wholesale_price]').val();
 			let vendor_price =$('input[name=is_vendor_price]').val();
 			if(whole_sales == '' || whole_sales > new_price)
@@ -184,14 +184,14 @@ products_module = {
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let p_ids = [];
-			
+
 			$('input[name*=ck_pp_]:checked').each(function(){
 				let p_id = $(this).val();
 				p_ids.push(p_id);
 			})
-			
+
 			let params = { _token : _token , p_ids : p_ids };
-			
+
 			$.ajax
 		    ({
 		        url : base_url + "/request/products/duplicateproducts",
@@ -206,20 +206,20 @@ products_module = {
 		        		bootbox.alert(response.error_msg);
 		        		return false;
 	        		}
-		        	
+
 		        	products_module.DisplayListProducts();
-		        	
+
 		        }
 		    })
-			
+
 		},
 		GetZonesDropdown : function() {
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let warehouse_id 		= $("#FK_WWAREHOUSE_ID").val();
 			let params = { _token : _token , warehouse_id : warehouse_id };
-			
-			
+
+
 			$.ajax
 		    ({
 		        url : base_url + "/request/products/getzonesdropdown",
@@ -234,19 +234,19 @@ products_module = {
 		        		bootbox.alert(response.error_msg);
 		        		return false;
 	        		}
-		        	
+
 		        	$('.DefaultZone').html(response.dropdown)
-		        	
+
 		        }
 		    });
-			
+
 		},
 		GetFloorDropDown : function(){
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let zone_id 			= $(this).val();
 			let params = { _token : _token , zone_id : zone_id };
-			
+
 			$.ajax
 		    ({
 		        url : base_url + "/request/products/getfloorsdropdown",
@@ -261,12 +261,12 @@ products_module = {
 		        		bootbox.alert(response.error_msg);
 		        		return false;
 	        		}
-		        	
+
 		        	$('.DefaultFloor').html(response.dropdown)
-		        	
+
 		        }
 		    });
-			
+
 		},
 		QuickActions : function(){
 			let  base_url 			= $('input[name=base_url]').val();
@@ -276,19 +276,24 @@ products_module = {
 			{
 				case "EXPORT_CSV":
 				{
-				
+
 				}
 				break;
-                            case "IMPORT_PRODUCTS":
-                            {
-                             // $('#myModal').modal('show');
-                            }
-                            break;
+                case "ADD_SERIALNUMBERS":
+                {
+                    products_module.ManageStockUnitIds();
+                }
+                break;
+                case "IMPORT_PRODUCTS":
+                {
+                 // $('#myModal').modal('show');
+                }
+                break;
 				case "DOWNLOAD_TEMPLATE":
 				{
 					$.ajax({
                                             url: base_url + "/request/products/downloadtemplate?_token=" + _token,
-                                            method: "GET", 
+                                            method: "GET",
                                             success: function(data) {
 
                                                 const blob = new Blob([data]);
@@ -322,7 +327,7 @@ products_module = {
                     $(".checkboxes:checked").each(function(){
                             var sm_id = $(this).val();
                             sm_ids.push(sm_id);
-                    }); 
+                    });
                     var str_smIds = sm_ids.join(",");
                     $.ajax
                     ({
@@ -425,15 +430,15 @@ products_module = {
 		        	$('img#BARCODE_IMG').attr('src',"data:image/png;base64," + response.bar_code_png );
 		        }
 		    })
-			
+
 		},
 		OpenProductLabels : function(){
 			let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
 			let  is_id 				= $("input[name=is_id]").val();
 			let url =  base_url + "/products/stocks/displaybarodelabels/" + is_id;
-			
-			window.open(url,'_blank'); 
+
+			window.open(url,'_blank');
 		},
 		ChangeCurrencyLabel : function(){
 			let currency_text = $("#P_PRODUCT_CURRENCY option:selected").text();
@@ -483,7 +488,7 @@ products_module = {
 			        	$("input[name=is_wholesale_price]").val(response.p_product_selling_price);
 			        	$("input[name=is_vendor_price]").val(response.p_product_selling_price);
 		        	}
-		        	
+
 		        	let old_quantity = $('input[name=is_quanity]').val();
 		        	if(response.stock_has_serial_number == 1)
 	        		{
@@ -499,7 +504,7 @@ products_module = {
 		        		$('.StockSerialNumber').css({'display' : ''});
 		        		$('.AddItemHolder').css({'display' : 'none'});
 		        		$('input[name=p_id]').removeAttr('required');
-		        		
+
 		        		if(old_quantity <= 1)
 		        			$('input[name=is_quanity]').val(1);
 	        		}
@@ -515,10 +520,10 @@ products_module = {
 		DisplayListProducts  : function(){
 		var base_url 	= $('input[name=base_url]').val();
 		var _token 		= $('input[name=_token]').val();
-		var page_number 		= $('input[name=page_number]').val(); 
-		var general_search 		= $('input[name=general_search]').val(); 
-		var product_category 	= $('select[name=product_category]').val(); 
-		var product_currency 	= $('select[name=product_currency]').val(); 
+		var page_number 		= $('input[name=page_number]').val();
+		var general_search 		= $('input[name=general_search]').val();
+		var product_category 	= $('select[name=product_category]').val();
+		var product_currency 	= $('select[name=product_currency]').val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/products/displaylist",
@@ -607,7 +612,7 @@ products_module = {
             },
 	        success : function(response){
 	            $('#LstTransferStocks').html(response.display);
-	            
+
 	        }
 	    });
 	},
@@ -692,7 +697,7 @@ products_module = {
 		var TransferStockForm = $('#FORM_TRANSFER_SOCKET');
         var error3 = $('.alert-danger', TransferStockForm);
         var success3 = $('.alert-success', TransferStockForm);
-         
+
         TransferStockForm.validate({
             errorElement: 'span', //default input error message container
             errorClass: 'help-block help-block-error', // default input error message class
@@ -747,9 +752,9 @@ products_module = {
             submitHandler: function (form) {
                success3.show();
                error3.hide();
-               var base_url = $('#BASE_URL').val(); 
-             
-   	        var str_params = $("#FORM_TRANSFER_SOCKET").serialize(); 
+               var base_url = $('#BASE_URL').val();
+
+   	        var str_params = $("#FORM_TRANSFER_SOCKET").serialize();
    	         $.ajax
    	        ({
    	            url : base_url + "/request/products/stocktransfer",
@@ -757,7 +762,7 @@ products_module = {
    	            method : 'put',
    	            dataType : "json",
    	            success : function(response){
-   	             
+
    	             var main_transfer = $("#MAIN_TRANSFER").val();
    	             var url;
    	             if(main_transfer == 1)
@@ -768,7 +773,7 @@ products_module = {
                         {
                                url = base_url + "/inventory/editproduct/" + p_id;
                         }
-                 
+
    	              if(response.is_error == 0)
    	              {
    	            	 var p_id = $("input[name=p_id]").val();
@@ -790,7 +795,7 @@ products_module = {
 		 var StockForm = $('#FORM_SAVE_SOCKET');
 	        var error3 = $('.alert-danger', StockForm);
 	        var success3 = $('.alert-success', StockForm);
-	         
+
 	        StockForm.validate({
 	            errorElement: 'span', //default input error message container
 	            errorClass: 'help-block help-block-error', // default input error message class
@@ -861,7 +866,7 @@ products_module = {
 	            submitHandler: function (form) {
 	               success3.show();
 	               error3.hide();
-	               var base_url = $('#BASE_URL').val(); 
+	               var base_url = $('#BASE_URL').val();
 
 	   	        var str_params = $("#FORM_SAVE_SOCKET").serialize();
 	   	         $.ajax
@@ -889,7 +894,7 @@ products_module = {
 		 var StockForm = $('#FORM_SAVE_SOCKET');
         var error3 = $('.alert-danger', StockForm);
         var success3 = $('.alert-success', StockForm);
-         
+
         StockForm.validate({
             errorElement: 'span', //default input error message container
             errorClass: 'help-block help-block-error', // default input error message class
@@ -958,7 +963,7 @@ products_module = {
             	   bootbox.alert('Please Add all Serial Numbers Releated to this Stock Record');
             	   return false;
         	   }
-            	
+
    	        var str_params = $("#FORM_SAVE_SOCKET").serialize();
    	         $.ajax
    	        ({
@@ -1009,7 +1014,7 @@ products_module = {
 		 var ProductForm = $('#FORM_ADD_SOCKET');
          var error3 = $('.alert-danger', ProductForm);
          var success3 = $('.alert-success', ProductForm);
-          
+
          ProductForm.validate({
              errorElement: 'span', //default input error message container
              errorClass: 'help-block help-block-error', // default input error message class
@@ -1068,7 +1073,7 @@ products_module = {
              submitHandler: function (form) {
                 success3.show();
                 error3.hide();
-                var base_url = $('#BASE_URL').val(); 
+                var base_url = $('#BASE_URL').val();
 
     	        var str_params = $("#FORM_ADD_SOCKET").serialize();
     	         $.ajax
@@ -1152,7 +1157,7 @@ products_module = {
             	 required : true,
             	 number:true
                },
-               p_product_min_selling_price : { 
+               p_product_min_selling_price : {
 	          	 number:true
 	           },
                p_product_currency : {
@@ -1200,8 +1205,8 @@ products_module = {
              submitHandler: function (form) {
                 success3.show();
                 error3.hide();
-                var base_url = $('#BASE_URL').val(); 
-    	        
+                var base_url = $('#BASE_URL').val();
+
     	        var FormDataFields = $("form[id=FORM_SAVE_PRODUCT]");
 
     	        var data = new FormData();
@@ -1218,8 +1223,8 @@ products_module = {
     	                data.append($(this).attr('name'), $(this).val() );
     	        });
     	        const p_product_description  = $.editor.getData();
-    	        
-    	        data.append("p_product_description", p_product_description ); 
+
+    	        data.append("p_product_description", p_product_description );
     	         $.ajax
     	        ({
     	            url : base_url + "/request/products/saveproductinfo",

@@ -46,65 +46,65 @@ use App\library\AccountingManager;
 
 class CustomersController extends Controller
 {
-    
-    
+
+
     /**
      * get list of customers saved in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
-     * 
+     *
      * @return json result_array
      */
     public function GetListCustomers(Request $request)
     {
-        
+
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $customer_search     = $request->input('searchquery');
         $current_page = $request->input('current_page');
-        $user_info           = Users::find($user_id); 
-        
+        $user_info           = Users::find($user_id);
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         $nbr_rows_per_pages    = 10;
         if($current_page > 1)
             $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
-        
+
+
         $customers_cond    = Customers::whereIcIsDeleted(0);
         if(strlen($customer_search) > 0)
             $customers_cond    = $customers_cond->where('ic_customer_name','LIKE','%' . $customer_search. '%');
-        
+
         $customers_count = $customers_cond->count();
-        
-        
+
+
         $total_pages = ceil( $customers_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
+
         $lst_customers_obj = $customers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-        
+
         $result_array = array();
         $customers_array = array();
         $AccountingManager = new AccountingManager();
-        
-        
-        foreach ($lst_customers_obj as $index => $customer_info) 
+
+
+        foreach ($lst_customers_obj as $index => $customer_info)
         {
             $customers_array[$index]['ic_id']                   = $customer_info->ic_id;
             $customers_array[$index]['ic_customer_code']        = $customer_info->ic_customer_code;
@@ -115,16 +115,16 @@ class CustomersController extends Controller
             $customers_array[$index]['ic_customer_phone']       = $customer_info->ic_customer_phone;
             $customers_array[$index]['ic_customer_mobile']      = $customer_info->ic_customer_mobile;
             $customers_array[$index]['ic_account_number']       = $customer_info->ic_account_number;;
-            
-            
-            
+
+
+
             $customer_account_id = $customer_info->ic_account_number;
-            
+
             // getlist of movement related to the current Account Statment
-            $lst_movements          = TransactionMovements::where("tm_ledger_account","=",$customer_account_id)->orWhere("tm_sub_ledger_account","=",$customer_account_id)->get();
-            $total_customer_data    = $AccountingManager->GetTotalAccountBalance($lst_movements);
-            $customers_array[$index]['total_customer_data']       = $total_customer_data;
-            
+            //$lst_movements          = TransactionMovements::where("tm_ledger_account","=",$customer_account_id)->orWhere("tm_sub_ledger_account","=",$customer_account_id)->get();
+            //$total_customer_data    = $AccountingManager->GetTotalAccountBalance($lst_movements);
+            //$customers_array[$index]['total_customer_data']       = $total_customer_data;
+
             $image_src_url  = url('/')."/".Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
             $image_src_path = public_path(). "/" .Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
             if(strlen($customer_info->ic_image_base_src) > 0 ){
@@ -132,113 +132,117 @@ class CustomersController extends Controller
             }else{
                 $img_src = url('images/NoImageAvailable.jpg');
             }
-            
+
             $customers_array[$index]['customer_profile']    = $img_src;
         }
-        
+
         $result_array['is_error']               = 0;
         $result_array['customers_array']        = $customers_array;
         $result_array['total_pages']       = $total_pages;
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
      public function GetListCustomerslight(Request $request)
     {
-        
+
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $customer_search     = $request->input('searchquery');
         $current_page = $request->input('current_page');
-        $user_info           = Users::find($user_id); 
-        
+        $user_info           = Users::find($user_id);
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         $nbr_rows_per_pages    = 10;
         if($current_page > 1)
             $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
-        
+
+
         $customers_cond    = Customers::whereIcIsDeleted(0);
 
         $customers_count = $customers_cond->count();
-      
+
         $lst_customers_obj = $customers_cond->get();
-        
+
         $result_array = array();
         $customers_array = array();
         $AccountingManager = new AccountingManager();
-        
-        
-        foreach ($lst_customers_obj as $index => $customer_info) 
-        { 
-            $customers_array[] = array(
-                'id' =>  $customer_info->ic_id,
-                'label' =>  $customer_info->ic_customer_name,
-            );
-           
+
+
+        foreach ($lst_customers_obj as $index => $customer_info)
+        {
+            if($customer_info->ic_customer_name != null)
+            {
+                $customers_array[] = array(
+                    'id' =>  $customer_info->ic_id,
+                    'label' =>  $customer_info->ic_customer_name,
+                );
+
+            }
+
         }
-        
+
         $result_array['is_error']               = 0;
         $result_array['customers_array']        = $customers_array;
-        
+
         return Response()->json($result_array);
     }
-    
+
     public function DeleteCustomerInfo(Request $request)
     {
          $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $customer_id         = $request->input('customer_id');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $customer_res = Customers::find($customer_id)->delete();
-        
+
         $result_array['is_error']       = 0;
         $result_array['error_msg']       = "Delete Customer Completed Successfully";
-        
-        
+
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * get customer info of a customer_id and send it in the json response
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
-     * 
+     *
      * @return JSON $result_array
      */
     public function GetCustomerInfo(Request $request)
@@ -247,23 +251,23 @@ class CustomersController extends Controller
         $customer_id         = $request->input('customer_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
         $customer_array      = array();
-        
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $customer_info = Customers::find($customer_id);
-        
+
         $customer_array['ic_id']                    = $customer_info->ic_id;
         $customer_array['ic_customer_code']         = $customer_info->ic_customer_code;
         $customer_array['ic_customer_name']         = $customer_info->ic_customer_name;
@@ -272,7 +276,7 @@ class CustomersController extends Controller
         $customer_array['ic_customer_website']      = $customer_info->ic_customer_website;
         $customer_array['ic_customer_phone']        = $customer_info->ic_customer_phone;
         $customer_array['ic_customer_mobile']       = $customer_info->ic_customer_mobile;
-        
+
         $image_src_url  = url('/')."/".Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
         $image_src_path = public_path(). "/" .Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
         if(strlen($customer_info->ic_image_base_src) > 0 ){
@@ -280,22 +284,22 @@ class CustomersController extends Controller
         }else{
             $img_src = url('images/NoImageAvailable.jpg');
         }
-        
+
         $customer_array['customer_profile']    = $img_src;
-        
+
         $result_array['is_error']       = 0;
         $result_array['customer_info']  = $customer_array;
-        
+
         unset($customer_array);
         $customer_array = null;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Search Customer Information By Mobile
-     * 
+     *
      * @author Moe mantach
      * @access public
      * @param Request $request
@@ -304,12 +308,12 @@ class CustomersController extends Controller
     {
         $sc_customer_mobile = $request->input('sc_customer_mobile');
         $customer_info = Customers::where('ic_customer_mobile','LIKE','%' . $sc_customer_mobile . '%')->get();
-        
+
         $result_array = array();
         $customer_name = "";
-        
-        
-        
+
+
+
         $result_array['is_error'] = 0;
         $result_array['customer_name'] = $customer_info->ic_customer_name;
         return Response()->json($result_array);
@@ -320,41 +324,41 @@ class CustomersController extends Controller
     {
         $sc_customer_name = $request->input('sc_customer_name');
         $customer_info = Customers::where('ic_customer_name','LIKE','%' . $sc_customer_name . '%')->get();
-        
+
         $result_array = array();
         $customer_data = array();
-        
-         
-        
+
+
+
         if(count($customer_info) == 0)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "Customer Does not Exist";
              return Response()->json($result_array);
         }
-        
+
         $customer_data = array(
             'customer_id' => $customer_info[0]->ic_id,
             'customer_name' => $customer_info[0]->ic_customer_name,
             'customer_mobile' => $customer_info[0]->ic_customer_mobile,
             'customer_address' => $customer_info[0]->ic_customer_address,
         );
-        
+
         $result_array['is_error'] = 0;
         $result_array['customer_data'] = json_encode($customer_data);
         return Response()->json($result_array);
     }
-    
+
     /**
      * Save Customer Info Saved In the Database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function SaveCustomerInfo( Request $request )
     {
-        $user_id                = $request->input('user_id'); 
+        $user_id                = $request->input('user_id');
         $customer_id            = $request->has('customer_id') ? $request->input('customer_id') : 0;
         $ic_customer_name       = $request->input('ic_customer_name');
         $ic_customer_address    = $request->input('ic_customer_address');
@@ -364,38 +368,38 @@ class CustomersController extends Controller
         $ic_customer_mobile     = $request->input('ic_customer_mobile');
         $g_hash                 = $request->input('g_hash');
         $user_info              = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
         $customer_array      = array();
-        
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $customer_manager = new CustomersManager();
         $params = array(
             'company_id' => $user_info->fk_company_id
         );
         $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
-        
+
         if($customer_id != 0)
         {
             $customer_info = Customers::find($customer_id);
         }
-        else 
+        else
         {
             $customer_info = new Customers();
         }
-        
-        
-        
+
+
+
         $customer_info->ic_customer_code    = $ic_customer_code;
         $customer_info->ic_customer_name    = $ic_customer_name;
         $customer_info->ic_customer_address = $ic_customer_address;
@@ -403,28 +407,28 @@ class CustomersController extends Controller
         $customer_info->ic_customer_website = $ic_customer_website;
         $customer_info->ic_customer_phone = $ic_customer_phone;
         $customer_info->ic_customer_mobile = $ic_customer_mobile;
-        
-        
+
+
         if(isset($_FILES['ic_avatar_pic']))
         {
             $image_data =  $customer_manager->UploadCustomersAvatar($customer_id);
             $customer_info->ic_image_base_src      = $image_data['data']['ic_image_base_src'];
             $customer_info->ic_image_file_name     = $image_data['data']['ic_file_name'];
             $customer_info->ic_image_extension     = $image_data['data']['ic_file_extension'];
-            
+
         }
-        
+
         // if this add new customer we create a new account and save it as account info
         if($customer_id == 0)
         {
             $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
             $account_info = $account_info[0];
-            
+
             $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
-      
+
             $new_count      = $count + 1;
             $aa_account_ref = $account_info->aa_account . (String)$new_count;
-            
+
             $AccAccounting = new ChartAccounts();
             $AccAccounting->aa_parent_account   = $account_info->aa_id;
             $AccAccounting->aa_account_ref      = $aa_account_ref;
@@ -433,22 +437,22 @@ class CustomersController extends Controller
             $AccAccounting->aa_account_label    = $ic_customer_name;
             $AccAccounting->fk_country_id       = 0;
             $AccAccounting->save();
-            
+
             $aa_id = $AccAccounting->aa_id;
             $customer_info->ic_account_number = $aa_id;
         }
-        
+
         $customer_info->save();
-        
-        
+
+
         $result_array['is_error'] = 0;
         $result_array['customer_id'] = $customer_info->ic_id;
         $result_array['customer_name'] = $ic_customer_name;
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Delete customer from the database
      *
@@ -462,29 +466,29 @@ class CustomersController extends Controller
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
-        $result_array        = array(); 
-        
+        $result_array        = array();
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $customer_info = Customers::find($customer_id);
         $customer_info->ic_is_deleted = 1;
         $customer_info->ic_deleted_by = $user_id;
         $customer_info->save();
-        
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Completed Successfully";
-        
+
         return Response()->json($result_array);
     }
-    
+
 }

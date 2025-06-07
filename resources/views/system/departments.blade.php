@@ -73,7 +73,7 @@ th{
 
 												</div>
 												<div class="col-md-4">
-                                                  
+
 
 												</div>
 											</div>
@@ -93,9 +93,9 @@ th{
 								<!--end: Search Form -->
 		                          <!--begin: Datatable -->
 								<div class="table-responsive">
-									<table class="table">
-                						<thead>
-                							<tr class="fw-bold fs-6 text-gray-800">
+                                    <table class="table table-striped gy-7 gs-7">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                 								<th style="width:2px;">#</th>
                 								<th style="width:2px;">ID</th>
                 								<th>Department Title</th>
@@ -136,10 +136,10 @@ th{
 									</a>
 									<div class="m-separator m-separator--dashed d-xl-none"></div>
 								</div>
-								
+
 								</div>
-    
-    
+
+
     </div>
 </div>
 

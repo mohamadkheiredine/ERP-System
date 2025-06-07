@@ -52,7 +52,7 @@ use App\models\Inventory\StockIds;
 use App\models\SRM\Suppliers;
 use App\models\Inventory\ProductCategories;
 use App\models\Shipment\PackingPrices;
-
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 
 class SOrdersController extends Controller
@@ -67,11 +67,11 @@ class SOrdersController extends Controller
      */
     public function index()
     {
-        
+
         $lst_customers  = Customers::whereIcIsDeleted(0)->get();
         $lst_vendors    = Vendors::whereIvIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
-        
+
         $data = array(
             'lst_warehouses' => $lst_warehouses,
             'lst_customers' => $lst_customers,
@@ -79,8 +79,8 @@ class SOrdersController extends Controller
         );
         return Response()->view('shipment.orders.orders',$data);
     }
-    
-    
+
+
     /**
      * Display list of Orders saved in the database
      *
@@ -90,21 +90,21 @@ class SOrdersController extends Controller
      */
     public function DisplayList(Request $request)
     {
-        
+
         $so_order_warehouse     = $request->input('so_order_warehouse');
         $so_vendor_id           = $request->input('so_vendor_id');
         $so_order_customer      = $request->input('so_order_customer');
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
-        
-        $list_orders = shippingOrders::whereSoIsDeleted(0); 
+
+
+        $list_orders = shippingOrders::whereSoIsDeleted(0);
 
         if($so_order_customer > 0)
             $list_orders = $list_orders->whereSoOrderCustomer($so_order_customer);
@@ -113,78 +113,78 @@ class SOrdersController extends Controller
              $list_orders = $list_orders->where('so_order_label','LIKE','%' . $general_search . '%');
              $list_orders = $list_orders->orwhere('so_order_code','LIKE','%' . $general_search . '%');
          }
-             
-        
+
+
          $order_count = $list_orders->count();
-       
-        
+
+
          $total_pages = ceil( $order_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
-             
+
          $list_orders = $list_orders->skip($skip)->take($nbr_rows_per_pages)->get();
         $data = array(
-            "list_orders" => $list_orders, 
+            "list_orders" => $list_orders,
         );
-        
-        $result_array = array(); 
+
+        $result_array = array();
         $result_array['display'] = view("shipment.orders.displaylist",$data)->render();
         $result_array['total_pages'] = $total_pages;
-        
+
         return Response()->json($result_array);
     }
-    
-     
-    
+
+
+
     /**
      * Display list of products for selected order
-     * 
+     *
      * @author Moe Masntach
-     * @access public 
+     * @access public
      * @param Request $request
      */
     public function DisplayListCategories(Request $request)
     {
         $so_id = $request->input('order_id');
-        
+
         $lst_order_categories = OrderCategories::whereFkOrderId($so_id)->get();
-   
-        
-        
+
+
+
         $data = array(
             "lst_order_categories" => $lst_order_categories
         );
-        
+
         $result_array = array();
         $result_array['display'] = view("shipment.orders.displaylistcategories",$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
+
       public function GetPackingPrice(Request $request)
     {
         $so_id              = $request->input('so_id');
         $category_id        = $request->input('category_id');
         $so_package_weight  = $request->input('so_package_weight');
-        
+
         $result_array = array();
-        
+
         $packing_cost_obj  = PackingPrices::where('fk_category_id',$category_id)->where('cp_weight_from','<=',$so_package_weight)->where('cp_weight_to','>',$so_package_weight)->get();
-        
+
         if(count($packing_cost_obj) == 0)
         {
             $result_array['is_error']  = 1;
             $result_array['error_msg'] = 'No Price for this Weight';
             return Response()->json($result_array);
         }
-        
-        
+
+
         $result_array['is_error']  = 0;
         $result_array['package_cost']  = $packing_cost_obj[0]->cp_price_range;
         $result_array['error_msg'] = 'Order Item Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Function of Adding a new Order
      *
@@ -194,11 +194,11 @@ class SOrdersController extends Controller
      */
     public function AddForm()
     {
-        
+
         $rand_barcode       = rand(10000000,99999999999);
         $barcode = new DNS1D();
-        $bar_code_png = $barcode->getBarcodePNG($rand_barcode, "C39+",150 , 50 ); 
-        
+        $bar_code_png = $barcode->getBarcodePNG($rand_barcode, "C39+",150 , 50 );
+
         $lst_order_status   = OrderStatus::whereSsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_vat_tax        = VatAccounts::whereAvIsDeleted(0)->get();
@@ -206,19 +206,19 @@ class SOrdersController extends Controller
         $lst_customers      = Customers::whereIcIsDeleted(0)->get();
         $lst_vendors        = Vendors::whereIvIsDeleted(0)->get();
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
-        
+
         $lst_suppliers  = Suppliers::whereSsIsDeleted(0)->get();
-        
+
         $OrderManager   = new OrdersManager();
         $order_code     = $OrderManager->GenerateOrdereCode();
         unset($OrderManager);
-        
-        
+
+
         $data = array(
             "lst_order_status" => $lst_order_status,
-            "bar_code_png" => $bar_code_png, 
-            "rand_barcode" => $rand_barcode, 
-            "order_code" => $order_code, 
+            "bar_code_png" => $bar_code_png,
+            "rand_barcode" => $rand_barcode,
+            "order_code" => $order_code,
             "lst_users" => $lst_users,
             "lst_vendors" => $lst_vendors,
             "lst_warehouses" => $lst_warehouses,
@@ -229,8 +229,8 @@ class SOrdersController extends Controller
         );
         return view('shipment.orders.addform',$data);
     }
-    
-    
+
+
     /**
      * Save Order Info to the database
      *
@@ -243,34 +243,36 @@ class SOrdersController extends Controller
     public function SaveOrderInfo(Request $request)
     {
         $so_id                      = $request->input('so_id');
-        $so_order_code              = $request->input('so_order_code'); 
-        $so_assign_to               = $request->input('so_assign_to'); 
-        $so_supplier_id               = $request->input('so_supplier_id'); 
+        $so_order_code              = $request->input('so_order_code');
+        $so_assign_to               = $request->input('so_assign_to');
+        $so_supplier_id               = $request->input('so_supplier_id');
         $so_order_status            = $request->input('so_order_status');
-        $so_payment_type            = $request->input('so_payment_type'); 
-        $so_order_label             = $request->input('so_order_label'); 
-        $so_order_note              = $request->input('so_order_note'); 
+        $so_payment_type            = $request->input('so_payment_type');
+        $so_order_label             = $request->input('so_order_label');
+        $so_order_note              = $request->input('so_order_note');
         $so_order_date              = $request->input('so_order_date');
         $so_order_date              = date("Y-m-d",strtotime($so_order_date));
-        $so_delivery_date           = $request->input('so_delivery_date'); 
+        $so_delivery_date           = $request->input('so_delivery_date');
         $so_delivery_date           = date("Y-m-d",strtotime($so_delivery_date));
-        $so_vat_id                  = $request->input('so_vat_id'); 
-        $so_order_currency          = $request->input('so_order_currency'); 
+        $so_vat_id                  = $request->input('so_vat_id');
+        $so_order_currency          = $request->input('so_order_currency');
         $fk_warehouse_id            = $request->input('fk_warehouse_id');
+        $so_delivery_fees            = $request->input('so_delivery_fees');
+        $so_extra_fees            = $request->input('so_extra_fees');
         $so_customer_payment        = $request->input('so_customer_payment');
-        $so_order_customer          = $request->input('so_order_customer') != null ? $request->input('so_order_customer') : 0; 
-        $so_vendor_id               = $request->input('so_vendor_id') != null ? $request->input('so_vendor_id') : 0; 
-         
+        $so_order_customer          = $request->input('so_order_customer') != null ? $request->input('so_order_customer') : 0;
+        $so_vendor_id               = $request->input('so_vendor_id') != null ? $request->input('so_vendor_id') : 0;
+
         $result_array = array();
- 
-        
+
+
         $Orders = new shippingOrders();
          $total_packing_value = 0;
         if( $so_id != null )
         {
             $Orders = shippingOrders::find($so_id);
-            
-            
+
+
             $lst_order_categories = OrderCategories::whereFkOrderId($so_id)->get();
             foreach ( $lst_order_categories as $key => $cat_info ) {
                 $total_packing_value = $total_packing_value + $cat_info->so_package_price;
@@ -282,13 +284,13 @@ class SOrdersController extends Controller
             $Orders->fk_user_id          = $fk_user_id;
             $Orders->so_creation_date    = $so_creation_date;
         }
-        
-        
-        
-        
-        
+
+
+
+
+
         $total_price = $so_customer_payment + $total_packing_value;
-         
+
         $Orders->so_order_code       = $so_order_code;
         $Orders->so_assign_to        = $so_assign_to;
         $Orders->fk_status_id     = $so_order_status;
@@ -303,18 +305,62 @@ class SOrdersController extends Controller
         $Orders->so_assign_to   = $so_assign_to;
         $Orders->so_customer_payment   = $so_customer_payment;
         $Orders->so_total_price   = $total_price;
-        
+        $Orders->so_delivery_fees   = $so_delivery_fees;
+        $Orders->so_extra_fees   = $so_extra_fees;
+
         $Orders->save();
-        
+
         $result_array['is_error']  = 0;
         $result_array['so_id']  = $Orders->so_id;
         $result_array['error_msg'] = 'Order Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+    public function DownloadShippingInvoice( $so_id )
+    {
+        $order_info = shippingOrders::find($so_id);
+
+        $invoice = view('templates.shippinginvoice')->render();
+
+        $invoice = str_replace("%CUSTOMERNAME%",$order_info->Customer->ic_customer_name, $invoice);
+        $invoice = str_replace("%CUSTOMERCODE%",$order_info->Customer->ic_customer_code, $invoice);
+        $invoice = str_replace("%CUSTOMERPHONE%",$order_info->Customer->ic_customer_mobile, $invoice);
+        $invoice = str_replace("%CUSTOMERADDRESS%",$order_info->Customer->ic_customer_address, $invoice);
+        $invoice = str_replace("%TOTAL_FEES%",$order_info->so_extra_fees, $invoice);
+        $invoice = str_replace("%TOTAL_DELIVERY%",$order_info->so_delivery_fees, $invoice);
+        $invoice = str_replace("%DELIVERY_DATE%",$order_info->so_delivery_date, $invoice);
+
+
+
+        $lst_order_items = OrderCategories::whereFkOrderId($so_id)->get();
+        $total_weight = 0;
+        $total_pack_price = 0;
+
+        foreach ($lst_order_items as $index => $item_info) {
+            $total_weight = $total_weight + $item_info->so_package_weight;
+            $total_pack_price = $total_weight + $item_info->so_package_price;
+        }
+
+        $invoice = str_replace("%AMOUNT%",number_format($order_info->so_total_price + $total_pack_price , 2), $invoice);
+        $invoice = str_replace("%TOTAL%",number_format($order_info->so_total_price  + $order_info->so_extra_fees + $order_info->so_delivery_fees + $total_pack_price, 2), $invoice);
+        $data = array(
+          'items' => $lst_order_items
+        );
+        $lst_products_pack = view('templates.lstpackingprices',$data)->render();
+        $invoice = str_replace("%LISTPRODUCT%",$lst_products_pack, $invoice);
+        $invoice = str_replace("%TOTAL_WEIGHT%",$total_weight, $invoice);
+        $invoice = str_replace("%TOTAL_AMOUNT%",$total_pack_price, $invoice);
+        $invoice = str_replace("%LOGOURL%",session('company_logo'), $invoice);
+
+        return PDF::loadHTML($invoice)
+            ->setPaper('a4')
+            ->setOption('encoding', 'UTF-8')
+            ->download('invoice-' . strtolower($order_info->Customer->ic_customer_code) . '.pdf');
+    }
+
+
     /**
      * Display Edit Order Form Page
      *
@@ -324,8 +370,8 @@ class SOrdersController extends Controller
      */
     public function EditForm( $so_id )
     {
-        
-        
+
+
         $lst_order_status   = OrderStatus::whereSsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_vat_tax        = VatAccounts::whereAvIsDeleted(0)->get();
@@ -337,7 +383,7 @@ class SOrdersController extends Controller
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
         $lst_categories     = ProductCategories::wherePcIsDeleted(0)->get();
-        
+
         $order_code = "";
         if($order_info->so_order_code != null)
         {
@@ -346,8 +392,8 @@ class SOrdersController extends Controller
             unset($OrderManager);
         }
         $barcode = new DNS1D();
-        $bar_code_png = $barcode->getBarcodePNG($order_info->so_order_code, "C39+",150 , 50 ); 
-        
+        $bar_code_png = $barcode->getBarcodePNG($order_info->so_order_code, "C39+",150 , 50 );
+
         $data = array(
             "order_info" => $order_info,
             "bar_code_png" => $bar_code_png,
@@ -365,9 +411,9 @@ class SOrdersController extends Controller
         );
         return view('shipment.orders.editform',$data);
     }
-    
-    
-    
+
+
+
     /**
      * save packing category
      * @param Request $request
@@ -380,7 +426,7 @@ class SOrdersController extends Controller
         $so_package_cost        = $request->input('so_package_cost');
         $fk_oc_supplier_id        = $request->input('fk_oc_supplier_id');
         $currency_id            = $request->input('currency_id');
-        
+
         $order_item = new OrderCategories();
         $order_item->fk_order_id = $order_id;
         $order_item->fk_category_id = $so_product_category;
@@ -390,30 +436,30 @@ class SOrdersController extends Controller
         $order_item->so_package_currency = $currency_id;
         $order_item->fk_oc_supplier_id = $fk_oc_supplier_id;
         $order_item->save();
-        
-        
+
+
         // add price to total order price
         $order_info = shippingOrders::find($order_id);
         $order_info->so_total_price = $order_info->so_total_price + $so_package_cost;
-        
-        $order_info->save(); 
-        
+
+        $order_info->save();
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Order Item Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * add product from stock to selected order based on validation of certain criteria
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function AddOrderCategory( Request $request )
-    {   
+    {
         $order_id               = $request->input('order_id');
         $order_product_id       = $request->input('order_product');
         $so_product_cost        = $request->input('so_product_cost');
@@ -423,29 +469,29 @@ class SOrdersController extends Controller
         $warehouse_id           = $request->input('warehouse_id');
         $product_info           = Products::find($order_product_id);
         $result_array           = array();
-        
-        $order_info = Orders::find($order_id); 
+
+        $order_info = Orders::find($order_id);
         // Get Stock information for the product
         $product_stock = Stocks::whereFkProductId($order_product_id)->whereFkWarehouseId($warehouse_id)->get();
-        
+
         if(count($product_stock) == 0)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "We dont have any stock for this Product in this warehouse";
             return Response()->json($result_array);
         }
-        
+
         $stock_serial_info = StockIds::whereSiStockUid($so_product_serial)->get();
-       
-        // check if we have the queanty ordered 
+
+        // check if we have the queanty ordered
         if($product_stock[0]['is_quanity'] < $so_product_quantity)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "We don't have quantity in the stock for this product ";
             return Response()->json($result_array);
         }
-        
-        
+
+
       /**  $product_cost       = $so_product_cost;**/
         $product_currency_id   = $product_info->p_product_currency;
         $so_order_currency_id  = $order_info->so_order_currency;
@@ -461,13 +507,13 @@ class SOrdersController extends Controller
             $product_currency = Currency::find($product_currency_id);
             $op_product_cost= convertCurrency($product_cost, $product_currency->cc_currency_code, $order_currency->cc_currency_code);
         }
-        else 
+        else
         {
             $exchange_rate = $currency_exchange[0]['er_exchange_rate'];
             $op_product_cost = $op_product_cost * $exchange_rate;
         }*/
-        
-        
+
+
         $order_products = new OrderCategories();
         $order_products->fk_order_id            = $order_id;
         $order_products->fk_product_id          = $order_product_id;
@@ -478,16 +524,16 @@ class SOrdersController extends Controller
         $order_products->so_exchange_rate       = $exchange_rate;
         $order_products->so_stock_id            = $product_stock[0]['is_id'];
         $order_products->save();
-        
-        
-        
+
+
+
         $order_info = Orders::find($order_id);
-        
+
         // check currency of order and currency of products
         //$product_currency_id
-        
-       
-        
+
+
+
    /** if($so_order_currency_id != $product_currency_id)
         {
             // calculation new total order info
@@ -503,70 +549,70 @@ class SOrdersController extends Controller
                 $total_order    = $total_order * $exchange_rate;
             }
         }
-       
+
         dd($op_product_cost);*/
-        
+
         $total_order                = $order_info->so_total_cost + ( $op_product_cost * $order_products->so_product_quantity );
-        
+
         $order_info->so_total_cost  = $total_order;
         $order_info->save();
-        
+
         $result_array['is_error']       = 0;
         $result_array['total_order']    = $total_order;
         $result_array['error_msg']      = 'Order Information Has been saved';
-        
+
         return Response()->json($result_array);
-        
+
     }
-    
-    
+
+
     /**
      * get price of product with currency selected in the order
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function GetProductPrice(Request $request)
     {
-        $so_id          =  $request->input('so_id'); 
+        $so_id          =  $request->input('so_id');
         $product_id     =  $request->input('product_id');
         $result_array   = array();
-        
+
         $lst_currency   = Currency::all();
         $currency_array = CreateDatabaseArrayByIndex($lst_currency, 'cc_id');
-        
+
         $order_info     = Orders::find($so_id);
-        $product_info   = Products::find($product_id); 
+        $product_info   = Products::find($product_id);
         $product_currency   = $product_info->p_product_currency;
         $order_currency     = $order_info->so_order_currency;
-        
+
         $today_date = date("Y-m-d");
         $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($product_currency)->whereErToCurrency($order_currency)->where('er_date_exchange','=',$today_date)->get();
-        
+
         $selling_price = $product_info->p_product_selling_price;
         $op_product_cost = 0;
         if(count($currency_exchange) == 0)
         {
             $op_product_cost    = convertCurrency($selling_price,$currency_array[ $product_currency ]['cc_currency_code'], $currency_array[ $order_currency ]['cc_currency_code']);
         }
-        else 
+        else
         {
             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
             $op_product_cost    = $selling_price * $exchange_rate;
         }
-        
+
         $result_array['is_error']        = 0;
         $result_array['product_price']   = $op_product_cost;
         $result_array['selling_price']   = $selling_price;
         $result_array['error_msg']       = 'Operation completed successfully';
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Pay Order by changing status and generate invoice and receipts
-     * 
+     *
      * @author Moe mantach
      * @access public
      * @param Request $request
@@ -575,19 +621,19 @@ class SOrdersController extends Controller
     {
         $so_id = $request->input('so_id');
         $result_array = array();
-        
+
         $order_info = Orders::find($so_id);
         $order_info->so_pay_date    = date("Y-m-d");
         $order_info->so_order_paied = 1;
         $order_info->save();
-        
+
         $customer_id    = $order_info->so_customer_id;
         $customer_info  = Customers::find($customer_id);
-        
+
         $AccountingManager = new AccountingManager();
-        
+
         $invoice_code = $AccountingManager->GenerateInvoiceCode();
-        
+
         // Create a new invoice and create a payment record /receipt record
         // give the ability from the order page to generate the invoice and receipt file
         $invoice_info = new Invoices();
@@ -608,17 +654,17 @@ class SOrdersController extends Controller
         $invoice_info->bi_invoice_paid= 1;
         $invoice_info->bi_number_payments = 1;
         $invoice_info->save();
-        
-        $bi_id = $invoice_info->bi_id;
-        
 
-        
-        
+        $bi_id = $invoice_info->bi_id;
+
+
+
+
         // Save the transaction and movememnt data to the accounting table
-        
+
         $payment_type_info      = PaymentTypes::find(2);
         $pt_payment_account     = $payment_type_info->pt_payment_account;
-        
+
         $AccTransaction = new Transactions();
         $AccTransaction->at_transaction_date    = $invoice_info->bi_invoice_date;
         $AccTransaction->at_creation_date       = date("Y-m-d");
@@ -626,7 +672,7 @@ class SOrdersController extends Controller
         $AccTransaction->fk_acc_journal_id      = 3;
         $AccTransaction->save();
         $at_id = $AccTransaction->at_id;
-        
+
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
@@ -638,7 +684,7 @@ class SOrdersController extends Controller
         $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
 
-        
+
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $pt_payment_account;
@@ -653,13 +699,13 @@ class SOrdersController extends Controller
 
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = 'Operation completed successfully';
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Delete Order information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -667,18 +713,18 @@ class SOrdersController extends Controller
      */
     public function DeleteOrderInfo(Request $request)
     {
-        
+
         $so_id= $request->input('so_id');
-         
+
         $order_info  = shippingOrders::find( $so_id );
         $order_info->so_is_deleted          = 1;
         $order_info->so_deleted_by          = Session('user_id');
         $order_info->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
 

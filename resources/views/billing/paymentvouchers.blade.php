@@ -56,6 +56,7 @@ th{
         	<span id="hidden_fields">
     			<input type="hidden" name="page_number" value="1" />
     			<input type="hidden" name="fisical_year" value="{{ date('Y') }}" />
+                <input type="hidden" name="pv_ids" value="" />
     		</span>
     		<!--begin: Search Form -->
     		<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
@@ -116,7 +117,7 @@ th{
     					</div>
     				</div>
     				<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-    					
+
     				</div>
     			</div>
     		</div>
@@ -149,7 +150,7 @@ th{
                  </div>
                  <div class="col-md-2" align="right"></div>
              </div>
-    		<!--end: Datatable --> 
+    		<!--end: Datatable -->
     		<div class="row">
     			<div class="col-md-12" align="right">
     				<a href="{{ url('billing/paymentvoucher/addform') }}" class="btn btn-info">
@@ -166,5 +167,5 @@ th{
         </div>
 	</div>
 </div>
- 
+
 @endsection

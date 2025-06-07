@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 	 function getCookie(cName) {
 		  const name = cName + "=";
@@ -32,7 +32,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -42,7 +42,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
@@ -52,7 +52,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -62,7 +62,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	$(".LstReceiptsGrid").on('click',"a[id*=EDIT_RECEIPT_]",receipts_module.EditReceiptForm)

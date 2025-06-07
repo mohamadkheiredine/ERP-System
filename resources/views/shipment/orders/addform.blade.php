@@ -111,19 +111,31 @@ th{
                                     <label class="control-label"> Order Label:&nbsp;</label><br/>
                                     <input type="text" name="so_order_label" id="SO_ORDER_LABEL" class="form-control" required="required" maxlength="255"  tabindex="5"  value="" />
                                 </div>
-                        </div> 
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Delivery Fees :&nbsp;<span class="required"> * </span></label><br/>
+                                <input type="text" name="so_delivery_fees" id="SO_DELIVERY_FEES" class="form-control" required="required" maxlength="255"  value=""  tabindex="6" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Extra Fees :&nbsp;<span class="required"> * </span></label><br/>
+                                <input type="text" name="so_extra_fees" id="SO_EXTRA_FEES" class="form-control" required="required" maxlength="255"  value=""  tabindex="7" />
+                            </div>
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Order Date:&nbsp;</label><br/>
                                     <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y') }}"  tabindex="6" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                           <div class="form-group">
                                 <label class="control-label"> Delivery Date:&nbsp;</label><br/>
                                 <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y') }}"  tabindex="7" />
                             </div>
-                        </div> 
+                        </div>
                          <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Customer Payment:&nbsp;</label><br/>
@@ -168,7 +180,7 @@ th{
                                 <label class="control-label"> Order Note:&nbsp;</label>
                                 <textarea class="form-control" style="width:100%;height: 250px;" name="so_order_note" id="SO_ORDER_NOTE"  tabindex="12"></textarea>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                     <div class="row">

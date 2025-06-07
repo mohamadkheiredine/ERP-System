@@ -26,18 +26,18 @@ class PayrollsPaymentMethods extends Model
     protected   $table          = 'payrolls_payment_methods';
     public      $timestamps     = false;
     protected   $primaryKey     = "pm_id";
-    
-    
+
+
     public function Company()
     {
         return $this->hasOne('App\models\System\Companies', 'cd_id','pm_company_id');
     }
-    
-    
-         public function Employee()
+
+
+    public function Employee()
     {
         return $this->hasOne('App\models\Users\Users', 'id','pm_employee_id');
     }
-    
-    
+
+
 }

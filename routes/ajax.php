@@ -2,7 +2,7 @@
 Route::post('/request/license/savelicenseinfo','IndexController@GenerateLicenseFile');
 Route::post('/request/login','Auth\LoginController@Login');
 
-Route::post('ajaxsaveConfiguration', 'Utilities\ConfigurationController@SaveConfiguration'); 
+Route::post('ajaxsaveConfiguration', 'Utilities\ConfigurationController@SaveConfiguration');
 
 
 Route::post('/request/dashboard/getdailysales','Dashboard\DashboardController@GetDailySales');
@@ -48,6 +48,36 @@ Route::post('/request/warehouse/deletezone','WareHouses\WareHouseController@Dele
 Route::post('/request/WareHouse/addemployee','WareHouses\WareHouseController@AddWarehouseEmployee');
 Route::post('/request/warehouse/removeemployee','WareHouses\WareHouseController@RemoveWarehouseEmployee');
 
+Route::get('/request/zones/displaylist','WareHouses\WarehouseZonesController@DisplayList');
+Route::post('/request/zones/savezoneinfo','WareHouses\WarehouseZonesController@SaveWarehouseZoneInfo');
+Route::delete('/request/zones/deletezoneinfo','WareHouses\WarehouseZonesController@DeleteWarehouseZoneInfo');
+
+
+Route::get('/request/floors/displaylist','WareHouses\WarehouseFloorsController@DisplayList');
+Route::post('/request/floors/savefloorinfo','WareHouses\WarehouseFloorsController@SaveWarehouseFloorInfo');
+Route::delete('/request/floors/deletefloorinfo','WareHouses\WarehouseFloorsController@DeleteWarehouseFloorInfo');
+
+
+Route::get('/request/assets/listlocations','Assets\AssetLocationsController@DisplayList');
+Route::post('/request/assets/savelocationinfo','Assets\AssetLocationsController@SaveAssetLocationInfo');
+Route::delete('/request/assets/deletelocationinfo','Assets\AssetLocationsController@DeleteAssetLocationInfo');
+
+Route::get('/request/assets/listcategories','Assets\AssetCategoriesController@DisplayList');
+Route::post('/request/assets/savecategoryinfo','Assets\AssetCategoriesController@SaveAssetCategoryInfo');
+Route::delete('/request/assets/deletecategoryinfo','Assets\AssetCategoriesController@DeleteAssetCategoryInfo');
+
+Route::get('/request/assets/displaylist','Assets\AssetsController@DisplayList');
+Route::post('/request/assets/saveinfo','Assets\AssetsController@SaveAssetInfo');
+Route::delete('/request/assets/deleteinfo','Assets\AssetsController@DeleteAssetInfo');
+
+Route::get('/request/assets/displaylistdep','Assets\AssetDepreciationController@DisplayList');
+Route::post('/request/assets/savedepinfo','Assets\AssetDepreciationController@SaveAssetDepreciationInfo');
+Route::delete('/request/assets/deletedepinfo','Assets\AssetDepreciationController@DeleteAssetDepreciationInfo');
+
+
+Route::get('/request/assets/displaylisttransfers','Assets\AssetTransfersController@DisplayList');
+Route::post('/request/assets/savetransferinfo','Assets\AssetTransfersController@SaveAssetTransferInfo');
+Route::delete('/request/assets/deletetransferinfo','Assets\AssetTransfersController@DeleteAssetTransferInfo');
 
 Route::post('/request/products/displaylistcategory','Inventory\ProductCategoriesController@DisplayList');
 Route::post('/request/products/savecategoryinfo','Inventory\ProductCategoriesController@SaveProductCategoryInfo');
@@ -132,6 +162,22 @@ Route::post('/request/timesheet/changerequeststatus','Timesheet\HolidayRequestsC
 Route::post('/request/payroll/displaylistpayroll','PayRoll\PayRollController@DisplayListPayRoll');
 Route::post('/request/payroll/generatemonthpayroll','PayRoll\PayRollController@GenerateMonthPayRoll');
 
+
+Route::get('/request/payroll/displaylistdedben','PayRoll\PayrollsDedBenController@DisplayList');
+Route::post('/request/payroll/savededbeninfo','PayRoll\PayrollsDedBenController@SaveDedBenInfo');
+Route::delete('/request/payroll/deletededbeninfo','PayRoll\PayrollsDedBenController@DeleteDedBenInfo');
+
+
+Route::get('/request/payroll/displaylistperiods','PayRoll\PayRollsPeriodController@DisplayList');
+Route::post('/request/payroll/saveperiodinfo','PayRoll\PayRollsPeriodController@SavePayRollPeriodInfo');
+Route::delete('/request/payroll/deleteperiodinfo','PayRoll\PayRollsPeriodController@DeletePayRollPeriodInfo');
+
+
+Route::get('/request/payroll/displaylisttaxbrackets','PayRoll\PayrollsTaxBracketsController@DisplayList');
+Route::post('/request/payroll/savebracketsinfo','PayRoll\PayrollsTaxBracketsController@SavePayRollBracketInfo');
+Route::delete('/request/payroll/deletebracketinfo','PayRoll\PayrollsTaxBracketsController@DeletePayRollPeriodInfo');
+
+
 Route::post('/request/timesheet/displaylisttimesheet','Timesheet\TimeSheetController@DisplayListTimesheet');
 Route::post('/request/timesheet/checkincheckout','Timesheet\TimeSheetController@CheckInCheckOutAttendance');
 Route::post('/request/timesheet/admintimesheet','Timesheet\TimeSheetController@DisplaySelectedTimesheet');
@@ -205,6 +251,7 @@ Route::get('/request/callcenter/downloadclosuresalesapp','CallCenter\Appointment
 Route::get('/request/deals/getdealinfo','CRM\DealsController@GetDealInfo');
 Route::get('/request/callcenter/getappointmentinformation','CallCenter\AppointmentsController@GetAppointmentInformation');
 Route::post('/request/appointments/generateappointmentsreport','CallCenter\AppointmentsController@GenerateAppointmentsReport');
+Route::get('/request/crm/getleadinfo','CRM\LeadsController@GetLeadInfo');
 
 Route::get('/generate-pdf', [App\Http\Controllers\CRM\DealsController::class, 'generatePDF']);
 
@@ -573,10 +620,11 @@ Route::delete('/request/costcenters/deleteinfo','CostCenter\CostCenterController
 Route::post('/request/inboundcall/displaylist','CallCenter\InboundController@DisplayList');
 Route::post('/request/inboundcall/saveinfo','CallCenter\InboundController@SaveInboundCallInfo');
 Route::delete('/request/inboundcall/deleteinfo','CallCenter\InboundController@DeleteInboundCallInformation');
-Route::put('/request/inboundcall/savemv','CallCenter\InboundController@SaveMaintenanceVoucherInfo');
+Route::post('/request/inboundcall/savemv','CallCenter\InboundController@SaveMaintenanceVoucherInfo');
 Route::post('/request/inboundcall/generateanddownloadlist','CallCenter\InboundController@GenerateAndDownloadList');
 Route::get('/request/call/getlistcallresults','CallCenter\InboundController@GetListCallResul');
 Route::post('/request/inboundcall/savecallresult','CallCenter\InboundController@SaveCallResultInfo');
+Route::get('/request/mvoucher/getnewmaintenancenumber','CallCenter\InboundController@GetNewMaintenanceNumber');
 
 Route::post('/request/outboundcall/displaylist','CallCenter\OutboundController@DisplayList');
 Route::post('/request/outboundcall/saveinfo','CallCenter\OutboundController@SaveOutboundCallInfo');

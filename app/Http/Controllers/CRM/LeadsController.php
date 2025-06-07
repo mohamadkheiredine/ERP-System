@@ -51,24 +51,24 @@ use Config;
 
 class LeadsController extends Controller
 {
-    
+
     /**
      * Main Page to display the leads management
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @return Response
      */
     public function index()
     {
-        
+
         // get dropdowns filter data
         $lead_categories = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lead_statuses  = CRMLeadStatus::whereLsIsDeleted(0)->get();
         $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get(); 
-        
+        $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
+
         $data = array(
             "lead_categories" => $lead_categories,
             "lst_appt_results" => $lst_appt_results,
@@ -76,13 +76,21 @@ class LeadsController extends Controller
             "lst_sales" => $lst_sales,
             "lead_statuses" => $lead_statuses
         );
-        return Response()->view("leads.leads",$data);
+        if(Config::get('appconfig.crm_telemarketing') == "0")
+        {
+            return Response()->view("leads.manageleads",$data);
+        }
+        else
+        {
+            return Response()->view("leads.leads",$data);
+        }
+
     }
 
 
     /**
      * Display list of the Leads based on selected fields
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -95,25 +103,25 @@ class LeadsController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        
+
         $leads_cond = CRMLeads::whereClIsDeleted(0);
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
+
         if( $lead_status > 0 )
         {
             $leads_cond = $leads_cond->whereFkLeadStatusId($lead_status);
         }
-        
-        
+
+
          if( $cl_sales_id > 0 )
         {
             $leads_cond = $leads_cond->whereClSalesId($cl_sales_id);
         }
-        
+
         if( strlen($general_search)  > 0)
         {
             $leads_cond = $leads_cond->where('cl_sheet_number','LIKE','%' . $general_search . '%');
@@ -122,15 +130,15 @@ class LeadsController extends Controller
             $leads_cond = $leads_cond->orWhere('cl_mobile','LIKE','%' . $general_search . '%');
             $leads_cond = $leads_cond->orWhere('cl_lead_description','LIKE','%' . $general_search . '%');
         }
-        
+
         $leads_count = $leads_cond->count();
-       
-        
+
+
          $total_pages = ceil( $leads_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
-        
+
         $lst_leads = $leads_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-        
+
 
         $response_array = array();
 
@@ -139,15 +147,24 @@ class LeadsController extends Controller
         );
         $response_array['is_error'] = 0;
         $response_array['total_pages'] = $total_pages;
-        $response_array['display'] = view('leads.listleads',$data)->render();
+
+        if(Config::get('appconfig.crm_telemarketing') == "0")
+        {
+            $response_array['display'] = view('leads.lstmanageleads',$data)->render();
+        }
+        else
+        {
+            $response_array['display'] = view('leads.listleads',$data)->render();
+        }
+
 
         return Response()->json($response_array);
     }
 
-    
+
     /**
      * Add Lead Result to database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -159,10 +176,10 @@ class LeadsController extends Controller
         $lr_text_result = $request->input('lr_text_result');
         $cl_lead_notes = $request->input('cl_lead_notes');
         $result_array = array();
-        
+
         $lead_info = CRMLeads::find($lr_lead_id);
-        
-        
+
+
         $lead_results                             = new CRMLeadResults();
         $lead_results->lr_lead_id                 = $lr_lead_id;
         $lead_results->lr_text_result             = $lr_text_result;
@@ -171,22 +188,48 @@ class LeadsController extends Controller
         $lead_results->lr_telemarketing_id        = $lead_info->cl_telemarketing_id;
         $lead_results->lr_sales_id                = $lead_info->cl_sales_id;
         $lead_results->save();
-        
+
         // change lead info
         $lead_info->cl_lead_results = $lr_text_result;
-        $lead_info->cl_lead_notes = $cl_lead_notes;
+       // $lead_info->cl_lead_notes = $cl_lead_notes;
         $lead_info->save();
-        
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
         return Response()->json($result_array);
-        
+
     }
-    
-    
+
+
+    public function GetLeadInfo(Request $request)
+    {
+        $lead_id = $request->input('lead_id');
+        $lead_info = CRMLeads::find($lead_id);
+        $result_array = array();
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+        $result_array['data'] = array(
+            "cl_id" => $lead_id,
+            "cl_lead_results" => $lead_info->cl_lead_results,
+            "cl_lead_notes" => $lead_info->cl_lead_notes,
+            "cl_sales_id" => $lead_info->cl_sales_id,
+            "cl_telemarketing_id" => $lead_info->cl_telemarketing_id,
+            "cl_first_name" => $lead_info->cl_first_name,
+            "cl_last_name" => $lead_info->cl_last_name,
+            "cl_mobile" => $lead_info->cl_mobile,
+            "cl_lead_description" => $lead_info->cl_lead_description,
+            "cl_lead_status" => $lead_info->cl_lead_status,
+            "cl_area" => $lead_info->cl_area,
+            "cl_nbr_employees" => $lead_info->cl_nbr_employees,
+            "cl_referred_by" => $lead_info->cl_referred_by
+        );
+        return Response()->json($result_array);
+    }
+
+
     /**
      * Get Display List Lead Results
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -194,10 +237,10 @@ class LeadsController extends Controller
     public function GetDisplayListLeadResults(Request $request)
     {
         $lead_id = $request->input('lead_id');
-        
+
         $lst_lead_results = CRMLeadResults::whereLrLeadId($lead_id)->whereLrIsDeleted(0)->orderBy('lr_id','DESC')->get();
-        
-        
+
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
         $data = array(
@@ -206,8 +249,8 @@ class LeadsController extends Controller
         $result_array['display'] = view('leads.listleadresults',$data)->render();
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Open form of add new Lead
      *
@@ -220,14 +263,14 @@ class LeadsController extends Controller
         $lead_categories    = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lead_statuses      = CRMLeadStatus::whereLsIsDeleted(0)->whereFkParentStatus(null)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        $lst_industries     = Industry::whereSiIsDeleted(0)->get(); 
-        $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get(); 
-        $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get(); 
-        $lst_countries      = Countries::all(); 
+        $lst_industries     = Industry::whereSiIsDeleted(0)->get();
+        $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get();
+        $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
+        $lst_countries      = Countries::all();
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        
-        
+
+
         $crm_telemarketing  = Config::get('appconfig.crm_telemarketing');
 
         $data = array(
@@ -255,11 +298,11 @@ class LeadsController extends Controller
     public function EditForm($cl_id)
     {
         $lead_info = CRMLeads::find($cl_id);
-        
+
         $lead_categories                = CRMClientCategories::whereCcIsDeleted(0)->get();
-        
+
         $lead_status                    =  $lead_info->fk_lead_status_id;
-        
+
         $lead_statuses                  = CRMLeadStatus::whereLsIsDeleted(0)->whereFkParentStatus($lead_status)->orWhere('ls_id',$lead_status)->get();
         $lst_users                      = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
@@ -269,8 +312,8 @@ class LeadsController extends Controller
         $lst_countries                  = Countries::all();
         $lst_service_categories         = CRMServiceCategories::whereScIsDeleted(0)->get();
         $crm_telemarketing              = Config::get('appconfig.crm_telemarketing');
-        $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get(); 
- 
+        $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
+
         $data = array(
             'lead_categories' => $lead_categories,
             'lead_statuses' => $lead_statuses,
@@ -283,7 +326,7 @@ class LeadsController extends Controller
             'lst_countries' => $lst_countries,
             'lst_service_categories' => $lst_service_categories,
             'lead_info' => $lead_info
-        ); 
+        );
         if($crm_telemarketing == '0')
             return Response()->view('leads.editlead',$data);
         else
@@ -299,8 +342,8 @@ class LeadsController extends Controller
      * @param Request $request
      */
     public function SaveLeadInfo(Request $request)
-    { 
-        
+    {
+
         $cl_id              = $request->input('cl_id');
         $cl_region              = $request->input('cl_region');
         $cl_area              = $request->input('cl_area');
@@ -333,11 +376,11 @@ class LeadsController extends Controller
         $need_shipment       = $request->input('need_shipment');
         $ini_status_id       = $request->input('ini_status_id');
         $ini_assign_to       = $request->input('ini_assign_to');
-        
+
         $cl_referred_by       = $request->input('cl_referred_by');
         $cl_lead_type_id       = $request->input('cl_lead_type_id');
         $cl_sales_id       = $request->input('cl_sales_id');
-        
+
         $cl_date_creation       = $request->input('cl_date_creation');
         $cl_type_items       = $request->input('cl_type_items');
         $cl_telemarketing_id       = $request->input('cl_telemarketing_id');
@@ -350,26 +393,26 @@ class LeadsController extends Controller
            if(count($name) > 1)
            {
               $cl_first_name = $name[0];
-                $cl_last_name = $name[1];  
+                $cl_last_name = $name[1];
            }
            else if(count($name) == 1)
            {
                $cl_first_name = $name[0];
-                $cl_last_name = ""; 
+                $cl_last_name = "";
            }
            else
            {
                 $cl_first_name = "";
-                $cl_last_name = ""; 
+                $cl_last_name = "";
            }
-           
+
         }
-        
-        
-        
-        $is_new = true; 
+
+
+
+        $is_new = true;
         $LeadInfo = new CRMLeads();
-        $leads_obj = new LeadsManager(); 
+        $leads_obj = new LeadsManager();
         if($cl_id != null)
         {
             $LeadInfo = CRMLeads::find($cl_id);
@@ -377,7 +420,7 @@ class LeadsController extends Controller
         }
         else{
              $count_exist_leads = CRMLeads::whereClMobile($cl_mobile)->whereClIsDeleted(0)->get();
-        
+
             if(count($count_exist_leads) >= 1)
             {
                 $result_array['is_error'] = 1;
@@ -386,21 +429,21 @@ class LeadsController extends Controller
                 return Response()->json($result_array);
             }
         }
-        
-        
+
+
         // upload file to the CRM photo
         if(count($_FILES) > 0 )
         {
             $image_data =  $leads_obj->UploadLeadAvatar($cl_id);
-            
+
             $LeadInfo->cl_image_base_src    = $image_data['data']['cl_image_base_src'];
             $LeadInfo->cl_image_file_name   = $image_data['data']['cl_image_file_name'];
             $LeadInfo->cl_image_extension   = $image_data['data']['cl_image_extension'];
-            
+
         }
-        
-        
-        $LeadInfo->fk_lead_owner        = $fk_lead_owner; 
+
+
+        $LeadInfo->fk_lead_owner        = $fk_lead_owner;
         $LeadInfo->fk_assign_to         = $fk_assign_to;
         $LeadInfo->cl_category_id       = $cl_category_id;
         $LeadInfo->cl_first_name        = $cl_first_name;
@@ -434,14 +477,14 @@ class LeadsController extends Controller
         $LeadInfo->cl_lead_type_id              = $cl_lead_type_id;
         $LeadInfo->cl_sheet_number              = $cl_sheet_number;
         $LeadInfo->cl_telemarketing_id              = $cl_telemarketing_id;
-        
+
         if($is_new == true)
         {
             $LeadInfo->cl_date_creation     = $cl_date_creation;
         }
-        
+
         $LeadInfo->save();
-        
+
         if($crm_telemarketing == '0')
         {
             $CRMLogs = new CRMLogsManager();
@@ -454,7 +497,7 @@ class LeadsController extends Controller
                 );
                 $CRMLogs->InsertCRMLog($params_array);
             }
-            else 
+            else
             {
                 if($ini_status_id != $fk_lead_status_id)
                 {
@@ -470,29 +513,29 @@ class LeadsController extends Controller
 
             }
         }
-        
+
 
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
 
     }
-    
-    
+
+
     public function CheckLeadExistByMobile(Request $request)
     {
         $cl_mobile = $request->input('cl_mobile');
         $leads_info = CRMLeads::whereClMobile($cl_mobile)->whereClIsDeleted(0)->get();
-       
+
         $result_array = array();
         if(count($leads_info) == 0)
         {
             $result_array['is_error'] = 0;
             $result_array['error_msg'] = "Lead Not Exist, we can add it ";
-            
+
             return Response()->json($result_array);
         }
-        
+
          $leads_info = $leads_info[0];
         $result_array['is_error'] = 1;
         $data = array(
@@ -506,19 +549,19 @@ class LeadsController extends Controller
             'cl_telemarketing_id' => $leads_info->Telemarketing->id,
             'cl_telemarketing_name' => $leads_info->Telemarketing->u_fullname,
             'cl_referred_by' => $leads_info->cl_referred_by
-        ); 
+        );
         $result_array['display'] = view('leads.displayexistinglead',$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Quick function to create Lead from inbound call
-     * 
+     *
      * @author Moe Mantach
-     * @access public 
+     * @access public
      * @param Request $request
-     * 
+     *
      * @return Response Response
      */
     public function QuickAddLead(Request $request)
@@ -532,20 +575,20 @@ class LeadsController extends Controller
         $cl_first_name          = $request->input('cl_first_name');
         $cl_last_name           = $request->input('cl_last_name');
         $cl_lead_code           = $request->input('cl_lead_code');
-        
-        
+
+
          $count_exist_leads = CRMLeads::whereClMobile($cl_mobile)->whereClIsDeleted(0)->get();
-       
+
         $result_array = array();
         if(count($count_exist_leads) >= 1)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "Phone Number Already Exist Please Add a new Phone Number";
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         $lead_info = new CRMLeads();
         $lead_info->fk_lead_owner       = $cl_agent_id;
         $lead_info->cl_lead_code        = $cl_lead_code;
@@ -559,16 +602,16 @@ class LeadsController extends Controller
         $lead_info->cl_phone            = $cl_phone;
         $lead_info->fk_lead_status_id   = 1;
         $lead_info->save();
-        
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Add Lead Activity from lead page
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -592,10 +635,10 @@ class LeadsController extends Controller
         return view("leads.addleadactivity",$data);
     }
 
-    
+
     /**
      * Change lead status of ids sent to the function
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -605,14 +648,14 @@ class LeadsController extends Controller
         $cs_lead_ids        = $request->input("cs_lead_ids");
         $cs_lead_status_id  = $request->input("cs_lead_status_id");
         $lead_ids_array     = explode(",", $cs_lead_ids);
-        
+
         foreach ($lead_ids_array as $key => $lead_id) {
             $Lead_Obj =CRMLeads::find($lead_id);
-            
+
             $old_lead_status = $Lead_Obj->fk_lead_status_id;
             $Lead_Obj->fk_lead_status_id = $cs_lead_status_id;
             $Lead_Obj->save();
-            
+
             if($old_lead_status != $cs_lead_status_id)
             {
                 //insert log of change status
@@ -626,29 +669,29 @@ class LeadsController extends Controller
                 $CRMLogs->InsertCRMLog($params_array);
             }
 
-            
+
         }
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     public function LeadAssignTo(Request $request)
     {
         $la_lead_ids        = $request->input("la_lead_ids");
         $la_fk_assign_to    = $request->input("la_fk_assign_to");
         $lead_ids_array     = explode(",", $la_lead_ids);
-        
+
         foreach ($lead_ids_array as $key => $lead_id) {
             $Lead_Obj =CRMLeads::find($lead_id);
             $Lead_Obj->fk_assign_to = $la_fk_assign_to;
             $Lead_Obj->save();
-            
-            
+
+
             //insert log of Assign Lead
             $CRMLogs = new CRMLogsManager();
             $params_array = array(
@@ -658,17 +701,17 @@ class LeadsController extends Controller
             );
             $CRMLogs->InsertCRMLog($params_array);
         }
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Delete Lead  info and check all condition before begin deleted
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -679,7 +722,7 @@ class LeadsController extends Controller
         $cl_id = $request->input('cl_id');
         $result_array = array();
 
-        
+
         $lead_info = CRMLeads::find($cl_id);
         $lead_info->cl_is_deleted   = 1;
         $lead_info->cl_deleted_by   = session('user_id');

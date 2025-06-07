@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 vouchers_module = {
 	displayListPayments : function(){
@@ -29,7 +29,7 @@ vouchers_module = {
                           $(this).prop("checked", checked);
                       });
                       $.uniform.update(set);
-                  }); 
+                  });
 	        	  if(response.total_pages > 0)
         		  {
 	        		  $.pagination = $('#VouchersPagination').twbsPagination({
@@ -41,13 +41,22 @@ vouchers_module = {
 	                       }
 	                   });
         		  }
-                
-                 
+
+
 				$('#LstPaymentVouchers').on('click',"a[id*=EDIT_PV_]",vouchers_module.EditPaymentVoucherInfo);
 				$('#LstPaymentVouchers').on('click',"a[id*=DELETE_PV_]",vouchers_module.DeletePaymentVoucherData);
 	        }
 	    });
 	},
+    SelectedVoucherRecord : function(){
+        $('#LstPaymentVouchers tr').each((index,item) => {
+            $(item).find('input[type=checkbox]').removeAttr('checked');
+            $(item).removeClass('SelectedRow');
+        })
+        $(this).find('input[type=checkbox]').attr('checked',true);
+        $(this).addClass('SelectedRow');
+        $("input[name=pv_ids]").val($(this).find('input[type=checkbox]').val());
+    },
         displayListOnepagerPayments : function(){
 		var base_url 	= $('input[name=base_url]').val();
 		var _token 		= $('input[name=_token]').val();
@@ -75,7 +84,7 @@ vouchers_module = {
                           $(this).prop("checked", checked);
                       });
                       $.uniform.update(set);
-                  }); 
+                  });
 	        	  if(response.total_pages > 0)
         		  {
 	        		  $.pagination = $('#VouchersPagination').twbsPagination({
@@ -87,8 +96,8 @@ vouchers_module = {
 	                       }
 	                   });
         		  }
-                
-                 
+
+
 				$('#LstPaymentVouchers').on('click',"a[id*=EDIT_PV_]",vouchers_module.EditPaymentVoucherInfo);
 				$('#LstPaymentVouchers').on('click',"a[id*=DELETE_PV_]",vouchers_module.DeletePaymentVoucherData);
 	        }
@@ -123,10 +132,25 @@ vouchers_module = {
                     $('form[name=frm_save_voucher]').find('select[name=pv_currency_id]').val(response.voucher_obj.pv_currency_id).trigger('change');
                     $('form[name=frm_save_voucher]').find('select[name=pv_sec_currency_id]').val(response.voucher_obj.pv_sec_currency_id).trigger('change');
                 }
-            }); 
+            });
             }
 
         });
+    },
+    QuickActionExecution : function(){
+      let action_type  = $(this).data('action_type');
+      switch(action_type)
+      {
+          case "PRINT":
+          {
+              let pv_ids = $('input[name=pv_ids]').val();
+              let base_url = $('#BASE_URL').val();
+              let url = base_url + "/billing/downloadvoucher/" + pv_ids
+              window.open(url, '_blank').focus();
+
+          }
+          break;
+      }
     },
         CalculateSecondaryAmountValue : function(){
             var pv_payment_amount = $('input[name=pv_payment_amount]').val();
@@ -134,9 +158,9 @@ vouchers_module = {
             var secondary_currency_amount = pv_payment_amount / pv_exchange_rate;
             $('input[name=pv_amount_secondary_amount]').val(secondary_currency_amount.toFixed(2))
         },
-        GenerateVoucherCode : function(){ 
+        GenerateVoucherCode : function(){
              var _token 	= $("input[name=_token]").val();
-		var base_url 	= $('input[name=base_url]').val(); 
+		var base_url 	= $('input[name=base_url]').val();
 		$.ajax
 		({
                     url : base_url + "/request/billing/getvouchercode",
@@ -145,14 +169,14 @@ vouchers_module = {
                     dataType : "json",
                     beforeSend : function(){
                     },
-                    success : function(response){ 
+                    success : function(response){
                         $("#PV_CODE").val(response.voucher_code);
                     }
 		});
         },
 	AddVoucherExtension : function(){
 		var base_url 	= $('input[name=base_url]').val();
-		var _token 		= $('input[name=_token]').val();  
+		var _token 		= $('input[name=_token]').val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/vouchers/displayextensionrow",
@@ -173,13 +197,13 @@ vouchers_module = {
 	},
         QuickAction : function(){
             let action_type = $(this).data('action_type');
-            
+
             switch(action_type)
             {
                 case "DOWNLOAD":
                 {
 	                            vouchers_module.DownloadPaymentVoucher();
-                      
+
                 }
                 break;
             }
@@ -189,7 +213,7 @@ vouchers_module = {
 			$(".checkboxes:checked").each(function(){
 				var pv_id = $(this).val();
 				pv_ids.push(pv_id);
-			}); 
+			});
 			var str_pv = pv_ids.join(",");
 		var base_url 	= $('input[name=base_url]').val();
 		var _token 		= $('input[name=_token]').val();
@@ -215,10 +239,10 @@ vouchers_module = {
 					$("button[id*=BTN_SAVE_EXTENSION_]").on('click',vouchers_module.SaveVoucherExtension);
 		        }
 		    });
-	}, 
+	},
 	DisplayListExtensions : function(){
 		var base_url 	= $('input[name=base_url]').val();
-		var _token 		= $('input[name=_token]').val(); 
+		var _token 		= $('input[name=_token]').val();
 		var pv_id 		= $('input[name=pv_id]').val();
 	    $.ajax
 	    ({
@@ -244,25 +268,25 @@ vouchers_module = {
 		var ve_extension_notes 		= $(this).parents('tr').find('input[name=ve_extension_notes]').val();
 		var base_url 	= $('input[name=base_url]').val();
 		var _token 		= $('input[name=_token]').val();
-		
+
 		var params = { ve_id : ve_id , _token : _token , ve_extention_account_id : ve_extention_account_id , ve_extension_currency : ve_extension_currency , ve_extension_amount : ve_extension_amount , ve_extension_notes : ve_extension_notes };
 		 $.ajax
 		    ({
 		        url : base_url + "/request/vouchers/saveextensionrow",
 		        data : params,
 	            method : 'post',
-	            dataType : "json", 
-		        success : function(response){ 
+	            dataType : "json",
+		        success : function(response){
 		        	vouchers_module.DisplayListExtensions();
 		        }
 		    });
-		
+
 	},
 	EditVoucherExtension : function(){
-		
+
 	},
 	DeleteVoucherExtension : function(){
-		
+
 	},
 	SavePaymentVoucherInfo : function(){
 		return vouchers_module.SavePaymentVoucherSubmitHandler();
@@ -288,7 +312,7 @@ vouchers_module = {
             		 required: true
             	 },
             	 pv_account_receivable : {
-            		 required: true, 
+            		 required: true,
             	 },
             	 pv_payment_amount : {
             		 required: true,
@@ -340,9 +364,9 @@ vouchers_module = {
                 success3.show();
                 error3.hide();
                 var base_url = $('#BASE_URL').val();
-    	       // var _token = $('input[name=_token]').val(); 
-    	         
-    	        var str_params = $("#FORM_SAVE_VOUCHER").serialize(); 
+    	       // var _token = $('input[name=_token]').val();
+
+    	        var str_params = $("#FORM_SAVE_VOUCHER").serialize();
     	         $.ajax
     	        ({
     	            url : base_url + "/request/billing/savepayvoucherinfo",
@@ -355,7 +379,7 @@ vouchers_module = {
     	                 window.location.href = base_url + "/billing/vouchers";
     	              }
     	            }
-    	        }); 
+    	        });
              }
 
          });

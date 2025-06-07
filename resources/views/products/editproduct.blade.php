@@ -20,9 +20,9 @@ Page Description :
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
+
 }
- 
+
 
 ?>
 
@@ -92,7 +92,7 @@ Page Description :
                 </div>
                 <div class="col-md-12" style="height:10px;">&nbsp;</div>
                 <div class="col-md-12">
-                
+
                 <div class="card card-bordered">
                 <div class="card-header bg-light">
                     <h3 class="card-title">Product Information</h3>
@@ -129,7 +129,7 @@ Page Description :
                                                 <option value="">No Parent</option>
                                                 <?php foreach ( $lst_product_categories_array as $key => $category_info ) { ?>
                                                         <option {{ $category_info->pc_id == $product_info->fk_pc_id ? "selected" : "" }} value="<?php echo $category_info->pc_id;  ?>"><?php echo $category_info->pc_category;  ?></option>
-                                                <?php  } ?> 
+                                                <?php  } ?>
                                         </select>
                                     </div>
                                 </div>
@@ -172,7 +172,7 @@ Page Description :
                                 @if($license_array->PRODUCTION_MODULE == 1)
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label> Product Lot</label> 
+                                        <label> Product Lot</label>
                                             <select  name="fk_lot_id" id="FK_LOT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Lot">
                                                 <option value="">No Lot</option>
                                                 @foreach($lst_lot as $index => $lo_info)
@@ -189,7 +189,7 @@ Page Description :
                                                  @foreach($lst_product_types as $index => $type_info)
                                                 	<option  {{ $product_info->p_product_type == $type_info->pt_id ? "selected" : "" }} value="{{ $type_info->pt_id }}">{{ $type_info->pt_type_name  }}</option>
                                                 @endforeach
-                                        </select> 
+                                        </select>
                                     </div>
                                 </div>
                                   @endif
@@ -199,9 +199,9 @@ Page Description :
                               				<select name="p_product_unit_type" id="P_PRODUCT_UNIT_TYPE" style="width:100%;" class="form-control">
                               					<option value="">-- Select type --</option>
                               					<option {{ $product_info->p_product_unit_type == "size" ? "selected" : "" }} value="size">size</option>
-                              					<option {{ $product_info->p_product_unit_type == "volume" ? "selected" : "" }} value="volume">Volume</option> 
-                              					<option {{ $product_info->p_product_unit_type == "weight" ? "selected" : "" }} value="weight">Weight</option> 
-                              					
+                              					<option {{ $product_info->p_product_unit_type == "volume" ? "selected" : "" }} value="volume">Volume</option>
+                              					<option {{ $product_info->p_product_unit_type == "weight" ? "selected" : "" }} value="weight">Weight</option>
+
                               				</select>
                               			</div>
                               		</div>
@@ -213,14 +213,14 @@ Page Description :
                                          <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_TOP"  class="btn btn-info">Save</button>
                                         <button type="button" id="BACK_FORM_TOP" name="back_form" class="btn default">Back</button>
                                     </div>
-                                </div>  
+                                </div>
                 </div>
-            </div> 
+            </div>
 
 						<div class="row" style="height:25px">&nbsp;</div>
 						@if(config('appconfig.price_by_supplier') == 0)
-						
-						
+
+
 						<div class="row">
 							<div class="col-md-12">
 							 <div class="card card-bordered">
@@ -254,11 +254,11 @@ Page Description :
                                     </div>
                                      <div class="col-md-4">
                                         <div class="form-group">
-                                            <label> Stock Currency </label> 
+                                            <label> Stock Currency </label>
                                                 <select   data-control="select2" data-placeholder="Select a Product Currency"  class="bs-select form-control" name="p_product_currency" id="P_PRODUCT_CURRENCY" data-actions-box="true">
                                                     @foreach( $lst_currencies as $key => $curr_info )
                                                             <option {{ $product_info->p_product_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                                     @endforeach 
+                                                     @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -272,14 +272,14 @@ Page Description :
                                                         @endforeach
                                                 </select>
                                             </div>
-                                    </div> 
+                                    </div>
                             	</div>
                                 </div>
                               </div>
 							</div>
-						</div> 
+						</div>
 						@endif
-						<div class="row" style="height:25px">&nbsp;</div>	
+						<div class="row" style="height:25px">&nbsp;</div>
 						<div class="row">
 							<div class="col-md-12">
                                  <div class="form-group">
@@ -287,7 +287,7 @@ Page Description :
                                     <textarea style="width:100%;height:250px;resize:none" id="P_PRODUCT_DESCRIPTION"  class="form-control" name="p_product_description"  cols="">{{  $product_info->p_product_description }}</textarea>
                                  </div>
                             </div>
-						</div>	
+						</div>
 						<div class="row" style="height:25px">&nbsp;</div>
 						<div class="row">
 					        	<div class="col-md-12">
@@ -318,7 +318,7 @@ Page Description :
                                                 <label class="control-label">Zone</label>
                                                 <div class="DefaultZone form-group">
                                                  <select data-control="select2" data-placeholder="Select a zone" class="form-select"  name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
-                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                        <option value="">&nbsp;&nbsp;</option>
                                                 </select>
                                                 </div>
                                             </div>
@@ -328,7 +328,7 @@ Page Description :
                                                 <label class="control-label">Floor</label>
                                                 <div class="DefaultFloor form-group">
                                                  <select data-control="select2" data-placeholder="Select a Floor" class="form-select" name="fk_floor_id" id="FK_FLOOR_ID" data-actions-box="true">
-                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                        <option value="">&nbsp;&nbsp;</option>
                                                 </select>
                                                 </div>
                                             </div>
@@ -345,10 +345,10 @@ Page Description :
                                  <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_MIDDLE"  class="btn btn-info">Save</button>
                                 <button type="button" id="BACK_FORM_MIDDLE" name="back_form" class="btn default">Back</button>
                             </div>
-                        </div>    	
-						<div class="row" style="height:25px">&nbsp;</div>	
+                        </div>
+						<div class="row" style="height:25px">&nbsp;</div>
 						<div class="row">&nbsp;</div>
-						
+
 						<div class="row">
 							<div class="col-md-12">
 							<div class="card card-bordered">
@@ -363,18 +363,18 @@ Page Description :
                                 <div class="card-body">
                                 	<div class="row">
                                 		<div class="col-md-12"  id="ProductSizeInfo">
-                                			
+
                                 		</div>
                                 	</div>
                                 </div>
                                 </div>
-							
+
 							</div>
-						</div> 
-                	  
-                	
+						</div>
+
+
                 </div>
-                     
+
                    <div class="row" style="height:5px;"></div>
                     <div class="row">
                         <div class="col-md-9"></div>
@@ -397,7 +397,7 @@ Page Description :
                                 <a class="nav-link" data-bs-toggle="tab" href="#tabLogs">Logs</a>
                             </li>
                         </ul>
-                        
+
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="tabStock" role="tabpanel">
                               	<div class="row">
@@ -412,10 +412,12 @@ Page Description :
         											<th> Warehouse </th>
         											<th> Quanity </th>
         											<th> Price </th>
+        											<th> Edit </th>
+        											<th> Delete </th>
         										</tr>
         									</thead>
-        									<tbody class="LstStocks"> 
-        										 
+        									<tbody class="LstStocks">
+
         									</tbody>
         								</table>
                               		</div>
@@ -443,13 +445,13 @@ Page Description :
 													<th> Price </th>
 												</tr>
 											</thead>
-											<tbody class="LstStockMovement"> 
-												 
+											<tbody class="LstStockMovement">
+
 											</tbody>
 										</table>
                               		</div>
                               	</div>
-                               
+
 												<div class="row">
                                                     <div class="col-md-9"></div>
                                                     <div class="col-md-3" align="right">
@@ -458,11 +460,11 @@ Page Description :
                                                 </div>
                             </div>
                             <div class="tab-pane fade" id="tabLogs" role="tabpanel">
-                         
+
                             </div>
-                        </div>	
+                        </div>
                    		</div>
-                   </div> 
+                   </div>
                 </div>
             </form>
     </div>

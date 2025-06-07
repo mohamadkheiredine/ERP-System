@@ -23,11 +23,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class WareHouseZones extends Model
 {
-    //use \HighIdeas\UsersOnline\Traits\UsersOnlineTrait;
     protected   $table          = 'inventory_warehouse_zones';
     public      $timestamps     = false;
     protected   $primaryKey     = "wz_id";
 
-
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
+    }
 
 }

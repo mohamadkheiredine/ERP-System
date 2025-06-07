@@ -26,17 +26,17 @@ class PayrollsSalaryDetails extends Model
     protected   $table          = 'payrolls_salary_details';
     public      $timestamps     = false;
     protected   $primaryKey     = "pd_id";
-    
+
      public function Employee()
     {
         return $this->hasOne('App\models\Users\Users', 'id','pd_user_id');
     }
-    
-    
+
+
     public function Company()
     {
         return $this->hasOne('App\models\System\Companies', 'cd_id','pd_company_id');
     }
-    
-    
+
+
 }

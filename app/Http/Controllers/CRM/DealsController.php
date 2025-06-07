@@ -46,9 +46,9 @@ use App\models\Billing\InvoicePayments;
 use App\models\Billing\InvoiceProducts;
 use App\models\CRM\CRMContractTypes;
 use App\models\Accounting\ChartAccounts;
-use App\models\Billing\Invoices; 
+use App\models\Billing\Invoices;
 use App\models\CallCenter\MaintenanceCase;
-use PDF; 
+use PDF;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\models\Billing\Receipts;
 use App\models\CallCenter\InboundCall;
@@ -66,16 +66,16 @@ class DealsController extends Controller
      */
     public function index()
     {
-        
+
         $lst_accounts = CRMAccounts::whereCaIsDeleted(0)->get();
-        
+
         $data = array(
             "lst_accounts" => $lst_accounts
         );
         return Response()->view('accounts.deals',$data);
     }
-    
-    
+
+
     /**
      * Display list of Account Deals
      *
@@ -85,58 +85,58 @@ class DealsController extends Controller
      */
    public function DisplayList(Request $request)
     {
-        
+
         $ad_account             = $request->input("ad_account");
         $general_search         = $request->input("general_search");
         $page_number            = $request->input("page_number");
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-            
-        
+
+
          if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
-        
+
+
         $lst_deals_cond = CRMDeals::whereAdIsDeleted(0);
-        
+
         if( $ad_account > 0 )
         {
             $lst_deals_cond = $lst_deals_cond->whereFkAccountId($ad_account);
         }
-        
+
         $deals_count = $lst_deals_cond->count();
-       
-        
+
+
          $total_pages = ceil( $deals_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
-             
+
          $lst_account_deals = $lst_deals_cond->skip($skip)->take($nbr_rows_per_pages)->get();
           $lst_accounts   = CRMAccounts::whereCaIsDeleted(0)->get();
-         
-        $accounts_array   = array(); 
-        
-        foreach ( $lst_accounts as $key => $account_info ) 
+
+        $accounts_array   = array();
+
+        foreach ( $lst_accounts as $key => $account_info )
         {
             $accounts_array[ $account_info->ca_id ] =  $account_info->ca_account_name;
-        } 
+        }
         $data = array(
             "lst_account_deals" => $lst_account_deals,
             "accounts_array" => $accounts_array,
         );
-        
+
         $result_array = array();
-         
+
         $result_array['display'] = view("accounts.listdeals",$data)->render();
         $result_array['total_pages'] = $total_pages;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Get Deal info and return deal info
-     * 
+     *
      * @author Moe Mantach
      * @param Request $request
      */
@@ -144,35 +144,35 @@ class DealsController extends Controller
     {
         $result_array = array();
         $deal_code = $request->input('deal_code');
-        
+
         $deal_info = CRMDeals::where('ad_deal_code','LIKE','%' .$deal_code . '%')->whereAdIsDeleted(0)->get();
-        
-        
+
+
         if(count($deal_info) == 0)
         {
              $result_array['is_error'] = 0;
              $result_array['error_msg'] = "No Contract with this Contract Code";
              return Response()->json($result_array);
         }
-        
+
         $deal_info = $deal_info[0];
-    
+
         $invoice_id = $deal_info->ad_invoice_id;
-        
+
         $total_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->count();
         $paid_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->whereBrReceiptPaid(1)->count();
-        
+
         $result_array['is_error'] = 0;
         $result_array['deal_info'] = array(
             'fk_sales_id' => $deal_info->fk_sales_id,
             'billing_situation' => $paid_count . "/" .$total_count,
             'fk_telemarketing_id' => $deal_info->fk_telemarketing_id
         );
-        
+
         return Response()->json($result_array);
     }
-     
-    
+
+
     /**
      * Function of Adding a new Account Deals
      *
@@ -181,7 +181,7 @@ class DealsController extends Controller
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
     public function AddForm()
-    {      
+    {
         $lst_accounts   = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_leads      = CRMLeads::whereClIsDeleted(0)->get();
         $lst_contacts   = CRMContacts::whereCcIsDeleted(0)->get();
@@ -190,13 +190,13 @@ class DealsController extends Controller
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_currencies = Currency::all();
         $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
-        
+
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_supervisors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
-        
-        
-        
+
+
+
         $data = array(
             "lst_accounts" => $lst_accounts,
             "lst_products" => $lst_products,
@@ -212,11 +212,11 @@ class DealsController extends Controller
         );
         return Response()->view('accounts.adddeals',$data);
     }
-    
-    
+
+
     /**
-     * Generate and Download Contract 
-     * 
+     * Generate and Download Contract
+     *
      * @author Moe mantach
      * @access public
      * @param Request $request
@@ -225,41 +225,43 @@ class DealsController extends Controller
     {
         $ad_id = $request->input('ad_id');
         $deal_info = CRMDeals::find($ad_id);
-        
+
         $contract_document = view('templates.contractstatments')->render();
-        
         $contract_document = str_replace("%FULLNAME%", $deal_info->Account->ca_account_name, $contract_document);
+        $contract_document = str_replace("%COMPANY_NAME_TRANSLATION%", session('company_name_translation'), $contract_document);
         $contract_document = str_replace("%NATIONAL_ID%", $deal_info->Account->ca_national_id, $contract_document);
         $contract_document = str_replace("%PHONE_NUMBER%", $deal_info->Account->ca_account_phone, $contract_document);
         $contract_document = str_replace("%ADDRESS%", $deal_info->Account->ca_billing_address, $contract_document);
         $contract_document = str_replace("%NUMBER_PAYMENTS%", $deal_info->ad_nbr_of_payments, $contract_document);
         $contract_document = str_replace("%FIRSTINVOICE%", $deal_info->ad_first_bill_date, $contract_document);
         $contract_document = str_replace("%TOTAL_PRICE%", $deal_info->ad_remaining_payment, $contract_document);
+        $contract_document = str_replace("%CURRENCY%", $deal_info->Currency->cc_currency_name, $contract_document);
         $contract_document = str_replace("%NATIONALITY%", ( $deal_info->Account->Nationality ? $deal_info->Account->Nationality->name : ""), $contract_document);
-        
-        // get list of payments 
+
+        // get list of payments
         //LST_PAYMENTS
-        
+
          $deal_info = CRMDeals::find($ad_id);
          $invoice_id =   $deal_info->ad_invoice_id;
-        
+
          $lst_invoice_payments = InvoicePayments::whereFkInvoiceId($invoice_id)->get();
          $data = array(
-             "lst_invoice_payments" => $lst_invoice_payments
+             "lst_invoice_payments" => $lst_invoice_payments,
+             "currency_name" => $deal_info->Currency->cc_currency_name
          );
-         $payments = view('deals.lsttemplatedproducts',$data)->render();  
-         
-         
+         $payments = view('deals.lsttemplatedproducts',$data)->render();
+
+
         $contract_document = str_replace("%LST_PAYMENTS%", $payments, $contract_document);
-      
- 
+
+
        $pdf = App::make('snappy.pdf.wrapper');
         $pdf->loadHTML($contract_document);
         return $pdf->inline();
-        
+
     }
-    
-    
+
+
     public function generatePDF(Request $request)
     {
         // Define the CSV headers
@@ -288,16 +290,16 @@ class DealsController extends Controller
         // Return the response as a streamed download
         return new StreamedResponse($callback, 200, $headers);
     }
-    
+
        public function GetProductInfo( Request $request )
     {
         $product_id         = $request->input('product_id');
-        
+
         $result_array        = array();
         $product_array       = array();
-        
+
         $product_info = Products::find($product_id);
-        
+
         $product_array['product_id']                   = $product_id;
         $product_array['reference']                   = $product_info->p_product_ref;
         $product_array['p_barcode']                   = $product_info->p_barcode;
@@ -307,12 +309,12 @@ class DealsController extends Controller
         $product_array['category_name']               = $product_info->Category->pc_category;
         $product_array['p_product_selling_price']     = $product_info->p_product_selling_price;
         $product_array['p_product_cost_price']     = $product_info->p_product_cost_price;
-        
-        
+
+
         $product_array['p_product_tax_rate']          = $product_info->p_product_tax_rate;
         $product_array['currency_code']               = $product_info->Currency->cc_currency_code;
         $product_array['currency']                    = $product_info->p_product_currency;
-        
+
         $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
         $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
         if(strlen($product_info->p_product_profile_base_src) > 0 ){
@@ -320,21 +322,21 @@ class DealsController extends Controller
         }else{
             $img_src = url('images/NoImageAvailable.jpg');
         }
-        
-        $product_array['product_avatar']   = $img_src; 
-        
-        
+
+        $product_array['product_avatar']   = $img_src;
+
+
         $result_array['is_error']       = 0;
         $result_array['product_info']   = $product_array;
-        
+
         unset($product_array);
         $product_array = null;
-        
+
         return Response()->json($result_array);
-        
+
     }
-   
-    
+
+
     /**
      * Save Deal Category Info to the database
      *
@@ -362,7 +364,7 @@ class DealsController extends Controller
         $ad_deal_probability        = $request->input('ad_deal_probability');
         $ad_next_step               = $request->input('ad_next_step');
         $ad_expected_revenue        = $request->input('ad_expected_revenue');
-        $fk_sales_id                = $request->input('fk_sales_id'); 
+        $fk_sales_id                = $request->input('fk_sales_id');
         $ad_currency_id             = $request->input('ad_currency_id');
         $ad_down_payment            = $request->input('ad_down_payment');
         $ad_nbr_of_payments         = $request->input('ad_nbr_of_payments');
@@ -379,14 +381,14 @@ class DealsController extends Controller
         $ad_supervisor_comm                         = $request->input('ad_supervisor_comm');
         $ad_account_code                        = $request->input('ad_account_code');
         $ad_serial_number                        = $request->input('ad_serial_number');
-        
+
         $result_array = array();
-        
-        
-        // validate that code exist 
-       
-        
-        // Validate 
+
+
+        // validate that code exist
+
+
+        // Validate
          $action = "add";
         $account_deal = new CRMDeals();
         if($ad_id != null)
@@ -394,10 +396,10 @@ class DealsController extends Controller
             $account_deal= CRMDeals::find($ad_id);
             $action = "edit";
         }
-        
+
         $client_info = CRMAccounts::find($fk_account_id);
-        
-         
+
+
         $account_deal->fk_account_id         =   $fk_account_id;
         $account_deal->fk_contact_id         =   $fk_contact_id;
         $account_deal->fk_lead_id            =   $fk_lead_id;
@@ -429,20 +431,20 @@ class DealsController extends Controller
         $account_deal->ad_serial_number      =   $ad_serial_number;
         $account_deal->ad_deal_date      =   $ad_deal_date;
         $account_deal->ad_warranty_date      =   $ad_warranty_date;
-        
- 
+
+
         $account_deal->save();
         $ad_id = $account_deal->ad_id;
         $account_deal= CRMDeals::find($ad_id);
-        
+
         // save product deals
         if(strlen($deals) > 0)
         {
             $product_deals = explode(",", $deals);
             $ad_id = $account_deal->ad_id;
-            
+
             $delete_product = CRMDealProducts::whereDpDealId($ad_id)->delete();
-            foreach ($product_deals as $key => $product_id) 
+            foreach ($product_deals as $key => $product_id)
             {
                 $d_products_obj = new CRMDealProducts();
                 $d_products_obj->dp_deal_id = $ad_id;
@@ -450,10 +452,10 @@ class DealsController extends Controller
                 $d_products_obj->save();
             }
         }
-        
 
-        
-        
+
+
+
         // when approve create invoice and generate receipts and payment for all number of
         // payments
 //        if($ad_is_approved > 0)
@@ -461,20 +463,20 @@ class DealsController extends Controller
             // delete old invoice and payments exist
             $delete_invoice = Invoices::whereBiId($account_deal->ad_invoice_id)->delete();
             $delete_payments = InvoicePayments::whereFkInvoiceId($account_deal->ad_invoice_id)->delete();
-            
-            
+
+
                 if($fk_account_id == 0)
                 {
                     $result_array['is_error'] = 1;
                     $result_array['error_msg'] = "Please Select Account Before Save";
-                    
+
                     return Response()->json($result_array);
                 }
-            
+
                 // Create Accounting Account
                 $crm_account = CRMAccounts::find($fk_account_id);
 
-            
+
                 $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
                 $account_info = $account_info[0];
 
@@ -490,17 +492,17 @@ class DealsController extends Controller
                 $acc_accounting->aa_sub_account      = $account_info->aa_id;
                 $acc_accounting->aa_account_label    = $crm_account->ca_account_name;
                 $acc_accounting->fk_country_id       = 0;
-                $acc_accounting->save(); 
+                $acc_accounting->save();
                 $aa_id = $acc_accounting->aa_id;
-            
-                
+
+
                 $creation_date = date("Y-m-d H:i:s");
                 $company_id = Session('company_id');
                 $AccountingManager = new AccountingManager();
                 $params_array = array(
                     'company_id' => $company_id
                 );
-               $invoice_code = $AccountingManager->GenerateInvoiceCode($params_array); 
+               $invoice_code = $AccountingManager->GenerateInvoiceCode($params_array);
                 $invoice_info = new Invoices();
                 $invoice_info->bi_invoice_ref       = $invoice_code;
                 $invoice_info->bi_invoice_code      = $invoice_code;
@@ -529,13 +531,13 @@ class DealsController extends Controller
                 $deal_info = CRMDeals::find($ad_id);
                 $deal_info->ad_invoice_id = $bi_id;
                 $deal_info->save();
-                
+
                 $lst_deal_items = CRMDealProducts::whereDpDealId($ad_id)->get();
-                foreach ($lst_deal_items as $key => $item_info ) 
+                foreach ($lst_deal_items as $key => $item_info )
                 {
                     $invoice_items = new InvoiceProducts();
-                    
-                    
+
+
                     $invoice_items->fk_invoice_id        = $bi_id;
                     $invoice_items->ii_item_id           = -1;
                     $invoice_items->ii_stock_id          = -1;
@@ -546,20 +548,20 @@ class DealsController extends Controller
                     $invoice_items->ii_price_currency    = $ad_currency_id;
                     $invoice_items->save();
                 }
-                
-                
-                // Save invoice Payments 
+
+
+                // Save invoice Payments
                 $remaining_amount = $ad_deal_amount - $ad_down_payment;
                 $payment_amount = ceil($remaining_amount / $ad_nbr_of_payments);
                 $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
                 $neareset_amount = round($payment_amount, -3);
                 $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
                 $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
-                
+
               $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payments - 1);
               $last_payment = $payment_amount + $total;
-               
-                // create invoice down payment 
+
+                // create invoice down payment
                 $invoice_payment = new InvoicePayments();
                 $invoice_payment->fk_invoice_id = $bi_id;
                 $invoice_payment->ip_payment_percentage = $downpayment_percentage;
@@ -570,8 +572,8 @@ class DealsController extends Controller
                 $invoice_payment->ip_billing_status = 0;
                 $invoice_payment->ip_payment_label = "Downpayment of Deal Code #" . $ad_deal_code;
                 $invoice_payment->save();
-                
-                for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++) 
+
+                for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
                 {
                     $invoice_payment = new InvoicePayments();
                     $invoice_payment->fk_invoice_id = $bi_id;
@@ -584,7 +586,7 @@ class DealsController extends Controller
                     $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
                     $invoice_payment->save();
                 }
-                
+
                 $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
                 $invoice_payment = new InvoicePayments();
                 $invoice_payment->fk_invoice_id = $bi_id;
@@ -596,10 +598,10 @@ class DealsController extends Controller
                 $invoice_payment->ip_billing_status = 0;
                 $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
                 $invoice_payment->save();
-                
-                
+
+
         }
-        
+
         if($action == "add")
         {
            // Create Instalation Date Pending Maintenance Call
@@ -608,21 +610,21 @@ class DealsController extends Controller
             $call_index = "CC" . sprintf('%05d', $index);
 
             $call_info = new InboundCall();
-            $call_info->ic_call_index      = $call_index;  
-            $call_info->ic_sales_id      = $fk_sales_id;  
-            $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
-            $call_info->ic_client_code      = $client_info->ca_account_code;  
-            $call_info->ic_contract_code      = $ad_deal_code;  
-            $call_info->ic_serial_number      = $ad_serial_number;  
-            $call_info->ic_call_date      = $ad_first_bill_date;  
-            $call_info->ic_call_start_time      = "00:00";  
-            $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;  
-            $call_info->save();         
+            $call_info->ic_call_index      = $call_index;
+            $call_info->ic_sales_id      = $fk_sales_id;
+            $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
+            $call_info->ic_client_code      = $client_info->ca_account_code;
+            $call_info->ic_contract_code      = $ad_deal_code;
+            $call_info->ic_serial_number      = $ad_serial_number;
+            $call_info->ic_call_date      = $ad_first_bill_date;
+            $call_info->ic_call_start_time      = "00:00";
+            $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;
+            $call_info->save();
         }
 
-        
-        
-        
+
+
+
         // if deal approve create maintenance appointment next 3 month
         if($ad_is_approved > 0)
         {
@@ -633,47 +635,47 @@ class DealsController extends Controller
                 $count_calls = InboundCall::whereIcIsDeleted(0)->count();
                 $index = $count_calls + 1;
                 $call_index = "CC" . sprintf('%05d', $index);
-                
+
                 $call_info = new InboundCall();
-                $call_info->ic_call_index      = $call_index;  
-                $call_info->ic_sales_id      = $fk_sales_id;  
-                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
-                $call_info->ic_client_code      = $client_info->ca_account_code;  
-                $call_info->ic_contract_code      = $ad_deal_code;  
-                $call_info->ic_serial_number      = $ad_serial_number;  
-                $call_info->ic_call_date      = $ro_date;  
-                $call_info->ic_call_start_time      = "00:00";  
-                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_RO;  
+                $call_info->ic_call_index      = $call_index;
+                $call_info->ic_sales_id      = $fk_sales_id;
+                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
+                $call_info->ic_client_code      = $client_info->ca_account_code;
+                $call_info->ic_contract_code      = $ad_deal_code;
+                $call_info->ic_serial_number      = $ad_serial_number;
+                $call_info->ic_call_date      = $ro_date;
+                $call_info->ic_call_start_time      = "00:00";
+                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_RO;
                 $call_info->save();
-                
-                
+
+
                 $count_calls = InboundCall::whereIcIsDeleted(0)->count();
                 $index = $count_calls + 1;
                 $call_index = "CC" . sprintf('%05d', $index);
-        
+
                 $call_info = new InboundCall();
-                $call_info->ic_call_index      = $call_index;  
-                $call_info->ic_sales_id      = $fk_sales_id;  
-                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;  
-                $call_info->ic_client_code      = $client_info->ca_account_code;  
-                $call_info->ic_contract_code      = $ad_deal_code;  
-                $call_info->ic_serial_number      = $ad_serial_number;  
-                $call_info->ic_call_date      = $three_maint_date;  
-                $call_info->ic_call_start_time      = "00:00";  
-                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN;  
+                $call_info->ic_call_index      = $call_index;
+                $call_info->ic_sales_id      = $fk_sales_id;
+                $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
+                $call_info->ic_client_code      = $client_info->ca_account_code;
+                $call_info->ic_contract_code      = $ad_deal_code;
+                $call_info->ic_serial_number      = $ad_serial_number;
+                $call_info->ic_call_date      = $three_maint_date;
+                $call_info->ic_call_start_time      = "00:00";
+                $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN;
                 $call_info->save();
         }
-        
-        
+
+
         $result_array['is_error']  = 0;
         $result_array['ad_id']  = $ad_id;
         $result_array['error_msg'] = 'Account Deal Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Display Edit Account Deals Form Page
      *
@@ -692,11 +694,11 @@ class DealsController extends Controller
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
         $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
-        
+
         $lst_telemarketing  = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales          = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_supervisors    = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
-        
+
         $data = array(
             "lst_accounts" => $lst_accounts,
             "lst_leads" => $lst_leads,
@@ -714,11 +716,11 @@ class DealsController extends Controller
         );
         return Response()->view('accounts.editdeals',$data);
     }
-    
-    
+
+
     /**
      * Generate Deal Payments Preview to display it inside the deal added information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -729,27 +731,27 @@ class DealsController extends Controller
         $ad_down_payment    = $request->input('ad_down_payment');
         $ad_nbr_of_payment  = $request->input('ad_nbr_of_payment');
         $ad_first_bill_date  = $request->input('ad_first_bill_date');
-        
+
         $remaining_amount = $ad_deal_amount - $ad_down_payment;
+
         $payment_amount = $remaining_amount / $ad_nbr_of_payment;
 
         $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
 
         $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
-        
-           $neareset_amount = round($payment_amount, -3);
-        $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
 
-      $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payment - 1);
-      $last_payment = $payment_amount + $total;
-        
-        
-        
+        $neareset_amount = round($payment_amount, 3);
+        $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
+        $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payment - 1);
+        $last_payment = $payment_amount + $total;
+
+
+
         $payments_array = array();
         $result_array = array();
 
 
-        for ($index = 1; $index < $ad_nbr_of_payment; $index++) 
+        for ($index = 1; $index < $ad_nbr_of_payment; $index++)
         {
             $bill_nbr = sprintf("%07d",$index);
             $payments_array[] =array(
@@ -759,7 +761,7 @@ class DealsController extends Controller
                 'bill_amount' => $neareset_amount,
             );
         }
-        
+
         $bill_nbr = sprintf("%07d",$index);
         $payments_array[] =array(
             'bill_nbr' => $bill_nbr,
@@ -767,22 +769,22 @@ class DealsController extends Controller
             'bill_status' => "Pending",
             'bill_amount' => $last_payment,
         );
-        
-        
-        
+
+
+
         $result_array['is_error'] = 0;
         $data = array(
           "payments_array"   => $payments_array
         );
         $result_array['display'] = view('deals.paymentpreview',$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Delete Account Deal
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -790,18 +792,18 @@ class DealsController extends Controller
      */
     public function DeleteDealsInfo(Request $request)
     {
-        
+
         $ad_id= $request->input('ad_id');
-         
+
         $deal_info = CRMDeals::find( $ad_id);
         $deal_info->ad_is_deleted           = 1;
         $deal_info->ad_deleted_by           = Session('user_id');
         $deal_info->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
 

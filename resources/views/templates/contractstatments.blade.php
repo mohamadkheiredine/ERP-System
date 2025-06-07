@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar">
-<head> 
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Document</title> 
+    <title>Document</title>
       <style>
         table {
             width: 100%;
@@ -29,7 +29,7 @@
     </h2>
     <p style="text-align: right;">أقر انا الموقع ادناه  %FULLNAME%  احمل بطاقة شخصية ذات الرقم المدني <span class="large-text">%NATIONAL_ID%</span> %NATIONALITY% الجنسية</p>
     <p style="text-align: right;"> %ADDRESS% <span class="large-text">%PHONE_NUMBER%</span></p>
-    <p style="text-align: right;">بأني مدين لشركة عبداللطيف سويد و وسيم بدران و شريكهما و سأقوم بتسديد مبلغ و قدره <span class="large-text">%TOTAL_PRICE%</span> ليرة سورية و ألتزم بسداد هذا المبلغ على شكل أقساط شهرية لمدة %NUMBER_PAYMENTS% أشهر. يتم سداد القسط الأول في %FIRSTINVOICE% .</p>
+    <p style="text-align: right;">بأني مدين لشركة %COMPANY_NAME_TRANSLATION%  و سأقوم بتسديد مبلغ و قدره <span class="large-text">%TOTAL_PRICE%</span> %CURRENCY% و ألتزم بسداد هذا المبلغ على شكل أقساط شهرية لمدة %NUMBER_PAYMENTS% أشهر. يتم سداد القسط الأول في %FIRSTINVOICE% .</p>
 
     <table class="Payments">
         <thead>
@@ -37,7 +37,7 @@
                 <th>رقم الدفعة</th>
                 <th>تسدد بتاريخ</th>
                 <th>قيمتها</th>
-                <th>ليرة سورية</th>
+                <th>%CURRENCY%</th>
             </tr>
         </thead>
         <tbody>
@@ -45,7 +45,7 @@
         </tbody>
     </table>
 
-    <div class="spacer"></div>
+    <div style="width:100%;height: 400px"></div>
     <br/><br/>
     <table dir="rtl" border="0">
         <tr>

@@ -19,6 +19,6 @@ Page Description :
    <td>{{ $lst_invoice_payments[$i]->ip_billing_nbr }}</td>
    <td>{{ $lst_invoice_payments[$i]->ip_billing_date }}</td>
    <td>{{ $lst_invoice_payments[$i]->ip_payment_amount }}</td>
-   <td>ليرة سورية</td>
+   <td>{{  $currency_name }}</td>
 </tr>
 @endfor

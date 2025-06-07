@@ -44,7 +44,7 @@ Page Description :
                 Action
               </button>
               <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" data-action_type="IMPORT" href="#"></a></li>
+                  <li><a class="dropdown-item" data-action_type="DOWNLOAD_APPOINTMENT" href="#">Download Appointment</a></li>
               </ul>
             </div>
         </div>
@@ -73,7 +73,7 @@ Page Description :
                                     </div>
                                     <div id="kt_docs_card_collapsible" class="collapse show">
                                     <div class="row">
-                                         <div class="col-md-4">
+                                         <div class="col-md-4 LeadDropdown">
                                                 <div class="form-group">
                                                   <label>Leads <span class="required"> * </span> </label>
                                                   <select name="lead_id" required="required" id="LEAD_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Lead">
@@ -83,7 +83,7 @@ Page Description :
                                                           <?php  } ?>
                                                   </select>
                                               </div>
-                                          </div> 
+                                          </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Date </label>
@@ -106,10 +106,10 @@ Page Description :
                                                           <?php  } ?>
                                                   </select>
                                               </div>
-                                          </div> 
+                                          </div>
                                           <div class="col-md-4">
                                                 <div class="form-group">
-                                                  <label>Telemarketing <span class="required"> * </span>  </label> 
+                                                  <label>Telemarketing <span class="required"> * </span>  </label>
                                                       <select name="cl_telemarketing_id" id="CL_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
                                                           <option value="">-- Select Telemarketing --</option>
                                                           <?php foreach ( $lst_telemarketing as $key => $user_info ) { ?>
@@ -120,7 +120,7 @@ Page Description :
                                           </div>
                                           <div class="col-md-4">
                                                 <div class="form-group">
-                                                  <label>Lead Types</label> 
+                                                  <label>Lead Types</label>
                                                       <select name="cl_lead_type" id="CL_LEAD_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Type">
                                                           <option value="">-- Select Lead Type --</option>
                                                           <?php foreach ( $lst_lead_types as $key => $type_info ) { ?>
@@ -131,7 +131,7 @@ Page Description :
                                           </div>
                                           <div class="col-md-4">
                                                 <div class="form-group">
-                                                  <label>Result</label> 
+                                                  <label>Result</label>
                                                       <select name="ca_apt_result" id="CA_APT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Select Apt Result">
                                                           <option value="">-- Select Apt Result --</option>
                                                           <?php foreach ( $lst_appt_results as $key => $res_info ) { ?>
@@ -158,13 +158,13 @@ Page Description :
                                                 <input type="text" class="form-control" name="ca_apt_with" id="CA_APT_WITH" value="" maxlength="255" />
                                             </div>
                                         </div>
-                                          <div class="col-md-4">
+                                          <div class="col-md-4 AptJob">
                                             <div class="form-group">
                                                 <label>Job </label>
                                                 <input type="text" class="form-control" name="ca_apt_job" id="CA_APT_JOB" value="" maxlength="255" />
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 FieldJob">
                                             <div class="form-group">
                                                 <label>Area </label>
                                                 <input type="text" class="form-control" name="cl_area" id="CL_AREA" value="" maxlength="255" />
@@ -196,7 +196,7 @@ Page Description :
                                                      <span class="form-check-label fw-semibold text-muted">
                                                         Confirmed
                                                      </span>
-                                                 </label>  
+                                                 </label>
                                             </div>
                                        </div>
                                         <div class="col-md-8"></div>
@@ -217,15 +217,15 @@ Page Description :
                                             <button name="btn_save_app" class="btn btn-primary" type="submit">Save Info</button>
                                             <button name="btn_reset" class="btn btn-danger" type="reset">Reset</button>
                                         </div>
-                                    </div> 
-                                </div> 
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div style="height:50px" class="col-md-12"></div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    
+
                                     <div class="card shadow-sm">
                                       <div class="card-header collapsible cursor-pointer rotate" data-bs-toggle="collapse" data-bs-target="#kt_docs_card_search_apt">
                                           <h3 class="card-title">Search Appointment</h3>
@@ -264,11 +264,27 @@ Page Description :
                                                                   <?php  } ?>
                                                           </select>
                                                       </div>
-                                                  </div> 
+                                                  </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Result</label>
+                                                        <select name="ap_apt_result" id="AP_APT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Select Apt Result">
+                                                            <option value="0">-- Select Apt Result --</option>
+                                                            <?php foreach ( $lst_appt_results as $key => $res_info ) { ?>
+                                                            <option  value="<?php echo $res_info->ar_id;  ?>"><?php echo $res_info->ar_app_result;  ?></option>
+                                                            <?php  } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">&nbsp;</div>
+                                                <div class="col-md-12" style="text-align: right">
+                                                    <button type="button" name="btn_search" class="btn btn-primary">search</button>
+                                                    <button type="reset" name="btn_reset" class="btn btn-danger">Reset</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                             <div class="row">
@@ -286,11 +302,11 @@ Page Description :
                                                                                 <th title="Full Name"> Lead Name </th>
                                                                                 <th title="Area"> Area </th>
                                                                                 <th title="Salesman"> Salesman </th>
-                                                                                <th title="Result"> Result </th> 
-                                                                                <th title="Telemarketing"> Telemarketing </th> 
-                                                                                <th title="Confirmed"> Confirmed </th> 
-                                                                                <th title="edit">  </th> 
-                                                                                <th title="delete">  </th> 
+                                                                                <th title="Result"> Result </th>
+                                                                                <th title="Telemarketing"> Telemarketing </th>
+                                                                                <th title="Confirmed"> Confirmed </th>
+                                                                                <th title="edit">  </th>
+                                                                                <th title="delete">  </th>
                                                                         </tr>
                                                                 </thead>
                                                                 <tbody id="LstLeadAppts">

@@ -23,5 +23,7 @@ Page Description :
    <td>{{ $warehouses_array[$ps_info->fk_warehouse_id]['w_warehouse_name'] }}</td>
    <td>{{ $ps_info->is_quanity }}</td>
    <td>{{ $ps_info->is_price_stock }}</td>
+    <td style="width:2px;">  <a href="#"  data-is_id="{{ $ps_info->is_id }}" id="EDIT_STOCK_{{ $ps_info->is_id }}" ><i class="fa-regular fa-pen-to-square"></i></i></a> </td>
+    <td style="width:2px;"> <a href="#"  data-is_id="{{ $ps_info->is_id }}"  id="DELETE_STOCK_{{ $ps_info->is_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>
 </tr>
 @endforeach

@@ -91,7 +91,7 @@ th{
                                   </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
+                                    <div class="form-group" style="{{ (Config::get('appconfig.crm_telemarketing') == "1") ? "display:none" : ""  }}">
                                         <label>&nbsp;</label>
                                                 <select   id="LEAD_STATUS" name="lead_status" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Status">
                                                         <option value="0">-- Select Status --</option>
@@ -100,7 +100,7 @@ th{
                                                 @endforeach
                                             </select>
                                     </div>
-                                </div> 
+                                </div>
                         </div>
                 </div>
                 <div class="col-xl-4 order-1 order-xl-2 align-right">
@@ -123,28 +123,28 @@ th{
                                           </div>
 								<div class="table-responsive">
 									<table class="table table-bordered">
-                                                                                    <thead>
-                                                                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                                                    <th title="#"></th>
-                                                                                                    <th title="Id"> ID </th>
-                                                                                                    <th title="RS#"> RS# </th>
-                                                                                                    <th title="Lead name"> Lead Name </th>
-                                                                                                    <th title="Lead name"> Address </th>
-                                                                                                    <th title="Lead name"> Leads Type </th>
-                                                                                                    <th title="Lead name"> Salesman </th>
-                                                                                                    <th title="Lead name"> Telemarketer </th>
-                                                                                                    <th title="Mobile"> Mobile </th>
-                                                                                                    <th title="Mobile"> Referred by </th>
-                                                                                                    <th>Result</th>
-                                                                                                    <th>Notes</th>
-                                                                                                    <th style="width:2px;" nowrap title="#"> edit </th>
-                                                                                                    <th style="width:2px;" nowrap title="#"> Delete </th>
-                                                                                            </tr>
-                                                                                    </thead>
-                                                                                    <tbody id="LstLeads">
+                                                <thead>
+                                                        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                                <th title="#"></th>
+                                                                <th title="Id"> ID </th>
+                                                                <th title="RS#"> RS# </th>
+                                                                <th title="Lead name"> Lead Name </th>
+                                                                <th title="Lead name"> Address </th>
+                                                                <th title="Lead name"> Leads Type </th>
+                                                                <th title="Lead name"> Salesman </th>
+                                                                <th title="Lead name"> Telemarketer </th>
+                                                                <th title="Mobile"> Mobile </th>
+                                                                <th title="Mobile"> Referred by </th>
+                                                                <th>Result</th>
+                                                                <th>Notes</th>
+                                                                <th style="width:2px;" nowrap title="#"> edit </th>
+                                                                <th style="width:2px;" nowrap title="#"> Delete </th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody id="LstLeads">
 
-                                                                                    </tbody>
-                                                                        </table>
+                                                </tbody>
+                                    </table>
 								</div>
 
                                                     <div class="row">
@@ -156,8 +156,8 @@ th{
                                                     <div class="row">
                                                         <div class="col-md-12" style="height:50px" align="right"></div>
                                                     </div>
-                                          
-                                          
+
+
 								<div class="row">
 									<div class="col-md-12" align="right">
 										<a href="{{ url('crm/leads/addform') }}" class="btn btn-info">
@@ -178,8 +178,6 @@ th{
                                                                     <table class="table table-rounded table-striped border gy-7 gs-7">
                                                                                     <thead>
                                                                                             <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                                                    <th title="#"></th>
-                                                                                                    <th title="Id"> ID </th> 
                                                                                                     <th title="Salesman"> Salesman </th>
                                                                                                     <th title="Telemarketer"> Telemarketer </th>
                                                                                                     <th title="Next Call"> Next Call </th>
@@ -191,7 +189,7 @@ th{
 
                                                                                     </tbody>
                                                                         </table>
-                                                                    
+
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -199,8 +197,8 @@ th{
                                                             </div>
             </div>
 </div>
- 
-						
+
+
 					<!-- Models Section -->
 					<div class="modal fade" id="ChangeStatusModel" tabindex="-1" role="dialog" aria-labelledby="ChangeStatusModelLabel" aria-hidden="true">
 							<div class="modal-dialog modal-lg" role="document">
@@ -230,15 +228,15 @@ th{
                                                                     @foreach ($lead_statuses as $ls_index => $ls_info )
                                                                             <option value="{{ $ls_info->ls_id }}">{{ $ls_info->ls_status_title }}</option>
                                                                     @endforeach
-                                                            </select>			
-                                        
+                                                            </select>
+
                                         				</div>
         											</div>
-											</div> 
+											</div>
 										</form>
 									</div>
 									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" data-dismiss="modal">
+										<button type="button" name="btn_close_changestatus" class="btn btn-secondary" data-dismiss="modal">
 											Close
 										</button>
 										<button type="button" name="btn_change_status" class="btn btn-primary">
@@ -276,15 +274,15 @@ th{
                                                                     @foreach ($lst_users as $u_index => $user_info )
                                                                             <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                     @endforeach
-                                                            </select>			
-                                        
+                                                            </select>
+
                                         				</div>
         											</div>
-											</div> 
+											</div>
 										</form>
 									</div>
 									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" data-dismiss="modal">
+										<button type="button" name="btn_close_assign" class="btn btn-secondary" data-dismiss="modal">
 											Close
 										</button>
 										<button type="button" name="btn_assign_lead_to" class="btn btn-primary">
@@ -295,8 +293,8 @@ th{
 							</div>
 						</div>
 					<!-- End Models Section -->
-                                        
-                                        
+
+
 <div class="modal fade" id="AddResultModel" tabindex="-1" role="dialog" aria-labelledby="AddResultModelLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -325,7 +323,7 @@ th{
                                         </div>
                                          <div class="col-md-4">
                                                 <div class="form-group">
-                                                  <label>Result</label> 
+                                                  <label>Result</label>
                                                       <select name="lr_text_result" id="LR_TEXT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Select Apt Result">
                                                           <option value="">-- Select Apt Result --</option>
                                                           <?php foreach ( $lst_appt_results as $key => $res_info ) { ?>
@@ -340,11 +338,11 @@ th{
                                                 <textarea class="form-control" name="cl_lead_notes" id="LR_TEXT_NOTES" style="width:100%;height:250px;resize:none" ></textarea>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                             </form>
                     </div>
                     <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <button type="button" name="btn_result_close" class="btn btn-secondary" data-dismiss="modal">
                                     Close
                             </button>
                             <button type="button" name="btn_add_result" id="BTN_ADD_RESULT" class="btn btn-primary">

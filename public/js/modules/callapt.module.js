@@ -1,7 +1,7 @@
 callapt_module = {
     DisplayListAppointments : function(){
         	var base_url 			= $('input[name=base_url]').val();
-                var _token	 			= $('input[name=_token]').val(); 
+                var _token	 			= $('input[name=_token]').val();
                 var ld_apt_date	 	= $('input[name=ld_apt_date]').val();
                 var params = { _token : _token , ld_apt_date : ld_apt_date };
 		$.ajax
@@ -31,6 +31,41 @@ callapt_module = {
 	            	$('#LstAppointments').html(response.display);
 	            }
 	        });
+    },
+    GetLeadInformation : function(){
+        let lead_id = $('select[name=lead_id]').val();
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var params = { _token : _token , lead_id : lead_id };
+        $.ajax
+        ({
+            url : base_url + "/request/crm/getleadinfo",
+            data : params,
+            dataType : "json",
+            type : "get",
+            success : function(response){
+
+            }
+        });
+    },
+    QuickActionAppointments : function(){
+        let action_type = $(this).data('action_type');
+        switch (action_type) {
+            case "DOWNLOAD_APPOINTMENT":
+            {
+                let ca_id = $('input[name=ca_id]').val();
+                if(ca_id == 0)
+                {
+                    bootbox.alert('Please select Appointment to Download Form');
+                    return;
+                }
+                var base_url 	= $('input[name=base_url]').val();
+                let url = base_url + "/callcenter/appointments/downloadapt/" + ca_id;
+                window.open(url,'_blank');
+                window.open(url);
+            }
+            break;
+        }
     },
     DownloadlistAppointmentsReport : function(){
         var base_url 	= $('input[name=base_url]').val();
@@ -91,21 +126,39 @@ callapt_module = {
             data : params,
             dataType : "json",
             type : "get",
-            success : function(response){
+            success : function(response) {
                 $('input[name=ca_id]').val(response.appointment_array.ca_id);
                 $('select[name=lead_id]').val(response.appointment_array.ca_lead_id).trigger('change');
+                $('.LeadDropdown').css({display: "none"});
                 $('select[name=cl_sales_id]').val(response.appointment_array.ca_salesman_id).trigger('change');
+                $('select[name=cl_sales_id]').select2('destroy').select2();
                 $('select[name=cl_telemarketing_id]').val(response.appointment_array.ca_telemarketing_id).trigger('change');
+                $('select[name=cl_telemarketing_id]').select2('destroy').select2();
                 $('input[name=ca_apt_date]').val(response.appointment_array.ca_apt_date);
                 $('input[name=ca_apt_time]').val(response.appointment_array.ca_apt_time);
                 $('select[name=ca_apt_result]').val(response.appointment_array.ca_apt_result).trigger('click');
+                $('select[name=ca_apt_result]').select2('destroy').select2();
+                $('select[name=cl_lead_type]').val(response.appointment_array.cl_lead_type_id).trigger('click');
+                $('select[name=cl_lead_type]').select2('destroy').select2();
                 $('input[name=ca_apt_with]').val(response.appointment_array.ca_apt_with);
                 $('input[name=ca_apt_job]').val(response.appointment_array.ca_apt_job);
                 $('input[name=ca_lead_address]').val(response.appointment_array.ca_lead_address);
                 $('input[name=ca_nbr_leads]').val(response.appointment_array.ca_nbr_leads);
+                $('input[name=cl_full_name]').val(response.appointment_array.cl_full_name);
+                $('input[name=cl_phone]').val(response.appointment_array.cl_mobile);
+                $('input[name=cl_area]').val(response.appointment_array.cl_area);
+                $('input[name=cl_referred_by]').val(response.appointment_array.cl_referred_by);
                 $('textarea[name=ca_apt_notes]').val(response.appointment_array.ca_apt_notes);
                 $('textarea[name=ca_apt_details]').val(response.appointment_array.ca_apt_details);
-                $('input[name=ca_lead_confirm]').attr({ 'checked' : ( response.appointment_array.ca_lead_confirm == 1 ? "checked" : "" )});
+                if (response.appointment_array.ca_lead_confirm == 1)
+                    $('input[name=ca_lead_confirm]').attr({'checked': "checked"});
+                else
+                    $('input[name=ca_lead_confirm]').removeAttr("checked");
+
+                // 'cl_mobile' => $app_info->Lead->cl_mobile,
+                //     'cl_region' => $app_info->Lead->cl_region,
+                //     'cl_area' => $app_info->Lead->cl_area,
+                //     'cl_referred_by' => $app_info->Lead->cl_referred_by,
             }
         });
     },
@@ -145,7 +198,7 @@ callapt_module = {
         var ca_apt_last_date	 			= $('input[name=ca_apt_last_date]').val();
         var cl_sales_id	 			= $('select[name=cl_sales_id]').val();
         var params = { _token : _token , ca_apt_from_date : ca_apt_from_date , ca_apt_last_date : ca_apt_last_date , cl_sales_id : cl_sales_id };
- 
+
         $.ajax
        ({
            url : base_url + "/request/callcenter/downloadclosuresalesapp",
@@ -198,7 +251,8 @@ callapt_module = {
                 var ld_from_apt_date	 	= $('input[name=ld_from_apt_date]').val();
                 var ld_to_apt_date	 	= $('input[name=ld_to_apt_date]').val();
                 var ca_salesman_id	 	= $('select[name=ca_salesman_id]').val();
-                var params = { _token : _token , lead_id : lead_id , ca_salesman_id : ca_salesman_id , ld_apt_date : ld_apt_date , ld_from_apt_date : ld_from_apt_date , ld_to_apt_date : ld_to_apt_date };
+                var ap_apt_result	 	= $('select[name=ap_apt_result]').val();
+                var params = { _token : _token , ap_apt_result : ap_apt_result ,  lead_id : lead_id , ca_salesman_id : ca_salesman_id , ld_apt_date : ld_apt_date , ld_from_apt_date : ld_from_apt_date , ld_to_apt_date : ld_to_apt_date };
 		$.ajax
 	        ({
 	            url : base_url + "/request/callcenter/displaylistappointments",
@@ -232,7 +286,11 @@ callapt_module = {
                          },
                          ca_apt_result : {
                              required : true
-                         }
+                         },
+                     ca_nbr_leads : {
+                         required : true,
+                         min:0
+                     }
 	             },
 	             messages: { // custom messages for radio buttons and checkboxes
 
@@ -275,7 +333,7 @@ callapt_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FRM_CREATE_APT]");
 
 	    	        var data = new FormData();
@@ -293,9 +351,9 @@ callapt_module = {
                                 var name = "ca_lead_confirm";
                                 var val = $('input[name=ca_lead_confirm]:checked').length;
                                 data.append( name, val );
-                           }   
+                           }
 	    	        });
-                        
+
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveappointmentinfo",
@@ -312,11 +370,12 @@ callapt_module = {
 	    	              if(response.is_error == 0)
 	    	              {
                                   $("form[id=FRM_CREATE_APT]").trigger("reset");
+                              $('.LeadDropdown').css({display : ""});
                                     callapt_module.DisplayListAppointments();
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });

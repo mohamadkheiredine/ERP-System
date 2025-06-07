@@ -1,14 +1,14 @@
 /**
- * 
+ *
  */
 orders_module = {
         DisplayListOrderCategories : function(){
              var base_url 			= $('input[name=base_url]').val();
                 var _token 				= $('input[name=_token]').val();
                 var order_id 				= $('input[name=order_id]').val();
-                
+
                 let params = { order_id : order_id , _token : _token };
-                
+
                 $.ajax
                 ({
                         url : base_url + "/request/sorders/displaylistcategories",
@@ -21,8 +21,8 @@ orders_module = {
                                 $('#LstPackingCategories').html(response.display);
                         }
                 });
-                
-                
+
+
         },
         DisplayListOrders : function(){
                 var base_url 			= $('input[name=base_url]').val();
@@ -50,7 +50,7 @@ orders_module = {
                      $(this).prop("checked", checked);
                  });
                  $.uniform.update(set);
-             }); 
+             });
                                  if(response.total_pages > 0)
                                  {
                                          $('#SalesOrdersPagination').twbsPagination({
@@ -92,6 +92,31 @@ orders_module = {
                 }
             });
         },
+    QuickActionShippingOrders : function(){
+        var action_type = $(this).data('action_type');
+        if($(".checkboxes:checked").length == 0)
+        {
+            bootbox.alert("Please select a order to do any action");
+            return false;
+        }
+        switch(action_type)
+        {
+            case "DOWNLOAD":
+            {
+                var or_ids = [];
+                $(".checkboxes:checked").each(function(){
+                    var or_id = $(this).val();
+                    or_ids.push(or_id);
+                });
+                var st_or = or_ids.join(",");
+
+                let base_url = $("#BASE_URL").val();
+                url = base_url + "/sorders/downloadinvoice/" + st_or
+                window.open(url,'_blank');
+                window.open(url);
+            }
+        }
+    },
 	OpenAddOrderPackageModal : function(){
 		$('#OrderPackageModel').modal('toggle');
 	},
@@ -120,7 +145,7 @@ orders_module = {
 		       		number : true,
 		       		required : true
 		       	}
-		       	
+
             },
 
             messages: { // custom messages for radio buttons and checkboxes
@@ -189,7 +214,7 @@ orders_module = {
 	   	            		$("#SO_PACKAGE_COST").val('');
 	   	            		$('#OrderPackageModel').modal('toggle');
 	   	            	  });
-	   	            	  
+
    	            	  }
 	   	            }
 	   	        });
@@ -279,8 +304,8 @@ orders_module = {
     			{
     	        	so_whole_sale = 1;
     			}
-    	        
-    	        
+
+
     	        str_params = str_params + "&so_whole_sale=" + so_whole_sale;
     	         $.ajax
     	        ({
@@ -334,7 +359,7 @@ orders_module = {
 		var so_package_weight 		= $('input[name=so_package_weight]').val();
 		var category_id 	= $('#SO_PRODUCT_CATEGORY').val();
 		var _token 		= $('input[name=_token]').val();
-	    var base_url 	= $("#BASE_URL").val(); 
+	    var base_url 	= $("#BASE_URL").val();
 	    var params = { so_id : so_id , category_id : category_id , so_package_weight : so_package_weight ,  _token : _token };
 	    $("#AjaxLoader").css({'display':'block'});
         $.ajax
@@ -344,11 +369,11 @@ orders_module = {
             dataType : "Json",
             type : "POST",
             success : function(response){
-               $("#AjaxLoader").css({'display':'none'});  
+               $("#AjaxLoader").css({'display':'none'});
               if(response.is_error == 0)
               {
             	 $('input[name=so_package_cost]').val(response.package_cost);
-            	 
+
               }
               else{
                   bootbox.alert(response.error_msg);

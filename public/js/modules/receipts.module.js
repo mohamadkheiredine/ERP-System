@@ -1,13 +1,13 @@
 /**
- * 
+ *
  */
 
 receipts_module = {
 		DisplayListInvoiceReceipts : function(){
 			var base_url 			= $('input[name=base_url]').val();
-			var _token 				= $('input[name=_token]').val(); 
-			var bi_id 				= $('input[name=bi_id]').val(); 
-			var page_number 				= $('input[name=page_number]').val(); 
+			var _token 				= $('input[name=_token]').val();
+			var bi_id 				= $('input[name=bi_id]').val();
+			var page_number 				= $('input[name=page_number]').val();
 			$.ajax
 			({
 				url : base_url + "/request/billing/displaylistreceiptsinvoice",
@@ -24,7 +24,7 @@ receipts_module = {
                 GenerateReceiptCode : function(){
                     	var base_url 	= $('input[name=base_url]').val();
 		    var _token 		= $('input[name=_token]').val();
-                    
+
                     $.ajax
 		    ({
 		        url : base_url + "/request/billing/generatereceiptcode",
@@ -66,7 +66,7 @@ receipts_module = {
                                 });
                                 $.uniform.update(set);
                             });
-                             
+
                              if(response.total_pages > 0)
                         	 {
                                  $.pagination = $('#ReceiptsPagination').twbsPagination({
@@ -78,7 +78,7 @@ receipts_module = {
                                      }
                                  });
                         	 }
-                      
+
 		        }
 		    });
 		},
@@ -106,19 +106,19 @@ receipts_module = {
                                 $('form[name=form_save_receipt]').find('input[name=br_id]').val(response.receipt_obj.br_id);
                                 $('form[name=form_save_receipt]').find('input[name=br_receipt_number]').val(response.receipt_obj.br_receipt_number);
                                 $('form[name=form_save_receipt]').find('input[name=br_receipt_label]').val(response.receipt_obj.br_receipt_label);
-                                $('form[name=form_save_receipt]').find('input[name=br_receipt_date]').val(response.receipt_obj.br_receipt_date); 
-                                $('form[name=form_save_receipt]').find('input[name=br_payment_value]').val(response.receipt_obj.br_payment_value); 
-                                $('form[name=form_save_receipt]').find('input[name=br_exchange_rate]').val(response.receipt_obj.br_exchange_rate); 
-                                $('form[name=form_save_receipt]').find('textarea[name=br_receipt_note]').val(response.receipt_obj.br_receipt_note); 
+                                $('form[name=form_save_receipt]').find('input[name=br_receipt_date]').val(response.receipt_obj.br_receipt_date);
+                                $('form[name=form_save_receipt]').find('input[name=br_payment_value]').val(response.receipt_obj.br_payment_value);
+                                $('form[name=form_save_receipt]').find('input[name=br_exchange_rate]').val(response.receipt_obj.br_exchange_rate);
+                                $('form[name=form_save_receipt]').find('textarea[name=br_receipt_note]').val(response.receipt_obj.br_receipt_note);
                                 $('form[name=form_save_receipt]').find('select[name=br_account_id]').val(response.receipt_obj.br_account_id).trigger('change');
                                 $('form[name=form_save_receipt]').find('select[name=br_client_id]').val(response.receipt_obj.br_client_id).trigger('change');
                                 $('form[name=form_save_receipt]').find('select[name=br_payment_type]').val(response.receipt_obj.br_payment_type).trigger('change');
                                 $('form[name=form_save_receipt]').find('select[name=br_receipt_currency]').val(response.receipt_obj.br_receipt_currency).trigger('change');
                                 $('form[name=form_save_receipt]').find('select[name=br_second_currency_id]').val(response.receipt_obj.br_second_currency_id).trigger('change');
                             }
-                        }); 
+                        });
                         }
-                       
+
                     });
                 },
                 displayListOnePageReceipts : function(){
@@ -149,7 +149,7 @@ receipts_module = {
                                 });
                                 $.uniform.update(set);
                             });
-                             
+
                              if(response.total_pages > 0)
                         	 {
                                  $.pagination = $('#ReceiptsPagination').twbsPagination({
@@ -161,7 +161,7 @@ receipts_module = {
                                      }
                                  });
                         	 }
-                      
+
 		        }
 		    });
                 },
@@ -169,8 +169,8 @@ receipts_module = {
 			var _token 		= $("input[name=_token]").val();
 			var base_url 	= $('input[name=base_url]').val();
 			 var br_id 		= $('input[name=br_id]').val();
-			 
-		
+
+
 			$.ajax
 			({
 				url : base_url + "/request/billing/generatecode",
@@ -179,18 +179,18 @@ receipts_module = {
 				dataType : "json",
 				beforeSend : function(){
 				},
-				success : function(response){ 
+				success : function(response){
 					$("#BR_RECEIPT_NUMBER").val(response.code);
 				}
 			});
-			
+
 		},
                 QuickSaveReceiptInfo : function(){
 			return receipts_module.QuickSaveReceiptSubmitHandler();
 		},
 		QuickSaveReceiptSubmitHandler : function(){
                     var ReceiptForm = $('#FORM_SAVE_RECEIPT');
-	        
+
 			ReceiptForm.validate({
 	             errorElement: 'span', //default input error message container
 	             errorClass: 'help-block help-block-error', // default input error message class
@@ -250,8 +250,8 @@ receipts_module = {
 	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
 	             },
 	             submitHandler: function (form) {
-			$("#BTN_SAVE_RECEIPT").attr("disabled","disabled"); 
-	                var base_url = $('#BASE_URL').val(); 
+			$("#BTN_SAVE_RECEIPT").attr("disabled","disabled");
+	                var base_url = $('#BASE_URL').val();
 	    	        var str_params = $("#FORM_SAVE_RECEIPT").serialize();
 	    	         $.ajax({
 	    	            url : base_url + "/request/billing/savereceiptinfo",
@@ -261,7 +261,7 @@ receipts_module = {
 	    	            beforeSend : function(){
 	    	            },
 	    	            success : function(response){
-	    	              if(response.is_error == 0)
+                              if(response.is_error == 0)
                               {
                                   $('button[name=btn_reset]').trigger('click');
                                   receipts_module.GenerateReceiptCode();
@@ -277,7 +277,7 @@ receipts_module = {
 		},
 		SaveReceiptSubmitHandler : function(){
 			var ReceiptForm = $('#FORM_SAVE_RECEIPT');
-	        
+
 			ReceiptForm.validate({
 	             errorElement: 'span', //default input error message container
 	             errorClass: 'help-block help-block-error', // default input error message class
@@ -337,8 +337,8 @@ receipts_module = {
 	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
 	             },
 	             submitHandler: function (form) {
-					 $("#BTN_SAVE_RECEIPT").attr("disabled","disabled"); 
-	                var base_url = $('#BASE_URL').val(); 
+					 $("#BTN_SAVE_RECEIPT").attr("disabled","disabled");
+	                var base_url = $('#BASE_URL').val();
 	    	        var str_params = $("#FORM_SAVE_RECEIPT").serialize();
 	    	         $.ajax
 	    	        ({
@@ -353,16 +353,9 @@ receipts_module = {
 	    	              {
 	    	            	  var invoice_redirect = $('input[name=invoice_redirect]').val();
 	    	            	  var invoice_id = $('select[name=fk_invoice_id]').val();
-	    	            	  
-	    	            	  if(invoice_redirect == 1)
-    	            		  {
-	    	            		  window.location.href = base_url + "/billing/invoices/editform/" + invoice_id
-    	            		  }
-	    	            	  else
-    	            		  {
-	    	            		  window.location.href = base_url + "/billing/receipts"
-    	            		  }
-	    	            	  
+
+                              window.location.href = base_url + "/billing/receipts";
+
 	    	              }
 	    	            }
 	    	        });
@@ -377,10 +370,10 @@ receipts_module = {
 		},
 		DeleteReceiptForm : function(){
 			var br_id = $(this).parents('tr').data('br_id');
-			 var base_url = $('#BASE_URL').val(); 
+			 var base_url = $('#BASE_URL').val();
 		      var _token = $('input[name=_token]').val();
-		      
-		      
+
+
 		      Swal.fire({
 		    	  title: 'Are you sure you want to delete ?',
 		    	  text: "You won't be able to revert this!",
@@ -400,7 +393,7 @@ receipts_module = {
 				            type : "POST",
 				            success : function(response){
 				              if(response.is_error == 0)
-				              { 
+				              {
 			            	  Swal.fire(
 			    		    	      'Deleted!',
 			    		    	      'Your file has been deleted.',
@@ -410,11 +403,11 @@ receipts_module = {
 				              }
 				            }
 				        });
-		    		  
-		    	   
+
+
 		    	  }
 		    	})
-		        
+
 		},
                  CalculateSecondaryAmountValue : function(){
                     var br_payment_amount = $('input[name=br_payment_value]').val();

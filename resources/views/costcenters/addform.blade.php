@@ -28,12 +28,12 @@ th {
 	width: 800px;
 }
 </style>
-@endsection 
+@endsection
 @section('plugins')
 <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/costcenters.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/costcenters/savecostcenter.js') }}"></script>
-@endsection 
+@endsection
 @section('content')
 <div class="card shadow-sm">
 	<div class="card-header">
@@ -67,16 +67,16 @@ th {
 						</div>
 					</div>
 					<div class="col-md-4">
-                                            <div class="form-group">
-                                               <label class="control-label">Cost center Type</label>
-                                                     <select  name="ac_type_id" id="AC_TYPE_ID" class="form-select" data-control="select2" data-placeholder="Select Costcenter Type">
-                                                       <option value="">No Type</option>
-                                                       @foreach ( $lst_types as $key => $type_info )
-                                                               <option value="{{ $type_info->at_id }}">{{ $type_info->at_type_name }}</option>
-                                                       @endforeach
-                                               </select>
-                                           </div>
-                                       </div>
+                        <div class="form-group">
+                           <label class="control-label">Cost center Type</label>
+                                 <select  name="ac_type_id" id="AC_TYPE_ID" class="form-select" data-control="select2" data-placeholder="Select Costcenter Type">
+                                   <option value="">No Type</option>
+                                   @foreach ( $lst_types as $key => $type_info )
+                                           <option value="{{ $type_info->at_id }}">{{ $type_info->at_type_name }}</option>
+                                   @endforeach
+                           </select>
+                       </div>
+                   </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                <label class="control-label">Cost center Category</label>

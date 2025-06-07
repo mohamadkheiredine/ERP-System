@@ -10,7 +10,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -20,7 +20,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	new tempusDominus.TempusDominus(document.getElementById('PV_END_DATE'),{
@@ -30,7 +30,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -40,7 +40,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 
@@ -64,4 +64,7 @@ $(function(){
 		 $('#VouchersPagination').twbsPagination('destroy');
 		 vouchers_module.displayListPayments();
 	 });
+
+    $("#LstPaymentVouchers").on("click","tr",vouchers_module.SelectedVoucherRecord);
+    $(".dropdown-item").on("click",vouchers_module.QuickActionExecution);
 })

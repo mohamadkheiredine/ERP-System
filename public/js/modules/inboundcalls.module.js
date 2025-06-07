@@ -15,9 +15,9 @@ inboundcalls_module = {
 	    ({
 	        url : base_url + "/request/inboundcall/displaylist",
 	        data : { _token : _token ,
-                    page_number : page_number , 
-                    general_search : general_search , 
-                    ic_technician_id : ic_technician_id , 
+                    page_number : page_number ,
+                    general_search : general_search ,
+                    ic_technician_id : ic_technician_id ,
                     ic_telemarketing_id : ic_telemarketing_id,
                     ic_maintenance_type : ic_maintenance_type,
                     ic_archived_call : ic_archived_call,
@@ -36,7 +36,7 @@ inboundcalls_module = {
                         $(this).prop("checked", checked);
                     });
                     $.uniform.update(set);
-                });  
+                });
                 if(response.total_pages > 1)
             	{
                 	 $.pagination = $('#InboundCallsPagination').twbsPagination({
@@ -48,18 +48,25 @@ inboundcalls_module = {
                          }
                      });
             	}
-                
-                
+
+
                  $("#tablPendingCalls").tablesorter();
-              
+
 	        }
 	    });
-	    
+
 	},
-        
+    SelectCallRecord : function(){
+        $('#LstInboundCalls tr').each((index,item) => {
+            $(item).find('input[type=checkbox]').removeAttr('checked');
+            $(item).removeClass('SelectedRow');
+        })
+        $(this).find('input[type=checkbox]').attr('checked',true);
+        $(this).addClass('SelectedRow');
+    },
     QuickAction : function(){
       var action_type = $(this).data('action_type');
-      
+
       switch(action_type)
       {
           case "ADD_MAINTENANCE_VOUCHER":
@@ -147,7 +154,7 @@ inboundcalls_module = {
         $(".checkboxes:checked").each(function(){
                 var ic_id = $(this).val();
                 ic_ids.push(ic_id);
-        }); 
+        });
         var str_ic = ic_ids.join(",");
         $("input[name=ic_call_ids]").val(str_ic);
         inboundcalls_module.getListofCallResults();
@@ -164,7 +171,7 @@ inboundcalls_module = {
             method : 'get',
             dataType : "json",
             success : function(response){
-                    $('#LstCallWResults').html(response.display);     
+                    $('#LstCallWResults').html(response.display);
             }
         });
 
@@ -262,7 +269,7 @@ inboundcalls_module = {
                      if(response.is_error == 0)
                      {
                           inboundcalls_module.DisplayListInboundCalls();
-                          inboundcalls_module.getListofCallResults(); 
+                          inboundcalls_module.getListofCallResults();
                      }
                    }
                });
@@ -271,14 +278,29 @@ inboundcalls_module = {
         });
     },
     OpenMaintenanceVoucher : function(){
-        var ic_ids = [];
-        $(".checkboxes:checked").each(function(){
-                var ic_id = $(this).val();
-                ic_ids.push(ic_id);
-        }); 
-        var str_ic = ic_ids.join(",");
-        $("input[name=ic_ids]").val(str_ic);
-        $('#AddMainVoucher').modal('toggle');
+        var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val();
+        $.ajax
+        ({
+            url : base_url + "/request/mvoucher/getnewmaintenancenumber",
+            data : { _token : _token },
+            method : 'get',
+            dataType : "json",
+            success : function(response){
+                var ic_ids = [];
+                $(".checkboxes:checked").each(function(){
+                    var ic_id = $(this).val();
+                    ic_ids.push(ic_id);
+                });
+                var str_ic = ic_ids.join(",");
+                $("input[name=ic_ids]").val(str_ic);
+                $("#IC_CALL_INDEX").val(response.maintenance_number);
+                $('#AddMainVoucher').modal('toggle');
+            }
+        });
+
+
+
     },
     getAccountDealInfo : function(){
         var base_url 	= $('input[name=base_url]').val();
@@ -293,11 +315,11 @@ inboundcalls_module = {
                 method : 'get',
                 dataType : "json",
                 success : function(response){
-                        $('#CA_ACCOUNT_NAME').val(response.account_info.ca_account_name);     
-                        $('#FK_CUSTOMER_ID').val(response.account_info.ca_id); 
-                        $('#CA_ACCOUNT_ADDRESS').val(response.account_info.ca_billing_address); 
+                        $('#CA_ACCOUNT_NAME').val(response.account_info.ca_account_name);
+                        $('#FK_CUSTOMER_ID').val(response.account_info.ca_id);
+                        $('#CA_ACCOUNT_ADDRESS').val(response.account_info.ca_billing_address);
                         if(response.account_info.ad_deal_code != undefined )
-                            $('#IC_CONTRACT_CODE').val(response.account_info.ad_deal_code); 
+                            $('#IC_CONTRACT_CODE').val(response.account_info.ad_deal_code);
                 }
             });
         }
@@ -314,9 +336,9 @@ inboundcalls_module = {
             method : 'get',
             dataType : "json",
             success : function(response){
-                    $('#IC_SALES_ID').val(response.deal_info.fk_sales_id).trigger('change');     
-                    $('#IC_TELEMARKETING_ID').val(response.deal_info.fk_telemarketing_id).trigger('change'); 
-                    $('#IC_BILL_SITUATION').val(response.deal_info.billing_situation); 
+                    $('#IC_SALES_ID').val(response.deal_info.fk_sales_id).trigger('change');
+                    $('#IC_TELEMARKETING_ID').val(response.deal_info.fk_telemarketing_id).trigger('change');
+                    $('#IC_BILL_SITUATION').val(response.deal_info.billing_situation);
             }
         });
     },
@@ -402,6 +424,13 @@ inboundcalls_module = {
                    success : function(response){
                      if(response.is_error == 0)
                      {
+                            $('input[name=ic_resolution_date]').val('');
+                            $('input[name=ic_doc_number]').val('');
+                            $('input[name=ic_call_index]').val('');
+                            $('input[name=ic_comission]').val('');
+                            $('input[name=ic_visit_price]').val('');
+                            $('select[name=ic_currency_id]').val('');
+                            $('select[name=ic_payment_type]').val('');
                            $('#AddMainVoucher').modal('toggle');
                      }
                    }
@@ -472,9 +501,9 @@ inboundcalls_module = {
                const ic_notes = $.notes_desc.getData();
                const ic_item_problem = $.itemprob_desc.getData();
 
-               str_params = str_params + "&ic_call_outcome=" + ic_call_outcome; 
-               str_params = str_params + "&ic_notes=" + ic_notes; 
-               str_params = str_params + "&ic_item_problem=" + ic_item_problem; 
+               str_params = str_params + "&ic_call_outcome=" + ic_call_outcome;
+               str_params = str_params + "&ic_notes=" + ic_notes;
+               str_params = str_params + "&ic_item_problem=" + ic_item_problem;
                 $.ajax
                ({
                    url : base_url + "/request/inboundcall/saveinfo",

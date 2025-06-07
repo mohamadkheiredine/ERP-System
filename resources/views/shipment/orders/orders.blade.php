@@ -40,6 +40,7 @@
                     Action
                 </button>
                 <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" data-action_type="DOWNLOAD" href="#">Download Invoice</a></li>
                 </ul>
             </div>
         </div>
@@ -67,21 +68,21 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-select form-control" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2"> 
+                            <select class="form-select form-control" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2">
                                 <option value="0"> -- Customer -- </option>
                                 @foreach ( $lst_customers as $key => $customer_info )
                                 <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_code }}&nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                 @endforeach
                             </select>
-                        </div>  
+                        </div>
                         <div class="col-md-4">
-                            <select class="form-select form-control" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4"> 
+                            <select class="form-select form-control" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4">
                                 <option value="0" selected="selected"> -- Warehouse -- </option>
                                 @foreach ( $lst_warehouses as $key => $warehouse_info )
                                 <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                 @endforeach
-                            </select> 
-                        </div> 
+                            </select>
+                        </div>
                         <div class="col-md-12">&nbsp;</div>
                         <div class="col-md-12" style="text-align: right">
                             <a href="{{ url('shipment/orders/addform') }}" class="btn btn-info">

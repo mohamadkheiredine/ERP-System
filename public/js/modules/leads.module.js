@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 leads_module = {
 		DisplayListLeads : function(){
@@ -7,12 +7,12 @@ leads_module = {
 		var _token	 			= $('input[name=_token]').val();
 		var lead_category	 	= $('select[name=lead_category]').val();
 		var lead_status	 		= $('select[name=lead_status]').val();
-		var cl_sales_id	 		= $('select[name=cl_sales_id]').val(); 
+		var cl_sales_id	 		= $('select[name=cl_sales_id]').val();
                 if(cl_sales_id == '')
                 {
                     return false;
                 }
-                
+
 		var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , cl_sales_id : cl_sales_id };
 		$.ajax
 	        ({
@@ -29,7 +29,7 @@ leads_module = {
                                                $(this).prop("checked", checked);
                                            });
                                            $.uniform.update(set);
-                        }); 
+                        });
                         if(response.total_pages > 0)
                         {
                             $('#LeadsPagination').twbsPagination({
@@ -51,7 +51,7 @@ leads_module = {
 			$(".checkboxes:checked").each(function(){
 				var lr_id = $(this).val();
 				lr_ids.push(lr_id);
-			}); 
+			});
 			var str_lr = lr_ids.join(",");
 		    var params = { _token : _token ,lead_id : str_lr };
 		    $.ajax
@@ -105,7 +105,7 @@ leads_module = {
                              required : true
                          },
                          cl_mobile : {
-                             minlength: 10,
+                             minlength: 8,
                              required:true
                          }
 	             },
@@ -150,7 +150,7 @@ leads_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FORM_SAVE_LEAD]");
 
 	    	        var data = new FormData();
@@ -160,9 +160,9 @@ leads_module = {
                             var name = $(this).attr('name');
                             var val = $(this).val();
                             data.append( name, val );
-	    	        	 
+
 	    	        });
-                        
+
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveleadinfo",
@@ -184,7 +184,7 @@ leads_module = {
                                   }
                                   else
                                   {
-                                      
+
                                       let cl_sheet_number = $('input[name=cl_sheet_number]').val();
                                       let cl_full_name = $('input[name=cl_full_name]').val();
                                       let cl_region = $('input[name=cl_region]').val();
@@ -194,33 +194,33 @@ leads_module = {
                                       let cl_lead_type_id = $('select[name=cl_lead_type_id]').text();
                                       let cl_referred_by = $('input[name=cl_referred_by]').val();
                                       let cl_mobile = $('input[name=cl_mobile]').val();
-                                      
+
                                       let leads = $('#LstLeads').html();
                                       var length = $('#LstLeads tr').length;
                                       var index = parseInt(length) + 1;
-                                      leads += "<tr>"; 
-                                      leads += "<td>" + index + "</td>"; 
-                                      leads += "<td>" + cl_sheet_number + "</td>"; 
-                                      leads += "<td>" + cl_full_name + "</td>"; 
-                                      leads += "<td>" + cl_area + "</td>"; 
-                                      leads += "<td>" + cl_sales_id + "</td>"; 
-                                      leads += "<td>" + cl_telemarketing_id + "</td>"; 
-                                      leads += "<td>" + cl_mobile + "</td>"; 
-                                      leads += "<td>" + cl_referred_by + "</td>"; 
-                                      leads += "</tr>"; 
-                                      
+                                      leads += "<tr>";
+                                      leads += "<td>" + index + "</td>";
+                                      leads += "<td>" + cl_sheet_number + "</td>";
+                                      leads += "<td>" + cl_full_name + "</td>";
+                                      leads += "<td>" + cl_area + "</td>";
+                                      leads += "<td>" + cl_sales_id + "</td>";
+                                      leads += "<td>" + cl_telemarketing_id + "</td>";
+                                      leads += "<td>" + cl_mobile + "</td>";
+                                      leads += "<td>" + cl_referred_by + "</td>";
+                                      leads += "</tr>";
+
                                       $('#LstLeads').html(leads);
-                                      
+
                                       $('#CL_FULL_NAME').val('');
                                       $('#CL_MOBILE').val('');
                                       $('#CL_REGION').val('');
                                       $('#CL_AREA').val('');
                                   }
-	    	                
+
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -246,7 +246,7 @@ leads_module = {
                             {
                                 $(".ExistingLeadTabs").css('display','none');
                             }
-                            
+
                         }
                     });
                 },
@@ -290,18 +290,18 @@ leads_module = {
 			$(".checkboxes:checked").each(function(){
 				var ls_id = $(this).val();
 				ls_ids.push(ls_id);
-			}); 
+			});
 			var str_ls = ls_ids.join(",");
 			$("input[name=cs_lead_ids]").val(str_ls);
 			$('#ChangeStatusModel').modal('toggle');
-			
+
 		},
 		AssignLead : function(){
 			var ls_ids = [];
 			$(".checkboxes:checked").each(function(){
 				var ls_id = $(this).val();
 				ls_ids.push(ls_id);
-			}); 
+			});
 			var str_ls = ls_ids.join(",");
 			$("input[name=la_lead_ids]").val(str_ls);
 			$('#AssignLeadModel').modal('toggle');
@@ -311,7 +311,7 @@ leads_module = {
                     $(".checkboxes:checked").each(function(){
                             var ls_id = $(this).val();
                             ls_ids.push(ls_id);
-                    }); 
+                    });
                     var str_ls = ls_ids.join(",");
                     $("input[name=la_lead_ids]").val(str_ls);
                     $('#AddResultModel').modal('toggle');
@@ -321,7 +321,7 @@ leads_module = {
 			$(".checkboxes:checked").each(function(){
 				var ls_id = $(this).val();
 				ls_ids.push(ls_id);
-			}); 
+			});
 			var str_ls = ls_ids.join(",");
 			var base_url = $('#BASE_URL').val();
 			window.location.href = base_url + "/request/ExportCSV/leads/" + ls_ids;
@@ -331,7 +331,7 @@ leads_module = {
 			$(".checkboxes:checked").each(function(){
 				var ls_id = $(this).val();
 				ls_ids.push(ls_id);
-			}); 
+			});
 			var str_ls = ls_ids.join(",");
                         let _token = $('input[name=_token]').val();
 			var base_url = $('#BASE_URL').val();
@@ -344,7 +344,7 @@ leads_module = {
 		            type : "PUT",
 		            success : function(response){
 		              if(response.is_error == 0)
-		              { 
+		              {
 		            	  	leads_module.DisplayListLeads();
 		            		$('#AssignLeadModel').modal('toggle');
 		              }
@@ -397,7 +397,7 @@ leads_module = {
                     $(".checkboxes:checked").each(function(){
                             var ls_id = $(this).val();
                             ls_ids.push(ls_id);
-                    }); 
+                    });
                     var str_ls = ls_ids.join(",");
                     var base_url = $('input[name=base_url').val();
                     window.location.href = base_url + "/leads/createappointment/" + str_ls;
@@ -413,7 +413,7 @@ leads_module = {
 				type : "POST",
 				success : function(response){
 					if(response.is_error == 0)
-					{ 
+					{
 						leads_module.DisplayListLeads();
 						$('#ChangeStatusModel').modal('toggle');
 					}
@@ -431,7 +431,7 @@ leads_module = {
 				type : "POST",
 				success : function(response){
 					if(response.is_error == 0)
-					{ 
+					{
 						leads_module.DisplayListLeadResults();
                                                 leads_module.DisplayListLeads();
 						$('#AddResultModel').modal('toggle');
@@ -441,7 +441,7 @@ leads_module = {
 		},
 		SaveAssignLeadTo : function(){
 			var base_url = $('#BASE_URL').val();
-			var frm_str = $("form[name=frm_lead_assign_to]").serialize(); 
+			var frm_str = $("form[name=frm_lead_assign_to]").serialize();
 			 $.ajax
 		        ({
 		            url : base_url + "/request/leads/assignto",
@@ -450,7 +450,7 @@ leads_module = {
 		            type : "POST",
 		            success : function(response){
 		              if(response.is_error == 0)
-		              { 
+		              {
 		            	  	leads_module.DisplayListLeads();
 		            		$('#AssignLeadModel').modal('toggle');
 		              }
@@ -490,15 +490,15 @@ leads_module = {
 	            data : str_params,
 	            dataType : "Json",
 	            type : "POST",
-	            success : function(response){ 
+	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#AppointmentsManagement").html(response.display); 
+	            	  $("#AppointmentsManagement").html(response.display);
 	            	  var display_type = $('input[name=display_type]').val();
 	            	  if(display_type == 'list')
             		  {
-	            		 
-		            	  
+
+
 		              	$("a[id*=EDIT_APPT_]").on("click",leads_module.EditAppointmentInfo);
 		            	$("a[id*=DELETE_APPT_]").on("click",leads_module.DeleteAppointmentInfo);
             		  }
@@ -506,11 +506,11 @@ leads_module = {
             		  {
 	            		 var path = response.calendar_path;
 	            		  calendar_path = atob(path);
-	          
+
 	            			scheduler.init('scheduler_here',Date.now(),"week");
 	            			scheduler.load(calendar_path);
             		  }
-	            	  
+
 	              }
 	            }
 	        });
@@ -526,10 +526,10 @@ leads_module = {
 				data : str_params,
 				dataType : "Json",
 				type : "POST",
-				success : function(response){ 
+				success : function(response){
 					if(response.is_error == 0)
 					{
-						$("#ActivitiesManagement").html(response.display); 
+						$("#ActivitiesManagement").html(response.display);
 						$("a[id*=EDIT_ACTIVITY_]").on("click",leads_module.EditActivityInfo);
 						$("a[id*=DELETE_ACTIVITY_]").on("click",leads_module.DeleteActivityInfo);
 					}
@@ -547,11 +547,11 @@ leads_module = {
 	            data : str_params,
 	            dataType : "Json",
 	            type : "POST",
-	            success : function(response){ 
+	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#LogsManagement").html(response.display); 
-	            	  
+	            	  $("#LogsManagement").html(response.display);
+
 	              }
 	            }
 	        });
@@ -571,7 +571,7 @@ leads_module = {
 	              if(response.is_error == 0)
 	              {
 	            	  $("#FilesManagement").html(response.display);
-	            	   
+
 	              }
 	            }
 	        });
@@ -590,7 +590,7 @@ leads_module = {
 	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#ContactsManagement").html(response.display); 
+	            	  $("#ContactsManagement").html(response.display);
 		            	$("a[id*=EDIT_CONTACT_]").on("click",contacts_module.EditContactInfo);
 		            	$("a[id*=DELETE_CONTACT_]").on("click",contacts_module.DeleteLeadContactInfo);
 	              }
@@ -599,17 +599,17 @@ leads_module = {
 		},
 		AddLeadContact : function(){
 			var cl_id 		= $('input[name=lead_id]').val();
-			var base_url 	= $('#BASE_URL').val(); 
+			var base_url 	= $('#BASE_URL').val();
 			window.location.href = base_url + "/crm/leads/addcontacts/" + cl_id;
 		},
 		AddLeadAppointment : function(){
 			var cl_id 		= $('input[name=lead_id]').val();
-			var base_url 	= $('#BASE_URL').val(); 
+			var base_url 	= $('#BASE_URL').val();
 			window.location.href = base_url + "/crm/leads/addappointment/" + cl_id;
 		},
 		AddLeadActivity : function(){
 			var cl_id 		= $('input[name=lead_id]').val();
-			var base_url 	= $('#BASE_URL').val(); 
+			var base_url 	= $('#BASE_URL').val();
 			window.location.href = base_url + "/crm/leads/addactivity/" + cl_id;
 		},
 		DisplayListNotes : function(){
@@ -641,8 +641,8 @@ leads_module = {
 		    	bootbox.alert("Please Add You Note Before Submit");
 		    	return false;
 	    	}
-		    
-		    
+
+
 		    var str_params ={cl_id : cl_id , lead_notes : lead_notes , _token : _token};
 		    $.ajax
 	        ({
@@ -664,8 +664,8 @@ leads_module = {
 	        });
 		},
 		UploadLeadFile : function(){
-			var base_url 	= $('#BASE_URL').val(); 
-			
+			var base_url 	= $('#BASE_URL').val();
+
 			 var FormDataFields = $("form[id=FRM_LEAD_DROPZONE]");
 
  	        var data = new FormData();
@@ -681,7 +681,7 @@ leads_module = {
  	        FormDataFields.find('input').each(function(){
  	                data.append($(this).attr('name'), $(this).val() );
  	        });
- 	        
+
  	       $.ajax
 	        ({
 	            url : base_url + "/request/leads/uploadleadfile",
@@ -702,7 +702,7 @@ leads_module = {
 	              }
 	            }
 	        });
-			
+
 		},
 		DeleteLeadFile : function(){
 			var lf_id = $(this).data('lf_id');
@@ -829,19 +829,19 @@ leads_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var str_data = $("form[id=FORM_SAVE_APPOINTMENT]").serialize();
 
-	    	       
+
 	    	        const ca_appointment_description = $.desc_editor.getData();
 	    	        const ca_appointment_results = $.result_editor.getData();
-	    	        
+
 	    	        str_data = str_data + "&ca_appointment_description=" + ca_appointment_description + "&ca_appointment_results=" + ca_appointment_results;
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveleadappointment",
 	    	            data : str_data,
-	    	            method : 'post', 
+	    	            method : 'post',
 	    	            dataType : "json",
 	    	            beforeSend : function(){
 	    	            },
@@ -853,7 +853,7 @@ leads_module = {
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -936,19 +936,19 @@ leads_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var str_data = $("form[id=FORM_SAVE_ACTIVITY]").serialize();
 
-	    	       
+
 	    	        const ca_activity_description = $.desc_editor.getData();
 	    	        const ca_activity_result = $.result_editor.getData();
-	    	        
+
 	    	        str_data = str_data + "&ca_activity_description=" + ca_activity_description + "&ca_activity_result=" + ca_activity_result;
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveleadactivity",
 	    	            data : str_data,
-	    	            method : 'post', 
+	    	            method : 'post',
 	    	            dataType : "json",
 	    	            beforeSend : function(){
 	    	            },
@@ -960,7 +960,7 @@ leads_module = {
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -999,9 +999,9 @@ leads_module = {
 			var sc_id = $(this).val();
 			var base_url = $("#BASE_URL").val();
 			var _token = $("input[name=_token]").val();
-			
+
 			var str_params = { sc_id : sc_id , _token : _token };
-			
+
 			$.ajax
 	        ({
 	            url : base_url + "/request/request/general/getdropdown/services",
@@ -1114,30 +1114,30 @@ leads_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var str_data = $("form[id=FORM_SAVE_LEADITEMS]").serialize();
 
-	    	       
-	    	        const cs_service_description = $.editor.getData(); 
-	    	        
+
+	    	        const cs_service_description = $.editor.getData();
+
 	    	        str_data = str_data + "&cs_service_description=" + cs_service_description;
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/leads/saveleaditeminfo",
 	    	            data : str_data,
-	    	            method : 'post', 
+	    	            method : 'post',
 	    	            dataType : "json",
 	    	            beforeSend : function(){
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
 	    	              {
-	    	            	   
+
 	    	                 window.location.href = base_url + "/crm/leads/editform/" + response.lead_id;
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -1156,7 +1156,7 @@ leads_module = {
 	            success : function(response){
 	              if(response.is_error == 0)
 	              {
-	            	  $("#ItemsManagement").html(response.display); 
+	            	  $("#ItemsManagement").html(response.display);
 		            	$("a[id*=EDIT_LITEM_]").on("click",leads_module.EditLeadItemInfo);
 		            	$("a[id*=DELETE_LITEM_]").on("click",leads_module.DeleteLeadItemInfo);
 	              }
@@ -1203,7 +1203,7 @@ leads_module = {
 	        	{
 		        	$("#PROGRESSBAR").attr("aria-valuenow",i);
 	        	}
-		        
+
 		         $.ajax
 		        ({
 		            url : base_url + "/request/leads/converttoaccounts",

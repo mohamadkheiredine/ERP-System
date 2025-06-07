@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 $(function(){
@@ -18,7 +18,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -28,14 +28,14 @@ $(function(){
 		 },
 		 localization: {
 			 format : "yyyy-MM-dd"
-			 
+
 		 }
 	});
 
 	$('#BR_RECEIPT_DATE').on('changeDate', function() {
 	   var current_date = $('#BR_RECEIPT_DATE').val();
-	   
+
 	   receipts_module.GenerateReceiptCode(current_date);
 	});
-	$("#BTN_SAVE_RECEIPT").on("click",receipts_module.QuickSaveReceiptInfo);
+	$("#BTN_SAVE_RECEIPT").on("click",receipts_module.SaveReceiptInfo);
 })

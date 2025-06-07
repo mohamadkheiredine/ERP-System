@@ -25,8 +25,7 @@ Page Description :
 		<meta property="og:type" content="Enterprise Resource Planning" />
 		<meta property="og:title" content="Enterprise Resource Planning - titan ERP" />
 		<meta property="og:url" content="" />
-		<meta property="og:site_name" content="titan ERP | " />
-		<link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+		<meta property="og:site_name" content="titan ERP" />
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
@@ -42,6 +41,13 @@ Page Description :
 			 @yield("themes")
 		<!--end::Global Stylesheets Bundle-->
 		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
+        <script type="text/javascript">
+            $(function(){
+                $("#BACK_FORM").on('click',function(){
+                    history.go(-1);
+                })
+            })
+        </script>
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
@@ -83,7 +89,7 @@ Page Description :
 									</span>
 									</a>
 									<!--end:Menu link-->
-									<!--begin:Menu sub--> 
+									<!--begin:Menu sub-->
 									<!--end:Menu sub-->
 								</div>
 								<!--end:Menu item-->
@@ -107,7 +113,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('administrator/users') }}">
@@ -221,7 +227,7 @@ Page Description :
         											</div>
         											<!--end:Menu content-->
         										</div>
-        										<!--end:Menu item-->  
+        										<!--end:Menu item-->
         										 <div class="menu-item">
         											<!--begin:Menu link-->
         											<a class="menu-link" href="{{ url('administrator/config') }}">
@@ -232,7 +238,7 @@ Page Description :
         											</a>
         											<!--end:Menu link-->
         										</div>
-        										
+
         										<div class="menu-item">
         											<!--begin:Menu link-->
         											<a class="menu-link" href="#">
@@ -243,7 +249,7 @@ Page Description :
         											</a>
         											<!--end:Menu link-->
         										</div>
-									 
+
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -258,7 +264,7 @@ Page Description :
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
 									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
-                                                                           
+
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('callcenter/appointments/todaysappointment') }}">
@@ -268,7 +274,7 @@ Page Description :
                                                                                             <span class="menu-title"> Today's Appointments </span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div> 
+                                                                            </div>
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('callcenter/appointments') }}">
@@ -278,7 +284,7 @@ Page Description :
                                                                                             <span class="menu-title"> Appointments </span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div> 
+                                                                            </div>
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('crm/leads/addform') }}">
@@ -288,7 +294,7 @@ Page Description :
                                                                                             <span class="menu-title"> New Lead </span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div> 
+                                                                            </div>
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('/crm/leads') }}">
@@ -298,7 +304,7 @@ Page Description :
                                                                                             <span class="menu-title">Leads</span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div> 
+                                                                            </div>
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('crm/appointments/closureapp') }}">
@@ -308,7 +314,7 @@ Page Description :
                                                                                             <span class="menu-title"> Closure Sales Appointments Report </span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
-                                                                            </div>  
+                                                                            </div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -331,7 +337,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidays') }}">
@@ -341,7 +347,7 @@ Page Description :
 												<span class="menu-title"> yearly holidays</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidayrequests') }}">
@@ -351,7 +357,7 @@ Page Description :
 												<span class="menu-title">Holiday Requests</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/generaltimesheetmanagement') }}">
@@ -361,7 +367,7 @@ Page Description :
 												<span class="menu-title">Manage Timesheet</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/onlineemployees') }}">
@@ -371,7 +377,7 @@ Page Description :
 												<span class="menu-title">Online Employees</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/transportationemployees') }}">
@@ -381,7 +387,7 @@ Page Description :
 												<span class="menu-title">Transportation Report</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidayemployees') }}">
@@ -391,7 +397,7 @@ Page Description :
 												<span class="menu-title">Holidays Report</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/hourlysalaries') }}">
@@ -401,7 +407,7 @@ Page Description :
 												<span class="menu-title">Salary Report</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -425,7 +431,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/warehouses') }}">
@@ -435,18 +441,34 @@ Page Description :
 												<span class="menu-title"> Warehouse Management</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
+											<a class="menu-link" href="{{ url('inventory/zones') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Warehouse Zones</span>
+											</a>
+										</div>
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('inventory/floors') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Warehouse Floors</span>
+                                            </a>
+                                        </div>
+										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/productcategories') }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-												<span class="menu-title">Products Categories</span>
+												<span class="menu-title">Product Categories</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
-										<div class="menu-item">
+										</div>
+                                        <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/products') }}">
 												<span class="menu-bullet">
@@ -455,7 +477,7 @@ Page Description :
 												<span class="menu-title">Products</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/services') }}">
@@ -465,7 +487,7 @@ Page Description :
 												<span class="menu-title">Services</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/stocktransfer') }}">
@@ -475,7 +497,7 @@ Page Description :
 												<span class="menu-title">Stock Transfer Management</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/vendors') }}">
@@ -485,7 +507,7 @@ Page Description :
 												<span class="menu-title">Vendors Management</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/customers') }}">
@@ -495,10 +517,72 @@ Page Description :
 												<span class="menu-title">Customers Management</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
+                                    <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                        <!--begin:Menu link-->
+                                        <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-boxes-stacked fa-xl"></i>
+										</span>
+                                                                            Assets Module
+									</span>
+                                        <!--end:Menu link-->
+                                        <!--begin:Menu sub-->
+                                        <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                            <div class="menu-item">
+                                                <!--begin:Menu content-->
+                                                <div class="menu-content">
+                                                    <span class="menu-section fs-5 fw-bolder ps-1 py-1"> Assets Management</span>
+                                                </div>
+                                                <!--end:Menu content-->
+                                            </div>
+                                            <!--end:Menu item-->
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('assets/locations') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title"> Asset Locations</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('assets/categories') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title"> Asset Categories</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('assets') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title"> Assets</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('assets/transfers') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title"> Assets Transfers</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                        </div>
+                                        <!--end:Menu sub-->
+                                    </div>
 									@endif
 							@if($license_array->BANKING_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -519,7 +603,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/financialaccount/addform') }}">
@@ -529,7 +613,7 @@ Page Description :
 												<span class="menu-title">New Financial Account</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										   <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
@@ -539,7 +623,7 @@ Page Description :
 												<span class="menu-title">List Bank Accounts</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/entries/list') }}">
@@ -549,7 +633,7 @@ Page Description :
 												<span class="menu-title">List Entries</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/internaltransfer') }}">
@@ -559,11 +643,11 @@ Page Description :
 												<span class="menu-title">Internal Transfer</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 							@endif
 							@if($license_array->PAYROLL_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -572,7 +656,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-hryvnia-sign fa-xl"></i>
 										</span>
-                                                                            PayRoll Module
+                                        PayRoll Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
@@ -584,91 +668,90 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Salary Details</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                 <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Payroll Periods</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                 <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Employee Attendance</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                 <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Deductions and Benefits</span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                 <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Employee Taxes </span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Payroll Transactions </span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Payroll Payment Methods </span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
-                                                                                <div class="menu-item">
-                                                                                    <!--begin:Menu link-->
-                                                                                    <a class="menu-link" href="#">
-                                                                                            <span class="menu-bullet">
-                                                                                                    <span class="bullet bullet-dot"></span>
-                                                                                            </span>
-                                                                                            <span class="menu-title">Payroll Audit Logs </span>
-                                                                                    </a>
-                                                                                    <!--end:Menu link-->
-										</div> 
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Salary Details</span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                         <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('hr/payrollsperiods') }}">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Payroll Periods</span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                         <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Employee Attendance</span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                         <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('payrolls/dedben') }}">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Deductions and Benefits</span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                         <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/payrolls/taxbrackets') }}">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Employee Taxes </span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Payroll Transactions </span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Payroll Payment Methods </span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                    <span class="menu-title">Payroll Audit Logs </span>
+                                            </a>
+                                            <!--end:Menu link-->
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
 							@endif
 							@if(isset($license_array->SRM_MODULE) && $license_array->SRM_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-end" class="menu-item py-2">
@@ -689,7 +772,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/suppliercategories') }}">
@@ -699,7 +782,7 @@ Page Description :
 												<span class="menu-title">Supplier Categories</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/supplierstatuses') }}">
@@ -709,7 +792,7 @@ Page Description :
 												<span class="menu-title">Supplier Statuses</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/suppliers') }}">
@@ -719,7 +802,7 @@ Page Description :
 												<span class="menu-title">Suppliers Management</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/bidding/quotations') }}">
@@ -729,14 +812,14 @@ Page Description :
 												<span class="menu-title">Supplier Purchase Invoice</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 							@endif
 							@if($license_array->ACCOUNTING_MODULE == 1)
-								
+
 								<!--end:Menu item-->
 								<!--begin:Menu item-->
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -859,8 +942,8 @@ Page Description :
 											</div>
 											<!--end:Menu sub-->
 										</div>
-										
-                                                                                
+
+
                                                                                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 											<!--begin:Menu link-->
 											<span class="menu-link">
@@ -873,49 +956,49 @@ Page Description :
 											<!--end:Menu link-->
 											<!--begin:Menu sub-->
 											<div class="menu-sub menu-sub-accordion">
-                                                                                            <div class="menu-item"> 
+                                                                                            <div class="menu-item">
                                                                                                 <a class="menu-link" href="{{ url('costcenters/categories') }}">
                                                                                                     <span class="menu-bullet">
                                                                                                             <span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Categories</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
-                                                                                            <div class="menu-item"> 
+                                                                                            <div class="menu-item">
                                                                                                 <a class="menu-link" href="{{ url('costcenters') }}">
                                                                                                     <span class="menu-bullet">
                                                                                                             <span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Cost Center Management</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
-                                                                                            <div class="menu-item"> 
+                                                                                            <div class="menu-item">
                                                                                                 <a class="menu-link" href="#">
                                                                                                     <span class="menu-bullet">
                                                                                                             <span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Cost Center Budget</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
-                                                                                             <div class="menu-item"> 
+                                                                                             <div class="menu-item">
                                                                                                 <a class="menu-link" href="#">
                                                                                                     <span class="menu-bullet">
                                                                                                             <span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Actual Expense</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
-                                                                                             <div class="menu-item"> 
+                                                                                             <div class="menu-item">
                                                                                                 <a class="menu-link" href="#">
                                                                                                     <span class="menu-bullet">
                                                                                                             <span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Allocation Rules</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
                                                                                         </div>
                                                                                 </div>
-                                                                                
+
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/dashboard') }}">
@@ -925,7 +1008,7 @@ Page Description :
 												<span class="menu-title">Dashboard</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/ledger') }}">
@@ -935,7 +1018,7 @@ Page Description :
 												<span class="menu-title">Ledger</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/accountstatmentdetails') }}">
@@ -945,7 +1028,7 @@ Page Description :
 												<span class="menu-title">Account Statment details</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -981,22 +1064,22 @@ Page Description :
 											<!--end:Menu link-->
 											<!--begin:Menu sub-->
 											<div class="menu-sub menu-sub-accordion">
-                                                                                            <div class="menu-item"> 
+                                                                                            <div class="menu-item">
                                                                                                 <a class="menu-link" href="{{ url('billing/invoicetemplates') }}">
                                                                                                     <span class="menu-bullet">
                                                                                                         &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Invoice Templates</span>
-                                                                                                </a> 
+                                                                                                </a>
                                                                                             </div>
-                                                                                            <div class="menu-item"> 
+                                                                                            <div class="menu-item">
                                                                                                 <a class="menu-link" href="{{ url('billing/recurringinvoices') }}">
                                                                                                     <span class="menu-bullet">
                                                                                                             &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
                                                                                                     </span>
                                                                                                     <span class="menu-title">Recurring Invoices</span>
-                                                                                                </a> 
-                                                                                            </div> 
+                                                                                                </a>
+                                                                                            </div>
                                                                                         </div>
                                                                                 </div>
     										<div class="menu-item">
@@ -1008,7 +1091,7 @@ Page Description :
     												<span class="menu-title">Payment Types</span>
     											</a>
     											<!--end:Menu link-->
-    										</div>  
+    										</div>
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('sales/orders') }}">
@@ -1018,7 +1101,7 @@ Page Description :
     												<span class="menu-title">Orders</span>
     											</a>
     											<!--end:Menu link-->
-    										</div>  
+    										</div>
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/invoices') }}">
@@ -1028,7 +1111,7 @@ Page Description :
     												<span class="menu-title">Invoices</span>
     											</a>
     											<!--end:Menu link-->
-    										</div>  
+    										</div>
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/receipts') }}">
@@ -1038,7 +1121,7 @@ Page Description :
     												<span class="menu-title">Receipts</span>
     											</a>
     											<!--end:Menu link-->
-    										</div>  
+    										</div>
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/internaltransfers') }}">
@@ -1048,7 +1131,7 @@ Page Description :
     												<span class="menu-title">Internal Transfers</span>
     											</a>
     											<!--end:Menu link-->
-    										</div>  
+    										</div>
     											<div class="menu-item">
                                                                                                 <!--begin:Menu link-->
                                                                                                 <a class="menu-link" href="{{ url('billing/vouchers') }}">
@@ -1058,7 +1141,7 @@ Page Description :
                                                                                                         <span class="menu-title">Vouchers</span>
                                                                                                 </a>
                                                                                                 <!--end:Menu link-->
-                                                                                        </div>  
+                                                                                        </div>
     											<div class="menu-item">
                                                                                                 <!--begin:Menu link-->
                                                                                                 <a class="menu-link" href="{{ url('billing/journalvouchers') }}">
@@ -1068,7 +1151,7 @@ Page Description :
                                                                                                         <span class="menu-title">Journal Vouchers</span>
                                                                                                 </a>
                                                                                                 <!--end:Menu link-->
-                                                                                        </div>  
+                                                                                        </div>
                                                                                         <div class="menu-item">
                                                                                                 <!--begin:Menu link-->
                                                                                                 <a class="menu-link" href="{{ url('billing/bills/addform') }}">
@@ -1078,7 +1161,7 @@ Page Description :
                                                                                                         <span class="menu-title">Create Bill</span>
                                                                                                 </a>
                                                                                                 <!--end:Menu link-->
-                                                                                        </div> 
+                                                                                        </div>
                                                                                         <div class="menu-item">
                                                                                                 <!--begin:Menu link-->
                                                                                                 <a class="menu-link" href="{{ url('billing/bills') }}">
@@ -1088,7 +1171,7 @@ Page Description :
                                                                                                         <span class="menu-title">Bills Management</span>
                                                                                                 </a>
                                                                                                 <!--end:Menu link-->
-                                                                                        </div> 
+                                                                                        </div>
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
@@ -1098,7 +1181,7 @@ Page Description :
     												<span class="menu-title">Bank Accounts</span>
     											</a>
     											<!--end:Menu link-->
-    										</div> 
+    										</div>
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('crm/services') }}">
@@ -1108,7 +1191,7 @@ Page Description :
     												<span class="menu-title">Services</span>
     											</a>
     											<!--end:Menu link-->
-    										</div> 
+    										</div>
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('inventory/customers') }}">
@@ -1118,18 +1201,18 @@ Page Description :
     												<span class="menu-title">Customers</span>
     											</a>
     											<!--end:Menu link-->
-    										</div> 
+    										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 							@endif
 							@if($license_array->MANUFACTURING_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
 										<span class="menu-icon me-0">
-											<i class="ki-outline ki-wrench fs-2x"></i> 
+											<i class="ki-outline ki-wrench fs-2x"></i>
 										</span>
                                                                             Manufacturing Module
 									</span>
@@ -1143,7 +1226,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('mrp/billofmaterial') }}">
@@ -1153,11 +1236,11 @@ Page Description :
 												<span class="menu-title">BILL of Material</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 							@endif
 							@if($license_array->PRODUCTION_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -1178,7 +1261,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/machines') }}">
@@ -1188,7 +1271,7 @@ Page Description :
 												<span class="menu-title">Production Schedule</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/planstatus') }}">
@@ -1198,7 +1281,7 @@ Page Description :
 												<span class="menu-title">Plan Status</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/planning') }}">
@@ -1208,7 +1291,7 @@ Page Description :
 												<span class="menu-title">Production Plans</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1218,7 +1301,7 @@ Page Description :
 												<span class="menu-title">Quality Control</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -1244,7 +1327,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('pm/projects/types') }}">
@@ -1254,7 +1337,7 @@ Page Description :
 												<span class="menu-title">Project Types</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('projects/statuses') }}">
@@ -1264,7 +1347,7 @@ Page Description :
 												<span class="menu-title">Project Status</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1274,11 +1357,11 @@ Page Description :
 												<span class="menu-title">Job Status</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 							@endif
 							@if($license_array->SALES_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -1299,7 +1382,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('sales/orderstatus') }}">
@@ -1309,7 +1392,7 @@ Page Description :
 												<span class="menu-title">Order Status</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('sales/orders') }}">
@@ -1319,13 +1402,13 @@ Page Description :
 												<span class="menu-title">Orders</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
 									@endif
 							@if($license_array->CRM_MODULE == 1)
-								
+
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1344,7 +1427,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1354,7 +1437,7 @@ Page Description :
 												<span class="menu-title">Dashboard</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('leads/status') }}">
@@ -1364,7 +1447,7 @@ Page Description :
 												<span class="menu-title">Lead Statuses</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/leads') }}">
@@ -1374,7 +1457,7 @@ Page Description :
 												<span class="menu-title">Leads</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/activities') }}">
@@ -1384,7 +1467,7 @@ Page Description :
 												<span class="menu-title">Activities</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/clientcategories') }}">
@@ -1394,7 +1477,7 @@ Page Description :
 												<span class="menu-title">Client Categories</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/clients') }}">
@@ -1448,7 +1531,7 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								
+
 								@endif
 							@if($license_array->SHIPMENT_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
@@ -1478,7 +1561,7 @@ Page Description :
 												<span class="menu-title">Order Statuses</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
                                                                              <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/packingprices') }}">
@@ -1488,7 +1571,7 @@ Page Description :
 												<span class="menu-title">Packing Prices</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
                                                                              <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/orders') }}">
@@ -1498,7 +1581,7 @@ Page Description :
 												<span class="menu-title">Shipment Orders</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipments/shipmentoperations') }}">
@@ -1508,7 +1591,7 @@ Page Description :
 												<span class="menu-title">Shipment Operations</span>
 											</a>
 											<!--end:Menu link-->
-										</div>  
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/maptracker') }}">
@@ -1518,7 +1601,7 @@ Page Description :
 												<span class="menu-title">Map Trackers</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -1551,7 +1634,7 @@ Page Description :
                                                                 <span class="menu-title"> Create Call's</span>
                                                         </a>
                                                         <!--end:Menu link-->
-                                                </div> 
+                                                </div>
                                                   <div class="menu-item">
                                                         <!--begin:Menu link-->
                                                         <a class="menu-link" href="{{  url('callcenter/inboundcall') }}">
@@ -1561,8 +1644,8 @@ Page Description :
                                                                 <span class="menu-title"> Pending Call's</span>
                                                         </a>
                                                         <!--end:Menu link-->
-                                                </div> 
-										    
+                                                </div>
+
 									</div>
 									<!--end:Menu sub-->
 								</div>
@@ -1585,7 +1668,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->  
+										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('logistics/vehicules') }}">
@@ -1595,7 +1678,7 @@ Page Description :
 												<span class="menu-title">Vehicules</span>
 											</a>
 											<!--end:Menu link-->
-										</div> 
+										</div>
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('logistics/shipmentcompanies') }}">
@@ -1605,12 +1688,12 @@ Page Description :
 												<span class="menu-title">Shipment Companies</span>
 											</a>
 											<!--end:Menu link-->
-										</div>    
+										</div>
 									</div>
 									<!--end:Menu sub-->
 								</div>
 								@endif
-								
+
 							</div>
 						</div>
 						<!--end::Aside menu-->
@@ -1759,9 +1842,9 @@ Page Description :
 										<!--end::Tablet and mobile search toggle-->
 										<!--begin::Form-->
 										<form data-kt-search-element="form" class="w-100 position-relative" autocomplete="off">
-										
-											 
-											 
+
+
+
 										</form>
 										<!--end::Form-->
 										<!--begin::Menu-->
@@ -2396,7 +2479,7 @@ Page Description :
 								</div>
 								<!--end::Search-->
 								<!--begin::Action-->
-								<div class="d-flex align-items-center py-3 py-lg-0"> 
+								<div class="d-flex align-items-center py-3 py-lg-0">
 									<!--end::Item-->
 									<!--begin::Item-->
 									<div class="me-3">
@@ -2448,7 +2531,7 @@ Page Description :
 											<div class="menu-item px-5">
 												<a href="{{ url('/timesheet/timesheetmanagement') }}" class="menu-link px-5">Checkin/Checkout Timesheet</a>
 											</div>
-                                                                                        
+
                                                                                         <div class="menu-item px-5">
 												<a href="{{ url('/user/logout') }}" class="menu-link px-5">Sign Out</a>
 											</div>
@@ -6440,7 +6523,7 @@ Page Description :
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Vendors Javascript(used for this page only)-->
 		<script src="{{ url('theme/style/src/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
-		
+
 		<script src="{{ url('default/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
 		<script src="{{ url('default/assets/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
 		<script src="{{ url('default/assets/plugins/bootbox/bootbox.min.js') }}" type="text/javascript"></script>
@@ -6479,10 +6562,10 @@ Page Description :
                      $("#BACK_FORM").on('click',function(){
                         history.back();
                     });
-                    
+
                      $('input,select,textarea').on('keypress', function(e) {
                         if (e.which === 13) { // 13 is the code for "Enter"
-                            e.preventDefault(); 
+                            e.preventDefault();
                         }
                     });
                 })

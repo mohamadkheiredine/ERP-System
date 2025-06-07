@@ -7,9 +7,9 @@
  Date Created : Jun 30, 2019
  Developed By  : Mohamad Mantach   PHP Department itm Solutions
  All Rights Reserved ,   itm Solutions COPYRIGHT 2019
- 
+
  Page Description :
- 
+
  ***********************************************************/
 
 
@@ -22,9 +22,8 @@
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
-}
 
+}
 ?>
 
 @extends('layouts.layout',['page_title' => "Users Management"])
@@ -51,7 +50,7 @@ th{
     <div class="card-header">
         <h3 class="card-title">Edit Existing User</h3>
         <div class="card-toolbar">
-             
+
         </div>
     </div>
     <div class="card-body">
@@ -59,6 +58,7 @@ th{
             <div  class="form-body">
              <span id="hidden_fields">
                              <input type="hidden" name="user_id" value="{{ $user_info->id }}" />
+                             <input type="hidden" name="pm_id" value="{{ isset($payroll_paymentmethod) && count($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_id : 0 }}" />
                         {!! csrf_field() !!}
             </span>
                     <div class="alert alert-success" style="display:none">
@@ -75,7 +75,7 @@ th{
                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                         <img id="PROFILE_PIC" height="120" src="{{ $img_src }}" alt="" /> </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
-    
+
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -90,7 +90,7 @@ th{
                                     <span> Attached image thumbnail is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 10 only </span>
                                 </div>
                             </div>
-    
+
                         </div>
                 	</div>
                 	<div class="col-md-12">
@@ -98,7 +98,7 @@ th{
                         <div class="card-header">
                             <h3 class="card-title">User Information</h3>
                             <div class="card-toolbar">
-                                
+
                             </div>
                         </div>
                         <div class="card-body">
@@ -135,12 +135,12 @@ th{
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label> User Type <span class="required"> * </span></label> 
+                                                <label> User Type <span class="required"> * </span></label>
                                                 <select  name="u_user_type" id="U_USER_TYPE" class="form-select" data-control="select2" data-placeholder="Select user type">
                                                         <option value="">No User Type</option>
                                                          @foreach($lst_user_types as $key => $ut_info)
                                                      <option {{ $user_info->u_user_type ==  $ut_info->ut_id  ? "selected" : "" }} value="{{ $ut_info->ut_id }}">{{ $ut_info->ut_user_type }}</option>
-                                                    @endforeach 
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -151,7 +151,7 @@ th{
                                                     <option value="">--Select One--</option>
                                                     @foreach( $lst_roles as $key => $role_info)
                                                      <option {{ $user_info->fk_role_id  ==  $role_info->role_id  ? "selected" : "" }} value="{{ $role_info->role_id }}">{{ $role_info->role_name }}</option>
-                                                    @endforeach 
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -162,7 +162,7 @@ th{
                                                     <option value="">--Select One--</option>
                                                     @foreach($lst_langs as $key => $lang_info)
                                                      <option {{ $user_info->u_lang_id ==  $lang_info->lm_id  ? "selected" : "" }} value="{{ $lang_info->lm_id }}">{{ $lang_info->lm_lang_name }}</option>
-                                                    @endforeach 
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -173,22 +173,22 @@ th{
                                             </div>
                                         </div>
                                         <div class="col-md-4" style="height: 40px;">
-                                            <div class="col-12"> 
+                                            <div class="col-12">
                                              <br/>
                                             <label class="form-check form-switch form-check-custom form-check-solid">
                                                   <input class="form-check-input" {{ $user_info->u_is_active == 1 ? "checked='checked'" : "" }}  type="checkbox" name="u_is_active" value="1"  />
                                                   <span class="form-check-label fw-semibold text-muted">
                                                         Enable User
                                                   </span>
-                                              </label> 
+                                              </label>
                                         </div>
-                                        </div> 
+                                        </div>
                                     </div>
                         </div>
                        </div>
-                		 
-                	</div> 
-                </div> 
+
+                	</div>
+                </div>
                <div class="row" style="height:5px;"></div>
                 <div class="row">
                		<div class="col-md-12">
@@ -196,7 +196,7 @@ th{
                         <div class="card-header">
                             <h3 class="card-title">Personal Information</h3>
                             <div class="card-toolbar">
-                                
+
                             </div>
                         </div>
                         <div class="card-body">
@@ -263,8 +263,8 @@ th{
                                             <label class="control-label">Marital Status</label>
                                                 <select name="u_marital_status" id="U_MARITAL_STATUS"  class="form-select" data-control="select2" data-placeholder="Select marital status">
                                                     <option value="">-- Select One --</option>
-                                                   <option {{ $user_info->u_marital_status == 1 ? "selected" : "" }} value="1">single</option> 
-                                                   <option {{ $user_info->u_marital_status == 2 ? "selected" : "" }} value="2">married</option> 
+                                                   <option {{ $user_info->u_marital_status == 1 ? "selected" : "" }} value="1">single</option>
+                                                   <option {{ $user_info->u_marital_status == 2 ? "selected" : "" }} value="2">married</option>
                                                    <option {{ $user_info->u_marital_status == 3 ? "selected" : "" }} value="3">widowed</option>
                                                    <option {{ $user_info->u_marital_status == 4 ? "selected" : "" }} value="4">divorced</option>
                                                    <option {{ $user_info->u_marital_status == 5 ? "selected" : "" }} value="5">separated</option>
@@ -281,8 +281,8 @@ th{
 							</div>
                         </div>
                      	</div>
-               			
-               			 
+
+
 				</div>
                 <div class="row">
                		<div class="col-md-12">
@@ -290,7 +290,7 @@ th{
                             <div class="card-header">
                                 <h3 class="card-title">Employment Information</h3>
                                 <div class="card-toolbar">
-                                   
+
                                 </div>
                             </div>
                             <div class="card-body">
@@ -302,7 +302,7 @@ th{
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_companies as $key => $cmp_info)
                                                  <option {{ $user_info->fk_company_id == $cmp_info->cd_id ? "selected" : "" }} value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -313,18 +313,18 @@ th{
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_departments as $key => $dep_info)
                                                  <option {{ $user_info->u_department_id == $dep_info->sd_id ? "selected" : "" }} value="{{ $dep_info->sd_id }}">{{ $dep_info->sd_department_title }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div> 
+                                    </div>
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="control-label">Warehouse Responsible</label> 
+                                            <label class="control-label">Warehouse Responsible</label>
                                                 <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-select" data-control="select2" data-placeholder="Select Warehouse">
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_warhouses as $key => $warehouse_info)
                                                  <option {{ $user_info->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -335,7 +335,7 @@ th{
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_roles as $key => $jr_info)
                                                  <option {{ $user_info->u_job_role_id == $jr_info->jr_id ? "selected" : "" }}  value="{{ $jr_info->jr_id }}">{{ $jr_info->jr_job_role }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -346,7 +346,7 @@ th{
                                                 <option value="">--Select One--</option>
                                                 @foreach( $lst_job_titles as $key => $jt_info)
                                                  <option {{ $user_info->u_job_title_id == $jt_info->jt_id ? "selected" : "" }} value="{{ $jt_info->jt_id }}">{{ $jt_info->jt_job_title }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -357,10 +357,10 @@ th{
                                                 <option value="">--Select One--</option>
                                                     @foreach( $lst_employment_type as $key => $et_info)
                                                  <option {{ $user_info->u_employee_type == $et_info->et_id ? "selected" : "" }}  value="{{ $et_info->et_id }}">{{ $et_info->et_type }}</option>
-                                                @endforeach 
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="col-md-4">
                                        <div class="form-group">
                                             <label class="control-label">Employment Date <span class="required"> * </span></label>
@@ -385,7 +385,7 @@ th{
                                              <input type="text" name='u_user_sallary' class="form-control" id="U_USER_SALLARY" value="{{ $user_info->u_user_sallary }}" />
                                         </div>
                                     </div>
-                                
+
                                    <div class="col-md-4">
                                        <div class="form-group">
                                            <label class="control-label">Hourly Rate</label>
@@ -398,18 +398,18 @@ th{
                                              <input type="number" min="0" max="100" step="1"  name='u_number_holidays' class="form-control" id="U_NUMBER_HOLIDAYS" value="{{ $user_info->u_number_holidays }}" />
                                         </div>
                                     </div>
-                                     <div class="col-md-4" style="height: 40px;"> 
-                                         <div class="form-group"> 
+                                     <div class="col-md-4" style="height: 40px;">
+                                         <div class="form-group">
                                               <br/>
                                             <label class="form-check form-switch form-check-custom form-check-solid">
                                                   <input class="form-check-input" type="checkbox" name="u_has_insurance"  {{ $user_info->u_has_insurance == 1 ? "checked='checked'" : "" }}  value="1"  />
                                                   <span class="form-check-label fw-semibold text-muted">
                                                    Has Insurance
                                                   </span>
-                                              </label> 
+                                              </label>
 
 
-                                        </div> 
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div class="form-group">
@@ -417,12 +417,29 @@ th{
                                              <input type="text" name='u_cnss_number' maxlength="20" class="form-control" id="U_USER_SALLARY" value="{{ $user_info->u_cnss_number }}" />
                                         </div>
                                     </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Account Number</label>
+                                        <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{ count($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_account_number : ""  }}" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Payroll Payment Type</label>
+                                        <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
+                                            <option value="">--Select One--</option>
+                                            <option value="bank-transkfer"  {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "bank-transfer" ? "selected" : "" }} >Bank Transfer</option>
+                                            <option value="cash" {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "cash" ? "selected" : "" }}>Cash</option>
+                                            <option value="Check"  {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "Check" ? "selected" : "" }} >Check</option>
+                                        </select>
+                                    </div>
+                                </div>
 								</div>
                             </div>
                          </div>
 					</div>
 				</div>
-               
+
                 <div class="row" style="height:10px;"></div>
                 <div class="row">
                     <div class="col-md-9"></div>

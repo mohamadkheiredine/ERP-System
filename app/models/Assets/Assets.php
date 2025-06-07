@@ -1,0 +1,51 @@
+<?php
+/***********************************************************
+ * AssetLocations.php
+ * Product :titanerp
+ * Version : 1.0
+ * Release : 1
+ * Date Created : 4/28/2025
+ * Developed By  : Mohamad Mantach   PHP Department itm Solutions
+ * All Rights Reserved ,   itm Solutions COPYRIGHT 2025
+ *
+ * Page Description :
+ ***********************************************************/
+
+
+
+namespace App\models\Assets;
+
+use DB;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
+
+class Assets extends Model
+{
+    protected   $table          = 'inventory_assets';
+    public      $timestamps     = false;
+    protected   $primaryKey     = "aa_id";
+
+    public function Category()
+    {
+        return $this->hasOne('App\models\Assets\AssetCategories', 'ac_id','aa_category_id');
+    }
+
+    public function Location()
+    {
+        return $this->hasOne('App\models\Assets\AssetLocations', 'il_id','aa_location');
+    }
+
+
+    public function Account()
+    {
+        return $this->hasOne('App\models\Accounting\ChartAccounts', 'il_id','aa_location');
+    }
+
+
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id','aa_currency_id');
+    }
+}

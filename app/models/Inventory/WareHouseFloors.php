@@ -23,11 +23,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class WareHouseFloors extends Model
 {
-    
     protected   $table          = 'inventory_warehouse_floors';
     public      $timestamps     = false;
     protected   $primaryKey     = "wf_id";
 
 
+    public function warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
+    }
+
+
+    public function zone()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouseZones', 'wz_id','fk_zone_id');
+    }
 
 }
