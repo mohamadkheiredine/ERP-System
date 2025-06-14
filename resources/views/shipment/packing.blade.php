@@ -76,6 +76,7 @@
                                 <div class="form-group">
                                     <label> Product Categories : </label>
                                      <select name="product_category" id="PRODUCT_CATEGORY"  class="form-control form-select" data-control="select2" data-placeholder="Select Category">
+                                         <option value="">- Select Option -</option>
                                         @foreach ( $lst_product_categories as $key => $category_info )
                                         <option value="{{ $category_info->pc_id }}">{{ $category_info->pc_category }}</option>
                                         @endforeach
@@ -83,13 +84,13 @@
                                 </div>
                                 <br/>
                             </div>
-                            <div class="col-md-4"> 
+                            <div class="col-md-4">
                                 <br/>
                             </div>
                             <div class="col-md-4">
-                                
+
                             </div>
-                            <div class="col-md-4"> 
+                            <div class="col-md-4">
                                 <br/>
                             </div>
                         </div>
@@ -126,7 +127,7 @@
                 </div>
                 <div class="col-md-2" align="right"></div>
             </div>
-            <!--end: Datatable --> 
+            <!--end: Datatable -->
             <div class="row">
                 <div class="col-md-12" align="right">
                     <a href="{{ url('shipment/packingprices/addform') }}" class="btn btn-info">

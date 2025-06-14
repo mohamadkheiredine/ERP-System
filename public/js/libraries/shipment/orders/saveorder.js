@@ -8,7 +8,7 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 
+
 	 new tempusDominus.TempusDominus(document.getElementById('SO_ORDER_DATE'),{
 		 display: {
 			  components: {
@@ -16,7 +16,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -26,7 +26,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	 new tempusDominus.TempusDominus(document.getElementById('SO_DELIVERY_DATE'),{
@@ -36,7 +36,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -46,12 +46,12 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
-	 
+
 	 $('select').select2();
-	 
+
 	 let so_id = $('input[name=so_id]').val();
 	if(so_id != null)
 	{
@@ -64,5 +64,6 @@ $(function(){
 	$('#SO_PRODUCT_COST').on('blur',orders_module.CheckStockPriceValue);
 	$('#BTN_SAVE_ORDER').on('click',orders_module.SaveOrdersInfo);
 	$('#BTN_PAY_ORDER').on('click',orders_module.PayPaymentOrder);
-		
+	$('#LstPackingCategories').on('click','a[id*=DELETE_CATEGORY_]' ,orders_module.DeleteCategoryFromOrder);
+
 })

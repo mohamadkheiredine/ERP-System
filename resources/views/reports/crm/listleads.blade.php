@@ -32,7 +32,7 @@ Page Description :
                    <td>{{ $lead_info->cl_company_name }}</td>
                    <td>{{ $lead_info->cl_phone }}</td>
                    <td>{{ $lead_info->cl_mobile }}</td>
-                   <td>{{ $lead_info->cl_email }}</td> 
+                   <td>{{ $lead_info->cl_email }}</td>
                 </tr>
                 @endforeach
 		</tbody>

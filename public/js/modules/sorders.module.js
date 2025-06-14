@@ -74,7 +74,7 @@ orders_module = {
             var so_id 		= $('input[name=so_id]').val();
             $.ajax
             ({
-                url : base_url + "/request/orders/payorder",
+                url : base_url + "/request/sorders/payorder",
                 data : { _token : _token , so_id : so_id },
             method : 'post',
             dataType : "json",
@@ -200,22 +200,12 @@ orders_module = {
 	   	            dataType : "json",
 	   	            success : function(response){
 	   	              $("#AjaxLoader").css({'display':'none'});
-	   	              if(response.is_error == 0)
-	   	              {
-	            	  	$.op_datatable.destroy();
-	            	  	orders_module.DisplayListOrderProducts();
-	            		$('#OrderPackageModel').modal('toggle');
-	   	              }
-	   	              else
-   	            	  {
-	   	            	  bootbox.alert(response.error_msg,function(){
-	   	            		$("#SO_PRODUCT_CATEGORY").val('0');
-	   	            		$("#SO_PACKAGE_WEIGHT").val('');
-	   	            		$("#SO_PACKAGE_COST").val('');
-	   	            		$('#OrderPackageModel').modal('toggle');
-	   	            	  });
+                        orders_module.DisplayListOrderCategories();
+                        $("#SO_PRODUCT_CATEGORY").val('0');
+                        $("#SO_PACKAGE_WEIGHT").val('');
+                        $("#SO_PACKAGE_COST").val('');
+                        $('#OrderPackageModel').modal('toggle');
 
-   	            	  }
 	   	            }
 	   	        });
             }
@@ -349,6 +339,30 @@ orders_module = {
 			}
 		});
 	},
+    DeleteCategoryFromOrder : function(){
+        var category_id = $(this).data('category_id');
+        var order_id = $(this).data('order_id');
+        bootbox.confirm("Are you sure you want to delete ?", function(result) {
+            //result
+            if (result == true) {
+                var base_url = $('#BASE_URL').val();
+                var _token = $('input[name=_token]').val();
+                $.ajax
+                ({
+                    url : base_url + "/request/sorders/deleteordercategory",
+                    data : { _token : _token , category_id : category_id , order_id : order_id  },
+                    dataType : "Json",
+                    type : "POST",
+                    success : function(response){
+                        if(response.is_error == 0)
+                        {
+                            orders_module.DisplayListOrderCategories();
+                        }
+                    }
+                });
+            }
+        });
+    },
 	EditOrderInfo : function(){
 		var so_id = $(this).data('so_id');
 	    var base_url = $("#BASE_URL").val();

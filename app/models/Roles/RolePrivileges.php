@@ -28,5 +28,20 @@ class RolePrivileges extends Model
     public $timestamps      = false;
     protected $dateFormat   = 'Y-m-d H:i:s';
     protected $primaryKey   = 'rp_id';
-   
+
+
+    public static function getPrivileges( $role_id )
+    {
+        $role_privileges =  DB::table('role_privileges')->where('fk_role_r_id',$role_id)->get();
+
+        $privileges = array();
+
+        for ($i = 0; $i < count($role_privileges); $i++)
+        {
+            $privileges[ $role_privileges[$i]->rp_action_code ] = $role_privileges[$i]->rp_privilege;
+        }
+
+        return $privileges;
+    }
+
 }

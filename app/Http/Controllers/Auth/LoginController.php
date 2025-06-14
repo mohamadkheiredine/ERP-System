@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\models\Roles\RolePrivileges;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -100,7 +101,6 @@ class LoginController extends Controller
         $user_id = $user_info->id;
         $role_id = $user_info->fk_role_id;
         $company_id = $user_info->fk_company_id;
-
         $company_info = Companies::find($company_id);
 
         $company_tax = $company_info->cd_company_tax;
@@ -167,9 +167,10 @@ class LoginController extends Controller
             session()->put('cd_exchange_rate' ,$company_info->cd_exchange_rate);
         }
 
-        //$role_info = RolePrivileges::getPrivileges($role_id);
+        $role_info = RolePrivileges::getPrivileges($role_id);
 
-        //session()->put('role_info' ,$role_info);
+
+        session()->put('role_info' ,json_encode($role_info));
         // save cookie to remember user id and information
 
         if($ua_remember == true)

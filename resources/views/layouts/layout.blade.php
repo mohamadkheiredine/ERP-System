@@ -94,6 +94,8 @@ Page Description :
 								</div>
 								<!--end:Menu item-->
 								<!--begin:Menu item-->
+                                @if(CheckPrivilage('erp_administration_management') == "allow")
+
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -114,6 +116,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_users_management') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('administrator/users') }}">
@@ -124,6 +127,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_user_teams') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('administrator/usersteam') }}">
@@ -134,6 +139,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_roles_management') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('administrator/roles') }}">
@@ -144,6 +151,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_company_details') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('system/companies') }}">
@@ -154,6 +163,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_departments') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('system/departments') }}">
@@ -164,6 +175,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_job_titles') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('system/jobtitles') }}">
@@ -174,6 +187,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_job_roles') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('system/jobroles') }}">
@@ -184,6 +199,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_employments_type') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('system/employmenttype') }}">
@@ -194,6 +211,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_day_types') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/daytypes') }}">
@@ -204,11 +223,14 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
+                                @endif
 								<!--end:Menu item-->
 								<!--begin:Menu item-->
+                                @if(CheckPrivilage('erp_configuration_section') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -253,7 +275,9 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
-                                                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                @endif
+                                @if(CheckPrivilage('erp_callcenter_management') == "allow")
+                                 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
 										<span class="menu-icon me-0">
@@ -264,7 +288,7 @@ Page Description :
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
 									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
-
+                                        @if(CheckPrivilage('erp_call_todays_appointments') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('callcenter/appointments/todaysappointment') }}">
@@ -275,6 +299,8 @@ Page Description :
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_call_appointments_management') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('callcenter/appointments') }}">
@@ -285,6 +311,8 @@ Page Description :
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_call_leads_management') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('crm/leads/addform') }}">
@@ -295,6 +323,8 @@ Page Description :
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_call_new_lead') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('/crm/leads') }}">
@@ -305,6 +335,8 @@ Page Description :
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_call_reports') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
                                                                                     <a class="menu-link" href="{{ url('crm/appointments/closureapp') }}">
@@ -315,9 +347,15 @@ Page Description :
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
+                                            @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
+
+                                @endif
+
+                                @if(CheckPrivilage('erp_manage_timesheet') == "allow")
+
                                                                 @if($license_array->TIMESHEET_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -338,6 +376,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_company_holidays') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidays') }}">
@@ -348,6 +387,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_holiday_requests') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidayrequests') }}">
@@ -358,6 +399,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_manage_timesheet') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/generaltimesheetmanagement') }}">
@@ -368,6 +411,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_online_employees') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/onlineemployees') }}">
@@ -378,6 +423,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_transportation_report') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/transportationemployees') }}">
@@ -388,6 +435,9 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+
+                                        @endif
+                                        @if(CheckPrivilage('erp_holidays_report') == "allow")
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/holidayemployees') }}">
@@ -398,6 +448,7 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('timesheet/hourlysalaries') }}">
@@ -411,7 +462,11 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
+                                    @endif
 							@endif
+
+                                @if(CheckPrivilage('erp_inventory_management') == "allow")
+
 							@if($license_array->INVENTORY_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -432,6 +487,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_warehouse_management') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/warehouses') }}">
@@ -442,6 +498,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_warehouse_zones') == "allow")
 										 <div class="menu-item">
 											<a class="menu-link" href="{{ url('inventory/zones') }}">
 												<span class="menu-bullet">
@@ -450,6 +508,8 @@ Page Description :
 												<span class="menu-title">Warehouse Zones</span>
 											</a>
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_warehouse_floors') == "allow")
                                         <div class="menu-item">
                                             <a class="menu-link" href="{{ url('inventory/floors') }}">
 												<span class="menu-bullet">
@@ -458,6 +518,8 @@ Page Description :
                                                 <span class="menu-title">Warehouse Floors</span>
                                             </a>
                                         </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_product_categories') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/productcategories') }}">
@@ -468,6 +530,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_product_sku') == "allow")
                                         <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/products') }}">
@@ -478,6 +542,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_services') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/services') }}">
@@ -488,6 +554,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_stock_transfer') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/stocktransfer') }}">
@@ -498,6 +566,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_vendors') == "allow")
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/vendors') }}">
@@ -508,6 +578,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_customers_management') == "allow")
 											<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('inventory/customers') }}">
@@ -518,9 +590,11 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
+                                        @if(CheckPrivilage('erp_assets_module') == "allow")
                                     <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                         <!--begin:Menu link-->
                                         <span class="menu-link menu-center">
@@ -540,6 +614,7 @@ Page Description :
                                                 <!--end:Menu content-->
                                             </div>
                                             <!--end:Menu item-->
+                                            @if(CheckPrivilage('erp_assets_locations_management') == "allow")
                                             <div class="menu-item">
                                                 <!--begin:Menu link-->
                                                 <a class="menu-link" href="{{ url('assets/locations') }}">
@@ -550,6 +625,8 @@ Page Description :
                                                 </a>
                                                 <!--end:Menu link-->
                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_assets_categories') == "allow")
                                             <div class="menu-item">
                                                 <!--begin:Menu link-->
                                                 <a class="menu-link" href="{{ url('assets/categories') }}">
@@ -560,6 +637,8 @@ Page Description :
                                                 </a>
                                                 <!--end:Menu link-->
                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_assets_management') == "allow")
                                             <div class="menu-item">
                                                 <!--begin:Menu link-->
                                                 <a class="menu-link" href="{{ url('assets') }}">
@@ -570,6 +649,8 @@ Page Description :
                                                 </a>
                                                 <!--end:Menu link-->
                                             </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_assets_transfers') == "allow")
                                             <div class="menu-item">
                                                 <!--begin:Menu link-->
                                                 <a class="menu-link" href="{{ url('assets/transfers') }}">
@@ -580,10 +661,14 @@ Page Description :
                                                 </a>
                                                 <!--end:Menu link-->
                                             </div>
+                                            @endif
                                         </div>
                                         <!--end:Menu sub-->
                                     </div>
+                                       @endif
 									@endif
+                                @endif
+                                @if(CheckPrivilage('erp_banking_module') == "allow")
 							@if($license_array->BANKING_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -596,6 +681,7 @@ Page Description :
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
 									<div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+
         								 <div class="menu-item">
 											<!--begin:Menu content-->
 											<div class="menu-content">
@@ -603,6 +689,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
+                                        @if(CheckPrivilage('erp_banking_module') == "allow")
 										<!--end:Menu item-->
 										 <div class="menu-item">
 											<!--begin:Menu link-->
@@ -614,6 +701,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_financial_accounts') == "allow")
 										   <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
@@ -624,6 +713,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_list_entries') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/entries/list') }}">
@@ -634,6 +725,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_list_internal_transfers') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('banking/internaltransfer') }}">
@@ -644,12 +737,13 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                            @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
-
+                                @endif
 							@endif
-							@if($license_array->PAYROLL_MODULE == 1)
+							@if($license_array->PAYROLL_MODULE == 1 && CheckPrivilage('erp_payroll_module') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -669,6 +763,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_payroll_salary_details') == "allow")
 										 <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -679,6 +774,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_periods') == "allow")
                                          <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="{{ url('hr/payrollsperiods') }}">
@@ -689,6 +786,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_employee_attendance') == "allow")
                                          <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -699,6 +798,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_ded_ben') == "allow")
                                          <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="{{ url('payrolls/dedben') }}">
@@ -709,6 +810,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_employee_taxes') == "allow")
                                          <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="{{ url('/payrolls/taxbrackets') }}">
@@ -719,6 +822,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_transactions') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -729,6 +834,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_payment_methods') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -739,6 +846,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_payroll_audit_logs') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -749,11 +858,12 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 							@endif
-							@if(isset($license_array->SRM_MODULE) && $license_array->SRM_MODULE == 1)
+							@if(isset($license_array->SRM_MODULE) && $license_array->SRM_MODULE == 1 && CheckPrivilage('erp_suppliers_module') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-end" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -772,7 +882,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+										 @if(CheckPrivilage('erp_list_supplier_categories') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/suppliercategories') }}">
@@ -783,6 +893,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_list_supplier_status') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/supplierstatuses') }}">
@@ -793,6 +905,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_list_suppliers') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/suppliers') }}">
@@ -803,6 +917,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_list_supplier_purchase_invoices') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('srm/bidding/quotations') }}">
@@ -813,12 +929,13 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 							@endif
-							@if($license_array->ACCOUNTING_MODULE == 1)
+							@if($license_array->ACCOUNTING_MODULE == 1 && CheckPrivilage('erp_accounting_management') == "allow")
 
 								<!--end:Menu item-->
 								<!--begin:Menu item-->
@@ -856,6 +973,7 @@ Page Description :
 											<!--begin:Menu sub-->
 											<div class="menu-sub menu-sub-accordion">
 												<!--begin:Menu item-->
+                                                @if(CheckPrivilage('erp_chart_of_accounts') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/chartofaccounts') }}">
@@ -866,8 +984,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+												 @endif
+                                                @if(CheckPrivilage('erp_accounting_journals') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/accountingjournals') }}">
@@ -878,8 +996,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+                                                @endif
+                                                @if(CheckPrivilage('erp_personalized_group') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/personalizedgroups') }}">
@@ -890,8 +1008,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+                                                @endif
+                                                @if(CheckPrivilage('erp_default_accounts') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/defaultaccounts') }}">
@@ -902,8 +1020,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+                                                @endif
+                                                @if(CheckPrivilage('erp_tax_vat_accounts') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/vataccounts') }}">
@@ -914,8 +1032,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+                                                @endif
+                                                @if(CheckPrivilage('erp_exchange_rates') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/exchangerates') }}">
@@ -926,8 +1044,8 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
-												<!--begin:Menu item-->
+                                                @endif
+                                                @if(CheckPrivilage('erp_opening_vouchers') == "allow")
 												<div class="menu-item">
 													<!--begin:Menu link-->
 													<a class="menu-link" href="{{ url('accounting/openingvoucher') }}">
@@ -938,13 +1056,15 @@ Page Description :
 													</a>
 													<!--end:Menu link-->
 												</div>
-												<!--end:Menu item-->
+
+                                                @endif
 											</div>
 											<!--end:Menu sub-->
 										</div>
 
 
-                                                                                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                        @if(CheckPrivilage('erp_cost_center') == "allow")
+                                           <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 											<!--begin:Menu link-->
 											<span class="menu-link">
 												<span class="menu-icon">
@@ -956,49 +1076,61 @@ Page Description :
 											<!--end:Menu link-->
 											<!--begin:Menu sub-->
 											<div class="menu-sub menu-sub-accordion">
-                                                                                            <div class="menu-item">
-                                                                                                <a class="menu-link" href="{{ url('costcenters/categories') }}">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            <span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Categories</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                            <div class="menu-item">
-                                                                                                <a class="menu-link" href="{{ url('costcenters') }}">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            <span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Cost Center Management</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                            <div class="menu-item">
-                                                                                                <a class="menu-link" href="#">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            <span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Cost Center Budget</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                             <div class="menu-item">
-                                                                                                <a class="menu-link" href="#">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            <span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Actual Expense</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                             <div class="menu-item">
-                                                                                                <a class="menu-link" href="#">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            <span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Allocation Rules</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                </div>
+                                                @if(CheckPrivilage('erp_costcenter_categories') == "allow")
+                                                        <div class="menu-item">
+                                                            <a class="menu-link" href="{{ url('costcenters/categories') }}">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Categories</span>
+                                                            </a>
+                                                        </div>
+                                                @endif
+                                                    @if(CheckPrivilage('erp_costcenter_management') == "allow")
+                                                        <div class="menu-item">
+                                                            <a class="menu-link" href="{{ url('costcenters') }}">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Cost Center Management</span>
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                    @if(CheckPrivilage('erp_costcenter_budget') == "allow")
+                                                        <div class="menu-item">
+                                                            <a class="menu-link" href="#">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Cost Center Budget</span>
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                    @if(CheckPrivilage('erp_costcenter_actual_expense') == "allow")
+                                                         <div class="menu-item">
+                                                            <a class="menu-link" href="#">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Actual Expense</span>
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                    @if(CheckPrivilage('erp_costcenter_allocation_rules') == "allow")
+                                                         <div class="menu-item">
+                                                            <a class="menu-link" href="#">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Allocation Rules</span>
+                                                            </a>
+                                                        </div>
 
+                                                    @endif
+                                                    </div>
+                                            </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_accounting_dashboard') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/dashboard') }}">
@@ -1009,6 +1141,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_accounting_ledger') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/ledger') }}">
@@ -1019,6 +1153,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_account_statment') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('accounting/accountstatmentdetails') }}">
@@ -1029,11 +1165,12 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 							@endif
-							@if($license_array->BILLING_MODULE == 1)
+							@if($license_array->BILLING_MODULE == 1 && CheckPrivilage('erp_billing_management') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1052,7 +1189,8 @@ Page Description :
     											</div>
     											<!--end:Menu content-->
     										</div>
-                                                                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                        @if(CheckPrivilage('erp_recurring_invoices_management') == "allow")
+                                           <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 											<!--begin:Menu link-->
 											<span class="menu-link">
 												<span class="menu-icon">
@@ -1064,24 +1202,26 @@ Page Description :
 											<!--end:Menu link-->
 											<!--begin:Menu sub-->
 											<div class="menu-sub menu-sub-accordion">
-                                                                                            <div class="menu-item">
-                                                                                                <a class="menu-link" href="{{ url('billing/invoicetemplates') }}">
-                                                                                                    <span class="menu-bullet">
-                                                                                                        &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Invoice Templates</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                            <div class="menu-item">
-                                                                                                <a class="menu-link" href="{{ url('billing/recurringinvoices') }}">
-                                                                                                    <span class="menu-bullet">
-                                                                                                            &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
-                                                                                                    </span>
-                                                                                                    <span class="menu-title">Recurring Invoices</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                </div>
+                                                        <div class="menu-item">
+                                                            <a class="menu-link" href="{{ url('billing/invoicetemplates') }}">
+                                                                <span class="menu-bullet">
+                                                                    &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Invoice Templates</span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="menu-item">
+                                                            <a class="menu-link" href="{{ url('billing/recurringinvoices') }}">
+                                                                <span class="menu-bullet">
+                                                                        &nbsp;&nbsp;&nbsp;<span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Recurring Invoices</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                           @endif
+                                        @if(CheckPrivilage('erp_payment_types') == "allow")
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/paymenttypes') }}">
@@ -1092,6 +1232,8 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_manage_orders') == "allow")
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('sales/orders') }}">
@@ -1102,6 +1244,8 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_manage_invoices') == "allow")
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/invoices') }}">
@@ -1112,6 +1256,8 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_manage_receipts') == "allow")
     										<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/receipts') }}">
@@ -1122,6 +1268,8 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_internal_transfers') == "allow")
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('billing/internaltransfers') }}">
@@ -1132,46 +1280,57 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_vouchers_management') == "allow")
     											<div class="menu-item">
-                                                                                                <!--begin:Menu link-->
-                                                                                                <a class="menu-link" href="{{ url('billing/vouchers') }}">
-                                                                                                        <span class="menu-bullet">
-                                                                                                                <span class="bullet bullet-dot"></span>
-                                                                                                        </span>
-                                                                                                        <span class="menu-title">Vouchers</span>
-                                                                                                </a>
-                                                                                                <!--end:Menu link-->
-                                                                                        </div>
+                                                        <!--begin:Menu link-->
+                                                        <a class="menu-link" href="{{ url('billing/vouchers') }}">
+                                                                <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                </span>
+                                                                <span class="menu-title">Vouchers</span>
+                                                        </a>
+                                                        <!--end:Menu link-->
+                                                </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_journal_vouchers_management') == "allow")
     											<div class="menu-item">
-                                                                                                <!--begin:Menu link-->
-                                                                                                <a class="menu-link" href="{{ url('billing/journalvouchers') }}">
-                                                                                                        <span class="menu-bullet">
-                                                                                                                <span class="bullet bullet-dot"></span>
-                                                                                                        </span>
-                                                                                                        <span class="menu-title">Journal Vouchers</span>
-                                                                                                </a>
-                                                                                                <!--end:Menu link-->
-                                                                                        </div>
-                                                                                        <div class="menu-item">
-                                                                                                <!--begin:Menu link-->
-                                                                                                <a class="menu-link" href="{{ url('billing/bills/addform') }}">
-                                                                                                        <span class="menu-bullet">
-                                                                                                                <span class="bullet bullet-dot"></span>
-                                                                                                        </span>
-                                                                                                        <span class="menu-title">Create Bill</span>
-                                                                                                </a>
-                                                                                                <!--end:Menu link-->
-                                                                                        </div>
-                                                                                        <div class="menu-item">
-                                                                                                <!--begin:Menu link-->
-                                                                                                <a class="menu-link" href="{{ url('billing/bills') }}">
-                                                                                                        <span class="menu-bullet">
-                                                                                                                <span class="bullet bullet-dot"></span>
-                                                                                                        </span>
-                                                                                                        <span class="menu-title">Bills Management</span>
-                                                                                                </a>
-                                                                                                <!--end:Menu link-->
-                                                                                        </div>
+                                                            <!--begin:Menu link-->
+                                                            <a class="menu-link" href="{{ url('billing/journalvouchers') }}">
+                                                                    <span class="menu-bullet">
+                                                                            <span class="bullet bullet-dot"></span>
+                                                                    </span>
+                                                                    <span class="menu-title">Journal Vouchers</span>
+                                                            </a>
+                                                            <!--end:Menu link-->
+                                                    </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_create_bills') == "allow")
+                                            <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{ url('billing/bills/addform') }}">
+                                                            <span class="menu-bullet">
+                                                                    <span class="bullet bullet-dot"></span>
+                                                            </span>
+                                                            <span class="menu-title">Create Bill</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                            </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_create_bills') == "allow")
+                                            <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{ url('billing/bills') }}">
+                                                            <span class="menu-bullet">
+                                                                    <span class="bullet bullet-dot"></span>
+                                                            </span>
+                                                            <span class="menu-title">Bills Management</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                            </div>
+
+                                        @endif
+                                        @if(CheckPrivilage('erp_bank_accounts') == "allow")
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('banking/financialaccount') }}">
@@ -1182,6 +1341,8 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_services_management') == "allow")
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('crm/services') }}">
@@ -1190,8 +1351,9 @@ Page Description :
     												</span>
     												<span class="menu-title">Services</span>
     											</a>
-    											<!--end:Menu link-->
     										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_customers_management') == "allow")
     											<div class="menu-item">
     											<!--begin:Menu link-->
     											<a class="menu-link" href="{{ url('inventory/customers') }}">
@@ -1202,12 +1364,13 @@ Page Description :
     											</a>
     											<!--end:Menu link-->
     										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 							@endif
-							@if($license_array->MANUFACTURING_MODULE == 1)
+							@if($license_array->MANUFACTURING_MODULE == 1 && CheckPrivilage('erp_manifacturing_management') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1227,6 +1390,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_bill_of_materials') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('mrp/billofmaterial') }}">
@@ -1237,12 +1401,13 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 							@endif
-							@if($license_array->PRODUCTION_MODULE == 1)
+							@if($license_array->PRODUCTION_MODULE == 1 && CheckPrivilage('erp_production_management') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1261,7 +1426,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+										@if(CheckPrivilage('erp_production_schedule') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/machines') }}">
@@ -1272,6 +1437,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_production_plan_status') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/planstatus') }}">
@@ -1282,6 +1449,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_production_plans') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('production/planning') }}">
@@ -1292,6 +1461,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_quality_control') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1302,12 +1473,14 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 							@endif
-							@if($license_array->PROJECTS_MODULE == 1)
+							@if($license_array->PROJECTS_MODULE == 1 && CheckPrivilage('erp_project_management') == "allow")
 
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -1327,7 +1500,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+										@if(CheckPrivilage('erp_project_types') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('pm/projects/types') }}">
@@ -1338,6 +1511,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_project_statuses') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('projects/statuses') }}">
@@ -1348,6 +1523,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_job_status') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1358,12 +1535,13 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 							@endif
-							@if($license_array->SALES_MODULE == 1)
+							@if($license_array->SALES_MODULE == 1 && CheckPrivilage('erp_sales_section') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1382,7 +1560,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+										@if(CheckPrivilage('erp_orders_status') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('sales/orderstatus') }}">
@@ -1393,6 +1571,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_manage_orders') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('sales/orders') }}">
@@ -1403,11 +1583,12 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 									@endif
-							@if($license_array->CRM_MODULE == 1)
+							@if($license_array->CRM_MODULE == 1 && CheckPrivilage('erp_manage_orders') == "allow")
 
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -1428,6 +1609,7 @@ Page Description :
 											<!--end:Menu content-->
 										</div>
 										<!--end:Menu item-->
+                                        @if(CheckPrivilage('erp_crm_dashboard') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="#">
@@ -1438,6 +1620,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_leads_status') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('leads/status') }}">
@@ -1448,6 +1632,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_leads_management') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/leads') }}">
@@ -1458,6 +1644,9 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_activities') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/activities') }}">
@@ -1468,6 +1657,9 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_client_categories') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/clientcategories') }}">
@@ -1478,6 +1670,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_clients') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/clients') }}">
@@ -1488,6 +1682,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_contacts') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/contacts') }}">
@@ -1498,6 +1694,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_service_categories') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/servicecategories') }}">
@@ -1508,6 +1706,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_services') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/services') }}">
@@ -1518,6 +1718,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_crm_deals') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('crm/accounts/deals') }}">
@@ -1528,12 +1730,13 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
 
 								@endif
-							@if($license_array->SHIPMENT_MODULE == 1)
+							@if($license_array->SHIPMENT_MODULE == 1 && CheckPrivilage('erp_shipping_module') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1552,6 +1755,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
+                                        @if(CheckPrivilage('erp_shipping_order_statuses') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/orderstatus') }}">
@@ -1562,7 +1766,9 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
-                                                                             <div class="menu-item">
+                                        @endif
+                                        @if(CheckPrivilage('erp_shipping_packing_price') == "allow")
+                                        <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/packingprices') }}">
 												<span class="menu-bullet">
@@ -1572,7 +1778,9 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
-                                                                             <div class="menu-item">
+                                        @endif
+                                        @if(CheckPrivilage('erp_shipping_orders') == "allow")
+                                        <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/orders') }}">
 												<span class="menu-bullet">
@@ -1582,6 +1790,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_shipping_operations') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipments/shipmentoperations') }}">
@@ -1592,6 +1802,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_map_trackers') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('shipment/maptracker') }}">
@@ -1602,11 +1814,12 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>
-
 								@endif
+                                @if(CheckPrivilage('erp_calls_management') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1625,6 +1838,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
+                                        @if(CheckPrivilage('erp_create_calls') == "allow")
                                                 <div class="menu-item">
                                                         <!--begin:Menu link-->
                                                         <a class="menu-link" href="{{ url('callcenter/inboundcall/addform') }}">
@@ -1635,6 +1849,8 @@ Page Description :
                                                         </a>
                                                         <!--end:Menu link-->
                                                 </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_pending_calls') == "allow")
                                                   <div class="menu-item">
                                                         <!--begin:Menu link-->
                                                         <a class="menu-link" href="{{  url('callcenter/inboundcall') }}">
@@ -1646,10 +1862,14 @@ Page Description :
                                                         <!--end:Menu link-->
                                                 </div>
 
+
+                                        @endif
+
 									</div>
 									<!--end:Menu sub-->
 								</div>
-								@if($license_array->LOGISTICS_MODULE == 1)
+                                @endif
+								@if($license_array->LOGISTICS_MODULE == 1 && CheckPrivilage('erp_logistics_management') == "allow")
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
 									<span class="menu-link menu-center">
@@ -1668,7 +1888,7 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+										 @if(CheckPrivilage('erp_vehicules_management') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('logistics/vehicules') }}">
@@ -1679,6 +1899,8 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_shipping_companies') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
 											<a class="menu-link" href="{{ url('logistics/shipmentcompanies') }}">
@@ -1689,6 +1911,7 @@ Page Description :
 											</a>
 											<!--end:Menu link-->
 										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>

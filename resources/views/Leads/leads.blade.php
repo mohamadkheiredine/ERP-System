@@ -126,7 +126,7 @@ th{
                                                 <thead>
                                                         <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                                                 <th title="#"></th>
-                                                                <th title="Id"> ID </th>
+                                                                <th title="index">Index</th>
                                                                 <th title="RS#"> RS# </th>
                                                                 <th title="Lead name"> Lead Name </th>
                                                                 <th title="Lead name"> Address </th>
@@ -181,6 +181,7 @@ th{
                                                                                                     <th title="Salesman"> Salesman </th>
                                                                                                     <th title="Telemarketer"> Telemarketer </th>
                                                                                                     <th title="Next Call"> Next Call </th>
+                                                                                                    <th title="Next Call"> Result Date </th>
                                                                                                     <th title="Notes"> Notes </th>
                                                                                                     <th title="Results"> Results </th>
                                                                                             </tr>

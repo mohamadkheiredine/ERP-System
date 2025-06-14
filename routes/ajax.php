@@ -602,6 +602,7 @@ Route::post('/request/sorders/savepackingcategory','Shipment\SOrdersController@S
 Route::post('/request/sorders/displaylistcategories','Shipment\SOrdersController@DisplayListCategories');
 Route::post('/request/orders/getpackingprice','Shipment\SOrdersController@GetPackingPrice');
 Route::post('/request/sorders/payorder','Shipment\SOrdersController@PayOrder');
+Route::post('/request/sorders/deleteordercategory','Shipment\SOrdersController@DeleteOrderCategory');
 
 
 

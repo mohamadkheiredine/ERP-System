@@ -20,6 +20,7 @@ Page Description :
     <td> {{ $res_info->Salesman ? $res_info->Salesman->u_fullname : "" }} </td>
     <td> {{ $res_info->Telemarketing ? $res_info->Telemarketing->u_fullname : "" }} </td>
     <td> {{ $res_info->lr_next_call }} </td>
+    <td> {{ $res_info->lr_result_date }} </td>
     <td> {{ $res_info->lr_text_notes }} </td>
     <td> {{ $res_info->AppResult ? $res_info->AppResult->ar_app_result : "" }} </td>
 </tr>

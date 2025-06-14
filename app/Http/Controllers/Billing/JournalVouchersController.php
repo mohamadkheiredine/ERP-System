@@ -49,7 +49,7 @@ use App\models\Accounting\Journaltypes;
 
 class JournalVouchersController extends Controller
 {
-    
+
     /**
      * Page to Manage Journal Vouchers section
      * Database
@@ -62,20 +62,20 @@ class JournalVouchersController extends Controller
     {
         $lst_chart_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
-        
+
         $data = array(
             "lst_chart_accounts" => $lst_chart_accounts,
             "lst_currencies" => $lst_currencies,
         );
         return Response()->view('billing.journalvouchers',$data);
     }
-    
-    
-    
+
+
+
     /**
-     * Function to generate Table of list of journal vouchers and 
+     * Function to generate Table of list of journal vouchers and
      * Show it based on parameters chosen
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -90,56 +90,56 @@ class JournalVouchersController extends Controller
         $page_number                = $request->input("page_number");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
-        
-        
+
+
         $strfirstday = 'first day of January ' .$fisical_year;
         $strlastday = 'last day of December ' . $fisical_year;
-        
+
         $firstday = date("Y-m-d",strtotime($strfirstday));
-        $lastday = date("Y-m-d",strtotime($strlastday)); 
-        
+        $lastday = date("Y-m-d",strtotime($strlastday));
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-                
-         
+
+
         $lst_journal_vouchers       = JournalVouchers::wherePjIsDeleted(0);
-        
+
         // filter items
         if($jv_account_id  > 0)
-            $lst_journal_vouchers= $lst_journal_vouchers->where('pj_account_debit',$jv_account_id); 
+            $lst_journal_vouchers= $lst_journal_vouchers->where('pj_account_debit',$jv_account_id);
         if(strlen($jv_start_date) > 0)
             $lst_journal_vouchers= $lst_journal_vouchers->where('pj_creation_date','>=',$jv_start_date);
         if(strlen($jv_end_date) > 0)
             $lst_journal_vouchers= $lst_journal_vouchers->where('pj_creation_date','<',$jv_end_date);
-        
-  
-            
+
+
+
         $jv_count =     $lst_journal_vouchers->count();
         $total_pages = ceil( $jv_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
-        $lst_journal_vouchers   = $lst_journal_vouchers->skip($skip)->take($nbr_rows_per_pages)->get();
- 
+
+        $lst_journal_vouchers   = $lst_journal_vouchers->skip($skip)->take($nbr_rows_per_pages)->orderBy('pj_creation_date','DESC')->get();
+
         $lst_currency           = Currency::all();
         $currency_array         = CreateDatabaseArrayByIndex($lst_currency,"cc_id");
-        
-        
-        $data = array( 
+
+
+        $data = array(
             "lst_journal_vouchers" => $lst_journal_vouchers,
             "currency_array" => $currency_array
         );
-        
+
         $result_array = array();
         $result_array['total_pages'] = $total_pages;
         $result_array['display'] = view("billing.lstjournalvouchers",$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Open form of add new Journal Vouchers
      *
@@ -149,28 +149,28 @@ class JournalVouchersController extends Controller
      */
     public function AddForm()
     {
-        
+
         $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $lst_currencies     = Currency::all();
-        $account_management = new AccountingManager(); 
+        $account_management = new AccountingManager();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $jv_code            = $account_management->GetJournalVoucherCode();
         $lst_journals       = Journaltypes::all();
-        
+
         $data = array(
             'lst_chart_accounts' => $lst_accounts,
             'lst_journals'      => $lst_journals,
-            'lst_users' => $lst_users, 
-            'jv_code' => $jv_code, 
+            'lst_users' => $lst_users,
+            'jv_code' => $jv_code,
             "lst_currencies" => $lst_currencies
         );
-        
+
         return Response()->view('billing.addjvoucherform',$data);
     }
-    
-    
 
-    
+
+
+
     /**
      * get information of selected Account and  and open the edit form fields
      * @param unknown $w_id
@@ -178,14 +178,14 @@ class JournalVouchersController extends Controller
      */
     public function EditForm( $jv_id )
     {
-        
+
         $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $lst_currencies     = Currency::all();
         $account_management = new AccountingManager();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $jv_info            = JournalVouchers::find($jv_id);
         $lst_journals       = Journaltypes::all();
-        
+
         $data = array(
             'lst_chart_accounts' => $lst_accounts,
             'lst_users' => $lst_users,
@@ -193,14 +193,14 @@ class JournalVouchersController extends Controller
             'lst_journals' => $lst_journals,
             "lst_currencies" => $lst_currencies
         );
-        
+
         return Response()->view('billing.editjvoucherform',$data);
-        
+
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Save information of new Journal voucher and
      * add a transaction and movement records in the banks
@@ -212,19 +212,19 @@ class JournalVouchersController extends Controller
      */
     public function SaveJournalVoucherInfo(Request $request)
     {
-        $pj_id                  = $request->input('pj_id');  
-        $pj_user_id             = $request->input('pj_user_id');  
-        $pj_code                = $request->input('pj_code');  
-        $pj_voucher_label       = $request->input('pj_voucher_label');  
-        $pj_voucher_description = $request->input('pj_voucher_description');  
-        $pj_journal_id          = $request->input('pj_journal_id');  
-        $pj_account_credit      = $request->input('pj_account_credit');  
-        $pj_account_debit       = $request->input('pj_account_debit');  
+        $pj_id                  = $request->input('pj_id');
+        $pj_user_id             = $request->input('pj_user_id');
+        $pj_code                = $request->input('pj_code');
+        $pj_voucher_label       = $request->input('pj_voucher_label');
+        $pj_voucher_description = $request->input('pj_voucher_description');
+        $pj_journal_id          = $request->input('pj_journal_id');
+        $pj_account_credit      = $request->input('pj_account_credit');
+        $pj_account_debit       = $request->input('pj_account_debit');
         $pj_creation_date       = $request->input('pj_creation_date');
         $pj_creation_date       = date("Y-m-d",strtotime($pj_creation_date));
-        $pj_payment_amount      = $request->input('pj_payment_amount');  
-        $pj_currency_id         = $request->input('pj_currency_id'); 
-        
+        $pj_payment_amount      = $request->input('pj_payment_amount');
+        $pj_currency_id         = $request->input('pj_currency_id');
+
         $journal_voucher     = new JournalVouchers();
         $is_new = true;
         if( $pj_id  > 0 )
@@ -232,30 +232,30 @@ class JournalVouchersController extends Controller
             $journal_voucher    = JournalVouchers::find( $pj_id );
             $is_new = false;
         }
-        
+
         $journal_voucher->pj_code                   = $pj_code;
-        $journal_voucher->pj_user_id                = $pj_user_id; 
+        $journal_voucher->pj_user_id                = $pj_user_id;
         $journal_voucher->pj_account_credit         = $pj_account_credit;
         $journal_voucher->pj_account_debit          = $pj_account_debit;
         $journal_voucher->pj_creation_date          = $pj_creation_date;
-        $journal_voucher->pj_voucher_label          = $pj_voucher_label; 
-        $journal_voucher->pj_voucher_description    = $pj_voucher_description; 
-        $journal_voucher->pj_payment_amount         = $pj_payment_amount; 
-        $journal_voucher->pj_currency_id            = $pj_currency_id; 
+        $journal_voucher->pj_voucher_label          = $pj_voucher_label;
+        $journal_voucher->pj_voucher_description    = $pj_voucher_description;
+        $journal_voucher->pj_payment_amount         = $pj_payment_amount;
+        $journal_voucher->pj_currency_id            = $pj_currency_id;
         $journal_voucher->save();
         $pj_id  = $journal_voucher->pj_id;
-        
+
         {
-            
+
             // Delete Old Transaction and movment
-            $trans_id = $journal_voucher->pj_transaction_id; 
+            $trans_id = $journal_voucher->pj_transaction_id;
             if( $trans_id > 0 )
             {
                 $delete_trans = Transactions::where('at_id',$trans_id)->delete();
                 $delete_mov = TransactionMovements::where('fk_tran_id',$trans_id)->delete();
-                
+
             }
-             
+
             // add transaction record
             $AccTransaction = new Transactions();
             $AccTransaction->at_transaction_date    = $pj_creation_date;
@@ -264,8 +264,8 @@ class JournalVouchersController extends Controller
             $AccTransaction->fk_acc_journal_id      = 3;
             $AccTransaction->save();
             $at_id = $AccTransaction->at_id;
-             
-            
+
+
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
@@ -278,8 +278,8 @@ class JournalVouchersController extends Controller
             $TransactionMovement->tm_transaction_date   = $pj_creation_date;
             $TransactionMovement->tm_currency_id        = $pj_currency_id;
             $TransactionMovement->save();
-            
-            
+
+
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
@@ -292,24 +292,24 @@ class JournalVouchersController extends Controller
             $TransactionMovement->tm_transaction_date   = $pj_creation_date;
             $TransactionMovement->tm_currency_id        = $pj_currency_id;
             $TransactionMovement->save();
-            
-          
+
+
         }
-        
+
         $journal_voucher= JournalVouchers::find( $pj_id );
-        $journal_voucher->pj_transaction_id =  $at_id; 
+        $journal_voucher->pj_transaction_id =  $at_id;
         $journal_voucher->save();
-        
- 
+
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Complete Successfully";
         return Response()->json($result_array);
-        
+
     }
-    
-    
-   
-    
+
+
+
+
     /**
      * Delete journal voucher info and check all condition before begin deleted
      *
@@ -322,26 +322,26 @@ class JournalVouchersController extends Controller
     {
         $pj_id = $request->input('pj_id');
         $result_array = array();
-        
-        
-        
+
+
+
         $journal_vouchers   = JournalVouchers::find($pj_id);
         $journal_vouchers->pj_is_deleted = 1;
         $journal_vouchers->ph_deleted_by = session('user_id');
         $journal_vouchers->save();
-        
+
         $trans_id = $journal_vouchers->pj_transaction_id;
-        
+
         $delete_trans = Transactions::where('at_id',$trans_id)->delete();
         $delete_mov = TransactionMovements::where('fk_tran_id',$trans_id)->delete();
-        
-        
+
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-    
-    
+
+
+
+
 }

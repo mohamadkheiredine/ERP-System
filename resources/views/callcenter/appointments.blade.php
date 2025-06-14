@@ -132,8 +132,8 @@ Page Description :
                                           <div class="col-md-4">
                                                 <div class="form-group">
                                                   <label>Result</label>
-                                                      <select name="ca_apt_result" id="CA_APT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Select Apt Result">
-                                                          <option value="">-- Select Apt Result --</option>
+                                                      <select name="ca_apt_result" id="CA_APT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Pending">
+                                                          <option value="">Pending</option>
                                                           <?php foreach ( $lst_appt_results as $key => $res_info ) { ?>
                                                                   <option  value="<?php echo $res_info->ar_id;  ?>"><?php echo $res_info->ar_app_result;  ?></option>
                                                           <?php  } ?>
@@ -269,7 +269,7 @@ Page Description :
                                                     <div class="form-group">
                                                         <label>Result</label>
                                                         <select name="ap_apt_result" id="AP_APT_RESULT" class="form-control form-select" data-control="select2" data-placeholder="Select Apt Result">
-                                                            <option value="0">-- Select Apt Result --</option>
+                                                            <option value="">Pending</option>
                                                             <?php foreach ( $lst_appt_results as $key => $res_info ) { ?>
                                                             <option  value="<?php echo $res_info->ar_id;  ?>"><?php echo $res_info->ar_app_result;  ?></option>
                                                             <?php  } ?>

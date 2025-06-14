@@ -185,6 +185,7 @@ class LeadsController extends Controller
         $lead_results->lr_text_result             = $lr_text_result;
         $lead_results->lr_text_notes             = $cl_lead_notes;
         $lead_results->lr_next_call               = $lr_next_date;
+        $lead_results->lr_result_date               = date('Y-m-d H:i:s');
         $lead_results->lr_telemarketing_id        = $lead_info->cl_telemarketing_id;
         $lead_results->lr_sales_id                = $lead_info->cl_sales_id;
         $lead_results->save();

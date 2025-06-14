@@ -5,6 +5,7 @@ leads_module = {
 		DisplayListLeads : function(){
 		var base_url 			= $('input[name=base_url]').val();
 		var _token	 			= $('input[name=_token]').val();
+		var page_number	 			= $('input[name=page_number]').val();
 		var lead_category	 	= $('select[name=lead_category]').val();
 		var lead_status	 		= $('select[name=lead_status]').val();
 		var cl_sales_id	 		= $('select[name=cl_sales_id]').val();
@@ -13,7 +14,7 @@ leads_module = {
                     return false;
                 }
 
-		var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , cl_sales_id : cl_sales_id };
+		var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , cl_sales_id : cl_sales_id , page_number : page_number };
 		$.ajax
 	        ({
 	            url : base_url + "/request/leads/displaylist",
@@ -238,7 +239,6 @@ leads_module = {
                         success : function(response){
                             if(response.is_error == 1)
                             {
-                                alert(response.is_error );
                                 $("#LstExistingLeads").html(response.display);
                                 $(".ExistingLeadTabs").css('display','');
                             }

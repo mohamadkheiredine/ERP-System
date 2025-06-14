@@ -51,7 +51,8 @@
             "app/helpers/AccountingHelper.php",
             "app/helpers/DateTimeHelper.php",
             "app/helpers/EmailHelper.php",
-            "app/helpers/ImportHelper.php"
+            "app/helpers/ImportHelper.php",
+            "app/helpers/SessionHelper.php"
         ]
     },
     "autoload-dev": {

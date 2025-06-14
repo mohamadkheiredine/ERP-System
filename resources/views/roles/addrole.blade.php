@@ -19,7 +19,7 @@ View for add new role form
 
 @section('plugins')
 <script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
-<script type="text/javascript" src="{{ url('js/modules/roles.module.js') }}"></script> 
+<script type="text/javascript" src="{{ url('js/modules/roles.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/roles/saverole.js') }}"></script>
 @endsection
 @section('content')
@@ -39,8 +39,8 @@ View for add new role form
     <div class="card-body">
     <form name="form_save_role" id="FORM_SAVE_ROLE">
                 <div class="form-body">
-                     <span id="hidden_fields"> 
-                        {!! csrf_field() !!} 
+                     <span id="hidden_fields">
+                        {!! csrf_field() !!}
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Role Information is saved successfully!
@@ -72,7 +72,7 @@ View for add new role form
                     <div class="col-md-12 col-sm-12 col-xs-12" style="white-space: nowrap;">
                         <div class="portlet-body">
         					<h3>Privileges</h3>
-        					
+
         					<ul class="nav nav-tabs nav-line-tabs mb-12 fs-6">
         					@foreach($pa_result_array as $tab_title => $value)
                                 <li class="nav-item <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>">
@@ -80,34 +80,34 @@ View for add new role form
                                 </li>
                                 @endforeach
                             </ul>
-                            
+
                             <div class="tab-content" id="myTabContent">
                             	@foreach($pa_result_array as $tab_title => $pa_info)
                                 <div class="tab-pane fade show <?php echo str_replace(" ", "", $tab_title) == 'SystemManagement' ? 'active' : ''; ?>" id="tab_{{ str_replace(' ', '', $tab_title) }}" role="tabpanel">
-                                   <ul class="LstRoles">
-                                       <?php
-                                            foreach ($pa_info as $index => $pa_priv_info ) {
-                                               ?>
-                                                <li>
-                                                	<div class="table-responsive">
-                                                    	 <table cellspacing="0" cellpadding="0" class="table" style="width:100%">
-                                                              <tr>
-                                                                   <td style="width:3%;">
-                                                                       <input type="checkbox" name="<?php echo $pa_priv_info['code']; ?>" id="<?php echo strtoupper($pa_priv_info['code']); ?>" value="1" />
-                                                                   </td>
-                                                                   <td style="width:97%;"><?php echo $pa_priv_info['description']; ?></td>
-                                                              </tr>
-                                                        </table>
-                                                	</div> 
-                                                </li>
-                                               <?php
-                                            }
-                                       ?>
-                                    </ul>
+                                    <div class="table-responsive">
+                                        <table class="table table-row-dashed table-row-gray-300 gy-7" style="width:100%">
+                                            <thead>
+                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                <th style="width:2%;"><input type="checkbox" class="group-checkable CheckAll"  name="checkall_{{ str_replace(' ', '', $tab_title)  }}" id="CHECKALL_{{ str_replace(' ', '', $tab_title)  }}" value="1" /></th>
+                                                <th style="width:98%;">Description</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($pa_info as $index => $pa_priv_info )
+                                                <tr>
+                                                    <td style="width:3%;">
+                                                        <input type="checkbox" name="<?php echo $pa_priv_info['code']; ?>" id="<?php echo strtoupper($pa_priv_info['code']); ?>" value="1" />
+                                                    </td>
+                                                    <td style="width:97%;"><?php echo $pa_priv_info['description']; ?></td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 @endforeach
                             </div>
-        					 
+
         			     </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ View for add new role form
 </div>
 
 
- 
+
 
 
 @endsection

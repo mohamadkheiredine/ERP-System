@@ -622,8 +622,8 @@ class SOrdersController extends Controller
         $so_id = $request->input('so_id');
         $result_array = array();
 
-        $order_info = Orders::find($so_id);
-        $order_info->so_pay_date    = date("Y-m-d");
+        $order_info = ShippingOrders::find($so_id);
+        $order_info->so_paied_date    = date("Y-m-d");
         $order_info->so_order_paied = 1;
         $order_info->save();
 
@@ -699,6 +699,20 @@ class SOrdersController extends Controller
 
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = 'Operation completed successfully';
+
+        return Response()->json($result_array);
+    }
+
+
+    public function DeleteOrderCategory( Request $request )
+    {
+        $category_id = $request->input('category_id');
+        $order_id = $request->input('order_id');
+        $result_array = array();
+
+        $delete_query = OrderCategories::whereFkOrderId( $order_id )->whereFkCategoryId( $category_id )->delete();
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = 'Delete order category successfully';
 
         return Response()->json($result_array);
     }

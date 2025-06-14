@@ -210,11 +210,12 @@
                             <table class="table table-row-dashed table-row-gray-300 gy-7">
                                 <thead>
                                     <tr class="fw-bold fs-6 text-gray-800">
-                                        <th title="#">#</th>
+                                        <th title="#" style="width:2px;">#</th>
                                         <th title="Id"> ID </th>
                                         <th title="Category"> Category </th>
                                         <th title="Quantity"> Quantity </th>
                                         <th title="Package Price">Package Price</th>
+                                        <th title="Delete">Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody  id="LstPackingCategories" >

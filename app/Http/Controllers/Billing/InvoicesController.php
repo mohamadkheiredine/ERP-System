@@ -578,7 +578,7 @@ class InvoicesController extends Controller
             $total_pages = ceil( $count_invoices/$nbr_rows_per_pages );
             $total_pages = intval($total_pages);
 
-            $lst_invoices = $lst_invoices->skip($skip)->take($nbr_rows_per_pages)->get();
+            $lst_invoices = $lst_invoices->skip($skip)->take($nbr_rows_per_pages)->orderby('bi_id',"DESC")->get();
 
             $lst_currency           = Currency::all();
             $currency_array         = CreateDatabaseArrayByIndex($lst_currency,"cc_id");
