@@ -5,16 +5,38 @@ leads_module = {
 		DisplayListLeads : function(){
 		var base_url 			= $('input[name=base_url]').val();
 		var _token	 			= $('input[name=_token]').val();
-		var page_number	 			= $('input[name=page_number]').val();
+		var page_number	 		= $('input[name=page_number]').val();
 		var lead_category	 	= $('select[name=lead_category]').val();
 		var lead_status	 		= $('select[name=lead_status]').val();
 		var cl_sales_id	 		= $('select[name=cl_sales_id]').val();
-                if(cl_sales_id == '')
-                {
-                    return false;
-                }
+		var cl_lead_types	 	= $('select[name=cl_lead_types]').val();
+		var cl_area	 		    = $('select[name=cl_area]').val();
+		var general_search	 	= $('input[name=general_search]').val();
+		var lead_name	 		= $('input[name=lead_name]').val();
+		var lead_region	 		= $('input[name=lead_region]').val();
+		var referred_by	 		= $('input[name=referred_by]').val();
+		var lead_mobile	 		= $('input[name=lead_mobile]').val();
+		var sheet_number	 		= $('input[name=sheet_number]').val();
+        if(cl_sales_id == '')
+        {
+            return false;
+        }
 
-		var params = { _token : _token , lead_category : lead_category , lead_status : lead_status , cl_sales_id : cl_sales_id , page_number : page_number };
+		var params = {
+            _token : _token ,
+            general_search : general_search ,
+            cl_lead_types : cl_lead_types,
+            lead_category : lead_category ,
+            lead_status : lead_status ,
+            cl_sales_id : cl_sales_id ,
+            lead_name : lead_name ,
+            lead_region : lead_region ,
+            referred_by : referred_by ,
+            lead_mobile : lead_mobile ,
+            sheet_number : sheet_number ,
+            cl_area : cl_area ,
+            page_number : page_number
+        };
 		$.ajax
 	        ({
 	            url : base_url + "/request/leads/displaylist",
@@ -189,7 +211,7 @@ leads_module = {
                                       let cl_sheet_number = $('input[name=cl_sheet_number]').val();
                                       let cl_full_name = $('input[name=cl_full_name]').val();
                                       let cl_region = $('input[name=cl_region]').val();
-                                      let cl_area = $('input[name=cl_area]').val();
+                                      let cl_area = $('select[name=cl_area]').val();
                                       let cl_sales_id = $('select[name=cl_sales_id] option:selected').text();
                                       let cl_telemarketing_id = $('select[name=cl_telemarketing_id] option:selected').text();
                                       let cl_lead_type_id = $('select[name=cl_lead_type_id]').text();
@@ -204,6 +226,7 @@ leads_module = {
                                       leads += "<td>" + cl_sheet_number + "</td>";
                                       leads += "<td>" + cl_full_name + "</td>";
                                       leads += "<td>" + cl_area + "</td>";
+                                      leads += "<td>" + cl_region + "</td>";
                                       leads += "<td>" + cl_sales_id + "</td>";
                                       leads += "<td>" + cl_telemarketing_id + "</td>";
                                       leads += "<td>" + cl_mobile + "</td>";
@@ -307,6 +330,11 @@ leads_module = {
 			$('#AssignLeadModel').modal('toggle');
 		},
                 AddCallResult : function(){
+                    if($(".checkboxes:checked").length == 0)
+                    {
+                        bootbox.alert("Please select a Leads to do any action");
+                        return false;
+                    }
                     var ls_ids = [];
                     $(".checkboxes:checked").each(function(){
                             var ls_id = $(this).val();
@@ -423,6 +451,17 @@ leads_module = {
 		SaveAddLeadResult : function(){
 			var base_url = $('#BASE_URL').val();
 			var frm_str = $("form[name=frm_add_result]").serialize();
+            let app_result = $("#LR_TEXT_RESULT").val();
+            if(app_result == 2)
+            {
+                let lr_next_date = $('input[name=lr_next_date]').val();
+                if( lr_next_date == '' )
+                {
+                    bootbox.alert('Next Callback Call is Required !');
+                    return false;
+                }
+            }
+
 			$.ajax
 			({
 				url : base_url + "/request/leads/addleadresult",
@@ -433,8 +472,21 @@ leads_module = {
 					if(response.is_error == 0)
 					{
 						leads_module.DisplayListLeadResults();
-                                                leads_module.DisplayListLeads();
-						$('#AddResultModel').modal('toggle');
+                        leads_module.DisplayListLeads();
+                        $("#LR_TEXT_RESULT").val(0);
+                        $("#LR_TEXT_NOTES").val('');
+                        $("#LR_NEXT_DATE").val('');
+                        var base_url = $('#BASE_URL').val();
+                        if(response.new_result == "1")
+                        {
+                            let url = base_url + "/leads/createappointment/" + response.lr_lead_id;
+                            window.open(url, '_blank');
+                        }
+
+
+
+                        $('#AddResultModel').modal('toggle');
+
 					}
 				}
 			});

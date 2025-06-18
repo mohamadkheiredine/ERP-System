@@ -17,10 +17,11 @@ Page Description :
 <tr>
     <td></td>
     <td>{{ $cl_sheet_number }}</td>
-    <td>{{ $cl_full_name }}</td> 
+    <td>{{ $cl_full_name }}</td>
     <td>{{ $cl_area }}</td>
-    <td>{{ $cl_sales_name }}</td> 
-    <td>{{ $cl_telemarketing_name }}</td> 
-    <td>{{ $cl_mobile }}</td> 
-    <td>{{ $cl_referred_by }}</td> 
+    <td>{{ $cl_region }}</td>
+    <td>{{ $cl_sales_name }}</td>
+    <td>{{ $cl_telemarketing_name }}</td>
+    <td>{{ $cl_mobile }}</td>
+    <td>{{ $cl_referred_by }}</td>
 </tr>

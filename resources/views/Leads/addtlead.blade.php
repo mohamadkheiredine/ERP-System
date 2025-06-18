@@ -60,7 +60,7 @@ Page Description :
             			<div class="alert alert-danger" style="display:none">
             				<strong>Error!</strong> You have some form errors. Please check below.
             			</div>
-                    <div class="row"> 
+                    <div class="row">
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">sheet number <span class="required"> * </span></label>
@@ -88,7 +88,12 @@ Page Description :
                           <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Area <span class="required"> * </span> </label>
-                                <input type="text" name="cl_area"  required="required"  id="CL_AREA" class="form-control" maxlength="255" tabindex="4"  value="" />
+                                 <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                     <option value="">-- Select Area --</option>
+                                     <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                     <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                     <?php  } ?>
+                                 </select>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -101,10 +106,10 @@ Page Description :
                                         <?php  } ?>
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
-                               <label>Telemarketing <span class="required"> * </span>  </label> 
+                               <label>Telemarketing <span class="required"> * </span>  </label>
                                     <select name="cl_telemarketing_id" id="CL_TELEMARKETING_ID" tabindex="6"  class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
                                         <option value="">-- Select Telemarketing --</option>
                                         <?php foreach ( $lst_telemarketing as $key => $user_info ) { ?>
@@ -129,9 +134,9 @@ Page Description :
                                 <label class="control-label">Referred by<span class="required"> * </span></label>
                                 <input type="text" name="cl_referred_by" tabindex="8"  required="required" class="form-control" value="" />
                             </div>
-                        </div> 
+                        </div>
                    </div>
-                     <div class="row" style="height:50px;"></div> 
+                     <div class="row" style="height:50px;"></div>
                     <div class="row">
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">
@@ -139,16 +144,17 @@ Page Description :
                             <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
                         </div>
                     </div>
-                    <div class="row" style="height:50px;"></div> 
+                    <div class="row" style="height:50px;"></div>
                     <div class="row">
                         <div class="col-md-12">
                             <table class="table table-bordered">
                                         <thead>
                                                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                        <th title="#"></th> 
+                                                        <th title="#"></th>
                                                         <th title="RS#"> RS# </th>
                                                         <th title="Lead name"> Lead Name </th>
-                                                        <th title="Address"> Address </th>
+                                                        <th title="Area"> Area </th>
+                                                        <th title="Region"> Region </th>
                                                         <th title="Salesman"> Salesman </th>
                                                         <th title="Telemarketer"> Telemarketer </th>
                                                         <th title="Mobile"> Mobile </th>
@@ -161,18 +167,19 @@ Page Description :
                                         </tbody>
                             </table>
                         </div>
-                    </div> 
-                    <div class="row" style="height:50px;"></div> 
-                    
+                    </div>
+                    <div class="row" style="height:50px;"></div>
+
                      <div class="row">
                         <div class="col-md-12 ExistingLeadTabs" style="display: none">
                             <table class="table table-bordered">
                                         <thead>
                                                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                        <th title="#"></th> 
+                                                        <th title="#"></th>
                                                         <th title="RS#"> RS# </th>
                                                         <th title="Lead name"> Lead Name </th>
-                                                        <th title="Address"> Address </th>
+                                                        <th title="Area"> Area </th>
+                                                        <th title="Region"> Region </th>
                                                         <th title="Salesman"> Salesman </th>
                                                         <th title="Telemarketer"> Telemarketer </th>
                                                         <th title="Mobile"> Mobile </th>
@@ -185,11 +192,11 @@ Page Description :
                                         </tbody>
                             </table>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </form>
     </div>
 </div>
- 
+
 
 @endsection

@@ -17,6 +17,7 @@ Page Description :
 namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
+use App\models\System\Areas;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -68,10 +69,14 @@ class LeadsController extends Controller
         $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
+        $lst_lead_types      = CRMLeadTypes::whereLtIsDeleted(0)->get();
+        $lst_areas = Areas::all();
 
         $data = array(
             "lead_categories" => $lead_categories,
             "lst_appt_results" => $lst_appt_results,
+            "lst_lead_types" => $lst_lead_types,
+            "lst_areas" => $lst_areas,
             "lst_users" => $lst_users,
             "lst_sales" => $lst_sales,
             "lead_statuses" => $lead_statuses
@@ -102,7 +107,18 @@ class LeadsController extends Controller
         $cl_sales_id            = $request->input("cl_sales_id");
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
+        $cl_lead_types          = $request->input('cl_lead_types');
+        $cl_area                = $request->input('cl_area');
+        $lead_mobile            = $request->input('lead_mobile');
+        $referred_by            = $request->input('referred_by');
+        $lead_region            = $request->input('lead_region');
+        $lead_name              = $request->input('lead_name');
+        $sheet_number             = $request->input('sheet_number');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+
+
+
+        DB::enableQueryLog();
 
         $leads_cond = CRMLeads::whereClIsDeleted(0);
 
@@ -116,10 +132,41 @@ class LeadsController extends Controller
             $leads_cond = $leads_cond->whereFkLeadStatusId($lead_status);
         }
 
+        if( $cl_lead_types > 0 )
+        {
+            $leads_cond = $leads_cond->whereClLeadTypeId($cl_lead_types);
+        }
+
 
          if( $cl_sales_id > 0 )
         {
             $leads_cond = $leads_cond->whereClSalesId($cl_sales_id);
+        }
+
+
+        if( strlen($sheet_number)  > 0) {
+            $leads_cond = $leads_cond->where('cl_sheet_number', 'LIKE', '%' . $sheet_number . '%');
+        }
+
+        if( strlen($lead_name)  > 0) {
+            $leads_cond = $leads_cond->where('cl_first_name','LIKE','%' . $lead_name . '%');
+            $leads_cond = $leads_cond->orWhere('cl_last_name','LIKE','%' . $lead_name . '%');
+        }
+
+        if( strlen($lead_mobile)  > 0) {
+            $leads_cond = $leads_cond->where('cl_mobile','LIKE','%' . $lead_mobile . '%');
+        }
+
+        if( strlen($cl_area)  > 0) {
+            $leads_cond = $leads_cond->where('cl_area','LIKE','%' . $cl_area . '%');
+        }
+
+        if( strlen($lead_region)  > 0) {
+            $leads_cond = $leads_cond->where('cl_region','LIKE','%' . $lead_region . '%');
+        }
+
+        if( strlen($referred_by)  > 0) {
+            $leads_cond = $leads_cond->where('cl_referred_by','LIKE','%' . $referred_by . '%');
         }
 
         if( strlen($general_search)  > 0)
@@ -129,6 +176,8 @@ class LeadsController extends Controller
             $leads_cond = $leads_cond->orWhere('cl_last_name','LIKE','%' . $general_search . '%');
             $leads_cond = $leads_cond->orWhere('cl_mobile','LIKE','%' . $general_search . '%');
             $leads_cond = $leads_cond->orWhere('cl_lead_description','LIKE','%' . $general_search . '%');
+            $leads_cond = $leads_cond->orWhere('cl_area','LIKE','%' . $general_search . '%');
+            $leads_cond = $leads_cond->orWhere('cl_region','LIKE','%' . $general_search . '%');
         }
 
         $leads_count = $leads_cond->count();
@@ -137,8 +186,10 @@ class LeadsController extends Controller
          $total_pages = ceil( $leads_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
 
-        $lst_leads = $leads_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-
+         if(Config::get('appconfig.crm_telemarketing')  == 0)
+             $lst_leads = $leads_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+         else
+             $lst_leads = $leads_cond->orderBy('cl_date_creation','DESC')->get();
 
         $response_array = array();
 
@@ -186,16 +237,28 @@ class LeadsController extends Controller
         $lead_results->lr_text_notes             = $cl_lead_notes;
         $lead_results->lr_next_call               = $lr_next_date;
         $lead_results->lr_result_date               = date('Y-m-d H:i:s');
-        $lead_results->lr_telemarketing_id        = $lead_info->cl_telemarketing_id;
+        $lead_results->lr_telemarketing_id        = Session('user_id');
         $lead_results->lr_sales_id                = $lead_info->cl_sales_id;
         $lead_results->save();
 
         // change lead info
+        $lead_info->cl_last_result_id = $lead_info->cl_lead_results;
         $lead_info->cl_lead_results = $lr_text_result;
-       // $lead_info->cl_lead_notes = $cl_lead_notes;
+        if($lr_text_result == 2)
+        {
+            $lead_info->cl_next_call_date = $lr_next_date;
+
+        }
+        else
+        {
+            $lead_info->cl_last_call_date = $lead_info->cl_next_call_date;
+        }
+
         $lead_info->save();
 
         $result_array['is_error'] = 0;
+        $result_array['new_result'] = $lr_text_result;
+        $result_array['lr_lead_id'] = $lr_lead_id;
         $result_array['error_msg'] = "Operation Completed Successfully";
         return Response()->json($result_array);
 
@@ -268,12 +331,12 @@ class LeadsController extends Controller
         $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get();
         $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries      = Countries::all();
+        $lst_areas          = Areas::all();
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
 
 
         $crm_telemarketing  = Config::get('appconfig.crm_telemarketing');
-
         $data = array(
             'lead_categories' => $lead_categories,
             'lead_statuses' => $lead_statuses,
@@ -281,6 +344,7 @@ class LeadsController extends Controller
             'lst_industries' => $lst_industries,
             'lst_telemarketing' => $lst_telemarketing,
             'lst_lead_types' => $lst_lead_types,
+            'lst_areas' => $lst_areas,
             'lst_sales' => $lst_sales,
             'lst_countries' => $lst_countries,
             'lst_lead_source' => $lst_lead_source
@@ -314,6 +378,7 @@ class LeadsController extends Controller
         $lst_service_categories         = CRMServiceCategories::whereScIsDeleted(0)->get();
         $crm_telemarketing              = Config::get('appconfig.crm_telemarketing');
         $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
+        $lst_areas          = Areas::all();
 
         $data = array(
             'lead_categories' => $lead_categories,
@@ -321,6 +386,7 @@ class LeadsController extends Controller
             'lst_users' => $lst_users,
             'lst_telemarketing' => $lst_telemarketing,
             'lst_sales' => $lst_sales,
+            'lst_areas' => $lst_areas,
             'lst_lead_types' => $lst_lead_types,
             'lst_industries' => $lst_industries,
             'lst_lead_source' => $lst_lead_source,

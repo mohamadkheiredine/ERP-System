@@ -1,4 +1,4 @@
-<?php
+ 6M<?php
 /***********************************************************
 editlead.blade.php
 Product :
@@ -19,7 +19,7 @@ Page Description :
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
+
 }
 
 ?>
@@ -64,7 +64,7 @@ Page Description :
                     </div>
                     <div class="alert alert-danger" style="display:none">
                         <strong>Error!</strong> You have some form errors. Please check below.
-                    </div> 
+                    </div>
                     <div class="row">
                         <div class="col-md-4">
                               <div class="form-group">
@@ -236,7 +236,7 @@ Page Description :
                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                         <img id="AVATAR_PIC" width="100" src="{{ $img_src }}" alt="" /> </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
-        
+
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -333,7 +333,7 @@ Page Description :
                 </div>
             </form>
     </div>
- </div> 
+ </div>
  <div class="modal fade" tabindex="-1" id="UploadFiles">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -348,7 +348,7 @@ Page Description :
             </div>
 
             <div class="modal-body">
-              <form name="frm_lead_dropzone" id="FRM_LEAD_DROPZONE" class="dropzone" action="{{ url('request/upload/lead_files') }}" method="post"  enctype="multipart/form-data"> 
+              <form name="frm_lead_dropzone" id="FRM_LEAD_DROPZONE" class="dropzone" action="{{ url('request/upload/lead_files') }}" method="post"  enctype="multipart/form-data">
 				    {!! csrf_field() !!}
 				    <input type="hidden" name="lead_id" id="LEAD_ID" value="{{ $lead_info->cl_id }}" />
 				 	<div class="row">
@@ -388,7 +388,7 @@ Page Description :
             </div>
 
             <div class="modal-body">
-            <form name="frm_lead_insert_items" id="FRM_INSERT_ITEMS" method="post"  enctype="multipart/form-data"> 
+            <form name="frm_lead_insert_items" id="FRM_INSERT_ITEMS" method="post"  enctype="multipart/form-data">
 				    {!! csrf_field() !!}
 				    <input type="hidden" name="lead_id" id="LEAD_ID" value="{{ $lead_info->cl_id }}" />
 				 	<div class="row">

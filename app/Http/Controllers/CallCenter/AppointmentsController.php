@@ -547,6 +547,11 @@ class AppointmentsController extends Controller
         $app_info->ca_lead_referred_by               = $cl_referred_by;
         $app_info->save();
 
+        // change result of lead based of appointment change
+        $lead_info = CRMLeads::find($ca_lead_id);
+        $lead_info->cl_lead_results = $ca_apt_result;
+        $lead_info->save();
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Appointment Information Has been saved';
 

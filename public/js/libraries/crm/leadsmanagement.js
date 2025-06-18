@@ -3,10 +3,17 @@
  */
 $(function(){
 	 leads_module.DisplayListLeads();
-	 $("input[name=general_search]").on("keyup",leads_module.DisplayListLeads);
+	 $("input[name=sheet_number]").on("keyup",leads_module.DisplayListLeads);
+	 $("input[name=lead_name]").on("keyup",leads_module.DisplayListLeads);
+	 $("input[name=lead_region]").on("keyup",leads_module.DisplayListLeads);
+	 $("input[name=referred_by]").on("keyup",leads_module.DisplayListLeads);
+	 $("input[name=lead_mobile]").on("keyup",leads_module.DisplayListLeads);
 	 $("select[name=cl_sales_id]").on("change",leads_module.DisplayListLeads);
+	 $("select[name=cl_area]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=lead_status]").on("change",leads_module.DisplayListLeads);
+	 $("select[name=cl_lead_types]").on("change",leads_module.DisplayListLeads);
 	 $(".dropdown-item").on("click",leads_module.QuickActionLead);
+	 $("#btnAddResult").on("click",leads_module.AddCallResult);
 	 $("button[name=btn_change_status]").on("click",leads_module.SaveChangeLeadsStatus);
 	 $("button[name=btn_assign_lead_to]").on("click",leads_module.SaveAssignLeadTo);
 	 $("#BTN_ADD_RESULT").on("click",leads_module.SaveAddLeadResult);

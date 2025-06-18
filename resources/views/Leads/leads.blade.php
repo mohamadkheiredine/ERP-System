@@ -26,6 +26,30 @@ th{
 #ModelPopUp{
 	width:800px;
 }
+
+.fixed-header-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.fixed-header-table thead {
+    background-color: #f9f9f9;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table-scroll-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.fixed-header-table th,
+.fixed-header-table td {
+    white-space: nowrap;
+    padding: 8px;
+    border: 1px solid #dee2e6;
+}
 </style>
 @endsection
 @section('plugins')
@@ -39,7 +63,7 @@ th{
         <h3 class="card-title">Leads Management</h3>
         <div class="card-toolbar">
             <div class="btn-group">
-              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" style="display:none" aria-expanded="false">
                 Action
               </button>
               <ul class="dropdown-menu">
@@ -73,10 +97,77 @@ th{
                                                                 <span class="path1"></span>
                                                                 <span class="path2"></span>
                                                         </i>
-                                                        <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                                                        <input type="text" class="form-control form-control-solid ps-10" name="lead_name" id="LeadName" value="" placeholder="Lead Name" />
                                                 </div>
                                                 <!--end::Input group-->
                                             </div>
+                                </div>
+                            <div class="col-md-4">
+                                    <label>&nbsp;</label>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Input group-->
+                                                <div class="position-relative w-md-400px me-md-2">
+                                                        <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                        </i>
+                                                        <input type="text" class="form-control form-control-solid ps-10" name="lead_region" id="LeadRegion" value="" placeholder="Region" />
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>&nbsp;</label>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Input group-->
+                                                <div class="position-relative w-md-400px me-md-2">
+                                                        <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                        </i>
+                                                        <input type="text" class="form-control form-control-solid ps-10" name="referred_by" id="LeadRegion" value="" placeholder="Referred By" />
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                </div>
+                            <div class="col-md-4">
+                                    <label>&nbsp;</label>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Input group-->
+                                                <div class="position-relative w-md-400px me-md-2">
+                                                        <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                        </i>
+                                                        <input type="text" class="form-control form-control-solid ps-10" name="lead_mobile" id="LeadMobile" value="" placeholder="Lead Mobile" />
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                </div>
+                            <div class="col-md-4">
+                                    <label>&nbsp;</label>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Input group-->
+                                                <div class="position-relative w-md-400px me-md-2">
+                                                        <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                        </i>
+                                                        <input type="text" class="form-control form-control-solid ps-10" name="sheet_number" id="SheetNumber" value="" placeholder="Sheet Number" />
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Area <span class="required"> * </span> </label>
+                                        <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                            <option value="">-- Select Area --</option>
+                                            <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                            <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                            <?php  } ?>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
 
@@ -90,16 +181,16 @@ th{
                                       </select>
                                   </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group" style="{{ (Config::get('appconfig.crm_telemarketing') == "1") ? "display:none" : ""  }}">
-                                        <label>&nbsp;</label>
-                                                <select   id="LEAD_STATUS" name="lead_status" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Status">
-                                                        <option value="0">-- Select Status --</option>
-                                                @foreach($lead_statuses as $index => $status_info)
-                                                  <option value="{{ $status_info->ls_id }}">{{ $status_info->ls_status_title }}</option>
-                                                @endforeach
-                                            </select>
-                                    </div>
+                            <div class="col-md-4">
+                                     <div class="form-group">
+                                      <label>Lead Types </label>
+                                      <select name="cl_lead_types"  id="CL_LEAD_TYPES"  class="form-control form-select" data-control="select2" data-placeholder="Lead Types">
+                                              <option value="">-- Select Types --</option>
+                                              <?php foreach ( $lst_lead_types as $key => $type_info ) { ?>
+                                                      <option value="<?php echo $type_info->lt_id;  ?>"><?php echo $type_info->lt_deal_type;  ?></option>
+                                              <?php  } ?>
+                                      </select>
+                                  </div>
                                 </div>
                         </div>
                 </div>
@@ -121,43 +212,36 @@ th{
                                           <div class="row">
                                               <div class="col-md-12" style="height:25px">&nbsp;</div>
                                           </div>
-								<div class="table-responsive">
-									<table class="table table-bordered">
-                                                <thead>
-                                                        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                <th title="#"></th>
-                                                                <th title="index">Index</th>
-                                                                <th title="RS#"> RS# </th>
-                                                                <th title="Lead name"> Lead Name </th>
-                                                                <th title="Lead name"> Address </th>
-                                                                <th title="Lead name"> Leads Type </th>
-                                                                <th title="Lead name"> Salesman </th>
-                                                                <th title="Lead name"> Telemarketer </th>
-                                                                <th title="Mobile"> Mobile </th>
-                                                                <th title="Mobile"> Referred by </th>
-                                                                <th>Result</th>
-                                                                <th>Notes</th>
-                                                                <th style="width:2px;" nowrap title="#"> edit </th>
-                                                                <th style="width:2px;" nowrap title="#"> Delete </th>
-                                                        </tr>
-                                                </thead>
-                                                <tbody id="LstLeads">
+                                            <div class="table-responsive">
+                                                <div class="table-scroll-wrapper">
+                                                    <table class="table fixed-header-table">
+                                                        <thead class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                                                                    <th title="#"></th>
+                                                                                                    <th title="index">Index</th>
+                                                                                                    <th title="RS#"> RS# </th>
+                                                                                                    <th title="Lead name"> Lead Name </th>
+                                                                                                    <th title="Area"> Area </th>
+                                                                                                    <th title="Region"> Region </th>
+                                                                                                    <th title="Lead name"> Leads Type </th>
+                                                                                                    <th title="Lead name"> Salesman </th>
+                                                                                                    <th title="Lead name"> Telemarketer </th>
+                                                                                                    <th title="Mobile"> Mobile </th>
+                                                                                                    <th title="Referred By"> Referred by </th>
+                                                                                                    <th title="Last Call Date"> Last Call Date </th>
+                                                                                                    <th title="Result" style="cursor: pointer" id="btnAddResult">Result</th>
+                                                                                                    <th title="Last Result">Last Result</th>
+                                                                                                    <th title="Next Call">Next Call</th>
+                                                                                                    <th>Notes</th>
+                                                                                                    <th style="width:2px;" nowrap title="#"> edit </th>
+                                                                                                    <th style="width:2px;" nowrap title="#"> Delete </th>
+                                                                                            </tr>
+                                                                                    </thead>
+                                                                                    <tbody id="LstLeads">
 
-                                                </tbody>
-                                    </table>
-								</div>
-
-                                                    <div class="row">
-                                                      <div class="col-md-10 col-lg-10 col-xs-10" align="left">
-                                                          <ul id="LeadsPagination" class="pagination-sm"></ul>
-                                                      </div>
-                                                        <div class="col-md-2 col-lg-2 col-xs-2" align="right"></div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12" style="height:50px" align="right"></div>
-                                                    </div>
-
-
+                                                                                    </tbody>
+                                                                        </table>
+                                                                    </div>
+                                            </div>
 								<div class="row">
 									<div class="col-md-12" align="right">
 										<a href="{{ url('crm/leads/addform') }}" class="btn btn-info">
@@ -171,7 +255,7 @@ th{
 									</div>
 								</div>
                                                             <div class="row">
-                                                                <div class="col-md-12" style="height:150px" align="right"></div>
+                                                                <div class="col-md-12" style="height:50px" align="right"></div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-12" >
