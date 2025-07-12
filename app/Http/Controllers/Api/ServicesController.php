@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
 use Milon\Barcode\DNS1D;
-use Models\Product;
+use models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
@@ -46,6 +46,6 @@ use App\models\Billing\PaymentTypes;
 
 class DashboardController extends Controller
 {
-    
-    
+
+
 }

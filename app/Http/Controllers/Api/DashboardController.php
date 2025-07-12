@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
 use Milon\Barcode\DNS1D;
-use Models\Product;
+use models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
@@ -46,70 +46,70 @@ use App\models\Billing\PaymentTypes;
 
 class DashboardController extends Controller
 {
-    
+
     /**
      * get daily sales
-     * 
+     *
      * @author Moe Mantach
      * @access public
      */
     public function GetTodaysTotalOrders(Request $request)
     {
-        
-        $user_id             = $request->input('user_id'); 
+
+        $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         // Your custom SQL query
         $sql = "select SUM(so_total_cost) as total_cost , so_order_currency from sales_orders where so_order_date = CURDATE()  group by so_order_currency;";
-        
+
         // Bind values if needed
         $values = [];
-        
+
         // Execute the query
        $total_todays_orders = DB::select($sql, $values);
-     
-       
+
+
        $total_orders_array = array();
-       
-       
+
+
        foreach ($total_todays_orders as $key => $total_info) {
-           
+
            $currency_info = Currency::find($total_info->so_order_currency);
-           
+
            $total_orders_array[] = array(
                'total_order' => $total_info->total_cost,
                'currency_code' => $currency_info->cc_currency_code,
                'currency_id' => $currency_info->cc_id
            );
        }
-       
-       
+
+
        $result_array['total_orders_array'] = $total_orders_array;
 
-        
-        
+
+
         return Response()->json($result_array);
     }
-     
+
     /**
      * get list of orders throw year
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -119,37 +119,37 @@ class DashboardController extends Controller
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         $sql = "select SUM(so_total_cost) as total_cost , so_order_date , so_order_currency from sales_orders where YEAR(so_order_date) = YEAR(CURRENT_DATE()) group by so_order_date , so_order_currency;";
-        
+
         // Bind values if needed
         $values = [];
-        
+
         // Execute the query
         $lst_orders_data = DB::select($sql, $values);
-        
-        
+
+
         $lst_orders = array();
-        
+
         foreach ($lst_orders_data as $key => $order_info) {
-            
+
             $currency_info = Currency::find($order_info->so_order_currency);
-            
+
             $lst_orders[] = array(
                 'total_cost' => $order_info->total_cost,
                 'so_order_date' => $order_info->so_order_date,
@@ -157,9 +157,9 @@ class DashboardController extends Controller
                 'so_order_currency' => $currency_info->cc_currency_code
             );
         }
-        
+
         $result_array['lst_orders'] = $lst_orders;
-        
+
         return Response()->json($result_array);
     }
 }

@@ -35,7 +35,7 @@ use App\models\Accounting\Transactions;
 use App\models\Accounting\TransactionMovements;
 use App\library\AccountsManager;
 use App\library\AccountingManager;
-use Models\Account;
+use models\Account;
 use App\models\CRM\CRMAccounts;
 use App\models\Billing\Invoices;
 use App\models\Accounting\BankAccounts;

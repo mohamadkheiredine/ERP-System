@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
 use Milon\Barcode\DNS1D;
-use Models\Product;
+use models\Product;
 use App\models\Inventory\Stocks;
 use App\models\Inventory\StockMovements;
 use App\models\Inventory\ProductLots;
@@ -46,56 +46,56 @@ use App\models\Billing\PaymentTypes;
 
 class GeneralController extends Controller
 {
-    
+
     /**
      * get list of currencies saved in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      */
     public function getlistcurrency(Request $request)
     {
-        
-        $user_id             = $request->input('user_id'); 
+
+        $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
-        
+
+
         $lst_currencies = Currency::all();
-        
+
         $currencies_array = array();
-        
-        foreach ( $lst_currencies as  $index => $currency_info ) 
+
+        foreach ( $lst_currencies as  $index => $currency_info )
         {
             $currencies_array[ $currency_info->cc_id ] = array(
                 'currency_code' => $currency_info->cc_currency_code ,
                 'currency_name' => $currency_info->cc_currency_name
             );
         }
-        
+
         $result_array['currencies'] = $currencies_array;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * get list of chart of accounts saved in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -105,30 +105,30 @@ class GeneralController extends Controller
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $chart_accounts = array();
-        
-        
-        
+
+
+
         $result_array['chart_accounts'] = $chart_accounts;
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Get variables of Default Accounts
      * @param Request $request
@@ -138,30 +138,30 @@ class GeneralController extends Controller
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
         $user_info           = Users::find($user_id);
-        
+
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-        
-        
+
+
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
         {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
-            
+
             return Response()->json($result_array);
         }
-        
+
         $product_sales = DefaultAccounts::whereDaAccountCode('ACCOUNT_SOLD_PRODUCT')->get();
         $product_purchase = DefaultAccounts::whereDaAccountCode('ACCOUNT_BOUGHT_SERVICES')->get();
-        
+
         $result_array['product_sales_account']      = $product_sales[0]->da_account_value;
         $result_array['product_purchase_account']   = $product_purchase[0]->da_account_value;
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Api Request to get list of payment types
      * @param Request $request
@@ -169,24 +169,24 @@ class GeneralController extends Controller
      */
     public function GetListPaymentTypes(Request $request)
     {
-        
+
         $result_array        = array();
-        
-        
+
+
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $payment_types = array();
-        
+
         foreach ($lst_payment_types as $key => $payment_type) {
             $payment_types[] = array(
                 'id' => $payment_type->pt_id,
                 'title' => $payment_type->pt_payment_type
             );
         }
-        
+
         $result_array['is_error'] = 0;
         $result_array['payment_types'] = $payment_types;
         return Response()->json($result_array);
     }
-    
-    
+
+
 }
