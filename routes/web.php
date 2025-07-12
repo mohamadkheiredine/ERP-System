@@ -215,6 +215,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/leads/status/addform','CRM\LeadsStatusController@AddForm');
     Route::get('/leads/status/editform/{ls_id}','CRM\LeadsStatusController@EditForm');
 
+
+    Route::get('/leads/results','CRM\LeadAppResultsController@index');
+    Route::get('/leads/results/addform','CRM\LeadAppResultsController@AddForm');
+    Route::get('/leads/results/editform/{ar_id}','CRM\LeadAppResultsController@EditForm');
+
     Route::get('/crm/activities','CRM\LeadActivitiesController@Activities');
     Route::get('/crm/addactivity','CRM\LeadActivitiesController@AddForm');
 
@@ -437,6 +442,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/payrolls/taxbrackets/editform/{tb_id}','PayRoll\PayrollsTaxBracketsController@EditForm');
 
 
+    Route::get('/payrolls/employees','PayRoll\EmployeesController@index');
+    Route::get('/payrolls/employees/addform','PayRoll\EmployeesController@AddForm');
+    Route::get('/payrolls/employees/editform/{u_id}','PayRoll\EmployeesController@EditForm');
+
+
+
     Route::get('/phones/lines','Phones\PhoneLinesController@index');
     Route::get('/phones/lines/addform','Phones\PhoneLinesController@AddForm');
     Route::get('/phones/lines/editform/{pl_id}','Phones\PhoneLinesController@EditForm');
@@ -503,5 +514,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/appointments','CallCenter\AppointmentsController@index');
     Route::get('/callcenter/appointments/todaysappointment','CallCenter\AppointmentsController@TodaysAppointments');
     Route::get('/callcenter/appointments/downloadapt/{apt_id}','CallCenter\AppointmentsController@DownloadAppointment');
+    Route::get('/callcenter/reports/callbackreports','CallCenter\AppointmentsController@CallBackReports');
+    Route::get('/callcenter/leads/downloadcallbackleads','CallCenter\AppointmentsController@DownloadListCallbackLeads');
 
 });

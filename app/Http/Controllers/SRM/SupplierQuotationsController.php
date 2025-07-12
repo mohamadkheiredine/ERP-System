@@ -16,6 +16,7 @@ Page Description :
 namespace App\Http\Controllers\SRM;
 
 use App\Http\Controllers\Controller;
+use App\models\Accounting\VatAccounts;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -59,78 +60,78 @@ class SupplierQuotationsController extends Controller
     {
         $lst_suppliers     = Suppliers::whereSsIsDeleted(0)->get();
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
-       
+
         $data = array(
             "lst_suppliers" => $lst_suppliers,
             "lst_warehouses" => $lst_warehouses,
         );
         return Response()->view('srm.quotations',$data);
     }
-    
-    
+
+
    /**
     * Display list of Supplier Quotations saved in the database
-    * 
+    *
     * @author Moe Mantach
     * @access public
     * @param Request $request
     * @return unknown
     */
     public function DisplayList(Request $request)
-    {        
+    {
         $lst_suppliers          = Suppliers::whereSsIsDeleted(0)->get();
         $suppliers_array        = CreateDatabaseArrayByIndex($lst_suppliers, "ss_id");
         $lst_currency           = Currency::all();
         $currencies_array       = CreateDatabaseArrayByIndex($lst_currency, 'cc_id');
         $lst_supplier_bidding   = SuppliersBidding::whereSbIsDeleted(0)->get();
         $bidding_array          = CreateDatabaseArrayByIndex($lst_supplier_bidding, "sb_id");
-  
-        
+
+
         $page_number            = $request->input('page_number');
         $search_query           = $request->input('general_search');
         $quotation_warehouse    = $request->input('quotation_warehouse');
         $quotation_supplier     = $request->input('quotation_supplier');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-       
+
         $lst_supplier_quotations = SupplierQuotations::whereSqIsDeleted(0);
-        
+
         if(strlen($search_query) > 0)//
             $lst_supplier_quotations = $lst_supplier_quotations->where('sq_quotation_notes','LIKE','%' . $search_query . '%');
         if( $quotation_warehouse > 0 )//
             $lst_supplier_quotations = $lst_supplier_quotations->where('sq_warehouse_id','=',$quotation_warehouse);
         if( $quotation_supplier > 0 )//
             $lst_supplier_quotations = $lst_supplier_quotations->where('fk_supplier_id','=',$quotation_supplier);
-    
+
         $count_quotation =  $lst_supplier_quotations->count();
         $lst_supplier_quotations = $lst_supplier_quotations->skip($skip)->take($nbr_rows_per_pages)->get();
-       
-        
+
+
         $total_pages = ceil( $count_quotation/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
-        $supplier_categories_array   = array(); 
-        
+
+        $supplier_categories_array   = array();
+
         $data = array(
             "lst_supplier_quotations" => $lst_supplier_quotations,
             "suppliers_array" => $suppliers_array,
             "bidding_array" => $bidding_array,
             "currencies_array" => $currencies_array
         );
-        
+
         $result_array = array();
-        
+
         $result_array['display'] = view("srm.lstquotations",$data)->render();
         $result_array['total_pages'] = $total_pages;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Function of Adding a new Status
      *
@@ -149,10 +150,11 @@ class SupplierQuotationsController extends Controller
         $user_id                = session('user_id');
         $SRMManager             = new \App\library\SRMManager();
         $quotation_code         = $SRMManager->GenerateQuotationCode();
-        
+        $lst_vat = VatAccounts::whereAvIsDeleted(0)->get();
         $data = array(
             "lst_suppliers"         => $lst_suppliers,
             "lst_users"             => $lst_users,
+            "lst_vat"             => $lst_vat,
             "lst_currency"          => $lst_currency,
             "lst_warehouses"          => $lst_warehouses,
             "company_currency"      => $company_currency,
@@ -162,10 +164,10 @@ class SupplierQuotationsController extends Controller
         );
         return Response()->view('srm.addquotation',$data);
     }
-    
-    
+
+
     /**
-     * Form to scan Serials 
+     * Form to scan Serials
      * @param Request $request
      */
     public function AddSerials(Request $request)
@@ -174,10 +176,10 @@ class SupplierQuotationsController extends Controller
         $serial_numbers = $request->input('serial_numbers');
         $stock_quantity = $request->input('stock_quantity');
         $serial_numbers_array = array();
-        
+
         if(strlen($serial_numbers) > 0)
             $serial_numbers_array = explode(',', $serial_numbers);
-        
+
         $data = array(
             "index" => $index,
             "stock_quantity" => $stock_quantity,
@@ -185,7 +187,7 @@ class SupplierQuotationsController extends Controller
         );
         return Response()->view('srm.serials',$data);
     }
-    
+
     /**
      * Edit Form Page for supplier Quotation
      * @param unknown $ss_id
@@ -200,35 +202,37 @@ class SupplierQuotationsController extends Controller
         $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
         $quotation_products = SupplierProducts::whereFkQuotationId($sq_id)->get();
-       
+        $lst_vat = VatAccounts::whereAvIsDeleted(0)->get();
+
         $data = array(
             "supplier_quotation" => $supplier_quotation,
             "lst_supplier_bidding" => $bidding,
             "lst_warehouses" => $lst_warehouses,
             "lst_suppliers" => $lst_suppliers,
             "lst_users" => $lst_users,
+            "lst_vat" => $lst_vat,
             "lst_currency" => $lst_currency,
             "quotation_products" => $quotation_products
-        );  
+        );
         return Response()->view('srm.editquotation',$data);
     }
-    
-    
+
+
     /**
-     * View and display purshase quotation 
+     * View and display purshase quotation
      * @param unknown $sq_id
      * @return unknown
      */
     public function ViewPurshaseQuotation( $sq_id )
     {
-        
+
         $supplier_quotation     = SupplierQuotations::find($sq_id);
         $lst_suppliers          = Suppliers::whereSsIsDeleted(0)->get();
         $lst_currency           = Currency::all();
         $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        
+
         $quotation_products = SupplierProducts::whereFkQuotationId($sq_id)->get();
-        
+
         $data = array(
             "supplier_quotation" => $supplier_quotation,
             "lst_suppliers" => $lst_suppliers,
@@ -238,11 +242,11 @@ class SupplierQuotationsController extends Controller
         );
         return Response()->view('srm.viewpurchasequotation',$data);
     }
-    
+
     /**
      * Approve Quotation and Create A new Contract with the information already
      * Added to the Quotation
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -254,10 +258,10 @@ class SupplierQuotationsController extends Controller
         $quotation_info->sq_quotation_approve = 1;
         $quotation_info->save();
         $bidding_info = SuppliersBidding::find( $quotation_info->fk_bid_id );
-        
+
         $ContManager    = new SRMManager();
         $contract_code  = $ContManager->GenerateContractCode();
-        
+
         $contract_info  = new SupplierContracts();
         $contract_info->fk_supplier_id              = $quotation_info->fk_supplier_id;
         $contract_info->sc_code                     = $contract_code;
@@ -274,16 +278,16 @@ class SupplierQuotationsController extends Controller
         $contract_info->sc_currency_id              = $quotation_info->sq_currency_id;
         $contract_info->save();
         $sc_id = $contract_info->sc_id;
-        
+
         $result_array = array();
-        
+
         $result_array['is_error']   = 0;
         $result_array['sc_id']      = $sc_id;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Delete Supplier Quotation from the database by change flag is_deleted of the row
      *
@@ -294,26 +298,26 @@ class SupplierQuotationsController extends Controller
      */
     public function DeleteSupplierQuotationInfo(Request $request)
     {
-        
+
         $sq_id= $request->input('sq_id');
-        
+
         $supplier_quotation = SupplierQuotations::find( $sq_id );
         $supplier_quotation->sq_is_deleted      = 1;
         $supplier_quotation->sq_deleted_by      = Session('user_id');
         $supplier_quotation->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Save Supplier Status Info to saved in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -332,7 +336,7 @@ class SupplierQuotationsController extends Controller
         $sq_quotation_notes         = $request->input('sq_quotation_notes');
         $sq_total_price             = $request->input('sq_total_price');
         $sq_currency_id             = $request->input('sq_currency_id');
-        
+
         $serial_numbers             = $request->input('serial_numbers');
         $pr_quantity                = $request->input('pr_quantity');
         $pr_product_code            = $request->input('pr_product_code');
@@ -346,12 +350,21 @@ class SupplierQuotationsController extends Controller
         $product_id                 = $request->input('product_id');
         $currency_id                = $request->input('currency_id');
         $sq_warehouse_id            = $request->input('sq_warehouse_id');
-        $sq_container_number            = $request->input('sq_container_number');
+        $sq_container_number        = $request->input('sq_container_number');
+        $sq_shipping_type           = $request->input('sq_shipping_type');
+        $sq_enable_tva              = $request->has('sq_enable_tva') ? 1 : 0;
+        $sq_enable_freight          = $request->has('sq_enable_freight') ? 1 : 0;
+        $sq_enable_forwarding       = $request->has('sq_enable_forwarding') ? 1 : 0;
+        $sq_enable_insurance        = $request->has('sq_enable_insurance') ? 1 : 0;
+        $sq_tva_id                  = $request->input('sq_tva_id');
+        $sq_freight_amount          = $request->input('sq_freight_amount');
+        $sq_forwarding_percentage   = $request->input('sq_forwarding_percentage');
+        $sq_insurance_amount        = $request->input('sq_insurance_amount');
         $sq_approve_quotation       = $request->has('sq_approve_quotation') ? 1 : 0;
         $warehouse_id               = session('warehouse_id');
         $todays_date = date('Y-m-d');
         $result_array = array();
-        
+
         $product_info = Products::find($product_id);
 
         $supplier_quotation     = new SupplierQuotations();
@@ -361,8 +374,15 @@ class SupplierQuotationsController extends Controller
             $supplier_quotation = SupplierQuotations::find($sq_id);
             $action ='edit';
         }
-         
-        $supplier_quotation->fk_supplier_id          = $fk_supplier_id; 
+
+        $tva_info = VatAccounts::fint($sq_tva_id);
+        $tva_amount = 0;
+        if($sq_enable_tva == 1)
+        {
+            $tva_amount =  ($tva_info->av_vat_rate *  $sq_total_price);
+        }
+
+        $supplier_quotation->fk_supplier_id          = $fk_supplier_id;
         $supplier_quotation->sq_user_id              = $sq_user_id;
         $supplier_quotation->sq_date_submit          = $sq_date_submit;
         $supplier_quotation->sq_due_date             = $sq_due_date;
@@ -372,36 +392,42 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->sq_quotation_approve    = $sq_approve_quotation;
         $supplier_quotation->sq_warehouse_id         = $sq_warehouse_id;
         $supplier_quotation->sq_container_number         = $sq_container_number;
+        $supplier_quotation->sq_shipping_type         = $sq_shipping_type;
+        $supplier_quotation->sq_enable_tva         = $sq_enable_tva;
+        $supplier_quotation->sq_enable_freight         = $sq_enable_freight;
+        $supplier_quotation->sq_enable_forwarding         = $sq_enable_forwarding;
+        $supplier_quotation->sq_enable_insurance         = $sq_enable_insurance;
+        $supplier_quotation->sq_tva_id         = $sq_tva_id;
         $supplier_quotation->save();
-        
+
         $sq_id = $supplier_quotation->sq_id;
-        
+
         $supplier_info = Suppliers::find($fk_supplier_id);
-        
+
         // delete old supplier product
         //$supplier_products = SupplierProducts::whereFkQuotationId($sq_id)->delete();
-        
-        
+
+
         $quotation_total_price = 0;
-        
+
         $product_type_count = count($pr_product_name);
-        
-        
-        for ($i = 0; $i < $product_type_count; $i++) 
+
+
+        for ($i = 0; $i < $product_type_count; $i++)
         {
             $sup_p_id  = isset($sp_id[$i]) ? $sp_id[$i] : 0;
             $p_id   = isset($product_id[$i]) ? $product_id[$i] : 0;
-            
+
             if( $p_id == 0 )
                 continue;
             $product_info       = Products::find($p_id);
             $product_currency   = $product_info->p_product_currency;
             if( $sup_p_id != 0 && $sup_p_id != null )
                 $quotation_product = SupplierProducts::find($sup_p_id);
-            else 
+            else
                 $quotation_product = new SupplierProducts();
-            
-           
+
+
             $quotation_product->sp_product_serial           = $serial_numbers[$i] != null ? $serial_numbers[$i] : "";
             $quotation_product->fk_product_id               = $p_id;
             $quotation_product->fk_quotation_id             = $sq_id;
@@ -415,9 +441,9 @@ class SupplierQuotationsController extends Controller
             $quotation_product->sp_main_currency            = $sq_currency_id;
             $quotation_product->sp_product_currency         = $product_currency;
             $quotation_product->sp_product_quantity         = $pr_quantity[$i];
-            
+
             $exchange_rate = 1;
-            
+
             if($product_currency != $sq_currency_id)
             {
                 $exch_rate_obj      = CurrencyExchangeRates::whereErFromCurrency($product_currency)->whereErToCurrency($sq_currency_id)->orderBy('er_id', 'DESC')->get();
@@ -426,138 +452,207 @@ class SupplierQuotationsController extends Controller
                     $exchange_rate  = $exch_rate_obj[0]->er_exchange_rate;
                 }
 
-            } 
+            }
             $quotation_total_price = $quotation_total_price + ( ( $pr_pruchase_price[$i] * $pr_quantity[$i] ) * $exchange_rate);
-            
+
             $quotation_product->sp_product_currency         = $product_currency;
-            
-            $quotation_product->save(); 
+
+            $quotation_product->save();
             $is_id = $quotation_product->sp_stock_id;
-            
+
             if($sq_approve_quotation == 1)
             {
                 if($is_id != 0)
                     $stock_info = Stocks::find($is_id);
-                    else
-                        $stock_info = new Stocks();
-                        
-                        if($stock_info->fk_warehouse_id == null)
-                            $stock_info = new Stocks();
-                            
-                            $stock_info->fk_warehouse_id                = $sq_warehouse_id;
-                            $stock_info->fk_product_id                  = $p_id;
-                            $stock_info->is_supplier_id                 = $fk_supplier_id;
-                            $stock_info->is_stock_label                 = $pr_description[$i];
-                            $stock_info->is_stock_lot_person_in_charge  = session('user_id');
-                            $stock_info->is_created_by                  = session('user_id');
-                            $stock_info->is_quanity                     = $pr_quantity[$i];
-                            $stock_info->is_creation_date               = $todays_date;
-                            $stock_info->is_price_stock                 = $pr_pruchase_price[$i];
-                            $stock_info->is_selling_price               = $pr_selling_price[$i];
-                            $stock_info->is_wholesale_price             = $pr_wholesale_price[$i];
-                            $stock_info->is_vendor_price                = $pr_vendor_price[$i];
-                            $stock_info->is_price_item                  = $pr_selling_price[$i];
-                            $stock_info->is_discount                    = $pr_discount[$i];
-                            $stock_info->is_price_currency              = $sq_currency_id;
-                            $stock_info->is_stock_currency              = $sq_currency_id;
-                            $stock_info->is_stock_exchange_rate         = $exchange_rate;
-                            $stock_info->save();
-                            $is_id = $stock_info->is_id;
-                            
-                            $quotation_product->sp_stock_id = $is_id;
-                            $quotation_product->save();
-                            
-                            
-                            $stockids_delete =  StockIds::whereFkStockId($is_id)->delete();
-                            
-                            $serial_number_array = array();
-                            if(strlen(trim($serial_numbers[$i])) > 0 || $serial_numbers[$i] != null)
-                                $serial_number_array = explode( ",", $serial_numbers[$i] );
-                                
-                            // get list of existing records related to this stock ids
-                            $lst_existing_sn = StockIds::whereIn('si_stock_uid',$serial_number_array);
-                            $existing_sn_array = array();
-                            
-                            foreach ( $lst_existing_sn as $key => $sn_info )
-                            {
-                                $existing_sn_array[ $sn_info->si_stock_uid ] =  $sn_info->fk_stock_id;
-                            }
-                            
-                            for ($j = 0; $j < count($serial_number_array); $j++)
-                            {
-                                if($serial_number_array[$j] == '' || $serial_number_array[$j] == null || strlen(trim($serial_number_array[$j])) == 0 || isset($existing_sn_array[ $serial_number_array[$j] ] ))
-                                    continue;
-                                    $stockids_info                  = new StockIds();
-                                    $stockids_info->fk_product_id     = $p_id;
-                                    $stockids_info->fk_stock_id     = $is_id;
-                                    $stockids_info->si_stock_uid    = $serial_number_array[$j];
-                                    $stockids_info->save();
-                            }
+                else
+                    $stock_info = new Stocks();
+
+                if($stock_info->fk_warehouse_id == null)
+                    $stock_info = new Stocks();
+
+                    $stock_info->fk_warehouse_id                = $sq_warehouse_id;
+                    $stock_info->fk_product_id                  = $p_id;
+                    $stock_info->is_supplier_id                 = $fk_supplier_id;
+                    $stock_info->is_stock_label                 = $pr_description[$i];
+                    $stock_info->is_stock_lot_person_in_charge  = session('user_id');
+                    $stock_info->is_created_by                  = session('user_id');
+                    $stock_info->is_quanity                     = $pr_quantity[$i];
+                    $stock_info->is_creation_date               = $todays_date;
+                    $stock_info->is_price_stock                 = $pr_pruchase_price[$i];
+                    $stock_info->is_selling_price               = $pr_selling_price[$i];
+                    $stock_info->is_wholesale_price             = $pr_wholesale_price[$i];
+                    $stock_info->is_vendor_price                = $pr_vendor_price[$i];
+                    $stock_info->is_price_item                  = $pr_selling_price[$i];
+                    $stock_info->is_discount                    = $pr_discount[$i];
+                    $stock_info->is_price_currency              = $sq_currency_id;
+                    $stock_info->is_stock_currency              = $sq_currency_id;
+                    $stock_info->is_stock_exchange_rate         = $exchange_rate;
+                    $stock_info->save();
+                    $is_id = $stock_info->is_id;
+
+                    $quotation_product->sp_stock_id = $is_id;
+                    $quotation_product->save();
+
+
+                    $stockids_delete =  StockIds::whereFkStockId($is_id)->delete();
+
+                    $serial_number_array = array();
+                    if(strlen(trim($serial_numbers[$i])) > 0 || $serial_numbers[$i] != null)
+                        $serial_number_array = explode( ",", $serial_numbers[$i] );
+
+                    // get list of existing records related to this stock ids
+                    $lst_existing_sn = StockIds::whereIn('si_stock_uid',$serial_number_array);
+                    $existing_sn_array = array();
+
+                    foreach ( $lst_existing_sn as $key => $sn_info )
+                    {
+                        $existing_sn_array[ $sn_info->si_stock_uid ] =  $sn_info->fk_stock_id;
+                    }
+
+                    for ($j = 0; $j < count($serial_number_array); $j++)
+                    {
+                        if($serial_number_array[$j] == '' || $serial_number_array[$j] == null || strlen(trim($serial_number_array[$j])) == 0 || isset($existing_sn_array[ $serial_number_array[$j] ] ))
+                            continue;
+                            $stockids_info                  = new StockIds();
+                            $stockids_info->fk_product_id     = $p_id;
+                            $stockids_info->fk_stock_id     = $is_id;
+                            $stockids_info->si_stock_uid    = $serial_number_array[$j];
+                            $stockids_info->save();
+                    }
+
+
             }
-            
-            
+
+
         }
-        
-         
-        
-        // save total quotation value 
+
+
+        // save total quotation value
         $supplier_quotation =  SupplierQuotations::find($sq_id);
         $supplier_quotation->sq_total_price = $quotation_total_price;
         $supplier_quotation->save();
-        
         if($sq_approve_quotation == 1)
         {
             $at_id  = $supplier_quotation->sq_trans_id;
             $mov_id = $supplier_quotation->sq_mov_id;
-            
+
             // stock accounting records
             if($at_id != 0 )
                 $transaction = Transactions::find($at_id);
             else
                 $transaction = new Transactions();
-            
+
             $transaction->at_transaction_date   = $todays_date;
             $transaction->at_creation_date      = $todays_date;
             $transaction->at_accounting_doc     = "Transaction For Purchase a Stock from Supplier " . $supplier_info->ss_supplier_name;
             $transaction->fk_acc_journal_id     = 1;
             $transaction->at_currency_id        = $sq_currency_id;
             $transaction->save();
-            
+
             $at_id = $transaction->at_id;
-            
+
+            // delete existing record
+            $delete_mov = TransactionMovements::whereFkTranId($at_id)->delete();
             // add movement debit from company to supplier account
-            if($mov_id != 0)
-                $trans_mov= TransactionMovements::find($mov_id);
-            else
-                $trans_mov= new TransactionMovements();
+            $trans_mov= new TransactionMovements();
+
             $trans_mov->fk_tran_id              = $at_id;
             $trans_mov->tm_ledger_account       = $supplier_info->ss_sale_account_id;
-            $trans_mov->tm_sub_ledger_account   = $supplier_info->ss_purchase_account_id;
+            $trans_mov->tm_sub_ledger_account   = $supplier_info->ss_sale_account_id;
+            $trans_mov->tm_debit                = 0;
+            $trans_mov->tm_credit               = $quotation_total_price;
+            $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
+            $trans_mov->tm_currency_id          = $sq_currency_id;
+            $trans_mov->tm_ledger_label         = "Credit For Purchase a Stock from Supplier " . $supplier_info->ss_supplier_name;
+            $trans_mov->save();
+
+            $trans_mov= new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = 601;
+            $trans_mov->tm_sub_ledger_account   = 601;
             $trans_mov->tm_debit                = $quotation_total_price;
             $trans_mov->tm_credit               = 0;
             $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
             $trans_mov->tm_currency_id          = $sq_currency_id;
-            $trans_mov->tm_ledger_label         = "Debit For Purchase a Stock from Supplier " . $supplier_info->ss_supplier_name;
+            $trans_mov->tm_ledger_label         = "Debit Inside Purchasing for Stock from Supplier " . $supplier_info->ss_supplier_name;
             $trans_mov->save();
-            
+
+            if($sq_enable_tva == 1)
+            {
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 4421;
+                $trans_mov->tm_sub_ledger_account   = 4421;
+                $trans_mov->tm_debit                = $tva_amount;
+                $trans_mov->tm_credit               = 0;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Debit Inside TVA for Stock from Supplier " . $supplier_info->ss_supplier_name;
+                $trans_mov->save();
+
+
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 53;
+                $trans_mov->tm_sub_ledger_account   = 53;
+                $trans_mov->tm_debit                = 0;
+                $trans_mov->tm_credit               = $tva_amount;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Credit For Stock For Cash";
+                $trans_mov->save();
+            }
+
+            if($sq_enable_freight == 1)
+            {
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 6018;
+                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_debit                = $sq_freight_amount;
+                $trans_mov->tm_credit               = 0;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Debit Inside Freight for Stock from Supplier " . $supplier_info->ss_supplier_name;
+                $trans_mov->save();
+
+
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 53;
+                $trans_mov->tm_sub_ledger_account   = 53;
+                $trans_mov->tm_debit                = 0;
+                $trans_mov->tm_credit               = $sq_freight_amount;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Credit For Freight of Stock For Cash";
+                $trans_mov->save();
+            }
+
             $mov_id = $trans_mov->tm_id;
-            
+
             $supplier_quotation->sq_trans_id = $at_id;
             $supplier_quotation->sq_mov_id   = $mov_id;
             $supplier_quotation->save();
         }
-        
-       
-        
+
+
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Supplier Quotation Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Find A product information by barcode
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -565,22 +660,22 @@ class SupplierQuotationsController extends Controller
     public function FindProductByBarcode(Request $request)
     {
         $barcode = $request->input('barcode');
-        
+
         $product_info = Products::wherePBarcode($barcode)->get();
         $result_array = array();
-        
+
         // check if product exist if not we return message that is not exist
         if(count($product_info) == 0)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "this Product doesn't exist in our Database Please Add it before you add it to stcok page";
-            
-            
+
+
             return Response()->json($result_array);
         }
-        
+
         $product_info = $product_info[0];
-         
+
         $result_array['is_error']            = 0;
         $result_array['product_id']          = $product_info->p_id;
         $result_array['product_name']        = $product_info->p_product_name;
@@ -588,11 +683,11 @@ class SupplierQuotationsController extends Controller
         $result_array['min_selling_price']   = $product_info->p_product_min_selling_price;
         $result_array['product_currency']    = $product_info->p_product_currency;
         $result_array['use_serial_number']   = $product_info->Category->pc_use_serial_number;
-       
-       
-       
+
+
+
        return Response()->json($result_array);
-        
+
     }
 
 }

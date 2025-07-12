@@ -22,8 +22,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
 class ApptResults extends Model
-{ 
+{
     protected   $table          = 'crm_lead_app_results';
     public      $timestamps     = false;
     protected   $primaryKey     = "ar_id";
+
+
+    public function ResultParent()
+    {
+        return $this->hasOne('App\models\CallCenter\ApptResults', 'ar_id','ar_result_parent');
+    }
+
 }

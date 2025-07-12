@@ -67,6 +67,12 @@ callapt_module = {
             break;
         }
     },
+    DownloadListCallbackLeadsReports : function(){
+        var base_url 	= $('input[name=base_url]').val();
+        let url = base_url + "/callcenter/leads/downloadcallbackleads";
+        window.open(url,'_blank');
+        window.open(url);
+    },
     DownloadlistAppointmentsReport : function(){
         var base_url 	= $('input[name=base_url]').val();
 	    var _token 		= $('input[name=_token]').val()
@@ -154,11 +160,6 @@ callapt_module = {
                     $('input[name=ca_lead_confirm]').attr({'checked': "checked"});
                 else
                     $('input[name=ca_lead_confirm]').removeAttr("checked");
-
-                // 'cl_mobile' => $app_info->Lead->cl_mobile,
-                //     'cl_region' => $app_info->Lead->cl_region,
-                //     'cl_area' => $app_info->Lead->cl_area,
-                //     'cl_referred_by' => $app_info->Lead->cl_referred_by,
             }
         });
     },
@@ -370,8 +371,8 @@ callapt_module = {
 	    	              if(response.is_error == 0)
 	    	              {
                                   $("form[id=FRM_CREATE_APT]").trigger("reset");
+                                  $("button[name=btn_search]").trigger("click");
                               $('.LeadDropdown').css({display : ""});
-                                    callapt_module.DisplayListAppointments();
 	    	              }
 	    	            }
 	    	        });

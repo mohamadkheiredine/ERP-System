@@ -211,16 +211,24 @@ Page Description :
                                     <div class="col-md-9"></div>
                                     <div class="col-md-3" align="right">
                                          <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_TOP"  class="btn btn-info">Save</button>
+                                        <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_TOP"  class="btn btn-success">Save & New</button>
                                         <button type="button" id="BACK_FORM_TOP" name="back_form" class="btn default">Back</button>
                                     </div>
                                 </div>
                 </div>
             </div>
 
+                    <div class="row" style="height:25px">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label"> Product Description</label><br/>
+                                <textarea style="width:100%;height:250px;resize:none" id="P_PRODUCT_DESCRIPTION"  class="form-control" name="p_product_description"  cols="">{{  $product_info->p_product_description }}</textarea>
+                            </div>
+                        </div>
+                    </div>
 						<div class="row" style="height:25px">&nbsp;</div>
 						@if(config('appconfig.price_by_supplier') == 0)
-
-
 						<div class="row">
 							<div class="col-md-12">
 							 <div class="card card-bordered">
@@ -281,15 +289,6 @@ Page Description :
 						@endif
 						<div class="row" style="height:25px">&nbsp;</div>
 						<div class="row">
-							<div class="col-md-12">
-                                 <div class="form-group">
-                                    <label class="control-label"> Product Description</label><br/>
-                                    <textarea style="width:100%;height:250px;resize:none" id="P_PRODUCT_DESCRIPTION"  class="form-control" name="p_product_description"  cols="">{{  $product_info->p_product_description }}</textarea>
-                                 </div>
-                            </div>
-						</div>
-						<div class="row" style="height:25px">&nbsp;</div>
-						<div class="row">
 					        	<div class="col-md-12">
 					        	<div class="card card-bordered">
                             <div class="card-header bg-light">
@@ -343,6 +342,7 @@ Page Description :
                             <div class="col-md-9"></div>
                             <div class="col-md-3" align="right">
                                  <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_MIDDLE"  class="btn btn-info">Save</button>
+                                <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_MIDDLE"  class="btn btn-success">Save & New</button>
                                 <button type="button" id="BACK_FORM_MIDDLE" name="back_form" class="btn default">Back</button>
                             </div>
                         </div>
@@ -380,6 +380,7 @@ Page Description :
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">
                              <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT"  class="btn btn-info">Save</button>
+                            <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_BOTTOM"  class="btn btn-success">Save & New</button>
                             <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
                         </div>
                     </div>

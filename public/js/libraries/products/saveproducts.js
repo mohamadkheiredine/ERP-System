@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 $.editor
 $(function(){
@@ -36,27 +36,28 @@ $(function(){
 	            }
 	        }
 	    });
-	 
+
 	 var p_id = $("#P_ID").val();
-	 
+
 	 if(p_id > 0)
 	 {
 		 var unit_type = $("#P_PRODUCT_UNIT_TYPE").val();
 		 products_module.DisplayStock();
 		 products_module.DisplayStockMovement();
 		 if(unit_type != '')
-			 products_module.DisplayMetricProduct(); 
+			 products_module.DisplayMetricProduct();
 	 }
-	 
+
 	 let warehouse_id = $("#FK_WWAREHOUSE_ID").val();
 	 if(warehouse_id == "")
 	 {
 		products_module.GetZonesDropdown();
 	 }
-	 
+
 	 $("select").select2();
 	 $("#P_BAR_CODE").on("blur",products_module.GenerateBarCode);
 	 $("button[id*=BTN_SAVE_PRODUCT]").on("click",products_module.SaveProductInfo);
+	 $("button[name=btn_save_new_product]").on("click",products_module.SaveAndNewProductInfo);
 	 $("#BTN_ADD_STOCK").on("click",products_module.AddProductStock);
 	 $("#BTN_TRANSFER_STOCK").on("click",products_module.ProductTransferStock);
 	 $("#P_PRODUCT_UNIT_TYPE").on("change",products_module.DisplayMetricProduct);
@@ -71,7 +72,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -81,7 +82,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	 new tempusDominus.TempusDominus(document.getElementById('P_PRODUCT_EXPIRY_DATE'),{
@@ -91,7 +92,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -101,7 +102,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 })

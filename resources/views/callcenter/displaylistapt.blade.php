@@ -23,9 +23,10 @@ Page Description :
                             <th title="Full Name"> Lead Name </th>
                             <th title="Area"> Area </th>
                             <th title="Salesman"> Salesman </th>
-                            <th title="Result"> Result </th> 
-                            <th title="Telemarketing"> Telemarketing </th> 
-                            <th title="Confirmed"> Confirmed </th> 
+                            <th title="Result"> Result </th>
+                            <th title="Telemarketing"> Telemarketing </th>
+                        <th title="Mobile"> Mobile </th>
+                        <th title="Confirmed"> Confirmed </th>
                     </tr>
             </thead>
             <tbody id="LstLeadAppts">
@@ -34,13 +35,13 @@ Page Description :
    <td>{{ $app_info->ca_id }}</td>
    <td>{{ $app_info->ca_apt_date }}</td>
    <td>{{ $app_info->ca_apt_time }}</td>
-   <td>{{ $app_info->Lead->cl_first_name }}&nbsp;{{ $app_info->Lead->cl_last_name }}</td>
+   <td>{{ $app_info->ca_lead_fullname }}</td>
    <td>{{ $app_info->Lead->cl_area }}</td>
    <td>{{ $app_info->Salesman->u_fullname }}</td>
    <td>{{ $app_info->AppResult ? $app_info->AppResult->ar_app_result : "Pending" }}</td>
    <td>{{ $app_info->Telemarketing->u_fullname }}</td>
    <td>{{ $app_info->ca_lead_confirm  == 1? "Confirmed" : "Pending"  }}</td>
-    <td><a href="#" data-ca_id="{{ $app_info->ca_id }}"   id="DELETE_APP_{{ $app_info->ca_id }}" ><i class="fa-solid fa-trash"></i></a></td> 
+    <td><a href="#" data-ca_id="{{ $app_info->ca_id }}"   id="DELETE_APP_{{ $app_info->ca_id }}" ><i class="fa-solid fa-trash"></i></a></td>
 </tr>
 @endforeach
             </tbody>

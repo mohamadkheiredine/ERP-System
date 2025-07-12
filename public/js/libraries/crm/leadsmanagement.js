@@ -9,6 +9,7 @@ $(function(){
 	 $("input[name=referred_by]").on("keyup",leads_module.DisplayListLeads);
 	 $("input[name=lead_mobile]").on("keyup",leads_module.DisplayListLeads);
 	 $("select[name=cl_sales_id]").on("change",leads_module.DisplayListLeads);
+	 $("select[name=cl_lead_result]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=cl_area]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=lead_status]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=cl_lead_types]").on("change",leads_module.DisplayListLeads);

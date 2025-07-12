@@ -70,7 +70,7 @@ th{
                                                             <label class="control-label">Date <span class="required"> * </span></label>
                                                             <input type="text" name="ad_deal_date" id="AD_DEAL_DATE" class="form-control" required="required" maxlength="15"  value="{{ date('Y-m-d') }}" />
                                                         </div>
-                                                </div> 
+                                                </div>
                                                 <div class="col-md-4">
                                                       <div class="form-group">
                                                             <label class="control-label">Client Code <span class="required"> * </span></label>
@@ -82,7 +82,7 @@ th{
                                                             <label class="control-label">Contract Code <span class="required"> * </span></label>
                                                             <input type="text" name="ad_deal_code" id="AD_DEAL_CODE" class="form-control" required="required" maxlength="15"  value="" />
                                                         </div>
-                                                </div>  
+                                                </div>
                                                 <div class="col-md-4">
                                                       <div class="form-group">
                                                             <label class="control-label">Contract Type <span class="required"> * </span></label>
@@ -193,14 +193,48 @@ th{
                                                                         <input type="text" name="ad_supervisor_comm" class="form-control" value="" />
                                                                      </div>
                                                                 </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Technician </label>
+                                                                        <select name="fk_technician_id" id="FK_TECHNICIAN_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
+                                                                            <option value="0"> Select Technician </option>
+                                                                            @foreach ($lst_technicians as $key => $user_info )
+                                                                                <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Technician Comm. </label>
+                                                                        <input type="text" name="ad_technician_comm" class="form-control" value="" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> General Manager </label>
+                                                                        <select name="fk_manager_id" id="FK_MANAGER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select General Manager">
+                                                                            <option value="0"> Select Manager </option>
+                                                                            @foreach ($lst_general_managers as $key => $user_info )
+                                                                                <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Manager Comm. </label>
+                                                                        <input type="text" name="ad_manager_comm" class="form-control" value="" />
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-6">
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label> S/N </label>
                                                                     <input type="text" name="ad_serial_number" class="form-control" maxlength="255" value="" />
-                                                                </div> 
+                                                                </div>
                                                             </div>
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
@@ -218,7 +252,7 @@ th{
                                                           <span class="form-check-label fw-semibold text-muted">
                                                             Contract Approved
                                                           </span>
-                                                      </label> 
+                                                      </label>
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">
@@ -325,7 +359,7 @@ th{
                         </div>
                         <div class="modal-body">
                                 <form name="frm_product_deals" id="FRM_PRODUCT_DEALS">
-                                        <span id="hidden_field"> 
+                                        <span id="hidden_field">
                                                   {!! csrf_field() !!}
                                         </span>
                                         <div class="row">
@@ -337,11 +371,11 @@ th{
                                                                   @foreach ($lst_products as $key => $product_info )
                                                                         <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
                                                                 @endforeach
-                                                        </select>		
+                                                        </select>
 
                         </div>
                                                 </div>
-                                        </div> 
+                                        </div>
                                 </form>
                         </div>
                         <div class="modal-footer">

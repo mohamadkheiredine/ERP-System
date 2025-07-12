@@ -45,10 +45,10 @@ use App\library\CRMLogsManager;
 
 class LeadApptController extends Controller
 {
-  
+
     /**
      * Display list of appointments saved in the database for this current lead
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -59,9 +59,9 @@ class LeadApptController extends Controller
         $display_type   = $request->input("display_type");
         $result_array = array();
         $LeadAppointments = CRMLeadAppointments::whereFkLeadId($cl_id)->get();
-        
-   
-        
+
+
+
         $result_array['is_error'] = 0;
         switch($display_type)
         {
@@ -70,7 +70,7 @@ class LeadApptController extends Controller
                     $data = array(
                         "LeadAppointments" => $LeadAppointments
                     );
-                    $result_array["display"] = view("leads.lstappointments",$data)->render(); 
+                    $result_array["display"] = view("leads.lstappointments",$data)->render();
                 }
             break;
             case "calendar":
@@ -82,37 +82,37 @@ class LeadApptController extends Controller
                     $data = array(
                         "LeadAppointments" => $LeadAppointments
                     );
-                    $result_array["display"] = view("leads.calendarappt",$data)->render(); 
+                    $result_array["display"] = view("leads.calendarappt",$data)->render();
                 }
             break;
-        } 
-        
+        }
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Page to display Calendar of Appointment for loggedin user
-     * 
+     *
      * @author Moe Mantach
      * @access public
      */
     public function MyCalendar()
     {
-        
+
         $user_id = session('user_id');
         $AptManager = new LeadsManager();
-        $calendar_path = $AptManager->GenerateAppointmenMytCalendarFile($user_id); 
+        $calendar_path = $AptManager->GenerateAppointmenMytCalendarFile($user_id);
         $data = array(
             "calendar_path" => $calendar_path,
         );
-        return Response()->view("leads.leadscalendarappt",$data); 
+        return Response()->view("leads.leadscalendarappt",$data);
     }
-    
-    
+
+
     /**
      * Delete Appointment from the database by change flag  ca_is_deleted to 1
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -121,21 +121,21 @@ class LeadApptController extends Controller
     {
         $result_array = array();
         $ca_id = $request->input("ca_id");
-        
+
         $crm_appointment = CRMLeadAppointments::find($ca_id);
         $crm_appointment->ca_is_deleted = 1;
         $crm_appointment->ca_deleted_by=  session("user_id");
-        
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * form to add a new appointment to the current lead
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param unknown $cl_id
@@ -144,7 +144,7 @@ class LeadApptController extends Controller
     {
         $lst_leads = CRMLeads::whereClIsDeleted(0)->get();
         $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
-        
+
         $data = array(
             "cl_id" => $cl_id,
             "lst_leads" => $lst_leads,
@@ -152,11 +152,11 @@ class LeadApptController extends Controller
         );
         return response()->view("leads.addappointment",$data);
     }
-    
-    
+
+
     /**
      * Edit appointment info for selected lead
-     * 
+     *
      * @param Request $request
      */
     public function EditLeadAppointmentForm( $ca_id )
@@ -164,17 +164,17 @@ class LeadApptController extends Controller
         $appt_info = CRMLeadAppointments::find($ca_id);
         $lst_leads = CRMLeads::whereClIsDeleted(0)->get();
         $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
-        
+
         $data = array(
             "appt_info" => $appt_info,
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users
         );
         return response()->view("leads.editappointment",$data);
-        
+
     }
-    
-    
+
+
     public function SaveAppointmentInfo(Request $request)
     {
         $ca_id          = $request->input("ca_id");
@@ -189,12 +189,12 @@ class LeadApptController extends Controller
         $ca_appointment_results     = $request->input("ca_appointment_results");
         $result_array = array();
         $lead_appointment = new CRMLeadAppointments();
-        
+
         if($ca_id !== null)
         {
             $lead_appointment = CRMLeadAppointments::find($ca_id);
         }
-        
+
         $lead_appointment->fk_lead_id                   = $fk_lead_id;
         $lead_appointment->fk_assigned_to               = $fk_assigned_to;
         $lead_appointment->ca_appointment_subject       = $ca_appointment_subject;
@@ -204,21 +204,21 @@ class LeadApptController extends Controller
         $lead_appointment->ca_appointment_description   = $ca_appointment_description;
         $lead_appointment->ca_appointment_results       = $ca_appointment_results;
         $lead_appointment->save();
-        
-        
+
+
         // add log for add lead appointment
         $CRMLogs = new CRMLogsManager();
         $params_array = array(
-            'fk_lead_id' => $lead_id,
+            'fk_lead_id' => $fk_lead_id,
             'log_type' => CRMLogsManager::LOG_TYPE_ADD_LEAD_APPOINTMENT
         );
         $CRMLogs->InsertCRMLog($params_array);
-        
+
 
         $result_array['is_error'] = 0;
-       
+
         $result_array['error_msg'] = "Operation Completed Successfully";
-        
+
         return Response()->json($result_array);
     }
 }

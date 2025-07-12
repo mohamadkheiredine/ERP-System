@@ -112,6 +112,7 @@ class LeadsController extends Controller
         $lead_mobile            = $request->input('lead_mobile');
         $referred_by            = $request->input('referred_by');
         $lead_region            = $request->input('lead_region');
+        $cl_lead_result            = $request->input('cl_lead_result');
         $lead_name              = $request->input('lead_name');
         $sheet_number             = $request->input('sheet_number');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
@@ -145,7 +146,11 @@ class LeadsController extends Controller
 
 
         if( strlen($sheet_number)  > 0) {
-            $leads_cond = $leads_cond->where('cl_sheet_number', 'LIKE', '%' . $sheet_number . '%');
+            $leads_cond = $leads_cond->where('cl_sheet_number', '=', $sheet_number);
+        }
+
+        if( $cl_lead_result  > 0) {
+            $leads_cond = $leads_cond->where('cl_lead_results', '=', $cl_lead_result);
         }
 
         if( strlen($lead_name)  > 0) {
@@ -157,7 +162,7 @@ class LeadsController extends Controller
             $leads_cond = $leads_cond->where('cl_mobile','LIKE','%' . $lead_mobile . '%');
         }
 
-        if( strlen($cl_area)  > 0) {
+        if( $cl_area  > 0) {
             $leads_cond = $leads_cond->where('cl_area','LIKE','%' . $cl_area . '%');
         }
 
@@ -251,7 +256,7 @@ class LeadsController extends Controller
         }
         else
         {
-            $lead_info->cl_last_call_date = $lead_info->cl_next_call_date;
+            $lead_info->cl_last_call_date = date("Y-m-d");
         }
 
         $lead_info->save();
@@ -301,8 +306,17 @@ class LeadsController extends Controller
     public function GetDisplayListLeadResults(Request $request)
     {
         $lead_id = $request->input('lead_id');
+        $lead_info = CRMLeads::find($lead_id);
 
-        $lst_lead_results = CRMLeadResults::whereLrLeadId($lead_id)->whereLrIsDeleted(0)->orderBy('lr_id','DESC')->get();
+        $mobile_number = $lead_info->cl_mobile;
+
+        $list_same_mobiles = CRMLeads::whereClMobile($mobile_number)->get();
+
+        $lead_ids = array();
+        foreach($list_same_mobiles as $mobile)
+            $lead_ids[] = $mobile->cl_id;
+
+        $lst_lead_results = CRMLeadResults::whereIn('lr_lead_id',$lead_ids)->whereLrIsDeleted(0)->orderBy('lr_id','DESC')->get();
 
 
         $result_array['is_error'] = 0;
@@ -457,11 +471,16 @@ class LeadsController extends Controller
         if($cl_full_name != null)
         {
             $name = explode(' ', $cl_full_name);
-           if(count($name) > 1)
+           if(count($name) == 2)
            {
               $cl_first_name = $name[0];
                 $cl_last_name = $name[1];
            }
+            else if(count($name) == 3)
+            {
+                $cl_first_name = $name[0] . " " . $name[1];
+                $cl_last_name = $name[2];
+            }
            else if(count($name) == 1)
            {
                $cl_first_name = $name[0];
@@ -493,7 +512,7 @@ class LeadsController extends Controller
                 $result_array['is_error'] = 1;
                 $result_array['error_msg'] = "Phone Number Already Exist Please Add a new Phone Number";
 
-                return Response()->json($result_array);
+                //return Response()->json($result_array);
             }
         }
 
@@ -602,20 +621,9 @@ class LeadsController extends Controller
 
             return Response()->json($result_array);
         }
-
-         $leads_info = $leads_info[0];
         $result_array['is_error'] = 1;
         $data = array(
-            'cl_sheet_number' => $leads_info->cl_sheet_number,
-            'cl_full_name' => $leads_info->cl_first_name . " " . $leads_info->cl_last_name,
-            'cl_mobile' => $leads_info->cl_mobile,
-            'cl_region' => $leads_info->cl_region,
-            'cl_area' => $leads_info->cl_area,
-            'cl_sales_id' => $leads_info->Salesman->id,
-            'cl_sales_name' => $leads_info->Salesman->u_fullname,
-            'cl_telemarketing_id' => $leads_info->Telemarketing->id,
-            'cl_telemarketing_name' => $leads_info->Telemarketing->u_fullname,
-            'cl_referred_by' => $leads_info->cl_referred_by
+            'lst_leads' => $leads_info
         );
         $result_array['display'] = view('leads.displayexistinglead',$data)->render();
 

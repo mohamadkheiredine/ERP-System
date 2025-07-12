@@ -9,7 +9,7 @@ Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
 Page Description :
-Page to manage companies 
+Page to manage companies
 ***********************************************************/
 
 
@@ -50,7 +50,7 @@ th{
     </div>
     <div class="card-body">
     <div class="row">
-                 
+
                         <div class="col-xl-12 order-2 order-xl-1">
                                 <div class="row">
                                     <div class="col-md-4">
@@ -78,20 +78,20 @@ th{
                                                         New Company
                                                 </span>
                                         </span>
-                                </a> 
-                                      
-                                </div> 
-                                </div>        
-                        
+                                </a>
+
+                                </div>
+                                </div>
+
                 </div>
-        </div> 
+        </div>
      <div class="row">
         <!--end: Search Form -->
 <!--begin: Datatable -->
-        <div class=" col-md-12 table-responsive">
-                <table class="table">
-        <thead>
-                <tr class="fw-bold fs-6 text-gray-800">
+         <div class="table-responsive col-md-12" id="LstCompanies">
+             <table class="table table-striped gy-7 gs-7">
+                 <thead>
+                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                         <th><input type="checkbox" name="ck_cmp_all" id="CK_CMP_ALL" class="group-checkable" value="1" /></th>
                         <th>ID</th>
                         <th>Company Name</th>

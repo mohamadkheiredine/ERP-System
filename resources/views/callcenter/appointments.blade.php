@@ -32,6 +32,49 @@ Page Description :
 @section('plugins')
 <script type="text/javascript" src="{{ url('js/modules/callapt.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/callcenter/appointments.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const table = document.querySelector('.table-apt');
+        const headers = table.querySelectorAll('th[data-sort]');
+        const tbody = table.querySelector('tbody');
+
+        let sortColumn = null;
+        let sortDirection = 1; // 1 for ascending, -1 for descending
+
+        headers.forEach((header, i) => {
+            header.style.cursor = "pointer";
+            header.addEventListener("click", function () {
+                const type = header.getAttribute('data-sort');
+                sortDirection = (sortColumn === i) ? -sortDirection : 1;
+                sortColumn = i;
+                sortTableByColumn(tbody, i, sortDirection);
+                // Optional: Show sort arrow
+                headers.forEach(h => h.innerHTML = h.innerText); // Reset
+            });
+        });
+
+        function sortTableByColumn(tbody, column, direction) {
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                let cellA = a.children[column].innerText.trim();
+                let cellB = b.children[column].innerText.trim();
+
+                // Try to compare as numbers if possible
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    cellA = Number(cellA);
+                    cellB = Number(cellB);
+                }
+                // Try to compare as dates if the column is "Last Call Date" or similar
+                else if (column === 11 || column === 14) { // update these indexes for date columns
+                    cellA = new Date(cellA);
+                    cellB = new Date(cellB);
+                }
+                return (cellA > cellB ? 1 : cellA < cellB ? -1 : 0) * direction;
+            });
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    });
+</script>
 @endsection
 
 @section('content')
@@ -50,12 +93,7 @@ Page Description :
         </div>
     </div>
     <div class="card-body">
-        <form name="frm_create_apt" id="FRM_CREATE_APT">
              <div class="form-body">
-                  <span id="hidden_fields">
-                   {!! csrf_field() !!}
-                   <input type="hidden" name="ca_id" value="0" />
-                 </span>
                  <div class="alert alert-success" style="display:none">
                     <strong>Success!</strong> Appointment Information is saved successfully!
                  </div>
@@ -72,6 +110,13 @@ Page Description :
                                         </div>
                                     </div>
                                     <div id="kt_docs_card_collapsible" class="collapse show">
+
+                                        <form name="frm_create_apt" id="FRM_CREATE_APT">
+
+                  <span id="hidden_fields">
+                   {!! csrf_field() !!}
+                   <input type="hidden" name="ca_id" value="0" />
+                 </span>
                                     <div class="row">
                                          <div class="col-md-4 LeadDropdown">
                                                 <div class="form-group">
@@ -218,6 +263,7 @@ Page Description :
                                             <button name="btn_reset" class="btn btn-danger" type="reset">Reset</button>
                                         </div>
                                     </div>
+                                        </form>
                                 </div>
                             </div>
                             <div class="row">
@@ -234,6 +280,11 @@ Page Description :
                                           </div>
                                       </div>
                                         <div id="kt_docs_card_search_apt" class="collapse show" style="padding:25px;">
+                                            <form name="frm_search_apt">
+
+                  <span id="hidden_fields">
+                   {!! csrf_field() !!}
+                 </span>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                      <div class="form-group">
@@ -282,6 +333,7 @@ Page Description :
                                                     <button type="reset" name="btn_reset" class="btn btn-danger">Reset</button>
                                                 </div>
                                             </div>
+                                            </form>
                                         </div>
                                     </div>
 
@@ -293,23 +345,24 @@ Page Description :
                          <div class="row">
                                         <div class="col-md-12">
                                             <div class="table-responsive">
-                                                    <table class="table table-bordered">
-                                                                <thead>
+                                                    <table class="table table-bordered table-apt">
+                                                                <thead class="table-header">
                                                                         <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                                                                 <th title="#"></th>
-                                                                                <th title="Date"> Date </th>
-                                                                                <th title="Time"> Time </th>
-                                                                                <th title="Full Name"> Lead Name </th>
-                                                                                <th title="Area"> Area </th>
-                                                                                <th title="Salesman"> Salesman </th>
-                                                                                <th title="Result"> Result </th>
-                                                                                <th title="Telemarketing"> Telemarketing </th>
-                                                                                <th title="Confirmed"> Confirmed </th>
+                                                                                <th title="Date" data-sort="date"> Date </th>
+                                                                                <th title="Time" data-sort="time"> Time </th>
+                                                                                <th title="Full Name"  data-sort="string"> Lead Name </th>
+                                                                                <th title="Area"  data-sort="string"> Area </th>
+                                                                                <th title="Salesman"  data-sort="string"> Salesman </th>
+                                                                                <th title="Result"  data-sort="string"> Result </th>
+                                                                                <th title="Telemarketing"  data-sort="string"> Telemarketing </th>
+                                                                            <th title="MobileNumber"  data-sort="string"> Mobile Number </th>
+                                                                                <th title="Confirmed"  data-sort="string"> Confirmed </th>
                                                                                 <th title="edit">  </th>
                                                                                 <th title="delete">  </th>
                                                                         </tr>
                                                                 </thead>
-                                                                <tbody id="LstLeadAppts">
+                                                                <tbody id="LstLeadAppts" class="table-tbody">
 
                                                                 </tbody>
                                                     </table>
@@ -319,7 +372,6 @@ Page Description :
                      </div>
                  </div>
              </div>
-        </form>
     </div>
 </div>
 @endsection

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 deals_module = {
@@ -25,7 +25,7 @@ deals_module = {
                                 $(this).prop("checked", checked);
                             });
                             $.uniform.update(set);
-                        }); 
+                        });
                          if(response.total_pages > 0)
                          {
                                  $('#DealsPagination').twbsPagination({
@@ -36,14 +36,14 @@ deals_module = {
                                          deals_module.displayListDeals();
                                     }
                                 });
-                         }	     
+                         }
                 }
             });
 	},
         CalculateRemainingAmount : function(){
             var ad_deal_amount 	= $('input[name=ad_deal_amount]').val();
             var ad_down_payment 	= $('input[name=ad_down_payment]').val();
-            
+
             let remaining_payment = ad_deal_amount - ad_down_payment;
            $('input[name=ad_remaining_payment]').val(remaining_payment);
         },
@@ -60,9 +60,9 @@ deals_module = {
                     method : 'get',
                     dataType : "json",
                     success : function(response){
-                            $('#AD_CLIENT_NAME').val(response.account_info.ca_account_name);     
-                            $('#FK_ACCOUNT_ID').val(response.account_info.ca_id); 
-                            $('#ad_deal_types').html(response.account_info.ct_contract_type); 
+                            $('#AD_CLIENT_NAME').val(response.account_info.ca_account_name);
+                            $('#FK_ACCOUNT_ID').val(response.account_info.ca_id);
+                            $('#ad_deal_types').html(response.account_info.ct_contract_type);
                     }
                 });
             }
@@ -80,7 +80,7 @@ deals_module = {
                 data : { _token : _token , ad_first_bill_date : ad_first_bill_date  , ad_deal_amount : ad_deal_amount ,  ad_down_payment : ad_down_payment , ad_nbr_of_payment : ad_nbr_of_payment },
                 method : 'post',
                 dataType : "json",
-                success : function(response){ 
+                success : function(response){
                      $('#LstPaymentStatments').html(response.display);
                 }
             });
@@ -160,7 +160,7 @@ deals_module = {
                         if(response.is_error == 0)
                         {
                             let data_table = $("#LstProducts").html();
-                            
+
                             data_table += "<tr>";
                             data_table += "<td></td>";
                             data_table += "<td>" + response.product_info.product_id + "</td>";
@@ -169,23 +169,23 @@ deals_module = {
                             data_table += "<td>" + response.product_info.p_product_selling_price + " <b>" +  response.product_info.currency_code + "</b></td>";
                             data_table += "<td></td>";
                             data_table += "</tr>";
-                            
+
                             $("#LstProducts").html(data_table);
                         }
-                        
-                        
+
+
                         //selected_product
-                        
+
                        let deals = $("input[name=deals]").val();
                        if(deals == "")
                            deals = selected_product;
                        else
                            deals = deals + "," + selected_product;
-                       
+
                        $("input[name=deals]").val(deals);
                     }
                 })
-            
+
         },
 	FilterDeals : function(){
 		deals_module.displayListDeals();
@@ -285,7 +285,7 @@ deals_module = {
                 error3.hide();
                 var base_url = $('#BASE_URL').val();
     	       // var _token = $('input[name=_token]').val();
-    	      
+
     	        var str_params = $("#FORM_SAVE_DEALS").serialize();
     	        const ad_deal_description  	= $.desc_editor.getData();
     	        const ad_next_step	  		= $.nextstep_editor.getData();
@@ -401,7 +401,7 @@ deals_module = {
                 error3.hide();
                 var base_url = $('#BASE_URL').val();
     	       // var _token = $('input[name=_token]').val();
-    	      
+
     	        var str_params = $("#FORM_SAVE_DEALS").serialize();
     	        const ad_deal_description  	= $.desc_editor.getData();
     	        const ad_next_step	  		= $.nextstep_editor.getData();
@@ -417,6 +417,9 @@ deals_module = {
     	              {
     	                 window.location.href = base_url + "/crm/accounts/deals";
     	              }
+                      else {
+                          bootbox.alert(response.error_msg);
+                      }
     	            }
     	        });
              }

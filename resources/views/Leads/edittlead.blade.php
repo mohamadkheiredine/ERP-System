@@ -83,7 +83,7 @@ Page Description :
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Full Name <span class="required"> * </span></label>
-                                <input type="text" name="cl_full_name" id="CL_FULL_NAME" class="form-control" required="required" maxlength="255" placeholder="Full Name"  value="{{ $lead_info->cl_first_name }}&nbsp;-&nbsp;{{ $lead_info->cl_last_name }}" />
+                                <input type="text" name="cl_full_name" id="CL_FULL_NAME" class="form-control" required="required" maxlength="255" placeholder="Full Name"  value="{{ $lead_info->cl_first_name }}&nbsp;{{ $lead_info->cl_last_name }}" />
                             </div>
                         </div>
                         <div class="col-md-4">

@@ -12,16 +12,22 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2024
 Page Description :
 {Enter page description Here}
 ***********************************************************/
-
 ?>
-<tr>
-    <td></td>
-    <td>{{ $cl_sheet_number }}</td>
-    <td>{{ $cl_full_name }}</td>
-    <td>{{ $cl_area }}</td>
-    <td>{{ $cl_region }}</td>
-    <td>{{ $cl_sales_name }}</td>
-    <td>{{ $cl_telemarketing_name }}</td>
-    <td>{{ $cl_mobile }}</td>
-    <td>{{ $cl_referred_by }}</td>
-</tr>
+
+
+@foreach($lst_leads  as $index => $lead_info)
+ 
+    <tr>
+        <td></td>
+        <td>{{ $lead_info->cl_sheet_number }}</td>
+        <td>{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</td>
+        <td>{{ $lead_info->cl_area }}</td>
+        <td>{{ $lead_info->cl_region }}</td>
+        <td>{{ $lead_info->Salesman->u_fullname }}</td>
+        <td>{{ $lead_info->Telemarketing->u_fullname }}</td>
+        <td>{{ $lead_info->cl_mobile }}</td>
+        <td>{{ $lead_info->cl_referred_by }}</td>
+    </tr>
+
+@endforeach
+

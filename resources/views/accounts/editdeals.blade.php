@@ -12,7 +12,7 @@ Page Description :
 
 ***********************************************************/
 
- 
+
 ?>
 @extends('layouts.layout',['page_title' => "Contracts Management > edit Contract Information"])
 
@@ -136,7 +136,7 @@ th{
                                                         <label class="control-label">First Bill Date <span class="required"> * </span></label>
                                                         <input type="text" name="ad_first_bill_date" id="AD_FIRST_BILL_DATE" class="form-control" required="required" maxlength="15" readonly="readonly"  value="{{ $deal_info->ad_first_bill_date }}" />
                                                     </div>
-                                                </div> 
+                                                </div>
                                                 <div class="col-md-12">
                                                     <div class="row">
                                                         <div class="col-md-2"></div>
@@ -193,12 +193,47 @@ th{
                                                                         <input type="text" name="ad_supervisor_comm" class="form-control" value="{{ $deal_info->ad_supervisor_comm }}" />
                                                                      </div>
                                                                 </div>
-                                                                 <div class="col-md-3">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Technician </label>
+                                                                        <select name="fk_technician_id" id="FK_TECHNICIAN_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
+                                                                            <option value="0"> Select Technician </option>
+                                                                            @foreach ($lst_technicians as $key => $user_info )
+                                                                                <option {{ $deal_info->fk_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Technician Comm. </label>
+                                                                        <input type="text" name="ad_technician_comm" class="form-control" value="{{  $deal_info->ad_technician_comm  }}" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> General Manager </label>
+                                                                        <select name="fk_manager_id" id="FK_MANAGER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select General Manager">
+                                                                            <option value="0"> Select Manager </option>
+                                                                            @foreach ($lst_general_managers as $key => $user_info )
+                                                                                <option {{ $deal_info->fk_manager_id == $user_info->id ? "selected" : ""   }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label> Manager Comm. </label>
+                                                                        <input type="text" name="ad_manager_comm" class="form-control" value="{{ $deal_info->ad_manager_comm   }}" />
+                                                                    </div>
+                                                                </div>
+                                                                 <div class="col-md-6">
                                                                       <div class="col-md-12">
                                                                             <div class="form-group">
                                                                                 <label> S/N </label>
                                                                                 <input type="text" name="ad_serial_number" class="form-control" maxlength="10" value="{{ $deal_info->ad_serial_number }}" />
-                                                                            </div> 
+                                                                            </div>
                                                                         </div>
                                                                         <div class="col-md-12">
                                                                             <div class="form-group">
@@ -210,10 +245,10 @@ th{
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div> 
-                                                
-                                                
-                                                 
+                                                </div>
+
+
+
                                                    <div class="col-md-4">
                                                       <br/>
                                                     <label class="form-check form-switch form-check-custom form-check-solid">
@@ -221,7 +256,7 @@ th{
                                                           <span class="form-check-label fw-semibold text-muted">
                                                             Contract Approved
                                                           </span>
-                                                      </label> 
+                                                      </label>
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">

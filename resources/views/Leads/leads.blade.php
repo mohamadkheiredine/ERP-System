@@ -55,6 +55,50 @@ th{
 @section('plugins')
 <script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/crm/leadsmanagement.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const table = document.querySelector('.fixed-header-table');
+        const headers = table.querySelectorAll('th[data-sort]');
+        const tbody = table.querySelector('tbody');
+
+        let sortColumn = null;
+        let sortDirection = 1; // 1 for ascending, -1 for descending
+
+        headers.forEach((header, i) => {
+            header.style.cursor = "pointer";
+            header.addEventListener("click", function () {
+                const type = header.getAttribute('data-sort');
+                sortDirection = (sortColumn === i) ? -sortDirection : 1;
+                sortColumn = i;
+                sortTableByColumn(tbody, i, sortDirection);
+                // Optional: Show sort arrow
+                headers.forEach(h => h.innerHTML = h.innerText); // Reset
+            });
+        });
+
+        function sortTableByColumn(tbody, column, direction) {
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                let cellA = a.children[column].innerText.trim();
+                let cellB = b.children[column].innerText.trim();
+
+                // Try to compare as numbers if possible
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    cellA = Number(cellA);
+                    cellB = Number(cellB);
+                }
+                // Try to compare as dates if the column is "Last Call Date" or similar
+                else if (column === 11 || column === 14) { // update these indexes for date columns
+                    cellA = new Date(cellA);
+                    cellB = new Date(cellB);
+                }
+                return (cellA > cellB ? 1 : cellA < cellB ? -1 : 0) * direction;
+            });
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    });
+</script>
+
 @endsection
 
 @section('content')
@@ -162,7 +206,7 @@ th{
                                     <div class="form-group">
                                         <label class="control-label">Area <span class="required"> * </span> </label>
                                         <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
-                                            <option value="">-- Select Area --</option>
+                                            <option value="0">-- Select Area --</option>
                                             <?php foreach ( $lst_areas as $key => $area_info ) { ?>
                                             <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
                                             <?php  } ?>
@@ -185,9 +229,20 @@ th{
                                      <div class="form-group">
                                       <label>Lead Types </label>
                                       <select name="cl_lead_types"  id="CL_LEAD_TYPES"  class="form-control form-select" data-control="select2" data-placeholder="Lead Types">
-                                              <option value="">-- Select Types --</option>
+                                              <option value="0">-- Select Types --</option>
                                               <?php foreach ( $lst_lead_types as $key => $type_info ) { ?>
                                                       <option value="<?php echo $type_info->lt_id;  ?>"><?php echo $type_info->lt_deal_type;  ?></option>
+                                              <?php  } ?>
+                                      </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                     <div class="form-group">
+                                      <label>Lead Last Result </label>
+                                      <select name="cl_lead_result"  id="CL_LEAD_RESULT"  class="form-control form-select" data-control="select2" data-placeholder="Lead Last Result">
+                                              <option value="0">-- Select Result --</option>
+                                              <?php foreach ( $lst_appt_results as $key => $re_info ) { ?>
+                                                      <option value="<?php echo $re_info->ar_id;  ?>"><?php echo $re_info->ar_app_result;  ?></option>
                                               <?php  } ?>
                                       </select>
                                   </div>
@@ -216,31 +271,32 @@ th{
                                                 <div class="table-scroll-wrapper">
                                                     <table class="table fixed-header-table">
                                                         <thead class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                                                    <th title="#"></th>
-                                                                                                    <th title="index">Index</th>
-                                                                                                    <th title="RS#"> RS# </th>
-                                                                                                    <th title="Lead name"> Lead Name </th>
-                                                                                                    <th title="Area"> Area </th>
-                                                                                                    <th title="Region"> Region </th>
-                                                                                                    <th title="Lead name"> Leads Type </th>
-                                                                                                    <th title="Lead name"> Salesman </th>
-                                                                                                    <th title="Lead name"> Telemarketer </th>
-                                                                                                    <th title="Mobile"> Mobile </th>
-                                                                                                    <th title="Referred By"> Referred by </th>
-                                                                                                    <th title="Last Call Date"> Last Call Date </th>
-                                                                                                    <th title="Result" style="cursor: pointer" id="btnAddResult">Result</th>
-                                                                                                    <th title="Last Result">Last Result</th>
-                                                                                                    <th title="Next Call">Next Call</th>
-                                                                                                    <th>Notes</th>
-                                                                                                    <th style="width:2px;" nowrap title="#"> edit </th>
-                                                                                                    <th style="width:2px;" nowrap title="#"> Delete </th>
-                                                                                            </tr>
-                                                                                    </thead>
-                                                                                    <tbody id="LstLeads">
-
-                                                                                    </tbody>
-                                                                        </table>
-                                                                    </div>
+                                                        <tr>
+                                                            <th title="#" data-sort="number"></th>
+                                                            <th title="index" data-sort="index">Index</th>
+                                                            <th title="RS#" data-sort="rs"> RS# </th>
+                                                            <th title="Lead name" data-sort="leadName"> Lead Name </th>
+                                                            <th title="Area" data-sort="area"> Area </th>
+                                                            <th title="Region" data-sort="region"> Region </th>
+                                                            <th title="Lead name" data-sort="leadType"> Leads Type </th>
+                                                            <th title="Lead name" data-sort="salesman"> Salesman </th>
+                                                            <th title="Lead name" data-sort="telemarketer"> Telemarketer </th>
+                                                            <th title="Mobile" data-sort="mobile"> Mobile </th>
+                                                            <th title="Referred By" data-sort="referredBy"> Referred by </th>
+                                                            <th title="Last Call Date" data-sort="lastCallDate"> Last Call Date </th>
+                                                            <th title="Result" style="cursor: pointer" id="btnAddResult" data-sort="result">Result</th>
+                                                            <th title="Last Result" data-sort="lastResult">Last Result</th>
+                                                            <th title="Next Call" data-sort="nextCall">Next Call</th>
+                                                            <th>Notes</th>
+                                                            <th style="width:2px;" nowrap title="#"> edit </th>
+                                                            <th style="width:2px;" nowrap title="#"> Delete </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody id="LstLeads">
+                                                        <!-- Table rows here -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
 								<div class="row">
 									<div class="col-md-12" align="right">

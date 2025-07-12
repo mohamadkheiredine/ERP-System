@@ -21,14 +21,16 @@ Page Description :
                             <th title="Date"> Date </th>
                             <th title="Time"> Time </th>
                             <th title="Full Name"> Lead Name </th>
-                            <th title="Area"> Address </th>
+                            <th title="Area"> Area </th>
+                        <th title="State"> State </th>
                             <th title="Mobile"> Mobile </th>
                             <th title="Salesman"> Salesman </th>
-                            <th title="Result"> Result </th> 
-                            <th title="Telemarketing"> Telemarketing </th> 
-                            <th title="Confirmed"> Confirmed </th> 
-                            <th title="Lead Type"> Lead Type </th> 
-                            <th title="Reffered By"> Reffered By </th> 
+                            <th title="Result"> Result </th>
+                            <th title="Telemarketing"> Telemarketing </th>
+                            <th title="Confirmed"> Confirmed </th>
+                            <th title="Number of Leads"> Number of Leads </th>
+                            <th title="Lead Type"> Lead Type </th>
+                            <th title="Reffered By"> Reffered By </th>
                     </tr>
             </thead>
             <tbody id="LstLeadAppts">
@@ -38,14 +40,16 @@ Page Description :
    <td>{{ $app_info->ca_apt_date }}</td>
    <td>{{ $app_info->ca_apt_time }}</td>
    <td>{{ $app_info->Lead->cl_first_name }}&nbsp;{{ $app_info->Lead->cl_last_name }}</td>
-   <td>{{ $app_info->Lead->cl_state }}&nbsp;{{ $app_info->Lead->cl_area }}</td>
+   <td>{{ $app_info->Lead->cl_area }}</td>
+   <td>{{ $app_info->Lead->cl_state }}</td>
    <td>{{ $app_info->Lead->cl_mobile }}</td>
    <td>{{ $app_info->Salesman ? $app_info->Salesman->u_fullname : "-" }}</td>
    <td>{{ $app_info->AppResult ? $app_info->AppResult->ar_app_result : "Pending" }}</td>
    <td>{{ $app_info->Telemarketing ? $app_info->Telemarketing->u_fullname : "-" }}</td>
    <td>{{ $app_info->ca_lead_confirm  == 1? "Confirmed" : "Pending"  }}</td>
-      <td>{{ $app_info->LeadType ? $app_info->LeadType->lt_deal_type : "-"  }}</td>
-   <td>{{ $app_info->cl_referred_by  }}</td>
+    <td>{{ $app_info->ca_nbr_leads  }}</td>
+    <td>{{ $app_info->Lead->LeadType ? $app_info->Lead->LeadType->lt_deal_type : "-"  }}</td>
+   <td>{{ $app_info->Lead->cl_referred_by  }}</td>
 </tr>
 @endforeach
             </tbody>

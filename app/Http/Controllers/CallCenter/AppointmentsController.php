@@ -18,6 +18,7 @@ namespace App\Http\Controllers\CallCenter;
 
 use App;
 use App\Http\Controllers\Controller;
+use App\models\CRM\CRMLeadResults;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -318,7 +319,7 @@ class AppointmentsController extends Controller
             $current_date = date('Y-m-d');
         }
 
-        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaAptDate($current_date)->get();
+        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaAptDate($current_date)->whereCaLeadConfirm(1)->get();
 
        $result_array['is_error'] = 0;
        $data = array(
@@ -360,6 +361,33 @@ class AppointmentsController extends Controller
         return $pdf->inline();
     }
 
+
+    public function CallBackReports(Request $request)
+    {
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
+
+        $data = array(
+            "lst_leads" => $lst_leads
+        );
+
+        return Response()->view("callcenter.reportcallbackleads",$data);
+    }
+
+
+    public function DownloadListCallbackLeads(Request $request)
+    {
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
+
+        $data = array(
+            'lst_leads' => $lst_leads
+        );
+        $display = view('callcenter.downloadcallbackreport',$data)->render();
+
+
+        $pdf = App::make('snappy.pdf.wrapper');
+        $pdf->setPaper('a4')->setOption('encoding', 'UTF-8')->loadHTML($display);
+        return $pdf->inline();
+    }
 
 
     /**
@@ -438,7 +466,7 @@ class AppointmentsController extends Controller
             'ca_salesman_id' => $app_info->ca_salesman_id,
             'ca_telemarketing_id' => $app_info->ca_telemarketing_id,
             'ca_apt_date' => $app_info->ca_apt_date,
-            'cl_full_name' => $app_info->Lead->cl_first_name . " " . $app_info->Lead->cl_last_name,
+            'cl_full_name' => $app_info->ca_lead_fullname,
             'cl_lead_type_id' => $app_info->Lead->cl_lead_type_id,
             'ca_apt_time' => $app_info->ca_apt_time,
             'ca_apt_with' => $app_info->ca_apt_with,
@@ -518,7 +546,7 @@ class AppointmentsController extends Controller
         $cl_phone                               = $request->input('cl_phone');
         $cl_full_name                               = $request->input('cl_full_name');
         $lead_info = CRMLeads::find($ca_lead_id);
-        $lead_info->cl_lead_notes = "APP";
+        $lead_info->cl_lead_results = $ca_apt_result;
         $lead_info->save();
         $result_array = array();
 
@@ -551,6 +579,17 @@ class AppointmentsController extends Controller
         $lead_info = CRMLeads::find($ca_lead_id);
         $lead_info->cl_lead_results = $ca_apt_result;
         $lead_info->save();
+
+        // add callcenter result
+        $lead_results                             = new CRMLeadResults();
+        $lead_results->lr_lead_id                 = $ca_lead_id;
+        $lead_results->lr_text_result             = $ca_apt_result;
+        $lead_results->lr_text_notes             = $ca_apt_notes;
+        $lead_results->lr_result_date               = $ca_apt_date;
+        $lead_results->lr_telemarketing_id        = Session('user_id');
+        $lead_results->lr_sales_id                = $ca_salesman_id;
+        $lead_results->save();
+
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Appointment Information Has been saved';

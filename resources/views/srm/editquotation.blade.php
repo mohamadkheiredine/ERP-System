@@ -11,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 Page Description :
 
 ***********************************************************/
-  
+
 ?>
 
 @extends('layouts.layout',['page_title' => "Supplier Relation Management"])
@@ -121,6 +121,87 @@ th{
                                     </select>
                                 </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Shipping Type  <span class="required"> * </span></label>
+                                <select  name="sq_shipping_type" id="SQ_SHIPPING_TYPE" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Shipping Type">
+                                    <option value=""> Select Shipping Type </option>
+                                    <option {{ $supplier_quotation->sq_shipping_type == 1 ? "selected" : "" }} value="1"> CIF </option>
+                                    <option {{ $supplier_quotation->sq_shipping_type == 2 ? "selected" : "" }}  value="2"> FOB </option>
+                                    <option {{ $supplier_quotation->sq_shipping_type == 3 ? "selected" : "" }}  value="3"> Local Supplier </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" {{ $supplier_quotation->sq_enable_tva == 1 ? "checked" : ""  }} id="SQ_ENABLE_TVA" name="sq_enable_tva"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable TVA
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Tax  <span class="required"> * </span></label>
+                                <select  name="sq_tva_id" id="SQ_TVA_ID" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Tax">
+                                    <option value=""> Select TVA </option>
+                                    @foreach ( $lst_vat as $key => $vat_info )
+                                        <option {{ $supplier_quotation->sq_tva_id == $vat_info->av_id ? "selected" : "" }} value="{{ $vat_info->av_id }}" >{{ $vat_info->av_vat_label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" {{ $supplier_quotation->sq_enable_freight == 1 ? "checked" : ""  }}  type="checkbox" id="SQ_ENABLE_FREIGHT" name="sq_enable_freight"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Freight
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Freight Amount</label>
+                                <input type="text" name="sq_freight_amount" id="SQ_FREIGHT_AMOUNT"  class="form-control"  maxlength="10"  value="{{ $supplier_quotation->sq_freight_amount  }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_FORWARDING" {{ $supplier_quotation->sq_enable_forwarding == 1 ? "checked" : ""  }} name="sq_enable_forwarding"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Forwarding
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Forwarding Percentage</label>
+                                <input type="text" name="sq_forwarding_percentage" id="SQ_FORWARDING_PERCENTAGE" class="form-control"  maxlength="10"  value="{{ $supplier_quotation->sq_forwarding_percentage  }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_INSURANCE" {{ $supplier_quotation->sq_enable_insurance == 1 ? "checked" : ""  }} name="sq_enable_insurance"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Insurance
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Insurance Amount</label>
+                                <input type="text" name="sq_insurance_amount" id="SQ_INSURANCE_AMOUNT" class="form-control"  maxlength="10"  value="{{ $supplier_quotation->sq_insurance_amount   }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
                         @if( $supplier_quotation->sq_quotation_approve == 0 )
                          <div class="col-md-4"><br/>
                             <label class="form-check form-switch form-check-custom form-check-solid">
@@ -137,7 +218,7 @@ th{
                         <div class="col-md-4">
                         	<button type="button" name="btnAddProduct" id="btnAddProduct" class="btn btn-info"  data-bs-toggle="modal" data-bs-target="#AddNewProduct">Add Product</button>
                         </div>
-                        
+
                          <div class="col-md-12">
                          		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                                 <li class="nav-item">
@@ -145,9 +226,9 @@ th{
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#m_tab_products">Products</a>
-                                </li> 
+                                </li>
                             </ul>
-                            
+
                             <div class="tab-content" id="myTabContent">
                             	 <div class="tab-pane fade show active" id="m_tab_notes" role="tabpanel">
                             	  <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
@@ -175,11 +256,11 @@ th{
 											@foreach($quotation_products as $index => $qp_info )
 											<tr data-index="{{ $index + 1 }}" class="QuotationItems">
 												<th>
-												{{ $index + 1 }} 
+												{{ $index + 1 }}
 												<input type="hidden" name="sp_id[]" class="QProductId" value="{{ $qp_info->sp_id }}" />
 												<input type="hidden" name="product_id[]" class="ProductId" value="{{ $qp_info->products->p_id }}" />
 												<input type="hidden" name="currency_id[]" class="CurrencyId" value="{{ $qp_info->sp_product_currency }}" />
-												<input type="hidden" name="serial_numbers[]" class="SerialNumbers" value="{{ $qp_info->sp_product_serial }}" /> 
+												<input type="hidden" name="serial_numbers[]" class="SerialNumbers" value="{{ $qp_info->sp_product_serial }}" />
 											</th>
 												<td><input type="text" name="pr_product_code[]" class="form-control ProductCode" value="{{ $qp_info->products->p_barcode }}" /></td>
 												<td>
@@ -194,7 +275,7 @@ th{
 												<td><input type="text" name="pr_discount[]" class="form-control ProductDiscount" value="{{ $qp_info->sp_product_discount }}" /></td>
 												<td><input type="text" name="pr_selling_price[]" class="form-control SellingPrice" value="{{ $qp_info->sp_product_selling_price }}" /></td>
 												<td><input type="text" name="pr_wholesale_price[]" class="form-control WholeSalePrice" value="{{ $qp_info->sp_product_wholesale_price }}" /></td>
-												<td><input type="text" name="pr_vendor_price[]" class="form-control VendorPrice" value="{{ $qp_info->sp_product_vendor_price }}" /></td> 
+												<td><input type="text" name="pr_vendor_price[]" class="form-control VendorPrice" value="{{ $qp_info->sp_product_vendor_price }}" /></td>
 												<td><input type="text" name="pr_quantity[]" class="form-control StockQuantity" value="{{ $qp_info->sp_product_quantity }}" /></td>
 												<td><button class="btn ListSerialNumbers" style="{{ $qp_info->products->Category->pc_use_serial_number == 0 ? 'display:none' :'' }}" type="button" data-ids="{{ $qp_info->sp_product_serial }}" name="btn_list_serials[]" >...</button></td>
 												<td><a href="#" class="DeleteCode"><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
@@ -238,7 +319,7 @@ th{
 									</div>
                             	 </div>
                             </div>
-                         
+
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>

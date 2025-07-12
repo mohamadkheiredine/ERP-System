@@ -1,0 +1,15 @@
+ALTER TABLE `billing_invoices` ADD COLUMN `bi_company_id` INT NULL DEFAULT 1 AFTER `bi_invoice_ref`;
+ALTER TABLE  `crm_accounts` ADD COLUMN `ca_company_id` INT NULL DEFAULT 0 AFTER `ca_accounting_id`;
+ALTER TABLE `crm_account_deals` ADD COLUMN `ad_company_id` INT NULL DEFAULT 1 AFTER `fk_contact_id`;
+ALTER TABLE `crm_leads` ADD COLUMN `cl_company_id` INT NULL DEFAULT 1 AFTER `cl_id`;
+ALTER TABLE `billing_receipts` ADD COLUMN `br_company_id` INT NULL DEFAULT 1 AFTER `br_id`;
+ALTER TABLE `callcenter_lead_appointments` ADD COLUMN `ca_company_id` INT NULL DEFAULT 1 AFTER `ca_id`;
+ALTER TABLE `callcenter_inbound_calls` ADD COLUMN `ic_company_id` INT NULL DEFAULT 1 AFTER `ic_id`;
+ALTER TABLE `billing_payment_vouchers` ADD COLUMN `pv_company_id` INT NULL DEFAULT 1 AFTER `pv_id`;
+ALTER TABLE `billing_recurring_invoices` ADD COLUMN `ri_company_id` INT NULL DEFAULT 0 AFTER `ri_id`;
+ALTER TABLE `billing_journal_vouchers` ADD COLUMN `pj_company_id` INT NULL DEFAULT 0 AFTER `pj_id`;
+ALTER TABLE `callcenter_outbound_calls` ADD COLUMN `oc_company_id` INT NULL DEFAULT 0 AFTER `oc_id`;
+ALTER TABLE `crm_contacts` ADD COLUMN `cc_company_id` INT NULL DEFAULT 1 AFTER `cc_id`;
+ALTER TABLE `crm_services` ADD COLUMN `cs_company_id` INT NULL DEFAULT 1 AFTER `cs_id`;
+ALTER TABLE `crm_service_categories` ADD COLUMN `sc_company_id` INT NULL DEFAULT 1 AFTER `sc_deleted_by`;
+ALTER TABLE `crm_service_categories` CHANGE COLUMN `sc_company_id` `sc_company_id` INT NULL DEFAULT '1' AFTER `sc_id`;

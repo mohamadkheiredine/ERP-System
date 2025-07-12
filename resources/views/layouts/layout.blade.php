@@ -65,7 +65,7 @@ Page Description :
 					<!--begin::Logo-->
 					<div class="aside-logo flex-column-auto pt-10 pt-lg-20" id="kt_aside_logo">
 						<a href="{{ url('dashboard') }}">
-							<img alt="Logo" src="{{ session('company_logo') }}" class="h-20px" />
+							<img alt="Logo" src="{{ session('company_logo') }}"  style="height:70px" />
 						</a>
 					</div>
 					<!--end::Logo-->
@@ -85,7 +85,7 @@ Page Description :
 												<span class="path2"></span>
 											</i>
 										</span>
-                                                                            Dashboard
+                                         Dashboard
 									</span>
 									</a>
 									<!--end:Menu link-->
@@ -336,6 +336,19 @@ Page Description :
                                                                                     <!--end:Menu link-->
                                                                             </div>
                                             @endif
+
+                                            @if(CheckPrivilage('erp_manage_Lead_results') == "allow")
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('/leads/results') }}">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                    <span class="menu-title">Lead App Results</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                            @endif
                                             @if(CheckPrivilage('erp_call_reports') == "allow")
                                                                             <div class="menu-item">
                                                                                     <!--begin:Menu link-->
@@ -344,6 +357,16 @@ Page Description :
                                                                                                     <span class="bullet bullet-dot"></span>
                                                                                             </span>
                                                                                             <span class="menu-title"> Closure Sales Appointments Report </span>
+                                                                                    </a>
+                                                                                    <!--end:Menu link-->
+                                                                            </div>
+                                                                            <div class="menu-item">
+                                                                                    <!--begin:Menu link-->
+                                                                                    <a class="menu-link" href="{{ url('callcenter/reports/callbackreports') }}">
+                                                                                            <span class="menu-bullet">
+                                                                                                    <span class="bullet bullet-dot"></span>
+                                                                                            </span>
+                                                                                            <span class="menu-title"> Callback Leads Report </span>
                                                                                     </a>
                                                                                     <!--end:Menu link-->
                                                                             </div>
@@ -464,6 +487,49 @@ Page Description :
 								</div>
                                     @endif
 							@endif
+
+                                <div  style="display:none" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                    <!--begin:Menu link-->
+                                    <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-boxes-stacked fa-xl"></i>
+										</span>
+                                                                            Purchasing Module
+									</span>
+                                    <!--end:Menu link-->
+                                    <!--begin:Menu sub-->
+                                    <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                        <div class="menu-item">
+                                            <!--begin:Menu content-->
+                                            <div class="menu-content">
+                                                <span class="menu-section fs-5 fw-bolder ps-1 py-1"> Purchasing Module</span>
+                                            </div>
+                                            <!--end:Menu content-->
+                                        </div>
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title"> Purchasing Requisition</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title"> Purchase Orders</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                    </div>
+                                </div>
+
+
 
                                 @if(CheckPrivilage('erp_inventory_management') == "allow")
 
@@ -762,6 +828,16 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('payrolls/employees') }}">
+                                                    <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                    </span>
+                                                <span class="menu-title">Employees Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
 										<!--end:Menu item-->
                                         @if(CheckPrivilage('erp_payroll_salary_details') == "allow")
 										 <div class="menu-item">

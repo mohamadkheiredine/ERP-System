@@ -52,7 +52,7 @@ th{
     <form name="frm_save_quotation" id="FORM_SAVE_QUOTATION">
                 <div class="form-body">
                      <span id="hidden_fields" style="display:none">
-                     {!! csrf_field() !!} 
+                     {!! csrf_field() !!}
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Supplier Quotation Information is saved successfully!
@@ -128,6 +128,87 @@ th{
                                     </select>
                                 </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Shipping Type  <span class="required"> * </span></label>
+                                <select  name="sq_shipping_type" id="SQ_SHIPPING_TYPE" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Shipping Type">
+                                    <option value=""> Select Shipping Type </option>
+                                    <option value="1"> CIF </option>
+                                    <option value="2"> FOB </option>
+                                    <option value="3"> Local Supplier </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_TVA" name="sq_enable_tva"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable TVA
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Tax  <span class="required"> * </span></label>
+                                <select  name="sq_tva_id" id="SQ_TVA_ID" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Tax">
+                                    <option value=""> Select TVA </option>
+                                    @foreach ( $lst_vat as $key => $vat_info )
+                                        <option value="{{ $vat_info->av_id }}" >{{ $vat_info->av_vat_label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_FREIGHT" name="sq_enable_freight"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Freight
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Freight Amount</label>
+                                <input type="text" name="sq_freight_amount" id="SQ_FREIGHT_AMOUNT" class="form-control"  maxlength="10"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_FORWARDING" name="sq_enable_forwarding"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Forwarding
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Forwarding Percentage</label>
+                                <input type="text" name="sq_forwarding_percentage" id="SQ_FORWARDING_PERCENTAGE" class="form-control"  maxlength="10"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_INSURANCE" name="sq_enable_insurance"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Insurance
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Insurance Amount</label>
+                                <input type="text" name="sq_insurance_amount" id="SQ_INSURANCE_AMOUNT" class="form-control"  maxlength="10"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
                          <div class="col-md-4">
                          	<br/>
                             <label class="form-check form-switch form-check-custom form-check-solid">
@@ -135,23 +216,23 @@ th{
                                 <span class="form-check-label fw-semibold text-muted">
                                    Quotation Approved
                                 </span>
-                            </label>   
+                            </label>
                         </div>
                         <div class="col-md-12">&nbsp;</div>
                         <div class="col-md-4">
                         	<button type="button" name="btnAddProduct" id="btnAddProduct" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#AddNewProduct">Add Product</button>
                         </div>
                         <div class="col-md-12">
-                        
+
                         	<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#m_tab_notes">Notes</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#m_tab_products">Products</a>
-                                </li> 
+                                </li>
                             </ul>
-                            
+
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="m_tab_notes" role="tabpanel">
                                     <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
@@ -212,8 +293,8 @@ th{
 											<button name="add_product" type="button" id="ADD_PRODUCT" class="btn btn-info" >Add Stock</button>
 										</div>
 									</div>
-                                </div> 
-                            </div> 
+                                </div>
+                            </div>
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
@@ -227,7 +308,7 @@ th{
                 </div>
             </form>
     </div>
-</div> 
+</div>
 <div class="modal fade" id="AddNewProduct" tabindex="-1" role="dialog" aria-labelledby="AddNewProductModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">

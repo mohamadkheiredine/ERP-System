@@ -11,6 +11,7 @@ leads_module = {
 		var cl_sales_id	 		= $('select[name=cl_sales_id]').val();
 		var cl_lead_types	 	= $('select[name=cl_lead_types]').val();
 		var cl_area	 		    = $('select[name=cl_area]').val();
+		var cl_lead_result	 		    = $('select[name=cl_lead_result]').val();
 		var general_search	 	= $('input[name=general_search]').val();
 		var lead_name	 		= $('input[name=lead_name]').val();
 		var lead_region	 		= $('input[name=lead_region]').val();
@@ -27,6 +28,7 @@ leads_module = {
             general_search : general_search ,
             cl_lead_types : cl_lead_types,
             lead_category : lead_category ,
+            cl_lead_result : cl_lead_result ,
             lead_status : lead_status ,
             cl_sales_id : cl_sales_id ,
             lead_name : lead_name ,

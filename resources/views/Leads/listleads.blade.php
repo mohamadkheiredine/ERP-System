@@ -28,8 +28,8 @@ Page Description :
    <td>{{ $lead_info->cl_mobile }}</td>
    <td>{{ $lead_info->cl_referred_by }}</td>
    <td>{{ $lead_info->cl_last_call_date }}</td>
+   <td>&nbsp;</td>
    <td>{{ $lead_info->AppResult ? $lead_info->AppResult->ar_app_result : "" }}</td>
-   <td>{{ $lead_info->LastAppResult ? $lead_info->LastAppResult->ar_app_result : "" }}</td>
    <td>{{ $lead_info->cl_next_call_date }}</td>
    <td>{{ $lead_info->cl_lead_notes }}</td>
     @if(CheckPrivilage('erp_edit_existing_lead') == "allow")

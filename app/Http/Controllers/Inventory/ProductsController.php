@@ -57,10 +57,10 @@ class ProductsController extends Controller
     * @access public
     */
       public function index()
-      {  
+      {
           $lst_product_categories = ProductCategories::wherePcIsDeleted(0)->get();
           $lst_currencies = Currency::all();
-          
+
           $data = array(
               "lst_product_categories" => $lst_product_categories,
               "lst_currencies" => $lst_currencies,
@@ -78,7 +78,7 @@ class ProductsController extends Controller
        */
       public function AddNewProduct()
       {
-          
+
           $lst_product_categories_array = ProductCategories::wherePcIsDeleted(0)->orderBy('fk_pc_id', 'desc')->get();
           $rand_barcode                 = rand(10000000,99999999999);
           $barcode_obj = new DNS1D();
@@ -89,10 +89,10 @@ class ProductsController extends Controller
           $lst_currencies               = Currency::all();
           $lst_suppliers                = Suppliers::whereSsIsDeleted(0)->get();
           $lst_product_types            = ProductTypes::wherePtIsDeleted(0)->get();
-          
-          
+
+
           $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
-          
+
           $data = array(
               "lst_product_categories_array" => $lst_product_categories_array,
               "rand_barcode" => $rand_barcode,
@@ -107,27 +107,35 @@ class ProductsController extends Controller
           );
           return Response()->view('products.addnewproduct',$data);
       }
-      
-      
+
+
       public function Uploadlistproducts(Request $request)
       {
           $result_array = array();
           $company_currency = $request->input('company_currency');
           $file_name = $_FILES['ac_temp_file']['name'];
-        
+
           $tmp_path = $_FILES['ac_temp_file']['tmp_name'];
-          $full_path = storage_path($file_name); 
-          
+          $full_path = storage_path($file_name);
+
             if (move_uploaded_file($tmp_path, $full_path)) {
-                
+
                 $data = Excel::toArray(new ExcelImport, $full_path);
                 $data = $data[0];
-                
-                foreach ($data as $key => $product_info) 
-                { 
-                    $item       = $product_info['item'];
-                    $price_gnf  = $product_info['price_gnf'];
-                    $category   = $product_info['category'];
+                foreach ($data as $key => $product_info)
+                {
+                    $product_ref       = $product_info['product_ref'];
+                    $category       = $product_info['category'];
+                    $warehouse  = $product_info['warehouse'];
+                    $zoon  = $product_info['zoon'];
+                    $floor  = $product_info['floor'];
+                    $product_name  = $product_info['product_name'];
+                    $product_description  = $product_info['product_description'];
+                    $width  = $product_info['width'];
+                    $height  = $product_info['height'];
+                    $length  = $product_info['length'];
+                    $selling_price  = $product_info['selling_price'];
+                    $currency  = $product_info['currency'];
                     $pc_id = 0;
                     $category_info = ProductCategories::where('pc_category','=', $category)->get();
                     if(count($category_info) == 0)
@@ -135,48 +143,53 @@ class ProductsController extends Controller
                         $category_data = new ProductCategories();
                         $category_data->pc_cat_ref = "";
                         $category_data->fk_pc_id = 0;
-                        $category_data->pc_category = $item;
-                        $category_data->pc_description = $item;
+                        $category_data->pc_category = $category;
+                        $category_data->pc_description = $category;
                         $category_data->save();
-                        
+
                         $pc_id = $category_data->pc_id;
                     }
                     else
                     {
                         $pc_id = $category_info[0]->pc_id;
-                    }    
-                        
-                   $gnf = $company_currency;
-                   
-                   $product_count = Products::where('p_product_name','LIKE','%' . $item . '%')->count(); 
-                   
+                    }
+
+
+                   $product_count = Products::where('p_product_name','LIKE','%' . $product_name . '%')->count();
+
                    if($product_count == 0)
                    {
                        $product = new Products();
                        $product->fk_pc_id = $pc_id;
-                       $product->p_product_name = $item;
-                       $product->p_product_selling_price = $price_gnf;
-                       $product->p_product_min_selling_price = $price_gnf;
-                       $product->p_product_cost_price = $price_gnf;
-                       $product->p_product_currency = $gnf;
+                       $product->fk_warehouse_id = $warehouse;
+                       $product->fk_zone_id = 0;
+                       $product->fk_floor_id =0;
+                       $product->p_barcode = $product_ref;
+                       $product->p_product_ref = $key;
+                       $product->p_product_name = $product_name;
+                       $product->p_product_description = $product_description;
+                       $product->p_product_selling_price = $selling_price;
+                       $product->p_product_min_selling_price = $selling_price;
+                       $product->p_product_cost_price = $selling_price;
+                       $product->p_product_currency = $currency;
                        $product->save();
                    }
-                   
-                    
+
+
                 }
-                
+
             }
-          
+
             $result_array = array();
             $result_array['is_error'] = 0;
-          
-          
+
+
           return Response()->json($result_array);
       }
-      
+
       /**
        * Page of Edit Product
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param integer $pp_id
@@ -192,14 +205,14 @@ class ProductsController extends Controller
           $system_currencies            = Currency::all();
           $currency_array               = CreateDatabaseArrayByIndex($system_currencies, "cc_id");
           $rand_barcode                 = $product_info->p_barcode;
-          
+
           $barcode_obj                  = new DNS1D();
           $bar_code_png                 = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
           $lst_currencies               = Currency::all();
           $lst_suppliers                = Suppliers::whereSsIsDeleted(0)->get();
           $lst_warehouses               = WareHouses::whereWIsDeleted(0)->get();
           $lst_product_types            = ProductTypes::wherePtIsDeleted(0)->get();
-          
+
           $data = array(
               "lst_product_categories_array" => $lst_product_categories_array,
               "product_info" => $product_info,
@@ -215,10 +228,10 @@ class ProductsController extends Controller
               "lst_lot" => $lst_lot
           );
           return Response()->view('products.editproduct',$data);
-          
+
       }
-      
-      
+
+
       /**
        * Generate Barecode for product
        * @param Request $request
@@ -228,49 +241,49 @@ class ProductsController extends Controller
           $p_barcode    = $request->input('p_barcode');
           $bar_code_png = DNS1D::getBarcodePNG($p_barcode, "C39+",150 , 50 );
           $result_array = array();
-          
+
           $result_array['bar_code_png'] = $bar_code_png;
           $result_array['p_barcode']    = $p_barcode;
-          
+
           return Response()->json($result_array);
-          
+
       }
-      
-      
+
+
       /**
        * Duplicate product and save as new record to the database
-       * 
+       *
        * @author Moe Mantach
        * @access public
-       * 
+       *
        * @param Request $request
-       * $request->input('p_ids') array list of selected ids 
+       * $request->input('p_ids') array list of selected ids
        */
       public function Duplicateproducts( Request $request )
       {
         $p_ids = $request->input('p_ids');
         $result_array = array();
-        
-        foreach ($p_ids as $key => $p_id) 
+
+        foreach ($p_ids as $key => $p_id)
         {
             $product_info   = Products::find($p_id);
             $product        = $product_info->replicate();
             $product->p_product_name = "Copy of " . $product->p_product_name;
             $product->save();
-            
+
             unset($product_info);
             unset($product);
         }
-        
+
         $result_array['is_error'] = 0;
-        
+
         return Response()->json($result_array);
       }
-      
-      
+
+
       /**
        * get zones by selected warehouse
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param Request $request
@@ -279,24 +292,24 @@ class ProductsController extends Controller
       {
           $result_array = array();
           $warehouse_id = $request->input("warehouse_id");
-          
+
           $lst_zones = WareHouseZones::whereWzIsDeleted(0)->whereFkWarehouseId($warehouse_id)->get();
-          
+
           $data = array(
               'lst_zones' => $lst_zones
           );
-          
+
           $result_array['is_error'] = 0;
           $result_array['dropdown'] = view('warehouses.zonesdropdown',$data)->render();
-          
-          
+
+
           return Response()->json($result_array);
       }
-      
-      
+
+
       /**
        * get Floors by selected zone
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param Request $request
@@ -305,43 +318,43 @@ class ProductsController extends Controller
       {
           $result_array = array();
           $zone_id = $request->input("zone_id");
-          
+
           $lst_floors = WareHouseFloors::whereWfIsDeleted(0)->whereFkZoneId($zone_id)->get();
-          
+
           $data = array(
               'lst_floors' => $lst_floors
           );
-          
+
           $result_array['is_error'] = 0;
           $result_array['dropdown'] = view('warehouses.floorsdropdown',$data)->render();
-          
-          
+
+
           return Response()->json($result_array);
       }
-      
-      
-      
+
+
+
       /**
        * get list of all products from a view
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param Request $request
        */
       public function DisplayList(Request $request)
       {
-          
+
           $page_number                  = $request->input('page_number');
           $general_search               = $request->input('general_search');
           $product_category             = $request->input('product_category');
           $product_currency             = $request->input('product_currency');
           $nbr_rows_per_pages           = Config::get('appconfig.max_rows_per_page');
-          
+
           if($page_number > 1)
               $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
           else
               $skip = 0;
-          
+
           $lst_products                 = Products::wherePProductIsDeleted(0);
           if(strlen($general_search) > 0)
               $lst_products             = $lst_products->where('p_product_name','LIKE','%' . $general_search . '%')->orWhere('p_barcode','LIKE','%' . $general_search . '%');
@@ -351,20 +364,20 @@ class ProductsController extends Controller
               $lst_products             = $lst_products->wherePProductCurrency( $product_currency);
               $count_products               = $lst_products->count();
               $lst_products                 = $lst_products->skip($skip)->take($nbr_rows_per_pages)->get();
-          
+
           $lst_product_categories_array = ProductCategories::wherePcIsDeleted(0)->get();
-         
+
           $system_currencies            = Currency::all();
           $currency_array               = CreateDatabaseArrayByIndex($system_currencies, "cc_id");
-          
-          
-          
+
+
+
           $total_pages = ceil( $count_products/$nbr_rows_per_pages );
           $total_pages = intval($total_pages);
-          
-          
+
+
           $result_array =array();
-  
+
           $data = array(
               "lst_products" => $lst_products,
               "currency_array" => $currency_array,
@@ -373,13 +386,13 @@ class ProductsController extends Controller
           $result_array['is_error']         = 0;
           $result_array['total_pages']      = $total_pages;
           $result_array['display']          = view("products.displaylist",$data)->render();
-          
+
           return Response()->json($result_array);
-          
+
       }
-      
+
       /**
-       * Display Metric section related to the product based on  
+       * Display Metric section related to the product based on
        * @param Request $request
        */
       public function DisplayMetricSection(Request $request)
@@ -387,17 +400,17 @@ class ProductsController extends Controller
           $p_product_unit_type  = $request->input("p_product_unit_type");
           $p_id                 = $request->input("p_id");
           $result_array         = array();
-          
+
           $product_info = new Products();
-          
+
           if($p_id != null)
             $product_info = Products::find($p_id);
-          
+
           $lst_units        = Units::whereSuUnityType($p_product_unit_type)->get();
           $lst_units_weight = Units::whereSuUnityType("weight")->get();
           $lst_units_size   = Units::whereSuUnityType("size")->get();
           $lst_units_surface= Units::whereSuUnityType("surface")->get();
-          
+
           $data = array(
               "product_info" => $product_info,
               "p_product_unit_type" => $p_product_unit_type,
@@ -406,15 +419,15 @@ class ProductsController extends Controller
               "lst_units_size" => $lst_units_size,
           );
           $result_array['display'] =view("products.productmetrics" , $data)->render();
-          
-          
-          
+
+
+
           return Response()->json($result_array);
       }
-      
+
       /**
        * Save Product Information
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param Request $request
@@ -440,9 +453,9 @@ class ProductsController extends Controller
           $p_product_height_unit        = $request->input('p_product_height_unit');
           $p_product_area               = $request->input('p_product_area');
           $p_product_area_unit          = $request->input('p_product_area_unit');
-          $p_product_selling_price      = $request->input('p_product_selling_price'); 
-          $p_product_min_selling_price  = $request->input('p_product_min_selling_price'); 
-          $p_product_cost_price         = $request->input('p_product_cost_price'); 
+          $p_product_selling_price      = $request->input('p_product_selling_price');
+          $p_product_min_selling_price  = $request->input('p_product_min_selling_price');
+          $p_product_cost_price         = $request->input('p_product_cost_price');
           $p_product_tax_rate           = $request->input('p_product_tax_rate');
           $p_product_currency           = $request->input('p_product_currency');
           $p_sale_accounting_code       = $request->input('p_sale_accounting_code');
@@ -454,11 +467,11 @@ class ProductsController extends Controller
           $p_product_currency           = $request->input("p_product_currency");
           $p_product_expiry_date        = $request->input("p_product_expiry_date");
           $p_product_production_date    = $request->input("p_product_production_date");
-          
+
           $fk_warehouse_id              = $request->input("fk_warehouse_id");
           $fk_zone_id                   = $request->input("fk_zone_id");
           $fk_floor_id                  = $request->input("fk_floor_id");
-          
+
           $ProductInfo  = new Products();
           $ProductManager_obj = new ProductManager();
           if($p_id > 0)
@@ -469,11 +482,11 @@ class ProductsController extends Controller
               {
                  /** $currency_info        = Currency::find($saved_currency);
                   $com_currency_info    = Currency::find($company_currency);
-                  
-                  
+
+
                   $selling_price        = convertCurrency($p_product_selling_price, $currency_info->cc_currency_code, $com_currency_info->cc_currency_code);
                   $min_selling_price    = convertCurrency($p_product_min_selling_price, $currency_info->cc_currency_code, $com_currency_info->cc_currency_code);
-                  
+
                   $p_product_selling_price      = $selling_price;
                   $p_product_min_selling_price  = $min_selling_price;*/
                   //$p_product_currency           = $company_currency;
@@ -481,10 +494,10 @@ class ProductsController extends Controller
           }
           else
           {
-          
-              
+
+
           }
-          
+
           $ProductInfo->fk_pc_id                       = $fk_pc_id;
           $ProductInfo->p_barcode                     = $p_barcode;
           $ProductInfo->p_barcode_img                 = $p_barcode_img;
@@ -519,54 +532,54 @@ class ProductsController extends Controller
           $ProductInfo->fk_zone_id                    = $fk_zone_id;
           $ProductInfo->fk_floor_id                   = $fk_floor_id;
           $ProductInfo->save();
-          
+
           $p_id = $ProductInfo->p_id;
-          
+
           if( $p_id!== null && count($_FILES) > 0 )
           {
               $image_data =  $ProductManager_obj->UploadProductAvatar($p_id);
-              
+
               $ProductInfo->p_product_profile_base_src  = $image_data['data']['p_avatar_base_src'];
               $ProductInfo->p_product_profile_file_name = $image_data['data']['p_avatar_file_name'];
               $ProductInfo->p_product_profile_extention = $image_data['data']['p_avatar_extentions'];
               $ProductInfo->save();
-              
+
           }
-          
-          
-          
-          
+
+
+
+
           $result_array = array();
-          
+
           $result_array['is_error'] = 0;
           $result_array['error_msg'] = "Operation Complete Successfully";
           return Response()->json($result_array);
       }
-      
-      
+
+
       /**
        * Download CSV Template
-       * 
+       *
        * @author Moe Mantach
        * @access public
        * @param Request $request
        */
       public function DownloadTemplate(Request $request)
       {
-         
+
           $data = array();
           $data[] = ['Product Ref','category','warehouse','zoon','floor', 'Product Name','Product Description','width','height','length','Selling Price','Currency'];
-          
-  
-          
+
+
+
           $csv = Writer::createFromFileObject(new \SplTempFileObject());
-          
+
           $csv->insertAll($data);
-          
+
           $csv->output('products-template.csv');
       }
-      
-      
+
+
       /**
        * Delete Product by changing bflag of is deleted
        * @param Request $request
@@ -575,7 +588,7 @@ class ProductsController extends Controller
       public function DeleteProductInfo(Request $request)
       {
           $p_id = $request->input('p_id');
-          
+
           //check if already have a stock you cannot delete the item
           $ProductStock = Stocks::whereIsIsDeleted(0)->whereFkProductId($p_id)->get();
           if(count($ProductStock) > 0)
@@ -584,26 +597,26 @@ class ProductsController extends Controller
               $result_array['error_msg'] = "Product Already Has a stock , you cannot delete the product";
               return Response()->json($result_array);
           }
-          
-          
-          
+
+
+
           $ProductInfo = Products::find($p_id);
           $ProductInfo->p_product_is_deleted = 1;
           $ProductInfo->p_product_deleted_by = session('user_id');
           $ProductInfo->save();
-          
-          
+
+
           $result_array = array();
-          
+
           $result_array['is_error'] = 0;
           $result_array['error_msg'] = "Operation Complete Successfully";
           return Response()->json($result_array);
       }
-      
-      
+
+
       /**
        * Display list of stocks in all warehouses for selected product
-       * 
+       *
        * @author Moe mantach
        * @access public
        * @param Request $request
@@ -611,26 +624,26 @@ class ProductsController extends Controller
       public function DisplayListStocks(Request $request)
       {
           $p_id = $request->input("p_id");
-          
+
           $productStocks = Stocks::whereFkProductId($p_id)->whereIsIsDeleted(0)->get();
-          
+
           $result_array  = array();
-           
-          
+
+
           $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
           $warehouses_array =CreateDatabaseArrayByIndex($lst_warehouses, "w_id");
-          
+
           $data = array(
               "productStocks" => $productStocks,
               "warehouses_array" => $warehouses_array,
           );
           $result_array['is_error'] = 0;
           $result_array['display'] = view("products.displayliststocks",$data)->render();
-          
+
           return Response()->json($result_array);
       }
-      
-      
+
+
       /**
        * Display list of stock movements done for the current product
        * @param Request $request
@@ -639,12 +652,12 @@ class ProductsController extends Controller
       public function DisplayListStockMovements(Request $request)
       {
           $p_id = $request->input("p_id");
-          
+
           $productStockMovements = StockMovements::whereFkProductId($p_id)->whereSmIsDeleted(0)->get();
- 
+
           $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
           $warehouses_array =CreateDatabaseArrayByIndex($lst_warehouses, "w_id");
-          
+
           $result_array  = array();
           $data = array(
               "productStockMovements" => $productStockMovements,
@@ -652,7 +665,7 @@ class ProductsController extends Controller
           );
           $result_array['is_error'] = 0;
           $result_array['display'] = view("products.displayliststockmovements",$data)->render();
-          
+
           return Response()->json($result_array);
       }
 

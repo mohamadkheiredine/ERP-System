@@ -53,6 +53,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\models\Billing\Receipts;
 use App\models\CallCenter\InboundCall;
 use App\models\CallCenter\MaintenanceTypes;
+use App\models\Inventory\StockIds;
+use App\models\Inventory\Stocks;
+use App\models\PayRolls\PayrollsComissions;
 
 class DealsController extends Controller
 {
@@ -194,6 +197,8 @@ class DealsController extends Controller
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_supervisors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
+        $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_general_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_GENERAL_MANAGER)->get();
 
 
 
@@ -202,8 +207,10 @@ class DealsController extends Controller
             "lst_products" => $lst_products,
             "lst_leads" => $lst_leads,
             "lst_users" => $lst_users,
+            "lst_general_managers" => $lst_general_managers,
             "lst_deal_stages" => $lst_deal_stages,
             "lst_user_telemarketing" => $lst_telemarketing,
+            "lst_technicians" => $lst_technicians,
             "lst_contract_types" => $lst_contract_types,
             "lst_supervisors" => $lst_supervisors,
             "lst_user_sales" => $lst_sales,
@@ -381,6 +388,10 @@ class DealsController extends Controller
         $ad_supervisor_comm                         = $request->input('ad_supervisor_comm');
         $ad_account_code                        = $request->input('ad_account_code');
         $ad_serial_number                        = $request->input('ad_serial_number');
+        $fk_technician_id                        = $request->input('fk_technician_id');
+        $ad_technician_comm                        = $request->input('ad_technician_comm');
+        $fk_manager_id                        = $request->input('fk_manager_id');
+        $ad_manager_comm                        = $request->input('ad_manager_comm');
 
         $result_array = array();
 
@@ -432,6 +443,11 @@ class DealsController extends Controller
         $account_deal->ad_deal_date      =   $ad_deal_date;
         $account_deal->ad_warranty_date      =   $ad_warranty_date;
 
+        $account_deal->fk_technician_id   = $fk_technician_id;
+        $account_deal->ad_technician_comm   = $ad_technician_comm;
+        $account_deal->fk_manager_id   = $fk_manager_id;
+        $account_deal->ad_manager_comm   = $ad_manager_comm;
+
 
         $account_deal->save();
         $ad_id = $account_deal->ad_id;
@@ -454,6 +470,78 @@ class DealsController extends Controller
         }
 
 
+        // validate serial number of the product
+        if($ad_is_approved > 0)
+        {
+            $stock_serial = StockIds::whereSiStockUid($ad_serial_number)->get();
+
+            // check if serial number exist in stock
+            if(count($stock_serial) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Please Add A valid Serial Number";
+                return Response()->json($result_array);
+            }
+
+
+            $stock_id = $stock_serial[0]->fk_stock_id;
+            $product_id = $stock_serial[0]->fk_product_id;
+
+            $stock_info = Stocks::find($stock_id);
+
+
+            // create comissions records
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $fk_sales_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ad_sales_comm;
+            $payroll_comissions->pc_currency_id = $ad_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->save();
+
+
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $fk_technician_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ad_technician_comm;
+            $payroll_comissions->pc_currency_id = $ad_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->save();
+
+
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $fk_telemarketing_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ad_telemarketing_comm;
+            $payroll_comissions->pc_currency_id = $ad_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->save();
+
+
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $fk_supervisor_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ad_supervisor_comm;
+            $payroll_comissions->pc_currency_id = $ad_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->save();
+
+
+
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $fk_manager_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ad_manager_comm;
+            $payroll_comissions->pc_currency_id = $ad_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->save();
+
+        }
 
 
         // when approve create invoice and generate receipts and payment for all number of
@@ -695,12 +783,15 @@ class DealsController extends Controller
         $lst_currencies     = Currency::all();
         $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
 
-        $lst_telemarketing  = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales          = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        $lst_supervisors    = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
+        $lst_telemarketing      = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_supervisors        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
+        $lst_technicians        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_general_managers   = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_GENERAL_MANAGER)->get();
 
         $data = array(
             "lst_accounts" => $lst_accounts,
+            "lst_general_managers" => $lst_general_managers,
             "lst_leads" => $lst_leads,
             "lst_products" => $lst_products,
             "deal_info" => $deal_info,
@@ -711,7 +802,7 @@ class DealsController extends Controller
             "lst_contract_types" => $lst_contract_types,
             "lst_supervisors" => $lst_supervisors,
             "lst_user_sales" => $lst_sales,
-            "lst_deal_stages" => $lst_deal_stages,
+            "lst_technicians" => $lst_technicians,
             "lst_contacts" => $lst_contacts
         );
         return Response()->view('accounts.editdeals',$data);

@@ -152,7 +152,7 @@ th{
                                 </div>
                                  <div class="col-md-4">
                                     <div class="form-group">
-                                        <label> Product Supplier</label> 
+                                        <label> Product Supplier</label>
                                             <select  name="fk_psupplier_id" id="FK_PSUPPLIER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product Supplier">
                                                 <option value="">-- Select Supplier --</option>
                                                 <?php foreach ( $lst_suppliers as $key => $supplier_info ) { ?>
@@ -173,11 +173,11 @@ th{
                                         <input type="text" name="p_product_expiry_date" id="P_PRODUCT_EXPIRY_DATE" class="form-control"  maxlength="15" value="" />
                                     </div>
                                 </div>
-                                                                    
+
                                  @if($license_array->PRODUCTION_MODULE == 1)
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label> Product Lot</label> 
+                                        <label> Product Lot</label>
                                             <select name="fk_lot_id" id="FK_LOT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Lot">
                                                 <option value="">No Lot</option>
                                                 @foreach($lst_lot as $index => $lo_info)
@@ -185,7 +185,7 @@ th{
                                                 @endforeach
                                         </select>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label> Product Type</label>
@@ -200,12 +200,12 @@ th{
                           		 @endif
                                 <div class="col-md-4">
                           			<div class="form-group">
-                          				<label> UNit type </label><br/> 
+                          				<label> UNit type </label><br/>
                                                             <select name="p_product_unit_type" id="P_PRODUCT_UNIT_TYPE" class="form-control form-select" style="width:100%;"  data-control="select2" data-placeholder="Select Product unit type">
-                          					<option value="">-- Select type --</option>       
+                          					<option value="">-- Select type --</option>
                           					<option value="size">size</option>
-                          					<option value="volume">Volume</option> 
-                          					<option value="weight">Weight</option> 
+                          					<option value="volume">Volume</option>
+                          					<option value="weight">Weight</option>
                           				</select>
                           			</div>
                           		</div>
@@ -215,13 +215,22 @@ th{
                             <div class="col-md-9"></div>
                             <div class="col-md-3" align="right">
                                  <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_TOP"  class="btn btn-info">Save</button>
+                                <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_TOP"  class="btn btn-success">Save & New</button>
                                 <button type="button" id="BACK_FORM_TOP" name="back_form" class="btn default">Back</button>
                             </div>
                         </div>
                             </div>
                           </div>
-                	   
-						<div class="row" style="height:25px">&nbsp;</div>
+                        <div class="row" style="height:25px">&nbsp;</div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label"> Product Description</label><br/>
+                                    <textarea style="width:100%;height:250px;resize:none" id="P_PRODUCT_DESCRIPTION"  class="form-control" name="p_product_description"  cols=""></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="height:25px">&nbsp;</div>
 						@if(config('appconfig.price_by_supplier') == 0)
 						<div class="card card-bordered">
                             <div class="card-header bg-light">
@@ -258,7 +267,7 @@ th{
                                                 <select class="bs-select form-control" name="p_product_currency" id="P_PRODUCT_CURRENCY" data-control="select2" data-placeholder="Select Product Currency">
                                                     @foreach( $lst_currencies as $key => $curr_info )
                                                             <option {{ session('company_currency') == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                                     @endforeach 
+                                                     @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -286,7 +295,7 @@ th{
                                             </div>
                                             <div class="col-md-4">
                                               	<div class="form-group">
-                                                    <label class="control-label"> Product Tax Rate</label> 
+                                                    <label class="control-label"> Product Tax Rate</label>
                                                          <select class="bs-select form-control" name="p_product_tax_rate" id="P_PRODUCT_TAX_RATE"  data-control="select2" data-placeholder="Select Product Tax Rate">
                                                             <option value="">&nbsp;&nbsp;</option>
                                                             @foreach ( $lst_taxes as $key => $tax_info )
@@ -297,32 +306,24 @@ th{
                                             </div>
         								</div>
                             </div>
-                         </div> 
+                         </div>
         						@endif
-        						<div class="row" style="height:25px">&nbsp;</div>	
-        						<div class="row">
-        							<div class="col-md-12">
-                                         <div class="form-group">
-                                            <label class="control-label"> Product Description</label><br/>
-                                            <textarea style="width:100%;height:250px;resize:none" id="P_PRODUCT_DESCRIPTION"  class="form-control" name="p_product_description"  cols=""></textarea>
-                                         </div>
-                                    </div>
-        						</div>	
         						<div class="row" style="height:25px">&nbsp;</div>
         						<div class="row">
                                     <div class="col-md-9"></div>
                                     <div class="col-md-3" align="right">
                                          <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_MIDDLE"  class="btn btn-info">Save</button>
+                                        <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_MIDDLE"  class="btn btn-success">Save & New</button>
                                         <button type="button" id="BACK_FORM_MIDDLE" name="back_form" class="btn default">Back</button>
                                     </div>
-                                </div>    	
-        						<div class="row" style="height:25px">&nbsp;</div>	
+                                </div>
+        						<div class="row" style="height:25px">&nbsp;</div>
         						<div class="row">&nbsp;</div>
         						<div class="card card-bordered">
                                     <div class="card-header bg-light">
                                         <h3 class="card-title">Product Size & Weight Information
 													<small>
-														&nbsp;&nbsp;We use this information in order to validate the warehouse size and 
+														&nbsp;&nbsp;We use this information in order to validate the warehouse size and
 													</small></h3>
                                         <div class="card-toolbar">
                                             <button type="button" class="btn btn-sm btn-light">
@@ -333,13 +334,13 @@ th{
                                     <div class="card-body">
                                     <div class="row">
                                     		<div class="col-md-12"  id="ProductSizeInfo">
-                                    			
+
                                     		</div>
                                     	</div>
                                     </div>
-                                   </div>  
+                                   </div>
                    			</div>
-					        <div class="row" style="height:5px;"></div> 
+					        <div class="row" style="height:5px;"></div>
 					        <div class="row">
 					        	<div class="col-md-12">
 					        	<div class="card card-bordered">
@@ -369,7 +370,7 @@ th{
                                                 <label class="control-label">Zone</label>
                                                 <div class="DefaultZone form-group">
                                                  <select data-control="select2" data-placeholder="Select a zone" class="form-select"  name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
-                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                        <option value="">&nbsp;&nbsp;</option>
                                                 </select>
                                                 </div>
                                             </div>
@@ -379,7 +380,7 @@ th{
                                                 <label class="control-label">Floor</label>
                                                 <div class="DefaultFloor form-group">
                                                  <select data-control="select2" data-placeholder="Select a Floor" class="form-select" name="fk_floor_id" id="FK_FLOOR_ID" data-actions-box="true">
-                                                        <option value="">&nbsp;&nbsp;</option> 
+                                                        <option value="">&nbsp;&nbsp;</option>
                                                 </select>
                                                 </div>
                                             </div>
@@ -389,14 +390,15 @@ th{
                             </div>
 					        	</div>
 					        </div>
-					        
+
 					        <div class="row">
                                 <div class="col-md-9"></div>
                                 <div class="col-md-3" align="right">
                                      <button type="submit" name="btn_save_product" id="BTN_SAVE_PRODUCT_BOTTOM"  class="btn btn-info">Save</button>
+                                    <button type="submit" name="btn_save_new_product" id="BTN_SAVE_NEW_PRODUCT_BOTTOM"  class="btn btn-success">Save & New</button>
                                     <button type="button" id="BACK_FORM_BOTTOM" name="back_form" class="btn default">Back</button>
                                 </div>
-                            </div>            
+                            </div>
                 </div>
             </form>
     </div>

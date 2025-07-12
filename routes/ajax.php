@@ -262,6 +262,11 @@ Route::post('/request/leadstatus/deletestatusinfo','CRM\LeadsStatusController@De
 Route::post('/request/activities/displaylist','CRM\LeadActivitiesController@DisplayList');
 
 
+Route::get('/request/appresult/displaylist','CRM\LeadAppResultsController@DisplayList');
+Route::post('/request/appresult/saveresultinfo','CRM\LeadAppResultsController@SaveAppResultInfo');
+Route::delete('/request/appresult/deleteresultinfo','CRM\LeadAppResultsController@DeleteAppResultInfo');
+
+
 Route::post('/request/leads/changestatus','CRM\LeadsController@ChangeLeadStatus');
 Route::post('/request/leads/assignto','CRM\LeadsController@LeadAssignTo');
 
@@ -603,6 +608,12 @@ Route::post('/request/sorders/displaylistcategories','Shipment\SOrdersController
 Route::post('/request/orders/getpackingprice','Shipment\SOrdersController@GetPackingPrice');
 Route::post('/request/sorders/payorder','Shipment\SOrdersController@PayOrder');
 Route::post('/request/sorders/deleteordercategory','Shipment\SOrdersController@DeleteOrderCategory');
+
+
+
+Route::get('/payroll/employees/displaylist','PayRoll\EmployeesController@DisplayList');
+Route::post('/payroll/employees/saveinfo','PayRoll\EmployeesController@SaveInfo');
+Route::delete('/payroll/employees/deleteemployee','PayRoll\EmployeesController@DeleteRecord');
 
 
 
