@@ -375,7 +375,7 @@ class SupplierQuotationsController extends Controller
             $action ='edit';
         }
 
-        $tva_info = VatAccounts::fint($sq_tva_id);
+        $tva_info = VatAccounts::find($sq_tva_id);
         $tva_amount = 0;
         if($sq_enable_tva == 1)
         {

@@ -175,13 +175,13 @@ th{
                             <label class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_FORWARDING" {{ $supplier_quotation->sq_enable_forwarding == 1 ? "checked" : ""  }} name="sq_enable_forwarding"  value="1" />
                                 <span class="form-check-label fw-semibold text-muted">
-                                   Enable Forwarding
+                                   Enable Customs
                                 </span>
                             </label>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Forwarding Percentage</label>
+                                <label class="control-label">Customs Percentage</label>
                                 <input type="text" name="sq_forwarding_percentage" id="SQ_FORWARDING_PERCENTAGE" class="form-control"  maxlength="10"  value="{{ $supplier_quotation->sq_forwarding_percentage  }}" />
                             </div>
                         </div>
