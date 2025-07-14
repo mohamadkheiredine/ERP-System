@@ -189,7 +189,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Customs Amount</label>
-                                <input type="text" name="sq_forwarding_percentage" id="SQ_FORWARDING_PERCENTAGE" class="form-control"  maxlength="10"  value="" />
+                                <input type="text" name="sq_forwarding_amount" id="SQ_FORWARDING_AMOUNT" class="form-control"  maxlength="10"  value="" />
                             </div>
                         </div>
                         <div class="col-md-4">&nbsp;</div>
@@ -206,6 +206,22 @@ th{
                             <div class="form-group">
                                 <label class="control-label">Insurance Amount</label>
                                 <input type="text" name="sq_insurance_amount" id="SQ_INSURANCE_AMOUNT" class="form-control"  maxlength="10"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">&nbsp;</div>
+                        <div class="col-md-4">
+                            <br/>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"  type="checkbox" id="SQ_ENABLE_BROKER" name="sq_enable_broker"  value="1" />
+                                <span class="form-check-label fw-semibold text-muted">
+                                   Enable Clearing Expenses
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Clearing Expenses</label>
+                                <input type="text" name="sq_broker_amount" id="SQ_BROKER_AMOUNT" class="form-control"  maxlength="10"  value="" />
                             </div>
                         </div>
                         <div class="col-md-4">&nbsp;</div>

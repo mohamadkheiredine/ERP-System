@@ -356,10 +356,12 @@ class SupplierQuotationsController extends Controller
         $sq_enable_freight          = $request->has('sq_enable_freight') ? 1 : 0;
         $sq_enable_forwarding       = $request->has('sq_enable_forwarding') ? 1 : 0;
         $sq_enable_insurance        = $request->has('sq_enable_insurance') ? 1 : 0;
+        $sq_enable_broker        = $request->has('sq_enable_broker') ? 1 : 0;
         $sq_tva_id                  = $request->input('sq_tva_id');
         $sq_freight_amount          = $request->input('sq_freight_amount');
-        $sq_forwarding_percentage   = $request->input('sq_forwarding_percentage');
+        $sq_forwarding_amount       = $request->input('sq_forwarding_amount');
         $sq_insurance_amount        = $request->input('sq_insurance_amount');
+        $sq_broker_amount           = $request->input('sq_broker_amount');
         $sq_approve_quotation       = $request->has('sq_approve_quotation') ? 1 : 0;
         $warehouse_id               = session('warehouse_id');
         $todays_date = date('Y-m-d');
@@ -397,6 +399,11 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->sq_enable_freight         = $sq_enable_freight;
         $supplier_quotation->sq_enable_forwarding         = $sq_enable_forwarding;
         $supplier_quotation->sq_enable_insurance         = $sq_enable_insurance;
+        $supplier_quotation->sq_freight_amount         = $sq_freight_amount;
+        $supplier_quotation->sq_forwarding_amount         = $sq_forwarding_amount;
+        $supplier_quotation->sq_insurance_amount         = $sq_insurance_amount;
+        $supplier_quotation->sq_enable_broker         = $sq_enable_broker;
+        $supplier_quotation->sq_broker_amount         = $sq_broker_amount;
         $supplier_quotation->sq_tva_id         = $sq_tva_id;
         $supplier_quotation->save();
 
@@ -632,6 +639,63 @@ class SupplierQuotationsController extends Controller
                 $trans_mov->tm_transaction_date        = date('Y-m-d');
                 $trans_mov->tm_currency_id          = $sq_currency_id;
                 $trans_mov->tm_ledger_label         = "Credit For Freight of Stock For Cash";
+                $trans_mov->save();
+            }
+
+            if($sq_enable_forwarding == 1)
+            {
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 6018;
+                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_debit                = $sq_forwarding_amount;
+                $trans_mov->tm_credit               = 0;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Debit Inside Customs for Stock from Supplier " . $supplier_info->ss_supplier_name;
+                $trans_mov->save();
+
+
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 53;
+                $trans_mov->tm_sub_ledger_account   = 53;
+                $trans_mov->tm_debit                = 0;
+                $trans_mov->tm_credit               = $sq_forwarding_amount;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Credit For Customs of Stock For Cash";
+                $trans_mov->save();
+            }
+
+
+            if($sq_enable_insurance == 1)
+            {
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 6018;
+                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_debit                = $sq_insurance_amount;
+                $trans_mov->tm_credit               = 0;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Debit Inside Insurance Acount for Stock from Supplier " . $supplier_info->ss_supplier_name;
+                $trans_mov->save();
+
+
+                $trans_mov= new TransactionMovements();
+                $trans_mov->fk_tran_id              = $at_id;
+                $trans_mov->tm_ledger_account       = 53;
+                $trans_mov->tm_sub_ledger_account   = 53;
+                $trans_mov->tm_debit                = 0;
+                $trans_mov->tm_credit               = $sq_insurance_amount;
+                $trans_mov->tm_creation_date        = date('Y-m-d');
+                $trans_mov->tm_transaction_date        = date('Y-m-d');
+                $trans_mov->tm_currency_id          = $sq_currency_id;
+                $trans_mov->tm_ledger_label         = "Credit For Insurance of Stock For Cash";
                 $trans_mov->save();
             }
 
