@@ -61,6 +61,17 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Employee </label>
+                                <select  name="db_user_id" id="DB_USER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Employee">
+                                    <option value="">Select Employee</option>
+                                    @foreach ( $lst_employees as $key => $employee_info )
+                                        <option value="{{  $employee_info->id }}">{{  $employee_info->u_fullname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-md-4" >
                             <div class="form-group">
                                 <label class="control-label"> Charges Label <span class="required"> * </span></label>
@@ -90,7 +101,7 @@
                                 <select  name="db_type" id="DB_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Charges Type">
                                     <option value="">Select Type</option>
                                     <option value="deduction">deduction</option>
-                                    <option value="benefit">benefit</option>
+                                    <option value="benefit">Bonuses</option>
                                 </select>
                             </div>
                         </div>

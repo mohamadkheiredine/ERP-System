@@ -240,18 +240,21 @@ class ProductStocksController extends Controller
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
-        $lst_serial_numbers = StockIds::whereSiStockId($is_id)->get();
+        $lst_serial_numbers = StockIds::whereFkStockId($is_id)->get();
         $serial_numbers     = array();
         foreach ( $lst_serial_numbers as $key => $sn_info )
         {
             $serial_numbers[] = $sn_info->si_stock_uid;
         }
+
+        $product_info = Products::find($InventoryStock->fk_product_id);
         $data = array(
             'serial_numbers' => $serial_numbers,
             'lst_products' => $lst_products,
             'lst_warehouse' => $lst_warehouse,
             'lst_currencies' => $lst_currencies,
             'InventoryStock' => $InventoryStock,
+            'product_info' => $product_info,
             'currency_array' => $currency_array,
             'lst_suppliers' => $lst_suppliers,
             'secondary_currency' => $secondary_currency,

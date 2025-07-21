@@ -1,1 +1,0 @@
-ALTER TABLE `lg_shipment_operations` ADD COLUMN `so_delivery_date` DATETIME NULL DEFAULT NULL AFTER `so_operation_time`;

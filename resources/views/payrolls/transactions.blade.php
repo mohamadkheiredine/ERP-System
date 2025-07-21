@@ -10,7 +10,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2024
 
 Page Description :
 {Enter page description Here}
-***********************************************************/
+ ***********************************************************/
 
 ?>
 
@@ -28,14 +28,14 @@ Page Description :
     </style>
 @endsection
 @section('plugins')
-    <script type="text/javascript" src="{{ url('js/modules/salarydetails.module.js') }}"></script>
-    <script type="text/javascript" src="{{ url('js/libraries/payrolls/salarydetails.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/modules/ptransactions.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/libraries/payrolls/ptransactions.js') }}"></script>
 @endsection
 
 @section('content')
     <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="card-title">Salary Details Management</h3>
+            <h3 class="card-title">Payroll Transactions Management</h3>
             <div class="card-toolbar">
                 <div class="btn-group">
                     <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,35 +70,26 @@ Page Description :
                             </div>
                             <div class="col-md-4">
                                 <select class="form-control form-select" name="pd_company_id" id="DB_COMPANY_ID"  data-control="select2" data-placeholder="Select a Branch" tabindex="2">
-                                <option value="0"> -- Company -- </option>
-                                @foreach ( $lst_companies as $key => $company_info )
-                                    <option value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
+                                    <option value="0"> -- Company -- </option>
+                                    @foreach ( $lst_companies as $key => $company_info )
+                                        <option value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
                                     @endforeach
-                                    </select>
+                                </select>
                             </div>
                             <div class="col-md-4">
                                 <select class="form-control form-select" name="pd_user_id" id="PD_USER_ID"  data-control="select2" data-placeholder="Select Employee" tabindex="2">
-                                <option value="0"> -- Employee -- </option>
-                                @foreach ( $lst_employees as $key => $employee_info )
-                                    <option value="{{ $employee_info->u_id }}">{{ $employee_info->u_fullname }}</option>
+                                    <option value="0"> -- Employee -- </option>
+                                    @foreach ( $lst_employees as $key => $employee_info )
+                                        <option value="{{ $employee_info->u_id }}">{{ $employee_info->u_fullname }}</option>
                                     @endforeach
-                                    </select>
+                                </select>
                             </div>
                             <div class="col-md-4">
 
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 order-1 order-xl-2 align-right">
-                        <a href="{{ url('payroll/salarydetails/addform') }}" class="btn btn-info">
-						<span>
-							<i class="fas fa-user"></i>
-							<span>
-								Add New
-							</span>
-						</span>
-                        </a>
-                    </div>
+                    <div class="col-xl-4 order-1 order-xl-2 align-right"></div>
                 </div>
             </div>
             <!--end: Search Form -->
@@ -111,16 +102,13 @@ Page Description :
                         <th title="Id"> ID </th>
                         <th title="Company"> Company </th>
                         <th title="Employee"> Employee </th>
-                        <th title="Base Salary"> Base Salary </th>
-                        <th title="Total Comission"> Total Comission </th>
-                        <th title="Deduction"> Deduction </th>
-                        <th title="Benefit"> Benefit </th>
+                        <th title="Salary"> Base Salary </th>
                         <th title="Date"> Date </th>
-                        <th title="edit"> edit </th>
-                        <th title="delete"> Delete </th>
+                        <th title="view"> View </th>
+                        <th title="pay"> Pay </th>
                     </tr>
                     </thead>
-                    <tbody class="LstSallaryDetails">
+                    <tbody class="LstPayRollTransactions">
                     </tbody>
                 </table>
 
@@ -129,19 +117,9 @@ Page Description :
             <!--end: Datatable -->
             <div class="row">
                 <div class="col-md-10 col-lg-10 col-xs-10" align="left">
-                    <ul id="SalDetailsPagination" class="pagination-sm"></ul>
+                    <ul id="PayRollTransactionsPagination" class="pagination-sm"></ul>
                 </div>
-                <div class="col-md-2 col-lg-2 col-xs-2" align="right">
-                    <a href="{{ url('payroll/salarydetails/addform') }}" class="btn btn-info">
-						<span>
-							<i class="fas fa-user"></i>
-							<span>
-								Add New
-							</span>
-						</span>
-                    </a>
-                    <button type="button" name="btn_generate_payrolls" class="btn btn-success">Generate Details</button>
-                </div>
+                <div class="col-md-2 col-lg-2 col-xs-2" align="right"></div>
             </div>
         </div>
     </div>

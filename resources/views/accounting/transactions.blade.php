@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-transactions.blade.php
+transactions.blade.php.php
 Product :
 Version : 1.0
 Release : 1
@@ -9,7 +9,7 @@ Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
 Page Description :
-Page to display Transactions 
+Page to display Transactions
 ***********************************************************/
 
 ?>
@@ -173,7 +173,7 @@ th{
 					</div>
 				</div>
 				<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-					
+
 				</div>
 			</div>
 		</div>
@@ -189,17 +189,17 @@ th{
             			<th title="#">#</th>
             			<th title="Date">Date</th>
             			<th title="Accounting Doc">Accounting Doc</th>
-            			<th title="Account">Account</th> 
+            			<th title="Account">Account</th>
             			<th title="Label">Label</th>
             			<th title="Debit">Debit</th>
             			<th title="Credit">Credit</th>
-            			<th title="Currenct">Currency</th> 
+            			<th title="Currenct">Currency</th>
             			<th title="edit">Edit</th>
             			<th title="Delete">Delete</th>
             		</tr>
             	</thead>
             	<tbody  id="LstLedger">
-            	      
+
             	</tbody>
             </table>
 		</div>

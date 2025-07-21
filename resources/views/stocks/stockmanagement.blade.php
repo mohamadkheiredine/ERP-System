@@ -56,17 +56,20 @@ th{
 			<div class="row align-items-center">
 				<div class="col-xl-8 order-2 order-xl-1">
 					<div class="form-group m-form__group row align-items-center">
-						<div class="col-md-4">
-						<div class="m-input-icon m-input-icon--left">
-								<input type="text" class="form-control m-input m-input--solid" placeholder="Search..." name="general_search" id="generalSearch">
-								<span class="m-input-icon__icon m-input-icon__icon--right">
-									<span>
-										<i class="la la-search"></i>
-									</span>
-								</span>
-							</div>
-
-						</div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <!--begin::Input group-->
+                                <div class="position-relative w-md-400px me-md-2">
+                                    <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <br/>
+                        </div>
 						<div class="col-md-4">
 							<select class="bs-select form-control" name="stock_warehouse" id="STOCK_WAREHOUSE" data-actions-box="true">
                                     <option value="">Select Warehouse</option>
@@ -74,7 +77,6 @@ th{
                                             <option value="{{ $warehouse_info->w_id  }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                     @endforeach
                             </select>
-                            <div class="d-md-none m--margin-bottom-10"></div>
 						</div>
 						<div class="col-md-4">
 							<select class="bs-select form-control" name="stock_product" id="STOCK_PRODUCT" data-actions-box="true">
@@ -97,8 +99,8 @@ th{
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-					<a href="{{ url('inventory/addstock') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
+				<div class="col-xl-12 order-1 order-xl-2 align-right">
+					<a href="{{ url('inventory/addstock') }}" class="btn btn-success">
 						<span>
 							<i class="fas fa-user"></i>
 							<span>
@@ -112,24 +114,27 @@ th{
 		</div>
 		<!--end: Search Form -->
           <!--begin: Datatable -->
-		<div  id="LstProductsMain">
-			<table class="table m-table m-table--head-bg-brand" id="html_table" width="100%">
-        		<thead>
-        			<tr>
+		<div  class="table-responsive" id="LstProductsMain">
+            <table class="table table-striped gy-7 gs-7">
+                <thead>
+                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
         				<th style="width:10px">#</th>
         				<th title="Id" style="width:10px"> ID </th>
         				<th title="Product" style="width:250px;white-space: nowrap;"> Product </th>
         				<th title="Warehouse" style="width:150px;white-space: nowrap;"> Warehouse  </th>
         				<th title="Price" style="width:150px;white-space: nowrap;"> Price </th>
         				<th title="Quantity" style="width:150px;white-space: nowrap;"> Quantity </th>
-        				<th style="width:4px !important;" nowrap title="#"> edit </th> 
+        				<th style="width:4px !important;" nowrap title="#"> edit </th>
         				<th style="width:4px !important;" nowrap title="#"> Delete </th>
         			</tr>
         		</thead>
             	<tbody  id="LstProductStocks" ></tbody>
             </table>
-            									
+
 		</div>
+        <div class="row">
+            <div class="col-md-12" style="height:20px">&nbsp;</div>
+        </div>
 		<div class="row">
              <div class="col-md-6" align="left">
                 <ul id="StocksPagination" class="pagination-sm"></ul>
@@ -138,11 +143,14 @@ th{
              	<span class="TotalCost"></span>
              </div>
          </div>
+        <div class="row">
+            <div class="col-md-12" style="height:20px">&nbsp;</div>
+        </div>
 		<!--end: Datatable -->
 		<div class="row">
 			<div class="col-md-8"></div>
 			<div class="col-md-4" align="right">
-				<a href="{{ url('inventory/addstock') }}" class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill">
+				<a href="{{ url('inventory/addstock') }}" class="btn btn-success">
 						<span>
 							<i class="fas fa-user"></i>
 							<span>

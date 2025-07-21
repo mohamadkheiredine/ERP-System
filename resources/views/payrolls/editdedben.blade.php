@@ -61,6 +61,17 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Employee </label>
+                                <select  name="db_user_id" id="DB_USER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Employee">
+                                    <option value="">Select Employee</option>
+                                    @foreach ( $lst_employees as $key => $employee_info )
+                                        <option {{ $employee_info->id == $employee_info->db_user_id ? "selected" : "" }} value="{{  $employee_info->id }}">{{  $employee_info->u_fullname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-md-4" >
                             <div class="form-group">
                                 <label class="control-label"> Charges Label <span class="required"> * </span></label>

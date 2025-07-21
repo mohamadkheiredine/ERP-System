@@ -473,23 +473,9 @@ class DealsController extends Controller
         // validate serial number of the product
         if($ad_is_approved > 0)
         {
-            $stock_serial = StockIds::whereSiStockUid($ad_serial_number)->get();
-
-            // check if serial number exist in stock
-            if(count($stock_serial) == 0)
-            {
-                $result_array['is_error'] = 1;
-                $result_array['error_msg'] = "Please Add A valid Serial Number";
-                return Response()->json($result_array);
-            }
 
 
-            $stock_id = $stock_serial[0]->fk_stock_id;
-            $product_id = $stock_serial[0]->fk_product_id;
-
-            $stock_info = Stocks::find($stock_id);
-
-
+            $delete_old_comissions = PayrollsComissions::wherePcDealId($ad_id)->delete();
             // create comissions records
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_sales_id;
@@ -497,6 +483,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_value = $ad_sales_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_comission_label = "Comission Deal " . $ad_deal_code . " For Client " . $account_deal->Account->ca_account_name;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->save();
 
@@ -508,6 +495,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = date('Y-m-d');
             $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->pc_comission_label = "Comission Deal " . $ad_deal_code . " For Client " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
 
@@ -518,6 +506,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = date('Y-m-d');
             $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->pc_comission_label = "Comission Deal " . $ad_deal_code . " For Client " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
 
@@ -528,6 +517,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = date('Y-m-d');
             $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->pc_comission_label = "Comission Deal " . $ad_deal_code . " For Client " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
 
@@ -539,6 +529,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = date('Y-m-d');
             $payroll_comissions->pc_deal_id = $ad_id;
+            $payroll_comissions->pc_comission_label = "Comission Deal " . $ad_deal_code . " For Client " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
         }

@@ -618,8 +618,8 @@ class SupplierQuotationsController extends Controller
             {
                 $trans_mov= new TransactionMovements();
                 $trans_mov->fk_tran_id              = $at_id;
-                $trans_mov->tm_ledger_account       = 6018;
-                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_ledger_account       = 60181;
+                $trans_mov->tm_sub_ledger_account   = 60181;
                 $trans_mov->tm_debit                = $sq_freight_amount;
                 $trans_mov->tm_credit               = 0;
                 $trans_mov->tm_creation_date        = date('Y-m-d');
@@ -646,8 +646,8 @@ class SupplierQuotationsController extends Controller
             {
                 $trans_mov= new TransactionMovements();
                 $trans_mov->fk_tran_id              = $at_id;
-                $trans_mov->tm_ledger_account       = 6018;
-                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_ledger_account       = 61185;
+                $trans_mov->tm_sub_ledger_account   = 61185;
                 $trans_mov->tm_debit                = $sq_forwarding_amount;
                 $trans_mov->tm_credit               = 0;
                 $trans_mov->tm_creation_date        = date('Y-m-d');
@@ -675,8 +675,8 @@ class SupplierQuotationsController extends Controller
             {
                 $trans_mov= new TransactionMovements();
                 $trans_mov->fk_tran_id              = $at_id;
-                $trans_mov->tm_ledger_account       = 6018;
-                $trans_mov->tm_sub_ledger_account   = 6018;
+                $trans_mov->tm_ledger_account       = 60183;
+                $trans_mov->tm_sub_ledger_account   = 60183;
                 $trans_mov->tm_debit                = $sq_insurance_amount;
                 $trans_mov->tm_credit               = 0;
                 $trans_mov->tm_creation_date        = date('Y-m-d');

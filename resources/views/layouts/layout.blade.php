@@ -41,13 +41,6 @@ Page Description :
 			 @yield("themes")
 		<!--end::Global Stylesheets Bundle-->
 		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
-        <script type="text/javascript">
-            $(function(){
-                $("#BACK_FORM").on('click',function(){
-                    history.go(-1);
-                })
-            })
-        </script>
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
@@ -488,7 +481,7 @@ Page Description :
                                     @endif
 							@endif
 
-                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div style="display: none"  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">
@@ -621,6 +614,16 @@ Page Description :
 											<!--end:Menu link-->
 										</div>
                                         @endif
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('inventory/stocks') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Stock Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
                                         @if(CheckPrivilage('erp_stock_transfer') == "allow")
 										<div class="menu-item">
 											<!--begin:Menu link-->
@@ -842,7 +845,7 @@ Page Description :
                                         @if(CheckPrivilage('erp_payroll_salary_details') == "allow")
 										 <div class="menu-item">
                                             <!--begin:Menu link-->
-                                            <a class="menu-link" href="#">
+                                            <a class="menu-link" href="{{ url('/payroll/salarydetails') }}">
                                                     <span class="menu-bullet">
                                                             <span class="bullet bullet-dot"></span>
                                                     </span>
@@ -882,7 +885,7 @@ Page Description :
                                                     <span class="menu-bullet">
                                                             <span class="bullet bullet-dot"></span>
                                                     </span>
-                                                    <span class="menu-title">Deductions and Benefits</span>
+                                                    <span class="menu-title">Deductions and Bonuses</span>
                                             </a>
                                             <!--end:Menu link-->
 										</div>
@@ -902,7 +905,7 @@ Page Description :
                                         @if(CheckPrivilage('erp_payroll_transactions') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
-                                            <a class="menu-link" href="#">
+                                            <a class="menu-link" href="{{ url('payroll/transactions') }}">
                                                     <span class="menu-bullet">
                                                             <span class="bullet bullet-dot"></span>
                                                     </span>
@@ -6871,6 +6874,13 @@ Page Description :
 		</script>
 		 @yield("plugins")
 		<!--end::Javascript-->
+        <script type="text/javascript">
+            $(function(){
+                $("#BACK_FORM").on('click',function(){
+                    history.go(-1);
+                })
+            })
+        </script>
 	</body>
 	<!--end::Body-->
 </html>

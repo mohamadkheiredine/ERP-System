@@ -497,6 +497,18 @@ Route::post('/request/payrollsperiod/saveinfo','PayRoll\PayRollsPeriodController
 Route::delete('/request/payrollsperiod/deleteinfo','PayRoll\PayRollsPeriodController@DeletePayRollPeriodInfo');
 
 
+
+Route::get('/request/salarydetails/displaylist','PayRoll\SalaryDetailsController@DisplayList');
+Route::post('/request/salarydetails/saveinfo','PayRoll\SalaryDetailsController@SaveSalaryDetailsInfo');
+Route::delete('/request/salarydetails/deleteinfo','PayRoll\SalaryDetailsController@DeleteSalaryDetailsInfo');
+Route::get('/request/salarydetails/getemployeeinfo','PayRoll\SalaryDetailsController@GetEmployeeInfo');
+Route::post('/request/salarydetails/generatepayrolltransaction','PayRoll\SalaryDetailsController@GeneratePayRollTransaction');
+
+
+Route::post('/request/ptransactions/payemployeepayroll','PayRoll\PayRollsTransactionsController@PayEmployeePayRoll');
+Route::get('/ request/ptransactions/displaylist','PayRoll\PayRollsTransactionsController@DisplayList');
+
+
 Route::post('/request/displaylistorderstatus','Sales\OrderStatusController@DisplayList');
 Route::post('/request/saveorderstatusinfo','Sales\OrderStatusController@SaveOrderStatusInfo');
 Route::post('/request/deleteorderstatus','Sales\OrderStatusController@DeleteOrderStatusInfo');

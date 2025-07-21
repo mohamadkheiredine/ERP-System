@@ -198,6 +198,15 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/payroll/dedben/editform/{db_id}','PayRoll\PayrollsDedBenController@EditForm');
 
 
+    Route::get('/payroll/salarydetails','PayRoll\SalaryDetailsController@index');
+    Route::get('/payroll/salarydetails/addform','PayRoll\SalaryDetailsController@AddForm');
+    Route::get('/payroll/salarydetails/editform/{pd_id}','PayRoll\SalaryDetailsController@EditForm');
+
+
+    Route::get('/payroll/transactions','PayRoll\PayRollsTransactionsController@index');
+    Route::get('/payroll/transactions/view/{pt_id}','PayRoll\PayRollsTransactionsController@EditForm');
+
+
     Route::get('/crm/leads','CRM\LeadsController@index');
     Route::get('/crm/leads/addform','CRM\LeadsController@AddForm');
     Route::get('/crm/leads/editform/{cl_id}','CRM\LeadsController@EditForm');

@@ -38,5 +38,10 @@ class PayrollsSalaryDetails extends Model
         return $this->hasOne('App\models\System\Companies', 'cd_id','pd_company_id');
     }
 
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id','pd_currency_id');
+    }
+
 
 }
