@@ -68,7 +68,7 @@ th{
 							</div>
 						</div>
 						<div class="col-md-4">
-						<select class="form-select form-select-transparent" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2"> 
+						<select class="form-select" name="so_order_customer" id="SO_ORDER_CUSTOMER"  data-control="select2" data-placeholder="Select a Customer" tabindex="2">
                                     <option value="0"> -- Customer -- </option>
                                     @foreach ( $lst_customers as $key => $customer_info )
                                             <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_code }}&nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
@@ -76,21 +76,23 @@ th{
                             </select>
 						</div>
 						<div class="col-md-4">
-							<select class="form-select form-select-transparent" name="so_vendor_id" id="SO_VENDOR_ID"  data-control="select2" data-placeholder="Select a Vendor" tabindex="3"> 
+							<select class="form-select" name="so_vendor_id" id="SO_VENDOR_ID"  data-control="select2" data-placeholder="Select a Vendor" tabindex="3">
                                     <option value="0"> -- Vendor -- </option>
                                     @foreach ( $lst_vendors as $key => $vendor_info )
                                             <option value="{{ $vendor_info->iv_id }}">{{ $vendor_info->iv_vendor_name }}</option>
                                     @endforeach
                             </select>
 						</div>
+                        <div class="col-md-12">&nbsp;</div>
 						<div class="col-md-4">
-						<select class="form-select form-select-transparent" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4"> 
+						<select class="form-select" name="so_order_warehouse" id="SO_ORDER_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4">
                                     <option value="0" selected="selected"> -- Warehouse -- </option>
                                     @foreach ( $lst_warehouses as $key => $warehouse_info )
                                             <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                     @endforeach
-                            </select> 
+                            </select>
 						</div>
+
 					</div>
 				</div>
 				<div class="col-xl-4 order-1 order-xl-2 align-right">
@@ -105,8 +107,8 @@ th{
 				</div>
 			</div>
 		</div>
-		<!--end: Search Form -->
-          <!--begin: Datatable -->
+
+        <div class="col-md-12">&nbsp;</div>
 		<div id="LstOrders" class="table-responsive">
 			<table class="table table-row-dashed table-row-gray-300 gy-7">
               <thead>
@@ -123,8 +125,8 @@ th{
               <tbody class="LstOrdersBody">
               </tbody>
              </table>
-		
-		
+
+
 		</div>
 		<!--end: Datatable -->
 		<div class="row">

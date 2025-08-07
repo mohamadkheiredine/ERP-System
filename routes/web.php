@@ -25,6 +25,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/accounting/dashboard','Dashboard\DashboardController@Accounting');
     Route::get('/services/dashboard','Dashboard\DashboardController@Services');
     Route::get('/crm/dashboard','Dashboard\DashboardController@CrmDashboard');
+    Route::get('/inventory/dashboard','Dashboard\DashboardController@InventoryDashboard');
 
     Route::get('/user/logout','Users\UsersController@LogOut');
     Route::get('/user/myprofile','Users\UsersController@MyProfile');
@@ -525,5 +526,22 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/appointments/downloadapt/{apt_id}','CallCenter\AppointmentsController@DownloadAppointment');
     Route::get('/callcenter/reports/callbackreports','CallCenter\AppointmentsController@CallBackReports');
     Route::get('/callcenter/leads/downloadcallbackleads','CallCenter\AppointmentsController@DownloadListCallbackLeads');
+
+
+
+
+    Route::get('/system/statuses','System\SystemStatusController@index');
+    Route::get('/system/statuses/addform','System\SystemStatusController@AddForm');
+    Route::get('/system/statuses/editform/{ss_id}','System\SystemStatusController@EditForm');
+
+
+    Route::get('/expenses/categories','Expenses\ExpenseCategoriesController@index');
+    Route::get('/expenses/categories/addform','Expenses\ExpenseCategoriesController@AddForm');
+    Route::get('/expenses/categories/editform/{ec_id}','Expenses\ExpenseCategoriesController@EditForm');
+
+
+    Route::get('/expenses','Expenses\ExpensesController@index');
+    Route::get('/expenses/addform','Expenses\ExpensesController@AddForm');
+    Route::get('/expenses/editform/{ac_id}','Expenses\ExpensesController@EditForm');
 
 });

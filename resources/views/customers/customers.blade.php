@@ -45,6 +45,7 @@ th{
                     <li><a class="dropdown-item" data-action_type="EXPORT_AS_CSV" href="#">Export As CSV</a></li>
                     <li><a class="dropdown-item" data-action_type="IMPORT" href="#" data-bs-toggle="modal" data-bs-target="#modal_import">Import</a></li>
                     <li><a class="dropdown-item" data-action_type="DOWNLOAD_TEMPLATE" href="#">Download Import Template</a></li>
+                  <li><a class="dropdown-item" data-action_type="CREATE_SALES_ORDER" href="#">Create Sales Order</a></li>
               </ul>
             </div>
         </div>
@@ -89,7 +90,7 @@ th{
 													</span>
 												</span>
 											</a>
-										 
+
 										</div>
 									</div>
 								</div>
@@ -106,17 +107,17 @@ th{
                                     				<th title="Customer Name"> Customer Name </th>
                                     				<th title="Customer Account"> Customer Email </th>
                                     				<th title="Customer Phone"> Customer Phone </th>
-                                    				<th title="Edit"> Edit </th> 
-                                    				<th title="Delete"> Delete </th> 
+                                    				<th title="Edit"> Edit </th>
+                                    				<th title="Delete"> Delete </th>
                                     			</tr>
                                     		</thead>
                                     		<tbody id="LstCustomers">
-                                    			  
+
                                     		</tbody>
                                     </table>
                                 </div>
 								</div>
-								
+
 								 <div class="row">
                                      <div class="col-md-10" align="left">
                                         <ul id="CustomersPagination" class="pagination-sm"></ul>
@@ -158,7 +159,7 @@ th{
                     <div class="col-md-12">
                         <form name="FORM_IMPORT_CUSTOMERS" id="FORM_IMPORT_CUSTOMERS">
                              <span id="hidden_fields">
-                                {!! csrf_field() !!} 
+                                {!! csrf_field() !!}
                             </span><div class="row">
                                 <div class="col-md-12" style="height:20px;"></div>
                             </div>
@@ -176,7 +177,7 @@ th{
                             <div class="row">
                                 <div class="col-md-12">
                                      <div class="form-group" style="text-align:right">
-                                   
+
                           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="submit" name="btn_upload_customers" id="BTN_UPLOAD_CUSTOMERS" class="btn btn-primary">Save changes</button>
                                     </div>
@@ -188,7 +189,7 @@ th{
             </div>
 
             <div class="modal-footer">
-              
+
             </div>
         </div>
     </div>

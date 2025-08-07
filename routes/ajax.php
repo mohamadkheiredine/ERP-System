@@ -15,6 +15,10 @@ Route::post('/request/dashboard/getservicesinvoicepercentage','Dashboard\Dashboa
 Route::post('/request/dashboard/services/servicespiechart','Dashboard\DashboardController@GetServicesPieChart');
 Route::post('/request/dashboard/displaylistaccountgroup','Dashboard\DashboardController@Displaylistaccounttotals');
 
+Route::post('/request/dashboard/getstockbyproducts','Dashboard\DashboardController@GetStockByProducts');
+Route::post('/request/dashboard/getstockbywarehouses','Dashboard\DashboardController@GetStockByWarehouse');
+Route::post('/request/dashboard/getsellingproducts','Dashboard\DashboardController@GetTopSellingProducts');
+
 Route::post('/request/dashboard/getstockbycategories','Dashboard\DashboardController@GetStockByCategories');
 
 Route::post('/request/displayusersManagement','Users\UsersController@DisplayList');
@@ -301,6 +305,7 @@ Route::post('/request/clients/deleteaccountinfo','CRM\AccountsController@DeleteA
 Route::put('/request/leads/converttoaccounts','CRM\AccountsController@ConvertLeadtoAccount');
 Route::get('/request/account/getaccountinfobycode','CRM\AccountsController@GetAccountInfoByCode');
 Route::post('/request/account/generatedealpaymentspreview','CRM\DealsController@GenerateDealPaymentsPreview');
+Route::post('/request/clients/getregionarea','CRM\AccountsController@GetRegionArea');
 
 Route::post('/request/services/displaylistcategory','CRM\ServiceCategoriesController@DisplayList');
 Route::post('/request/services/savecategoryinfo','CRM\ServiceCategoriesController@SaveServiceCategoryInfo');
@@ -661,3 +666,18 @@ Route::delete('/request/casestatus/deleteinfo','CallCenter\CaseStatusController@
 Route::get('/request/maintenancecase/displaylist','CallCenter\MaintenanceCaseController@DisplayList');
 Route::post('/request/maintenancecase/saveinfo','CallCenter\MaintenanceCaseController@SaveMaintenanceCaseInfo');
 Route::delete('/request/maintenancecase/deleteinfo','CallCenter\MaintenanceCaseController@DeleteMaintenanceCaseInfo');
+
+
+Route::get('/request/system/displayliststatus','System\SystemStatusController@DisplayList');
+Route::post('/request/system/savestatusinfo','System\SystemStatusController@SaveStatusInfo');
+Route::delete('/request/system/deletestatusinfo','System\SystemStatusController@DeleteStatusInfo');
+
+
+
+Route::get('/request/expenses/listcategories','Expenses\ExpenseCategoriesController@DisplayList');
+Route::post('/request/expenses/savecategoryinfo','Expenses\ExpenseCategoriesController@SaveExpenseCategoryInfo');
+Route::delete('/request/expenses/deletecategoryinfo','Expenses\ExpenseCategoriesController@DeleteExpensesCategoryInfo');
+
+Route::get('/request/expenses/displaylist','Expenses\ExpensesController@DisplayList');
+Route::post('/request/expenses/saveexpenseinfo','Expenses\ExpensesController@SaveExpenseInfo');
+Route::delete('/request/expenses/deleteexpenseinfo','Expenses\ExpensesController@DeleteExpensesInfo');

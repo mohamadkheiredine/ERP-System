@@ -1,14 +1,14 @@
 /**
- * 
+ *
  */
 
 clients_module = {
 		DisplayListClients : function(){
 			var base_url 			= $('input[name=base_url]').val();
 			var _token	 			= $('input[name=_token]').val();
-			var account_category	 	= $('select[name=account_category]').val(); 
-			var general_search	 	= $('input[name=general_search]').val(); 
-			var page_number	 	= $('input[name=page_number]').val(); 
+			var account_category	 	= $('select[name=account_category]').val();
+			var general_search	 	= $('input[name=general_search]').val();
+			var page_number	 	= $('input[name=page_number]').val();
 		    var params = { _token : _token , account_category : account_category , general_search : general_search , page_number : page_number };
 		    $.ajax
 	        ({
@@ -17,7 +17,7 @@ clients_module = {
 	            dataType : "json",
 	            type : "POST",
 	            success : function(response){
-	            	$('#LstClients').html(response.display); 
+	            	$('#LstClients').html(response.display);
 	            	 $('.group-checkable').change(function() {
                             var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
                             var checked = $(this).prop("checked");
@@ -53,7 +53,7 @@ clients_module = {
 					{
 					      var base_url = $('#BASE_URL').val();
 					      var _token = $('input[name=_token]').val();
-					        var str_params ={cc_id : cc_id , _token : _token};
+					        var str_params ={ca_id : ca_id , _token : _token};
 					         $.ajax
 					        ({
 					            url : base_url + "/request/clients/deleteaccountinfo",
@@ -70,6 +70,23 @@ clients_module = {
 					}
 				});
 		},
+    getlistofregions : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var lr_area	 	= $(this).val();
+        var params = { _token : _token , lr_area : lr_area };
+        $.ajax
+        ({
+            url : base_url + "/request/clients/getregionarea",
+            data : params,
+            dataType : "json",
+            type : "POST",
+            success : function(response){
+                $('#REGION_DROPDOWN').html(response.dropdown);
+                $('#ca_billing_region').select2();
+            }
+        });
+    },
 		SaveClientInfo : function(){
 			clients_module.SaveClientInfoSubmitHandler();
 		},
@@ -130,7 +147,7 @@ clients_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FORM_SAVE_ACCOUNT]");
 
 	    	        var data = new FormData();
@@ -142,19 +159,19 @@ clients_module = {
 	    	                        data.append(name, file);
 	    	                })
 	    	        });
-                        
-                        
+
+
 	    	        FormDataFields.find('input,select,textarea').each(function(){
                             var name = $(this).attr('name');
                             var val = $(this).val();
                             data.append( name, val );
-	    	        	 
-	    	        });
-                        
 
-	    	         
+	    	        });
+
+
+
 	    	        const ca_account_description = $.account_editor.getData();
-	    	        data.append("ca_account_description", ca_account_description ); 
+	    	        data.append("ca_account_description", ca_account_description );
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/clients/saveaccountinfo",
@@ -174,7 +191,7 @@ clients_module = {
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -193,6 +210,6 @@ clients_module = {
                 ImportLstAccounts : function(){
                     $('#ImportClientsModal').modal({
                         show: 'true'
-                    }); 
+                    });
                 }
 };

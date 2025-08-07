@@ -70,14 +70,14 @@ th{
                                         @foreach( $lst_leads as $key => $lead_info )
                                           <option value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
                         @else
                         <input type="hidden" name="ca_lead_id" value="0" />
                         @endif
-                    	 
+
                     	<div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Name <span class="required"> * </span></label>
@@ -98,7 +98,7 @@ th{
                                         @foreach( $lst_contract_types as $key => $type_info )
                                           <option value="{{ $type_info->ct_id }}">{{ $type_info->ct_contract_type }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -122,7 +122,7 @@ th{
                                         @foreach( $lst_countries as $key => $country_info )
                                           <option value="{{ $country_info->id }}">{{ $country_info->code . " - " . $country_info->name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -141,13 +141,25 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Area</label>
-                                <input type="text" name="ca_billing_area" id="CA_BILLING_AREA" class="form-control" maxlength="255" value="" />
+                                 <select name="ca_billing_area" required="required"  id="CA_BILLING_AREA" class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                     <option value="">-- Select Area --</option>
+                                     @foreach( $lst_areas as $key => $area_info )
+                                         <option value="{{ $area_info->la_area }}">{{ $area_info->la_area }}</option>
+                                     @endforeach
+                                 </select>
                             </div>
                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Region</label>
-                                <input type="text" name="ca_billing_region" id="ca_billing_region" class="form-control" maxlength="255" value="" />
+                                 <div class="col-md-12" id="REGION_DROPDOWN">
+                                 <select name="ca_billing_region" required="required"  id="ca_billing_region" class="form-control form-select" data-control="select2" data-placeholder="Select Region">
+                                     <option value="">-- Select Region --</option>
+                                     @foreach( $lst_regions as $key => $region_info )
+                                         <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                     @endforeach
+                                 </select>
+                                 </div>
                             </div>
                         </div>
                          <div class="col-md-4">
@@ -182,7 +194,7 @@ th{
                         </div>
                      </div>
                      <div class="row" style="height:50px;"></div>
-                      
+
                      <div class="row">
                     	<div class="col-md-12" align="left">
                 			<label>Client Description </label>

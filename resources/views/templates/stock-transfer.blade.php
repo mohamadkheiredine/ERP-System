@@ -36,9 +36,9 @@ Page Description :
             text-align: right;
         }
         .transfer-details {
-            margin: 20px 0;
+            margin: 10px 0;
             border: 1px solid #ddd;
-            padding: 15px;
+            padding: 10px;
         }
         table {
             width: 100%;
@@ -92,7 +92,6 @@ Page Description :
                 <th>Product Code</th>
                 <th>Product Name</th>
                 <th>Quantity</th>
-                <th>Unit</th>
             </tr>
         </thead>
         <tbody>
@@ -105,16 +104,26 @@ Page Description :
     </div>
 
     <div class="signatures">
-        <div>
-            <p>Issued By:</p>
-            <p>____________________</p>
-            <p>Warehouse Manager</p>
-        </div>
-        <div>
-            <p>Received By:</p>
-            <p>____________________</p>
-            <p>Receiving Warehouse Manager</p>
-        </div>
+        <table cellpadding="0" cellspacing="0" border="0" style="border:solid 0px #c0c0c0">
+            <tr>
+                <td style="text-align: left;border:solid 0px #c0c0c0">
+                    <div>
+                        <p>Issued By:</p>
+                        <p>____________________</p>
+                        <p>Warehouse Manager</p>
+                    </div>
+                </td>
+                <td style="text-align: left;border:solid 0px #c0c0c0">
+                    <div>
+                        <p>Received By:</p>
+                        <p>____________________</p>
+                        <p>Receiving Warehouse Manager</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
     </div>
 </body>
 </html>

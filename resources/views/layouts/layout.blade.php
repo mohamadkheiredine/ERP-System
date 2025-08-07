@@ -481,7 +481,7 @@ Page Description :
                                     @endif
 							@endif
 
-                                <div style="display: none"  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">
@@ -499,16 +499,36 @@ Page Description :
                                             </div>
                                             <!--end:Menu content-->
                                         </div>
-                                            <div class="menu-item">
-                                                <!--begin:Menu link-->
-                                                <a class="menu-link" href="#">
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/system/statuses') }}?ss_status_type=purchase_request_status">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                                <span class="menu-title"> Purchase Request Status</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/system/statuses') }}?ss_status_type=purchase_quotation_status">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                                <span class="menu-title"> Purchase Quotation Status</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-                                                    <span class="menu-title"> Purchasing Requisition</span>
-                                                </a>
-                                                <!--end:Menu link-->
-                                            </div>
+                                                <span class="menu-title"> Purchase Requisitions</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="#">
@@ -521,11 +541,67 @@ Page Description :
                                         </div>
                                     </div>
                                 </div>
-
-
-
+                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                    <!--begin:Menu link-->
+                                    <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fas fa-calculator fa-xl"></i>
+										</span>
+                                                                            Expenses Module
+									</span>
+                                    <!--end:Menu link-->
+                                    <!--begin:Menu sub-->
+                                    <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                        <div class="menu-item">
+                                            <!--begin:Menu content-->
+                                            <div class="menu-content">
+                                                <span class="menu-section fs-5 fw-bolder ps-1 py-1"> </span>
+                                            </div>
+                                            <!--end:Menu content-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/expenses/categories') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                                <span class="menu-title"> Expense Categories</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/system/statuses') }}?ss_status_type=expenses_status">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                                <span class="menu-title"> Expenses Status</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title"> Expenses </span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title"> Expenses Payment</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                    </div>
+                                </div>
                                 @if(CheckPrivilage('erp_inventory_management') == "allow")
-
 							@if($license_array->INVENTORY_MODULE == 1)
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
 									<!--begin:Menu link-->
@@ -545,7 +621,14 @@ Page Description :
 											</div>
 											<!--end:Menu content-->
 										</div>
-										<!--end:Menu item-->
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('inventory/dashboard') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title"> Dashboard </span>
+                                            </a>
+                                        </div>
                                         @if(CheckPrivilage('erp_warehouse_management') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->

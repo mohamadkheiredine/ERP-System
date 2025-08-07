@@ -47,6 +47,24 @@ deals_module = {
             let remaining_payment = ad_deal_amount - ad_down_payment;
            $('input[name=ad_remaining_payment]').val(remaining_payment);
         },
+        ChangeContractType : function(){
+            var contract_type = $(this).val();
+            if(contract_type == 1)
+            {
+                $('.DownPaymentHolder').css({display : "none"});
+                $('.NumberofPaymentHolder').css({display : "none"});
+                $('.RemainingPaymentHolder').css({display : "none"});
+                $('#AD_NBR_OF_PAYMENT').val(1);
+                $('.LabelBill').html("Date of Payment <span class='required'> * </span>");
+            }
+            else
+            {
+                $('.DownPaymentHolder').css({display : ""});
+                $('.NumberofPaymentHolder').css({display : ""});
+                $('.RemainingPaymentHolder').css({display : ""});
+                $('.LabelBill').html("First Bill Date <span class='required'> * </span>")
+            }
+        },
         getAccountDealInfo : function(){
             var base_url 	= $('input[name=base_url]').val();
             var _token 		= $('input[name=_token]').val();
@@ -71,17 +89,19 @@ deals_module = {
             var base_url 	= $('input[name=base_url]').val();
             var _token 		= $('input[name=_token]').val();
             var ad_deal_amount 		= $('#AD_DEAL_AMOUNT').val();
+            var ad_id 		= $('input[name=ad_id]').val();
             var ad_down_payment 		= $('#AD_DOWN_PAYMENT').val();
             var ad_nbr_of_payment 		= $('#AD_NBR_OF_PAYMENT').val();
             var ad_first_bill_date 		= $('#AD_FIRST_BILL_DATE').val();
              $.ajax
             ({
                 url : base_url + "/request/account/generatedealpaymentspreview",
-                data : { _token : _token , ad_first_bill_date : ad_first_bill_date  , ad_deal_amount : ad_deal_amount ,  ad_down_payment : ad_down_payment , ad_nbr_of_payment : ad_nbr_of_payment },
+                data : { _token : _token , ad_id : ad_id , ad_first_bill_date : ad_first_bill_date  , ad_deal_amount : ad_deal_amount ,  ad_down_payment : ad_down_payment , ad_nbr_of_payment : ad_nbr_of_payment },
                 method : 'post',
                 dataType : "json",
                 success : function(response){
                      $('#LstPaymentStatments').html(response.display);
+                     $('.BillsCom').html(response.billscoms);
                 }
             });
         },
@@ -214,8 +234,7 @@ deals_module = {
             		 required: true,
             	 },
             	 ad_deal_code : {
-	               required: true,
-	               minlength: 5
+	               required: true
 	             },
 	             ad_deal_title : {
 	               required: true,
@@ -225,8 +244,7 @@ deals_module = {
 	            	 number : true
 	             },
                      ad_down_payment : {
-                       number : true,
-                       required : true
+                       number : true
                      },
                      ad_nbr_of_payments : {
                          number : true,
@@ -330,8 +348,7 @@ deals_module = {
             		 required: true,
             	 },
             	 ad_deal_code : {
-	               required: true,
-	               minlength: 5
+	               required: true
 	             },
 	             ad_deal_title : {
 	               required: true,
@@ -341,8 +358,7 @@ deals_module = {
 	            	 number : true
 	             },
                      ad_down_payment : {
-                       number : true,
-                       required : true
+                       number : true
                      },
                      ad_nbr_of_payments : {
                          number : true,

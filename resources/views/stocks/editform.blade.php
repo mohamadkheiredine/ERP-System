@@ -69,14 +69,7 @@ th{
                                             <div class="row">
                                             	<div class="col-md-12">
                                             		<div class="row">
-                                            			<div class="col-md-4">
-                                            				 <img id="BARECODE_IMAGE" src="" alt="barcode" height="50" width="150"   /><br/>
-                                                 			<label class="BareCodeLabel"></label>
-                                            			</div>
-                                            			<div class="col-md-4">
-                                            				 <img id="PRODUCT_PROFILE" src=""  style="max-width: 200px; height: 150px;width:auto;"  /><br/>
-                                            			</div>
-                                            			<div class="col-md-4">
+                                            			<div class="col-md-12">
                                             				 <label>Initial Currency : </label><br/>
                                             				 <span class="IntialCurrency">{{ $currency_array[ $company_currency ]['cc_currency_code'] . " - " . $currency_array[ $company_currency ]['cc_currency_name'] }}</span>
                                             			</div>
@@ -85,11 +78,11 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
-                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true"> 
-                                                        		<option value="-1">Select Warehouse</option> 
+                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true">
+                                                        		<option value="-1">Select Warehouse</option>
                                                                 @foreach( $lst_warehouse as $key => $warehouse_info )
                                                                         <option {{ $InventoryStock->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
-                                                                @endforeach  
+                                                                @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -97,7 +90,7 @@ th{
                                                     <div class="form-group">
                                                         <label> Warehouse Zone </label>
                                                         <div class="WarehouseZone">
-                                                        	<select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true"> 
+                                                        	<select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
                                                                     <option value="0">Select Zone</option>
                                                             </select>
                                                         </div>
@@ -109,7 +102,7 @@ th{
                                                         <select class="bs-select form-control" name="p_id" id="P_ID" data-actions-box="true">
                                                                 @foreach( $lst_products as $key => $product_info )
                                                                         <option {{ $InventoryStock->fk_product_id == $product_info->p_id ? "selected" : "" }} value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -125,7 +118,7 @@ th{
                                                         <select class="bs-select form-control" name="is_supplier_id" id="IS_SUPPLIER_ID" data-actions-box="true">
                                                                 @foreach( $lst_suppliers as $key => $sup_info )
                                                                         <option {{ ( $InventoryStock->is_supplier_id == $sup_info->ss_id ) ? "selected" : "" }} value="{{ $sup_info->ss_id }}">{{ $sup_info->ss_supplier_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -171,7 +164,7 @@ th{
                                                         <select class="bs-select form-control" name="is_stock_currency" id="IS_STOCK_CURRENCY" data-actions-box="true">
                                                                 @foreach( $lst_currencies as $key => $curr_info )
                                                                         <option {{ $InventoryStock->is_stock_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>

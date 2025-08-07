@@ -53,6 +53,8 @@ use App\models\CRM\CRMServices;
 use App\models\SRM\Suppliers;
 use App\models\Users\Users;
 use App\models\Users\UserTypes;
+use App\models\Inventory\StockIds;
+use App\models\Inventory\Stocks;
 use Dompdf\Dompdf;
 use App\models\CRM\CRMServicesPaymentTypes;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
@@ -742,6 +744,7 @@ class InvoicesController extends Controller
         $ip_payment_doc = $request->input('ip_payment_doc');
         $ip_collector_id = $request->input('ip_collector_id');
         $ip_payment_type = $request->input('ip_payment_type');
+        $ip_billing_status = $request->has('ip_billing_status') ? 1 : 0;
         $ip_updated_by = session('user_id');
 
          $payment_info = InvoicePayments::find($ip_id);
@@ -754,6 +757,7 @@ class InvoicesController extends Controller
         $payment_info->ip_payment_doc = $ip_payment_doc;
         $payment_info->ip_collector_id = $ip_collector_id;
         $payment_info->ip_payment_type = $ip_payment_type;
+        $payment_info->ip_billing_status = $ip_billing_status;
         $payment_info->ip_updated_by = session('user_id');
         $payment_info->save();
 
@@ -777,43 +781,63 @@ class InvoicesController extends Controller
         $bi_product         = $request->input("bi_product");
         $bi_quanity         = $request->input("bi_quanity");
         $invoice_type_item  = $request->input("invoice_type_item");
+        $ii_product_serial_number  = $request->input("ii_product_serial_number");
         $ii_payment_type    = $request->input("ii_payment_type");
         $bi_item_price    = $request->input("bi_item_price");
         $product_info       = Products::find($bi_product);
         $invoice_info       = Invoices::find($invoice_id);
         $result_array       = array();
+
+        // validate existing of serial number
+
+        $stock = StockIds::whereSiStockUid($ii_product_serial_number)->whereSiStockSold(0)->get();
+
+        if(count($stock) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = "this Serial Number Not Found";
+            return Response()->json($result_array);
+        }
+
+
+
         if($item_id == "")
             $invoice_product = new InvoiceProducts();
-            else
-                $invoice_product = InvoiceProducts::find($item_id);
+        else
+            $invoice_product = InvoiceProducts::find($item_id);
 
-                $invoice_product->fk_invoice_id     = $invoice_id;
-                $invoice_product->ii_item_id        = $bi_product;
-                $invoice_product->ii_item_type      = $invoice_type_item;
-                $invoice_product->ii_item_label     = $product_info->p_product_name;
-                $invoice_product->ii_price_currency = $product_info->p_product_currency;
-                $invoice_product->ii_item_qyt       = $bi_quanity;
-                $invoice_product->ii_payment_type   = $ii_payment_type;
-                $invoice_product->ii_item_price     = $bi_item_price;
-                $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
-                $invoice_product->save();
+            $invoice_product->fk_invoice_id     = $invoice_id;
+            $invoice_product->ii_item_id        = $bi_product;
+            $invoice_product->ii_item_type      = $invoice_type_item;
+            $invoice_product->ii_product_serial_number      = $ii_product_serial_number;
+            $invoice_product->ii_item_label     = $product_info->p_product_name;
+            $invoice_product->ii_price_currency = $product_info->p_product_currency;
+            $invoice_product->ii_item_qyt       = $bi_quanity;
+            $invoice_product->ii_payment_type   = $ii_payment_type;
+            $invoice_product->ii_item_price     = $bi_item_price;
+            $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
+            $invoice_product->save();
 
-                // save total invoice value in the database
-                $AccountingManager = new AccountingManager();
-                $params_array = array(
-                    "invoice_info" => $invoice_info
-                );
-                $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
 
-                // save the updated total cost and price to the database
-                $invoice_info->bi_total_cost = $total_array['total_cost'];
-                $invoice_info->bi_total_price   = $total_array['total_price'];
-                $invoice_info->save();
 
-                unset($AccountingManager);
 
-                $result_array['is_error'] = 0;
-                return Response()->json($result_array);
+            // save total invoice value in the database
+            $AccountingManager = new AccountingManager();
+            $params_array = array(
+                "invoice_info" => $invoice_info
+            );
+            $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+
+            // save the updated total cost and price to the database
+            $invoice_info->bi_total_cost = $total_array['total_cost'];
+            $invoice_info->bi_total_price   = $total_array['total_price'];
+            $invoice_info->save();
+
+            unset($AccountingManager);
+
+            $result_array['is_error'] = 0;
+            $result_array['error_msg'] = "Operation Completed Successfully";
+            return Response()->json($result_array);
     }
 
     /**
@@ -1321,8 +1345,24 @@ class InvoicesController extends Controller
         $AccTransaction->save();
         $at_id = $AccTransaction->at_id;
 
+
+        $customer_info = new Customers();
+        $client_info = new CRMAccounts();
+
         //get information of the customer
-        $customer_info = Customers::find( $invoice_info->fk_customer_id );
+        $account_id = 0;
+        if(Config::get('appconfig.crm_telemarketing') == 0)
+        {
+            $customer_info = Customers::find( $invoice_info->fk_customer_id );
+            $account_id = $customer_info->ic_account_number;
+        }
+        else{
+            $client_info = CRMAccounts::find( $invoice_info->bi_client_id  );
+            $account_id = $client_info->fk_account_id;
+        }
+
+
+
 
         // remove tags from description
         $bi_invoice_note = strip_tags($invoice_info->bi_invoice_note);
@@ -1369,51 +1409,106 @@ class InvoicesController extends Controller
         // Save Service Income for all servbice items inside the invoice
         $lst_invoice_items =  InvoiceProducts::whereFkInvoiceId($bi_id)->get();
         $total_price = 0;
-        foreach ( $lst_invoice_items as $key => $ii_info )
+        $bi_invoice_type = $invoice_info->bi_invoice_items_type;
+
+        if($bi_invoice_type == 2)
         {
-            $item_id = $ii_info->ii_item_id;
-            $ii_supplier_id = $ii_info->ii_supplier_id;
-            $service_info = CRMServices::find($item_id);
-            $supplier_info = Suppliers::find($ii_supplier_id);
+            foreach ( $lst_invoice_items as $key => $ii_info )
+            {
+                $item_id = $ii_info->ii_item_id;
+                $ii_supplier_id = $ii_info->ii_supplier_id;
+                $service_info = CRMServices::find($item_id);
+                $supplier_info = Suppliers::find($ii_supplier_id);
+
+                $TransactionMovement = new TransactionMovements();
+                $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                $TransactionMovement->tm_sub_ledger_account =  $service_info->cs_sale_accounting_code;
+                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
+                $TransactionMovement->tm_debit              = 0;
+                $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
+                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                $TransactionMovement->save();
+
+                // supplIER RECORDS
+
+                $TransactionMovement = new TransactionMovements();
+                $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
+                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
+                $TransactionMovement->tm_debit              = 0;
+                $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
+                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                $TransactionMovement->save();
+
+                $TransactionMovement = new TransactionMovements();
+                $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                $TransactionMovement->tm_sub_ledger_account = $service_info->cs_purchase_accounting_code;
+                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
+                $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
+                $TransactionMovement->tm_credit             = 0;
+                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                $TransactionMovement->save();
+
+                $total_price = $total_price + $ii_info->ii_item_price;
+
+            }
+        }
+        else
+        {
+            foreach ( $lst_invoice_items as $key => $ii_info )
+            {
+                $item_id = $ii_info->ii_item_id;
+                $ii_supplier_id = $ii_info->ii_supplier_id;
+                $product_info = Products::find($item_id);
+                $supplier_info = Suppliers::find($ii_supplier_id);
+
+                $TransactionMovement = new TransactionMovements();
+                $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                $TransactionMovement->tm_sub_ledger_account =  0;
+                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " Credit For Invoice " . $bi_invoice_note;
+                $TransactionMovement->tm_debit              = 0;
+                $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
+                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                $TransactionMovement->save();
+
+
+                $total_price = $total_price + $ii_info->ii_item_price;
+
+            }
+
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account =  $service_info->cs_sale_accounting_code;
-            $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
+            $TransactionMovement->tm_ledger_account     = 701;
+            $TransactionMovement->tm_sub_ledger_account = 701;
+            $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " Credit For Invoice " . $bi_invoice_note;
             $TransactionMovement->tm_debit              = 0;
-            $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
+            $TransactionMovement->tm_credit             = $total_price;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+            $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
             $TransactionMovement->save();
 
-            // supplIER RECORDS
-
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
-            $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
-            $TransactionMovement->tm_debit              = 0;
-            $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
-            $TransactionMovement->save();
-
-            $TransactionMovement = new TransactionMovements();
-            $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $service_info->cs_purchase_accounting_code;
-            $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $service_info->cs_service_title . " " . $bi_invoice_note;
-            $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
+            $TransactionMovement->tm_ledger_account     = 53;
+            $TransactionMovement->tm_sub_ledger_account =  53;
+            $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " Credit For Invoice " . $bi_invoice_note;
+            $TransactionMovement->tm_debit              = $total_price;
             $TransactionMovement->tm_credit             = 0;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+            $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
             $TransactionMovement->save();
-
-            $total_price = $total_price + $ii_info->ii_item_price;
-
         }
+
+
 
         if($lst_payments ==0)
         {
@@ -1426,7 +1521,7 @@ class InvoicesController extends Controller
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+            $TransactionMovement->tm_sub_ledger_account = $account_id;
             $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
             $TransactionMovement->tm_debit              = $total_price;
             $TransactionMovement->tm_credit             = 0;
@@ -1444,6 +1539,36 @@ class InvoicesController extends Controller
         $invoice_info->bi_invoice_status    = 1;
         $invoice_info->bi_transaction_id    = $at_id;
         $invoice_info->save();
+
+        // reduce stock if its without serial number and mark serial number as sold  $bi_id
+        $lst_invoice_items = InvoiceProducts::whereFkInvoiceId($bi_id)->get();
+        foreach ($lst_invoice_items as $index => $item_info) {
+            $ii_product_serial_number = $item_info->ii_product_serial_number;
+            $stockids_info = StockIds::whereSiStockUid($ii_product_serial_number)->get();
+            if(count($stockids_info) > 0)
+            {
+                $stockids_info = $stockids_info[0];
+                $stockids_info->si_stock_sold = 1;
+                $stockids_info->save();
+
+                // update total quantity in stock record
+                $stock_info = Stocks::find($stockids_info->fk_stock_id);
+                $stock_info->is_quanity = $stock_info->is_quanity - 1;
+                $stock_info->save();
+            }
+            else{
+                $product_id = $item_info->ii_item_id;
+                $product_info = Products::find($product_id);
+                $stock_info = Stocks::whereFkProductId($product_id)->orderBy('is_id', 'asc')->get();
+                if(count($stock_info) > 0)
+                {
+                    $stock_info = $stock_info[0];
+                    $stock_info->is_quanity = $stock_info->is_quanity - $item_info->ii_item_qyt;
+                    $stock_info->save();
+                }
+
+            }
+        }
 
 
         $result_array['is_error']   = 0;

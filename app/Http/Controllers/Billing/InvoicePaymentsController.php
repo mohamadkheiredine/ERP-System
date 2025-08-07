@@ -16,6 +16,7 @@ Page Description :
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
+use App\models\PayRolls\PayrollsComissions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -82,6 +83,7 @@ class InvoicePaymentsController extends Controller
         $general_search              = $request->input('general_search');
         $pi_start_date              = $request->input('pi_start_date');
         $pi_end_date                = $request->input('pi_end_date');
+        $pi_upto_date                = $request->input('pi_upto_date');
         $page_number                = $request->input("page_number");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
 
@@ -101,6 +103,9 @@ class InvoicePaymentsController extends Controller
             $bills_cond = $bills_cond->where('ip_billing_date','>=',$pi_start_date);
         if(strlen($pi_end_date) > 0)
             $bills_cond = $bills_cond->where('ip_billing_date','<',$pi_end_date);
+
+        if(strlen($pi_upto_date) > 0)
+            $bills_cond = $bills_cond->where('ip_billing_date','<=',$pi_upto_date);
 
 
 
@@ -140,10 +145,14 @@ class InvoicePaymentsController extends Controller
         $lst_collectors     = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
         $lst_currencies     = Currency::all();
         $lst_payment_types       = PaymentTypes::wherePtIsDeleted(0)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+        $lst_technicians        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
 
 
         $data = array(
             'lst_collectors' => $lst_collectors,
+            'lst_admins' => $lst_admins,
+            'lst_technicians' => $lst_technicians,
             'lst_currency' => $lst_currencies,
             'lst_payment_types' => $lst_payment_types,
         );
@@ -155,7 +164,7 @@ class InvoicePaymentsController extends Controller
 
 
     /**
-     * get information of selected Account and  and open the edit form fields
+     * get information of selected Account and open the edit form fields
      * @param unknown $w_id
      * @return \Illuminate\Http\Response
      */
@@ -165,11 +174,15 @@ class InvoicePaymentsController extends Controller
         $lst_collectors     = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
         $lst_currencies     = Currency::all();
         $lst_payment_types       = PaymentTypes::wherePtIsDeleted(0)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+        $lst_technicians        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
 
         $bill_info = InvoicePayments::find($bi_id);
 
         $data = array(
             'lst_collectors' => $lst_collectors,
+            'lst_technicians' => $lst_technicians,
+            'lst_admins' => $lst_admins,
             'lst_currency' => $lst_currencies,
             'bill_info' => $bill_info,
             'lst_payment_types' => $lst_payment_types,
@@ -204,9 +217,11 @@ class InvoicePaymentsController extends Controller
         $ip_billing_date                    = $request->input('ip_billing_date');
         $ip_payment_amount                  = $request->input('ip_payment_amount');
         $ip_currency_id                     = $request->input('ip_currency_id');
+        $ip_pay_date                        = $request->input('ip_pay_date');
         $ip_updated_by                      = session('user_id');
         $ip_updated_date                    = date("Y-m-d");
         $ip_is_update                       = $request->has('ip_is_update') ? 1 : 0;
+        $ip_billing_status                  = $request->has('ip_billing_status') ? 1 : 0;
 
         $bills_info     = new InvoicePayments();
         $is_new = true;
@@ -218,18 +233,84 @@ class InvoicePaymentsController extends Controller
             $is_new = false;
         }
 
+        $client_info  = CRMAccounts::whereCaAccountCode($ip_client_code)->first();
+        $ip_client_id = $client_info->ca_id;
+
         $bills_info->ip_payment_doc                     = $ip_payment_doc;
         $bills_info->ip_client_id                       = $ip_client_id;
         $bills_info->ip_collector_id                    = $ip_collector_id;
         $bills_info->ip_payment_type_id                 = $ip_payment_type_id;
         $bills_info->ip_client_code                     = $ip_client_code;
         $bills_info->ip_client_name                     = $ip_client_name;
-        $bills_info->ip_billing_nbr                     = $ip_billing_nbr;
+        $bills_info->ip_billing_status                     = $ip_billing_status;
         $bills_info->ip_billing_nbr                     = $ip_billing_nbr;
         $bills_info->ip_billing_date                    = $ip_billing_date;
         $bills_info->ip_payment_amount                  = $ip_payment_amount;
         $bills_info->ip_currency_id                     = $ip_currency_id;
+        if($ip_billing_status == 1)
+            $bills_info->ip_pay_date                     = $ip_pay_date;
         $bills_info->save();
+
+        if($ip_billing_status == 1)
+        {
+            $client_info = CRMAccounts::find($ip_client_id);
+            $account_id = $client_info->ca_accounting_id;
+
+
+
+
+
+            $payment_type = PaymentTypes::find($ip_payment_type_id);
+            $pt_payment_account = $payment_type->pt_payment_account;
+            $transaction_id = $bills_info->ip_transaction_id;
+
+            $delete = Transactions::whereAtId($transaction_id)->delete();
+            $delete = TransactionMovements::whereFkTranId($transaction_id)->delete();
+
+            $transaction = new Transactions();
+            $todays_date = date('Y-m-d');
+
+
+            $transaction->at_transaction_date   = $todays_date;
+            $transaction->at_creation_date      = $todays_date;
+            $transaction->at_accounting_doc     = "Transaction For Pay Bill";
+            $transaction->fk_acc_journal_id     = 1;
+            $transaction->at_currency_id        = $ip_currency_id;
+            $transaction->save();
+            $at_id = $transaction->at_id;
+
+            $trans_mov= new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = $account_id;
+            $trans_mov->tm_sub_ledger_account   = $account_id ;
+            $trans_mov->tm_debit                = $ip_payment_amount;
+            $trans_mov->tm_credit               = 0;
+            $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
+            $trans_mov->tm_currency_id          = $ip_currency_id;
+            $trans_mov->tm_ledger_label         = "Debit For Client " . $client_info->ca_account_name;
+            $trans_mov->save();
+
+
+            $bills_info->ip_transaction_id   = $at_id;
+            $bills_info->save();
+
+            // add comission
+
+            $delete = PayrollsComissions::wherePcDealId($bills_info->ip_id)->delete();
+
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $ip_collector_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = 1;
+            $payroll_comissions->pc_currency_id = $ip_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_deal_id = $bills_info->ip_id;
+            $payroll_comissions->pc_comission_label = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
+            $payroll_comissions->save();
+
+        }
+
 
 
 

@@ -1,17 +1,17 @@
 /**
- * 
+ *
  */
 
 suppliers_module = {
 		DisplayListSuppliers : function(){
-			var base_url 			= $('input[name=base_url]').val(); 
-			var _token 			= $('input[name=_token]').val(); 
-			var general_search 			= $('input[name=general_search]').val(); 
-			var page_number 			= $('input[name=page_number]').val(); 
-			var supplier_category	 	= $('select[name=supplier_category]').val(); 
-			var supplier_status	 	= $('select[name=supplier_status]').val(); 
+			var base_url 			= $('input[name=base_url]').val();
+			var _token 			= $('input[name=_token]').val();
+			var general_search 			= $('input[name=general_search]').val();
+			var page_number 			= $('input[name=page_number]').val();
+			var supplier_category	 	= $('select[name=supplier_category]').val();
+			var supplier_status	 	= $('select[name=supplier_status]').val();
 		    var params = { _token : _token , supplier_category : supplier_category ,page_number : page_number, supplier_status : supplier_status , general_search : general_search };
-                    
+
                     $.ajax
 			({
 				url : base_url + "/request/srm/displaylistsuppliers",
@@ -29,7 +29,7 @@ suppliers_module = {
                                                 $(this).prop("checked", checked);
                                             });
                                             $.uniform.update(set);
-                                        }); 
+                                        });
 					 if(response.total_pages > 0)
 					 {
 						 $('#SuppliersPagination').twbsPagination({
@@ -43,7 +43,7 @@ suppliers_module = {
 					 }
 				}
 			});
-                    
+
 //		    $.ajax
 //	        ({
 //	            url : base_url + "/request/srm/displaylistsuppliers",
@@ -69,7 +69,7 @@ suppliers_module = {
 			window.location.href = base_url + "/srm/suppliers/edit/" + ss_id;
 		},
 		DeleteSupplierInfo : function(){
-			 var ss_id = $(this).data('ss_id'); 
+			 var ss_id = $(this).data('ss_id');
 				bootbox.confirm("Are you sure you want to delete ?", function(result){
 					//result
 					if(result == true)
@@ -84,11 +84,7 @@ suppliers_module = {
 					            dataType : "Json",
 					            type : "POST",
 					            success : function(response){
-					              if(response.is_error == 0)
-					              {
-					            	  $.suppliers_datatable.destroy();
-					            	  suppliers_module.DisplayListSuppliers();
-					              }
+                                    suppliers_module.DisplayListSuppliers();
 					            }
 					        });
 					}
@@ -105,18 +101,18 @@ suppliers_module = {
                         break;
                         case 'IMPORT':
                         {
-                            
+
                         }
                         break;
                          case 'EXPORT_AS_CSV':
                         {
-                            
+
                         }
                         break;
                     }
                 },
                 DownloadTemplate : function(){
-                    
+
 	                var base_url = $('#BASE_URL').val();
                         var _token = $('input[name=_token]').val();
                    $.ajax({
@@ -132,7 +128,7 @@ suppliers_module = {
                         link.click();
                         }
                     });
- 
+
                 },
                 UploadListSuppliers : function(e){
                     	 var ImportSuppliersForm = $('#FORM_IMPORT_SUPPLIERS');
@@ -188,7 +184,7 @@ suppliers_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	        
+
                      var FormDataFields = $("form[id=FORM_IMPORT_SUPPLIERS]");
                     var data = new FormData();
                     var index = 0;
@@ -218,23 +214,23 @@ suppliers_module = {
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
-	    	              { 
+	    	              {
                                 suppliers_module.DisplayListSuppliers();
                                 $("#modal_import").modal('toggle')
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
-                   
+
                 },
 		AddNewAccount : function(){
 			var parent_account 	= $('select[name=aa_parent_account]').val();
 			var account_label 	= $('input[name=aa_account_label]').val();
 			var dropdown_name 	= $('input[name=dropdown_name]').val();
-				
+
 			var _token 			= $('input[name=_token]').val();
 		     var base_url = $('#BASE_URL').val();
 			var params = {parent_account : parent_account , account_label : account_label , _token : _token};
@@ -259,7 +255,7 @@ suppliers_module = {
 	        	  }
 	            }
 	        });
-			
+
 		},
 		OpenAddNewAccount : function(){
 			var dropdown_name 	= $(this).data('dropdown_name');
@@ -330,7 +326,7 @@ suppliers_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FORM_SAVE_SUPPLIER]");
 
 	    	        var data = new FormData();
@@ -346,9 +342,9 @@ suppliers_module = {
 	    	        FormDataFields.find('input,select').each(function(){
 	    	                data.append($(this).attr('name'), $(this).val() );
 	    	        });
-	    	         
+
 	    	        const ss_supplier_description = $.desc_editor.getData();
-	    	        data.append("ss_supplier_description", ss_supplier_description ); 
+	    	        data.append("ss_supplier_description", ss_supplier_description );
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/srm/savesupplierinfo",
@@ -368,7 +364,7 @@ suppliers_module = {
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });

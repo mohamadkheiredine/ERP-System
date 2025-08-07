@@ -6,39 +6,51 @@ bills_module = {
 	    var general_search = $('input[name=general_search]').val();
 	    var pi_start_date = $('input[name=pi_start_date]').val();
 	    var pi_end_date = $('input[name=pi_end_date]').val();
-	    $.ajax
-	    ({
-	        url : base_url + "/request/billing/displaylistbills",
-	        data : { _token : _token , page_number : page_number , general_search : general_search , pi_start_date : pi_start_date , pi_end_date : pi_end_date  },
-            method : 'get',
-            dataType : "json",
-            beforeSend : function(){
-            },
-	        success : function(response){
-	            $('#LstBills').html(response.display);
-                $('.group-checkable').change(function() {
-                    var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
-                    var checked = $(this).prop("checked");
-                    $(set).each(function() {
-                        $(this).prop("checked", checked);
+	    var pi_upto_date = $('input[name=pi_upto_date]').val();
+        if( ( pi_start_date != '' &&  pi_end_date != '' ) || pi_upto_date != '' )
+        {
+            $.ajax
+            ({
+                url : base_url + "/request/billing/displaylistbills",
+                data : { _token : _token , page_number : page_number , general_search : general_search , pi_start_date : pi_start_date , pi_end_date : pi_end_date , pi_upto_date : pi_upto_date  },
+                method : 'get',
+                dataType : "json",
+                beforeSend : function(){
+                },
+                success : function(response){
+                    $('#LstBills').html(response.display);
+                    $('.group-checkable').change(function() {
+                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
+                        var checked = $(this).prop("checked");
+                        $(set).each(function() {
+                            $(this).prop("checked", checked);
+                        });
+                        $.uniform.update(set);
                     });
-                    $.uniform.update(set);
-                }); 
-                if(response.total_pages > 0)
-            	{
-                	 $.pagination = $('#BillsPagination').twbsPagination({
-                         totalPages: response.total_pages,
-                         visiblePages: 7,
-                         onPageClick: function (event, page) {
-                              $('input[name=page_number]').val(page);
-                              bills_module.DisplayListBills();
-                         }
-                     });
-            	}
-              
-	        }
-	    });
-	    
+
+                    // if ($('#BillsPagination').data('twbs-pagination')) {
+                    //     $('#BillsPagination').twbsPagination('destroy');
+                    // }
+
+
+                    if(response.total_pages > 0)
+                    {
+                        $('input[name=page_number]').val(1);
+                        $.pagination = $('#BillsPagination').twbsPagination({
+                            totalPages: response.total_pages,
+                            visiblePages: 7,
+                            onPageClick: function (event, page) {
+                                $('input[name=page_number]').val(page);
+                                bills_module.DisplayListBills();
+                            }
+                        });
+                    }
+
+                }
+            });
+        }
+
+
 	},
         getclientinfo : function(){
             var base_url 	= $('input[name=base_url]').val();
@@ -53,8 +65,8 @@ bills_module = {
                     method : 'get',
                     dataType : "json",
                     success : function(response){
-                            $('#IP_CLIENT_NAME').val(response.account_info.ca_account_name);     
-                            $('input[name=ip_client_id]').val(response.account_info.ca_id);  
+                            $('#IP_CLIENT_NAME').val(response.account_info.ca_account_name);
+                            $('input[name=ip_client_id]').val(response.account_info.ca_id);
                     }
                 });
             }
@@ -125,7 +137,7 @@ bills_module = {
                 var base_url = $('#BASE_URL').val();
     	       // var _token = $('input[name=_token]').val();
     	        var str_params = $("#FRM_SAVE_BILLS").serialize();
-    	        
+
     	         $.ajax
     	        ({
     	            url : base_url + "/request/billing/savebillsinfo",

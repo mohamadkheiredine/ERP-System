@@ -13,7 +13,7 @@ customers_module = {
 	            type : "POST",
 	            success : function(response){
 	            	$('#LstCustomers').html(response.display);
-	            	 
+
 	            	 $('.group-checkable').change(function() {
 	                        var set = $('table').find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
 	                        var checked = $(this).prop("checked");
@@ -27,7 +27,7 @@ customers_module = {
 	            		var ic_id = $(this).data('ic_id');
 	            		customers_module.DeleteCustomerInfo(ic_id);
 	            	});
-	            	
+
 	            	 $.pagination = $('#CustomersPagination').twbsPagination({
                          totalPages: response.total_pages,
                          visiblePages: 7,
@@ -36,7 +36,7 @@ customers_module = {
                               customers_module.DisplayListCustomers();
                          }
                      });
-	            	
+
 	            }
 	        });
 		},
@@ -56,13 +56,24 @@ customers_module = {
                         break;
                          case 'EXPORT_AS_CSV':
                         {
-                            
+
                         }
                         break;
+                        case "CREATE_SALES_ORDER":
+                        {
+                            customers_module.CreateSalesOrder();
+                        }
                     }
                 },
+                CreateSalesOrder : function(){
+                    var _token = $('input[name=_token]').val();
+                    let ic_id = $('.checkboxes:checked').val();
+                    var base_url = $('#BASE_URL').val();
+                    window.location.href = base_url + "/sales/orders/addform?customer_id=" + ic_id;
+
+                },
                 DownloadTemplate : function(){
-                    
+
 	                var base_url = $('#BASE_URL').val();
                         var _token = $('input[name=_token]').val();
                    $.ajax({
@@ -78,7 +89,7 @@ customers_module = {
                         link.click();
                         }
                     });
- 
+
                 },
                 UploadListCustomers : function(e){
                     	 var ImportCustomerForm = $('#FORM_IMPORT_CUSTOMERS');
@@ -134,7 +145,7 @@ customers_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	        
+
                      var FormDataFields = $("form[id=FORM_IMPORT_CUSTOMERS]");
                     var data = new FormData();
                     var index = 0;
@@ -164,18 +175,18 @@ customers_module = {
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
-	    	              { 
+	    	              {
                                 $('input[name=page_number]').val(1);
                                 customers_module.DisplayListCustomers();
                                 $("#modal_import").modal('toggle')
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
-                   
+
                 },
 		SaveCustomerInfo : function(){
 			return customers_module.SaveCustomerInfoSubmitHandler();
@@ -243,7 +254,7 @@ customers_module = {
 	                success3.show();
 	                error3.hide();
 	                var base_url = $('#BASE_URL').val();
-	    	       
+
 	                var FormDataFields = $("form[id=FORM_SAVE_CUSTOMER]");
 
 	    	        var data = new FormData();
@@ -273,12 +284,12 @@ customers_module = {
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
-	    	              { 
+	    	              {
 	    	                 window.location.href = base_url + "/inventory/customers";
 	    	              }
 	    	            }
 	    	        });
-	                
+
 	             }
 
 	         });
@@ -307,14 +318,14 @@ customers_module = {
 	              }
 	            }
 	        });
-			
+
 		},
 		EditCustomerInfo : function(){
 			var ic_id = $(this).data("ic_id");
 			var base_url = $('#BASE_URL').val();
 			window.location.href = base_url + "/inventory/customers/editform/" + ic_id;
 		},
-		DeleteCustomerInfo : function(ic_id){  
+		DeleteCustomerInfo : function(ic_id){
 			bootbox.confirm("Are you sure you want to delete ?", function(result){
 				//result
 				if(result == true)
@@ -330,12 +341,12 @@ customers_module = {
 				            type : "POST",
 				            success : function(response){
 				              if(response.is_error == 0)
-				              { 
+				              {
 				            	  customers_module.DisplayListCustomers();
 				              }
 				            }
 				        });
 				}
 			});
-		}	 
+		}
 };

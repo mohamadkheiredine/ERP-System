@@ -62,7 +62,7 @@ th{
             			<div class="alert alert-danger" style="display:none">
             				<strong>Error!</strong> You have some form errors. Please check below.
             			</div>
-                    
+
                     <div class="row">
                               @if($crm_client_select_lead == 1)
                     	<div class="col-md-4">
@@ -73,14 +73,14 @@ th{
                                         @foreach( $lst_leads as $key => $lead_info )
                                           <option {{ $account_info->ca_lead_id ==  $lead_info->cl_id ? "selected" : "" }} value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                         @else
                         <input type="hidden" name="ca_lead_id" value="0" />
                         @endif
-                    	 
+
                     	<div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Name <span class="required"> * </span></label>
@@ -101,7 +101,7 @@ th{
                                         @foreach( $lst_contract_types as $key => $type_info )
                                           <option {{ $account_info->ca_contract_type ==  $type_info->ct_id ? "selected" : "" }} value="{{ $type_info->ct_id }}">{{ $type_info->ct_contract_type }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -116,7 +116,7 @@ th{
                                 <label class="control-label">Mobile <span class="required"> * </span></label>
                                 <input type="text" name="ca_account_mobile" required="required" id="CA_ACCOUNT_MOBILE" class="form-control"  maxlength="255"  value="{{ $account_info->ca_account_mobile }}" />
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                 <label>Nationality </label>
@@ -125,7 +125,7 @@ th{
                                         @foreach( $lst_countries as $key => $country_info )
                                         <option {{ $account_info->ca_nationality_id == $country_info->id ? "selected" : "" }} value="{{ $country_info->id }}">{{ $country_info->code . " - " . $country_info->name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -134,7 +134,7 @@ th{
                                 <label class="control-label">National ID <span class="required"> * </span></label>
                                 <input type="text" name="ca_national_id" id="CA_NATIONAL_ID" required="required"  class="form-control"  maxlength="255"  value="{{ $account_info->ca_national_id }}" />
                             </div>
-                        </div> 
+                        </div>
                     </div>
                      <div class="row" style="height:50px;"></div>
                      <div class="row">
@@ -143,16 +143,28 @@ th{
                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Area</label>
-                                <input type="text" name="ca_billing_area" id="CA_BILLING_AREA" class="form-control" maxlength="255" value="{{ $account_info->ca_billing_area }}" />
-                            </div>
-                        </div>
+                                 <label class="control-label">Area</label>
+                                 <select name="ca_billing_area" required="required"  id="CA_BILLING_AREA" class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                     <option value="">-- Select Area --</option>
+                                     @foreach( $lst_areas as $key => $area_info )
+                                         <option  {{ $account_info->ca_billing_area == $area_info->la_area ? "selected" : ""  }} value="{{ $area_info->la_area }}">{{ $area_info->la_area }}</option>
+                                     @endforeach
+                                 </select>
+                             </div>
+                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Region</label>
-                                <input type="text" name="ca_billing_region" id="ca_billing_region" class="form-control" maxlength="255" value="{{ $account_info->ca_billing_region }}" />
-                            </div>
-                        </div>
+                                 <label class="control-label">Region</label>
+                                 <div class="col-md-12" id="REGION_DROPDOWN">
+                                 <select name="ca_billing_region" required="required"  id="ca_billing_region" class="form-control form-select" data-control="select2" data-placeholder="Select Region">
+                                     <option value="">-- Select Region --</option>
+                                     @foreach( $lst_regions as $key => $region_info )
+                                         <option {{ $account_info->ca_billing_region == $region_info->lr_region ? "selected" : ""  }} value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                     @endforeach
+                                 </select>
+                                 </div>
+                             </div>
+                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">City</label>
@@ -185,7 +197,7 @@ th{
                         </div>
                      </div>
                      <div class="row" style="height:50px;"></div>
-                      
+
                      <div class="row">
                     	<div class="col-md-12" align="left">
                 			<label>Client Description </label>
@@ -196,7 +208,7 @@ th{
                 		 	<textarea class="form-control" id="CA_ACCOUNT_DESCRIPTION" name="ca_account_description" style="width:100%;height:250px;resize:none" >{{ $account_info->ca_account_description }}</textarea>
                         </div>
                     </div>
-                    <div class="row" style="height:50px;"></div> 
+                    <div class="row" style="height:50px;"></div>
                     <div class="row">
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">

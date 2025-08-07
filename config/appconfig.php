@@ -1,5 +1,5 @@
-<?php
- return [
+<?php 
+ return [ 
 
 	"max_upload_size"=>"10240",
 "min_transportation_hours"=>"5",
@@ -12,5 +12,5 @@
 "crm_telemarketing"=>"1",
 "billing_pv_one_page"=>"0",
 "billing_rv_one_page"=>"0",
-"enable_shipping_module"=>"1"];
+"enable_shipping_module"=>"1"]; 
 ?>

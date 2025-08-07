@@ -9,7 +9,12 @@ $(function(){
 		$('#SO_ORDER_CUSTOMER').removeAttr('disabled');
 		$('#SO_VENDOR_ID').attr('disabled','disabled');
 	}
-	
+
+    $('#BTN_CLOSE').on('click',function(){
+        $('#FRM_ADD_PRODUCTS').resetForm();
+        orders_module.OpenAddOrderProductsModal();
+    });
+
 	 ClassicEditor
      .create( document.querySelector( '#SO_ORDER_NOTE' ) )
      .then( newEditor => {
@@ -18,7 +23,7 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 
+
 	 new tempusDominus.TempusDominus(document.getElementById('SO_ORDER_DATE'),{
 		 display: {
 			  components: {
@@ -26,7 +31,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -36,7 +41,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	 new tempusDominus.TempusDominus(document.getElementById('SO_DELIVERY_DATE'),{
@@ -46,7 +51,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -56,12 +61,11 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
-	 
-	 $('select').select2();
-	 
+
+
 	 let so_id = $('input[name=so_id]').val();
 	if(so_id != null)
 	{
@@ -75,9 +79,9 @@ $(function(){
 	$('#BTN_SAVE_ORDER').on('click',orders_module.SaveOrdersInfo);
 	$('#BTN_PAY_ORDER').on('click',orders_module.PayPaymentOrder);
 	 $('#SO_PRODUCT_SERIAL').on('blur',orders_module.getStockInformation);
-	
-		
-		
+
+
+
 		$(".WholeSaleSpan").on('click',function(){
 			if( $("input[name=so_whole_sale]:checked").length == 1 )
 			{
@@ -90,5 +94,5 @@ $(function(){
 				$('#SO_VENDOR_ID').removeAttr('disabled');
 			}
 		})
-		
+
 })

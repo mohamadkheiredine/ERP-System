@@ -79,7 +79,7 @@ th{
                                                                         <option value="<?php echo $category_info->pc_id;  ?>"><?php echo $category_info->pc_category;  ?></option>
                                                                 <?php  } ?>
                                                         </select>
-												 
+
 												</div>
 												<div class="col-md-4">
 													<select class="bs-select form-control" name="product_currency" id="PRODUCT_CURRENCY" data-actions-box="true">
@@ -87,7 +87,7 @@ th{
                                                             <?php foreach ( $lst_currencies as $key => $currency_info ) { ?>
                                                                     <option value="<?php echo $currency_info->cc_id;  ?>"><?php echo $currency_info->cc_currency_code;  ?>&nbsp;-&nbsp;<?php echo $currency_info->cc_currency_name;  ?></option>
                                                             <?php  } ?>
-                                                    </select> 
+                                                    </select>
 												</div>
 											</div>
 										</div>
@@ -114,15 +114,16 @@ th{
                                 				<th title="#">#</th>
                                 				<th title="Id"> ID </th>
                                 				<th title="Reference"> Product Reference </th>
+                                                 <th title="Barcode"> Product Barcode </th>
                                 				<th title="Name"> Product Name  </th>
                                 				<th title="Price"> Product Price </th>
-                                				<th title="edit"> edit </th> 
+                                				<th title="edit"> edit </th>
                                 				<th title="delete"> Delete </th>
                                 			</tr>
                                 		</thead>
                                     	<tbody  id="LstProducts" ></tbody>
                                     </table>
-                                    									
+
 								</div>
 																 <div class="row">
                                      <div class="col-md-10" align="left">
@@ -144,10 +145,10 @@ th{
 											</a>
 									</div>
 								</div>
-                                                                
-                                                                
-                                                                
-                                                                  
+
+
+
+
     </div>
 </div>
 
@@ -181,7 +182,7 @@ th{
                      <div class="row"> <div class="col-md-12" style="height:10px">&nbsp;</div> </div>
                      <div class="row">
                          <div class="col-md-12" align="right">
-                             
+
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="submit" id="BTN_IMPORT_PRODUCTS" class="btn btn-primary">Save changes</button>
                          </div>

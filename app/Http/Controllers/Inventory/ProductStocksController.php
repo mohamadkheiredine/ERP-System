@@ -202,11 +202,15 @@ class ProductStocksController extends Controller
 
         $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
-        //
+
         $currency_array     = CreateDatabaseArrayByIndex($lst_currencies,'cc_id');
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $rand_barcode                 = rand(10000000,99999999999);
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+
 
         $data = array(
             'lst_products'      => $lst_products,
@@ -214,6 +218,8 @@ class ProductStocksController extends Controller
             'company_currency'  => $company_currency,
             'secondary_currency'  => $secondary_currency,
             'lst_suppliers'  => $lst_suppliers,
+            'rand_barcode'  => $rand_barcode,
+            'bar_code_png'  => $bar_code_png,
             'currency_array'    => $currency_array,
             'lst_warehouse'     => $lst_warehouse
         );
@@ -326,6 +332,7 @@ class ProductStocksController extends Controller
         $stock->is_stock_lot_person_in_charge   =  session('user_id');
 
         // Save Accounting Records in the database to show it in inventory accounting chart
+        $delete = Transactions::whereAtId($stock->is_trans_id)->delete();
         $transactions = new Transactions();
         $transactions->at_transaction_date  = $creation_date;
         $transactions->at_creation_date     = $creation_date;
@@ -339,15 +346,9 @@ class ProductStocksController extends Controller
         $payable_account    = 0;
         $receivable_account = 0;
 
-        if($supplier_info->ss_sale_account_id > 0)
-            $payable_account = $supplier_info->ss_sale_account_id;
-        else
-            $payable_account = $ProductInfo->p_sale_accounting_code;
-
-         if($supplier_info->ss_purchase_account_id> 0)
-             $receivable_account    = $supplier_info->ss_purchase_account_id;
-         else
-             $receivable_account    = $ProductInfo->p_purchase_accounting_code;
+        $delete_mov = TransactionMovements::whereFkTranId($stock->is_trans_id)->delete();
+        $payable_account        = $supplier_info->ss_sale_account_id;
+        $receivable_account     = $supplier_info->ss_purchase_account_id;
 
         // insert transaction movement
         $transaction_movements = new TransactionMovements();
@@ -355,11 +356,26 @@ class ProductStocksController extends Controller
         $transaction_movements->tm_ledger_account       = $payable_account;
         $transaction_movements->tm_sub_ledger_account   = $receivable_account;
         $transaction_movements->tm_ledger_label         = $stock_account_label;
-        $transaction_movements->tm_debit                = $price_stock;
-        $transaction_movements->tm_credit               = 0;
+        $transaction_movements->tm_debit                = 0;
+        $transaction_movements->tm_credit               = $price_stock;
         $transaction_movements->tm_creation_date        = $creation_date;
         $transaction_movements->tm_currency_id          = $is_stock_currency;
+        $transaction_movements->tm_ledger_label         = "Credit Inside supplier for Stock from Supplier " . $supplier_info->ss_supplier_name;
         $transaction_movements->save();
+
+
+        $trans_mov= new TransactionMovements();
+        $trans_mov->fk_tran_id              = $at_id;
+        $trans_mov->tm_ledger_account       = 601;
+        $trans_mov->tm_sub_ledger_account   = 601;
+        $trans_mov->tm_debit                = $is_selling_price;
+        $trans_mov->tm_credit               = 0;
+        $trans_mov->tm_creation_date        = date('Y-m-d');
+        $trans_mov->tm_transaction_date        = date('Y-m-d');
+        $trans_mov->tm_currency_id          = $is_stock_currency;
+        $trans_mov->tm_ledger_label         = "Debit Inside Purchasing for Stock from Supplier " . $supplier_info->ss_supplier_name;
+        $trans_mov->save();
+
 
         $tm_id = $transaction_movements->tm_id;
 
@@ -494,7 +510,11 @@ class ProductStocksController extends Controller
             }
         }*/
 
-        $price_stock                            = $is_price_stock * $is_quanity;
+        if($is_id == 0)
+            $price_stock = $is_price_stock * $is_quanity;
+        else
+            $price_stock = $is_price_stock;
+
         $stock->is_stock_currency               =  $is_stock_currency;
         $stock->is_price_currency               =  $is_stock_currency;
         $stock->fk_product_id                   = $p_id;
@@ -576,19 +596,6 @@ class ProductStocksController extends Controller
             $payable_account    = 0;
             $receivable_account = 0;
 
-
-
-//             $supplier_info = Suppliers::find($is_supplier_id);
-
-//             if($supplier_info->ss_sale_account_id > 0)
-//                 $payable_account = $supplier_info->ss_sale_account_id;
-//             else
-//                 $payable_account = $product_info->p_sale_accounting_code;
-
-//              if($supplier_info->ss_purchase_account_id> 0)
-//                 $receivable_account    = $supplier_info->ss_purchase_account_id;
-//               else
-//                 $receivable_account    = $product_info->p_purchase_accounting_code;
 
             $movememnt_obj->fk_tran_id              = $at_id;
             $movememnt_obj->tm_ledger_account       = $product_info->p_sale_accounting_code;

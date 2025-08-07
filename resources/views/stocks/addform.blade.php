@@ -42,7 +42,7 @@ th{
               </button>
               <ul class="dropdown-menu">
               <li><a href="#" id="AddUnit" class="dropdown-item"> <i class=flaticon-chat-1"></i> Add Unit Ids Stock </a></li>
-              
+
               </ul>
             </div>
         </div>
@@ -64,14 +64,7 @@ th{
                                             <div class="row">
                                             	<div class="col-md-12">
                                             		<div class="row">
-                                            			<div class="col-md-4">
-                                            				 <img id="BARECODE_IMAGE" src="" alt="barcode" height="50" width="150"   /><br/>
-                                                 			<label class="BareCodeLabel"></label>
-                                            			</div>
-                                            			<div class="col-md-4">
-                                            				 <img id="PRODUCT_PROFILE" src=""  style="max-width: 200px; height: 150px;width:auto;"  /><br/>
-                                            			</div>
-                                            			<div class="col-md-4">
+                                            			<div class="col-md-12">
                                             				 <label>Initial Currency : </label><br/>
                                             				 <span class="IntialCurrency">{{ $currency_array[ $company_currency ]['cc_currency_code'] . " - " . $currency_array[ $company_currency ]['cc_currency_name'] }}</span>
                                             			</div>
@@ -81,10 +74,10 @@ th{
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
                                                         <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true">
-                                                        		<option value="-1">Select Warehouse</option> 
+                                                        		<option value="-1">Select Warehouse</option>
                                                                 @foreach( $lst_warehouse as $key => $warehouse_info )
                                                                         <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
-                                                                @endforeach  
+                                                                @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -104,7 +97,7 @@ th{
                                                         <select class="bs-select form-control" name="p_id" id="P_ID" data-actions-box="true">
                                                                 @foreach( $lst_products as $key => $prod_info )
                                                                         <option value="{{ $prod_info->p_id }}">{{ $prod_info->p_product_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -120,7 +113,7 @@ th{
                                                         <select class="bs-select form-control" name="is_supplier_id" id="IS_SUPPLIER_ID" data-actions-box="true">
                                                                 @foreach( $lst_suppliers as $key => $sup_info )
                                                                         <option value="{{ $sup_info->ss_id }}">{{ $sup_info->ss_supplier_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -145,7 +138,7 @@ th{
                                                 <div class="col-md-4">
                                                       <div class="form-group">
                                                             <label class="control-label"> Discount </label>
-                                                            <input type="text" maxlength="255" name="is_discount" id="IS_DISCOUNT" class="form-control" required="required"   value="" />
+                                                            <input type="text" maxlength="255" name="is_discount" id="IS_DISCOUNT" class="form-control" required="required"   value="0" />
                                                         </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -166,7 +159,7 @@ th{
                                                         <select class="bs-select form-control" name="is_stock_currency" id="IS_STOCK_CURRENCY" data-actions-box="true">
                                                                 @foreach( $lst_currencies as $key => $curr_info )
                                                                         <option {{ $secondary_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>

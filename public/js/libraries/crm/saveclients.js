@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 $(function(){
 	 ClassicEditor
@@ -37,4 +37,5 @@ $(function(){
 	    });
 	$('select').select2();
 	$("#BTN_SAVE_ACCOUNT").on("click",clients_module.SaveClientInfo);
+	$("#CA_BILLING_AREA").on("change",clients_module.getlistofregions);
 })

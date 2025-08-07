@@ -102,19 +102,29 @@ th{
                                                         <input type="text" name="ad_deal_amount" id="AD_DEAL_AMOUNT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_deal_amount }}" />
                                                     </div>
                                                 </div>
-                                                  <div class="col-md-4">
-                                                     <div class="form-group">
-                                                        <label class="control-label"> Down Payment <span class="required"> * </span></label>
-                                                        <input type="text" name="ad_down_payment" id="AD_DOWN_PAYMENT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_down_payment }}" />
-                                                    </div>
-                                                </div>
                                                 <div class="col-md-4">
-                                                     <div class="form-group">
-                                                        <label class="control-label">Remaining Payment <span class="required"> * </span></label>
-                                                        <input type="text" name="ad_remaining_payment" id="AD_REMAINING_PAYMENT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_remaining_payment }}" />
+                                                    <div class="form-group">
+                                                        <label> Payment Type </label>
+                                                        <select name="ad_contract_type" id="AD_CONTRACT_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Contract Type">
+                                                            <option value="0"> Select Contract Type </option>
+                                                            <option {{ $deal_info->ad_contract_type == 1 ? "selected" : "" }} value="1"> Full Payment</option>
+                                                            <option {{ $deal_info->ad_contract_type == 2 ? "selected" : "" }} value="2"> Installment</option>
+                                                        </select>
                                                     </div>
                                                 </div>
-                                                 <div class="col-md-4">
+                                                  <div class="col-md-4 DownPaymentHolder">
+                                                     <div class="form-group">
+                                                        <label class="control-label"> Down Payment</label>
+                                                        <input type="text" name="ad_down_payment" id="AD_DOWN_PAYMENT" class="form-control"  maxlength="255"  value="{{ $deal_info->ad_down_payment }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 NumberofPaymentHolder">
+                                                     <div class="form-group">
+                                                        <label class="control-label">Remaining Payment</label>
+                                                        <input type="text" name="ad_remaining_payment" id="AD_REMAINING_PAYMENT" class="form-control"  maxlength="255"  value="{{ $deal_info->ad_remaining_payment }}" />
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-4 RemainingPaymentHolder">
                                                      <div class="form-group">
                                                         <label class="control-label"> Number of Payments <span class="required"> * </span></label>
                                                         <input type="text" name="ad_nbr_of_payments" id="AD_NBR_OF_PAYMENT" class="form-control" required="required" maxlength="255"  value="{{ $deal_info->ad_nbr_of_payments }}" />
@@ -133,7 +143,7 @@ th{
                                                 </div>
                                                  <div class="col-md-4">
                                                      <div class="form-group">
-                                                        <label class="control-label">First Bill Date <span class="required"> * </span></label>
+                                                        <label class="control-label LabelBill">First Bill Date <span class="required"> * </span></label>
                                                         <input type="text" name="ad_first_bill_date" id="AD_FIRST_BILL_DATE" class="form-control" required="required" maxlength="15" readonly="readonly"  value="{{ $deal_info->ad_first_bill_date }}" />
                                                     </div>
                                                 </div>
@@ -147,6 +157,9 @@ th{
                                                                         <label> Salesman  </label>
                                                                             <select name="fk_sales_id" id="FK_SALES_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Sales">
                                                                                 <option value="0"> Select Salesman </option>
+                                                                                @foreach ($lst_admins as $key => $user_info )
+                                                                                    <option {{ $deal_info->fk_sales_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
                                                                                 @foreach ($lst_user_sales as $key => $user_info )
                                                                                         <option {{ $deal_info->fk_sales_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                                 @endforeach
@@ -164,6 +177,9 @@ th{
                                                                         <label> Telemarketer </label>
                                                                             <select name="fk_telemarketing_id" id="FK_TELEMARKETING_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
                                                                                 <option value="0"> Select Telemarketer </option>
+                                                                                @foreach ($lst_admins as $key => $user_info )
+                                                                                    <option {{ $deal_info->fk_telemarketing_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
                                                                                 @foreach ($lst_user_telemarketing as $key => $user_info )
                                                                                         <option {{ $deal_info->fk_telemarketing_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                                 @endforeach
@@ -181,6 +197,9 @@ th{
                                                                         <label> Supervisor </label>
                                                                             <select name="fk_supervisor_id" id="FK_SUPERVISOR_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Supervisor">
                                                                                 <option value="0"> Select Supervisor </option>
+                                                                                @foreach ($lst_admins as $key => $user_info )
+                                                                                    <option {{ $deal_info->fk_supervisor_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                                @endforeach
                                                                                 @foreach ($lst_supervisors as $key => $user_info )
                                                                                         <option {{ $deal_info->fk_supervisor_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                                 @endforeach
@@ -198,6 +217,9 @@ th{
                                                                         <label> Technician </label>
                                                                         <select name="fk_technician_id" id="FK_TECHNICIAN_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
                                                                             <option value="0"> Select Technician </option>
+                                                                            @foreach ($lst_admins as $key => $user_info )
+                                                                                <option {{ $deal_info->fk_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
                                                                             @foreach ($lst_technicians as $key => $user_info )
                                                                                 <option {{ $deal_info->fk_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                             @endforeach
@@ -215,6 +237,9 @@ th{
                                                                         <label> General Manager </label>
                                                                         <select name="fk_manager_id" id="FK_MANAGER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select General Manager">
                                                                             <option value="0"> Select Manager </option>
+                                                                            @foreach ($lst_admins as $key => $user_info )
+                                                                                <option {{ $deal_info->fk_manager_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                                            @endforeach
                                                                             @foreach ($lst_general_managers as $key => $user_info )
                                                                                 <option {{ $deal_info->fk_manager_id == $user_info->id ? "selected" : ""   }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                                             @endforeach
@@ -242,6 +267,11 @@ th{
                                                                             </div>
                                                                         </div>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="col-md-12 BillsCom">
+
                                                             </div>
                                                         </div>
                                                     </div>

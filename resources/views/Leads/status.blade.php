@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-status.blade.php
+status.blade.php.php
 Product :
 Version : 1.0
 Release : 1
@@ -95,7 +95,7 @@ th{
         			</tr>
         		</thead>
         		<tbody id="LstLeadStatuses">
-        		
+
         		</tbody>
         </table>
 		</div>
@@ -111,7 +111,7 @@ th{
 				</a>
 				<div class="m-separator m-separator--dashed d-xl-none"></div>
 			</div>
-		</div> 
+		</div>
     </div>
- </div> 
+ </div>
 @endsection

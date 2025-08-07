@@ -1,0 +1,108 @@
+<?php
+/***********************************************************
+ * editstatus.blade.php
+ * Product :titanerp
+ * Version : 1.0
+ * Release : 1
+ * Date Created : 8/3/2025
+ * Developed By  : Mohamad Mantach   PHP Department itm Solutions
+ * All Rights Reserved ,   itm Solutions COPYRIGHT 2025
+ *
+ * Page Description :
+ ***********************************************************/
+
+?>
+
+
+@extends('layouts.layout',['page_title' => "System Management"])
+
+@section('themes')
+    <style>
+        th{
+            cursor: pointer;
+        }
+        #ModelPopUp{
+            width:800px;
+        }
+    </style>
+@endsection
+@section('plugins')
+
+    <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/modules/systemstatus.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/libraries/system/savestatus.js') }}"></script>
+@endsection
+
+@section('content')
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="card-title">Edit System Status</h3>
+            <div class="card-toolbar">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form name="frm_save_status" id="FORM_SAVE_STATUS">
+                <div class="form-body">
+                     <span id="hidden_fields">
+                        {!! csrf_field() !!}
+			<input type="hidden" name="ss_status_type" value="{{ $status_info->ss_status_type }}" />
+			<input type="hidden" name="ss_id" value="{{ $status_info->ss_id }}" />
+                    </span>
+                    <div class="alert alert-success" style="display:none">
+                        <strong>Success!</strong> System Status Information is saved successfully!
+                    </div>
+                    <div class="alert alert-danger" style="display:none">
+                        <strong>Error!</strong> You have some form errors. Please check below.
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Status </label>
+                                <select name="ss_parent_status" id="SS_PARENT_STATUS"   class="form-control form-select" data-control="select2" data-placeholder="Select Parent Status">
+                                    <option value=""> -- Select Parent Status -- </option>
+                                    @foreach($lst_statuses as $key => $statuss_info)
+                                        <option {{ $status_info->ss_parent_status == $statuss_info->ss_id ? "selected" :"" }} value="{{ $statuss_info->ss_id }}">{{ $statuss_info->ss_status_title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Status Label <span class="required"> * </span></label><br/>
+                                <input type="text" name="ss_status_title" id="SS_STATUS_TITLE" class="form-control" value="{{ $status_info->ss_status_title }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Status Color <span class="required"> * </span></label><br/>
+                                <input type="color" name="ss_status_color" required="required" id="SS_STATUS_COLOR" class="form-control" value="{{ $status_info->ss_status_color }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label"> Description</label><br/>
+                                <textarea style="width:100%;height:250px;resize:none" id="SS_STATUS_DESCRIPTION"  class="form-control" name="ss_status_description"  cols="">{{ $status_info->ss_status_description }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="height:5px;"></div>
+                    <div class="row">
+                        <div class="col-md-9"></div>
+                        <div class="col-md-3" align="right">
+                            <button type="submit" name="btn_save_status" id="BTN_SAVE_STATUS"  class="btn btn-info">Save</button>
+                            <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection

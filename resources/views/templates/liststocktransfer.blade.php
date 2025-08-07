@@ -18,7 +18,6 @@ Page Description :
 <tr>
     <td>{{ $item_info->Product->p_product_ref }}</td>
     <td>{{ $item_info->Product->p_product_name }}</td>
-    <td>{{ $item_info->Product->p_product_quantity }}</td>
-    <td>{{ $item_info->mp_item_notes }}</td>
+    <td>{{ $item_info->mp_movement_quantity }}</td>
 </tr>
 @endforeach

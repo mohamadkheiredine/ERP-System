@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-status.blade.php
+status.blade.php.php
 Product :
 Version : 1.0
 Release : 1

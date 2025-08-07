@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 orders_module = {
 		DisplayListOrders : function(){
@@ -28,7 +28,7 @@ orders_module = {
                                             $(this).prop("checked", checked);
                                         });
                                         $.uniform.update(set);
-                     }); 
+                     });
 					 if(response.total_pages > 0)
 					 {
 						 $('#SalesOrdersPagination').twbsPagination({
@@ -40,7 +40,7 @@ orders_module = {
 	                         }
 	                     });
 					 }
-					
+
 					$("a[id*=EDIT_ORDER_]").on('click',orders_module.EditOrderInfo);
 					$("a[id*=DELETE_ORDER_]").on('click',orders_module.DeleteOrderData);
 				}
@@ -64,7 +64,7 @@ orders_module = {
 		        		bootbox.alert(response.error_msg);
 		        		return false;
 	        		}
-		        	
+
 		        	$("#BTN_ADD_PRODUCT").css({'display' : "none"});
 		        	$("#BTN_PAY_ORDER").css({'display' : "none"});
 		        }
@@ -84,7 +84,7 @@ orders_module = {
             },
 	        success : function(response){
 	        	$('#LstProducts').html(response.display);
-				 
+
 	        }
 	    });
 	},
@@ -115,11 +115,8 @@ orders_module = {
 		       	so_product_cost : {
 		       		number : true,
 		       		required : true
-		       	},
-		       	so_product_serial : {
-		       		required :true
 		       	}
-		       	
+
             },
 
             messages: { // custom messages for radio buttons and checkboxes
@@ -197,8 +194,9 @@ orders_module = {
 	   	            		$("#SO_PRODUCT_QUANTITY").val('');
 	   	            		$('#OrderProductsModel').modal('toggle');
 	   	            	  });
-	   	            	  
    	            	  }
+
+                        $('#FRM_ADD_PRODUCTS').resetForm();
 	   	            }
 	   	        });
             }
@@ -284,8 +282,8 @@ orders_module = {
     			{
     	        	so_whole_sale = 1;
     			}
-    	        
-    	        
+
+
     	        str_params = str_params + "&so_whole_sale=" + so_whole_sale;
     	         $.ajax
     	        ({
@@ -339,7 +337,7 @@ orders_module = {
 		var so_id 		= $('input[name=so_id]').val();
 		var product_id 	= $('#ORDER_PRODUCT').val();
 		var _token 		= $('input[name=_token]').val();
-	    var base_url 	= $("#BASE_URL").val(); 
+	    var base_url 	= $("#BASE_URL").val();
 	    var params = { so_id : so_id , product_id : product_id , _token : _token };
 	    $("#AjaxLoader").css({'display':'block'});
         $.ajax
@@ -352,7 +350,7 @@ orders_module = {
               if(response.is_error == 0)
               {
             	 $('input[name=so_product_cost]').val(response.product_price);
-            	 $("#AjaxLoader").css({'display':'none'});   
+            	 $("#AjaxLoader").css({'display':'none'});
               }
             }
         });
@@ -362,7 +360,7 @@ orders_module = {
 		var product_id 		= $('select[name=order_product]').val();
 		var order_currency 	= $('select[name=so_order_currency]').val();
 		var stock_price 	= $('input[name=so_product_cost]').val();
-	    var base_url 		= $("#BASE_URL").val(); 
+	    var base_url 		= $("#BASE_URL").val();
 	    var params = {product_id : product_id , stock_price : stock_price , _token : _token , order_currency : order_currency };
 	    $("#AjaxLoader").css({'display':'block'});
         $.ajax
@@ -385,17 +383,18 @@ orders_module = {
 		let barecode = $('#SO_PRODUCT_SERIAL').val();
 		if(barecode == '')
 			return false;
-        $("#AjaxLoader").css({'display':'block'});   	
+        $("#AjaxLoader").css({'display':'block'});
 		// get product stock information based on serial number we have
 		var base_url 		= $('input[name=base_url]').val();
-		var _token 			= $('input[name=_token]').val(); 
-		var whole_sales 	= $("#SO_WHOLE_SALE:checked").length; 
-		var order_currency 	= $("#SO_ORDER_CURRENCY").val(); 
-	    var so_product_serial 	= $("#SO_PRODUCT_SERIAL").val(); 
+		var _token 			= $('input[name=_token]').val();
+		var whole_sales 	= $("#SO_WHOLE_SALE:checked").length;
+		var order_currency 	= $("#SO_ORDER_CURRENCY").val();
+		var order_product 	= $("select[name=order_product]").val();
+	    var so_product_serial 	= $("#SO_PRODUCT_SERIAL").val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/orders/getstockinformation",
-	        data : { _token : _token , barecode : barecode , whole_sales : whole_sales , order_currency : order_currency },
+	        data : { _token : _token , barecode : barecode , whole_sales : whole_sales , order_currency : order_currency , order_product : order_product },
          method : 'post',
          dataType : "json",
          beforeSend : function(){
@@ -413,7 +412,7 @@ orders_module = {
 	     		}
 	        	$('#STOCK_ID').val(response.stock_id);
 	        	$('#SO_PRODUCT_COST').val(response.stock_price);
-	        	
+
 	        }
 	    });
 	}

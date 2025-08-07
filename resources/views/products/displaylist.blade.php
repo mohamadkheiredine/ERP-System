@@ -11,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 Page Description :
 
 ***********************************************************/
- 
+
 ?>
 
 
@@ -20,6 +20,7 @@ Page Description :
 	<td><input type="checkbox" name="ck_pp_{{ $pp_info->p_id }}" id="CK_PP_{{ $pp_info->p_id }}" class="checkboxes" value="{{ $pp_info->p_id }}" /></td>
    <td>{{ $pp_info->p_id }}</td>
    <td>{{ $pp_info->p_product_ref }}</td>
+    <td>{{ $pp_info->p_barcode }}</td>
    <td>{{ $pp_info->p_product_name }}</td>
    <td>{{ $pp_info->p_product_selling_price }}&nbsp;&nbsp;<b>{{  $pp_info->p_product_currency == null  ? session('currency_symbol') : $currency_array[ $pp_info->p_product_currency ]['cc_currency_code'] }}</b></td>
   <td style="width:2px;">  <a href="#"  data-p_id="{{ $pp_info->p_id }}" id="EDIT_PRODUCT_{{ $pp_info->p_id }}" ><i class="fa-regular fa-pen-to-square"></i></a> </td>

@@ -1,6 +1,6 @@
 <?php
 /* * *********************************************************
-  status.blade.php
+  status.blade.php.php
   Product :
   Version : 1.0
   Release : 1
@@ -118,7 +118,7 @@
         <div class="row">
             <div class="col-xl-8 order-1 order-xl-1 align-right"></div>
             <div class="col-xl-2 order-2 order-xl-2 align-right">
-           
+
             </div>
             <div class="col-xl-2 order-3 order-xl-3 align-right">
                 <a href="{{ url('/shipment/orderstatus/addform') }}" class="btn btn-info">

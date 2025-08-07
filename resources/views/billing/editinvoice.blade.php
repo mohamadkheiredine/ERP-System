@@ -43,7 +43,7 @@ th{
                 Action
               </button>
               <ul class="dropdown-menu">
-                    @if( $invoice_info->bi_invoice_status == 0 )			
+                    @if( $invoice_info->bi_invoice_status == 0 )
                         <li><a class="dropdown-item quickactions" data-action_type="CONVERT_TO_OFFICIAL" href="#">Convert to official Invoice</a></li>
                     @else
                         <li><a class="dropdown-item quickactions" data-action_type="REVERT_TO_DRAFT" href="#">Refert Back to draft Invoice</a></li>
@@ -71,7 +71,7 @@ th{
             				<strong>Error!</strong> You have some form errors. Please check below.
             			</div>
                     <div class="row">
-                        
+
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Invoice Date </label><br/>
@@ -128,7 +128,7 @@ th{
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Payment Terms</label><br/>
@@ -155,7 +155,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Tax Account</label>
-                                <select class="bs-select form-control" id="BI_VAT_ID" name="bi_vat_id"> 
+                                <select class="bs-select form-control" id="BI_VAT_ID" name="bi_vat_id">
                         			<option value="0">-- Select Tax Account --</option>
                                     @foreach($lst_vat_accounts as $index => $vat_info)
                                       <option {{ $invoice_info->bi_vat_id == $vat_info->av_id ? "selected" : "" }} value="{{ $vat_info->av_id }}">{{ $vat_info->av_vat_label . "(" . $vat_info->av_vat_rate. "%)" }}</option>
@@ -229,7 +229,7 @@ th{
                                     <a class="nav-link" data-bs-toggle="tab" href="#tabReceipts">Receipts</a>
                                 </li>
                             </ul>
-                            
+
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="tabProducts" role="tabpanel">
                                    <div class="row">
@@ -274,14 +274,14 @@ th{
 										</div>
 										@if($invoice_info->bi_invoice_status == 0)
 										<div class="row">
-											
+
 											<div class="col-md-12" align="right">
 												<button type="button" name="btn_generate_receipts" id="BTN_GENERATE_RECEIPTS" class="btn btn-danger">Generate Receipts</button>
 											</div>
 										</div>
 										@endif
                                 </div>
-                            </div> 
+                            </div>
                    		</div>
                    </div>
                    <div class="row" style="height:15px;"></div>
@@ -312,7 +312,7 @@ th{
 				</button>
 			</div>
 			<div class="modal-body">
-				<form name="frm_invoice_items" id="FRM_INVOICE_ITEMS" method="post"  enctype="multipart/form-data"> 
+				<form name="frm_invoice_items" id="FRM_INVOICE_ITEMS" method="post"  enctype="multipart/form-data">
 				    {!! csrf_field() !!}
 				     <input type="hidden" name="invoice_id" value="{{ $invoice_info->bi_id }}" />
 				     <input type="hidden" name="invoice_type_item" id="INVOICE_TYPE_ITEM" value="{{ $invoice_info->bi_invoice_type }}" />
@@ -329,6 +329,12 @@ th{
                                     </select>
                                 </div>
 				 		</div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label"> Serial Number </label><br/>
+                                <input type="text"  autocomplete="off" name="ii_product_serial_number" required class="form-control" value="" />
+                            </div>
+                        </div>
 				 		<div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="control-label"> Quanity </label><br/>
@@ -354,7 +360,7 @@ th{
 				</form>
 			</div>
 			<div class="modal-footer">
-				
+
 			</div>
 		</div>
 	</div>
@@ -376,37 +382,37 @@ th{
               <div class="row">
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Receipt </label> 
+                          <label>Receipt </label>
                            <input type="text"  autocomplete="off" required="required"  name="ip_billing_nbr" id="IP_BILLING_NBR" class="form-control"  maxlength="50" value="" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Date </label> 
+                          <label>Date </label>
                            <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Updated By </label> 
+                          <label>Updated By </label>
                           <input type="text"  autocomplete="off" name="ip_updated_by" id="IP_UPDATED_BY" class="form-control" readonly="readonly"  maxlength="255" value="{{ session('user_fullname') }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Updated Date </label> 
+                          <label>Updated Date </label>
                           <input type="text"  autocomplete="off" name="ip_updated_date" id="IP_UPDATED_DATE" class="form-control" readonly="readonly"  maxlength="25" value="{{ date('Y-m-d') }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Doc Nbr </label> 
+                          <label>Doc Nbr </label>
                           <input type="text"  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Collector  </label> 
+                          <label>Collector  </label>
                               <select name="ip_collector_id" required="required" id="IP_COLLECTOR_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Collector">
                                   <option value="">-- Select Collector --</option>
                                   <?php foreach ( $lst_collectors as $key => $tech_info ) { ?>
@@ -455,7 +461,7 @@ th{
 				</button>
 			</div>
 			<div class="modal-body">
-				<form name="frm_invoice_services" id="FRM_INVOICE_SERVICES" method="post"  enctype="multipart/form-data"> 
+				<form name="frm_invoice_services" id="FRM_INVOICE_SERVICES" method="post"  enctype="multipart/form-data">
 				    {!! csrf_field() !!}
 				     <input type="hidden" name="invoice_id" value="{{ $invoice_info->bi_id }}" />
 				     <input type="hidden" name="invoice_type_item" id="INVOICE_TYPE_ITEM" value="{{ $invoice_info->bi_invoice_type }}" />
@@ -519,12 +525,12 @@ th{
 				</form>
 			</div>
 			<div class="modal-footer">
-				
+
 			</div>
 		</div>
 	</div>
     </div>
 
- 
+
 <!-- End Insert Service -->
 @endsection

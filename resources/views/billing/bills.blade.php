@@ -65,26 +65,33 @@ th{
 								</div>
 								<!--end::Input group-->
 							</div>
-						</div> 
-						<div class="col-md-4">
-                                                        <div class="form-group">
-                                                           <label class="form-label"> From Date </label><br/>
-                                                           <input type="text" name="pi_start_date" id="PI_START_DATE" value="" class="form-control" />
-                                                       </div>
-                                                                           </div>
-                                                                           <div class="col-md-4">
-                                                                                    <div class="form-group">
-                                                           <label class="form-label"> To Date </label><br/>
-                                                           <input type="text" name="pi_end_date" id="PI_END_DATE" value="" class="form-control" />
-                                                       </div>
 						</div>
+						<div class="col-md-4">
+                        <div class="form-group">
+                           <label class="form-label"> From Date </label><br/>
+                           <input type="text" name="pi_start_date" id="PI_START_DATE" value="" class="form-control" />
+                       </div>
+                                           </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                           <label class="form-label"> To Date </label><br/>
+                           <input type="text" name="pi_end_date" id="PI_END_DATE" value="" class="form-control" />
+                       </div>
+						</div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label"> Up To Date </label><br/>
+                                <input type="text" name="pi_upto_date" id="PI_UPTO_DATE" value="" class="form-control" />
+                            </div>
+                        </div>
 					</div>
 				</div>
 				<div class="col-xl-4">
-					
+
 				</div>
 			</div>
 		</div>
+        <div class="row"><div class="col-md-12">&nbsp;</div></div>
         <div class="row">
             <div class="col-md-12" align="right">
                     <a href="{{ url('billing/bills/addform') }}" class="btn btn-info">
@@ -97,19 +104,19 @@ th{
                     </a>
             </div>
         </div>
+        <div class="row"><div class="col-md-12">&nbsp;</div></div>
         <div class="row">
     		<div class="col-md-12 table-responsive">
-    			<table class="table table-striped gy-7 gs-7">
+    			<table class="table table-striped">
             		<thead>
             			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
             				<th style="width:2px;white-space: nowrap;" title="#">#</th>
-            				<th style="width:2px;white-space: nowrap;" title="Id"> ID </th>
             				<th title="Voucher Ref"> Ref </th>
+                            <th title="Bill Nbr"> Bill Nbr </th>
             				<th title="Voucher Date"> Date </th>
             				<th title="Client Code"> Client Code </th>
-            				<th title="Client Name"> Client Name </th> 
+            				<th title="Client Name"> Client Name </th>
             				<th title="Total Price"> Total Price </th>
-            				<th title="currency"> Currency </th>
             				<th style="width:2px;" nowrap title="#"> edit </th>
             				<th style="width:2px;" nowrap title="#"> Delete </th>
             			</tr>
@@ -119,12 +126,14 @@ th{
             	</table>
     		</div>
 		</div>
+        <div class="row"><div class="col-md-12">&nbsp;</div></div>
     	 <div class="row">
              <div class="col-md-10" align="left">
                 <ul id="BillsPagination" class="pagination-sm"></ul>
              </div>
              <div class="col-md-2" align="right"></div>
          </div>
+        <div class="row"><div class="col-md-12">&nbsp;</div></div>
         <div class="row">
             <div class="col-md-12" align="right">
                     <a href="{{ url('billing/bills/addform') }}" class="btn btn-info">

@@ -112,19 +112,19 @@ th{
                                     <label class="control-label"> Order Label:&nbsp;</label><br/>
                                     <input type="text" name="so_order_label" id="SO_ORDER_LABEL" class="form-control" required="required" maxlength="255"  tabindex="5"  value="" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Order Date:&nbsp;</label><br/>
                                     <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y') }}"  tabindex="6" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                           <div class="form-group">
                                 <label class="control-label"> Delivery Date:&nbsp;</label><br/>
                                 <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y') }}"  tabindex="7" />
                             </div>
-                        </div> 
+                        </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Currency:&nbsp;</label><br/>
@@ -153,7 +153,7 @@ th{
                                 <select  name="so_order_customer" id="SO_ORDER_CUSTOMER"  class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
                                         <option value=""> -- Customer -- </option>
                                         @foreach ( $lst_customers as $key => $customer_info )
-                                                <option value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }}) &nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
+                                                <option {{ $customer_id == $customer_info->ic_id  ? "selected" : ""  }} value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }}) &nbsp;-&nbsp;{{ $customer_info->ic_customer_name }}</option>
                                         @endforeach
                                 </select>
                             </div>
@@ -177,7 +177,7 @@ th{
                                           Whole Sales
                                         </span>
                                         <span class="WholeSaleSpan"></span>
-                                    </label>  
+                                    </label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -196,7 +196,7 @@ th{
                                 <label class="control-label"> Order Note:&nbsp;</label>
                                 <textarea class="form-control" style="width:100%;height: 250px;" name="so_order_note" id="SO_ORDER_NOTE"  tabindex="12"></textarea>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                     <div class="row">

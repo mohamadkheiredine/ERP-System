@@ -76,7 +76,7 @@ th{
                                     <label class="control-label"> Order Code :&nbsp;</label><br/>
                                     <input type="text" name="so_order_code" id="SO_ORDER_CODE" class="form-control" readonly="readonly" required="required" maxlength="25"  tabindex="1" value="{{ $order_info->so_order_code != null ? $order_info->so_order_code : $order_code }}" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Assign To :&nbsp;</label><br/>
@@ -115,19 +115,19 @@ th{
                                     <label class="control-label"> Order Label :&nbsp;<span class="required"> * </span></label><br/>
                                     <input type="text" name="so_order_label" id="SO_ORDER_LABEL" class="form-control" required="required" maxlength="255"  value="{{ $order_info->so_order_label }}"  tabindex="5" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Order Date :&nbsp;</label><br/>
                                     <input type="text" name="so_order_date" id="SO_ORDER_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_order_date)) }}"  tabindex="6" />
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                           <div class="form-group">
                                 <label class="control-label"> Delivery Date :&nbsp;</label><br/>
                                 <input type="text" name="so_delivery_date" id="SO_DELIVERY_DATE" class="form-control" required="required" readonly="readonly"  maxlength="10"  value="{{ date('m/d/Y',strtotime($order_info->so_delivery_date)) }}" tabindex="7" />
                             </div>
-                        </div> 
+                        </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Currency :&nbsp;</label><br/>
@@ -180,8 +180,8 @@ th{
                                           Whole Sales
                                         </span>
                                         <span class="WholeSaleSpan"></span>
-                                    </label>  
-                            </div> 
+                                    </label>
+                            </div>
                         </div>
                         <div class="col-md-4">
                              <div class="form-group">
@@ -199,7 +199,7 @@ th{
                                 <label class="control-label"> Order Note :&nbsp;</label>
                                 <textarea class="form-control" style="width:100%;height: 250px;" name="so_order_note" id="SO_ORDER_NOTE"  tabindex="12">{{ $order_info->so_order_note }}</textarea>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                     <div class="row">
@@ -219,7 +219,7 @@ th{
                     <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">Products</a>
                 </li>
             </ul>
-            
+
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="tabProducts" role="tabpanel">
                     <div class="row">
@@ -239,7 +239,7 @@ th{
                     			</tr>
                     		</thead>
                     		<tbody  id="LstProducts" >
-                    
+
                     		</tbody>
                     </table>
 						</div>
@@ -267,7 +267,7 @@ th{
         				</button>
         			</div>
         			<div class="modal-body">
-        				<form name="frm_add_products" id="FRM_ADD_PRODUCTS"  method="post"  enctype="multipart/form-data"> 
+        				<form name="frm_add_products" id="FRM_ADD_PRODUCTS"  method="post"  enctype="multipart/form-data">
         				    {!! csrf_field() !!}
         				    <input type="hidden" name="order_id" id="ORDER_ID" value="{{ $order_info->so_id }}" />
         				    <input type="hidden" name="stock_id" id="STOCK_ID" value="0" />
@@ -275,8 +275,7 @@ th{
         				 	<div class="row">
         				 		<div class="col-md-12">
         				 			<label>Product</label>
-        				 			<!--  -->
-        				 			<select class="bs-select form-control" name="order_product" id="ORDER_PRODUCT" required="required" style="width:100%;" data-actions-box="true" tabindex="1">
+                                    <select name="order_product" id="ORDER_PRODUCT" class="form-control form-select" data-control="select2"  data-placeholder="Select Product">
                                         <option value=""> -- Product -- </option>
                                         @foreach ( $lst_products as $key => $product_info )
                                                 <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
@@ -286,7 +285,7 @@ th{
         				 		 <div class="col-md-12">
                                       <div class="form-group">
                                             <label class="control-label" tabindex="0">Product Serial-Number</label>
-                                            <input type="text" name="so_product_serial" id="SO_PRODUCT_SERIAL" class="form-control" required="required" value=""  tabindex="2"  />
+                                            <input type="text" name="so_product_serial" id="SO_PRODUCT_SERIAL" class="form-control"  value=""  tabindex="2"  />
                                         </div>
                                 </div>
                                  <div class="col-md-12">
@@ -301,6 +300,7 @@ th{
                                             <input type="text" name="so_product_quantity" id="SO_PRODUCT_QUANTITY" class="form-control" required="required" value="0" min="1" max="99999999" step="1"  tabindex="4" />
                                         </div>
                                 </div>
+                                <div class="col-md-12" align="right" style="height:10px;">&nbsp;</div>
                                  <div class="col-md-6" align="left">
                                  	<span id="AjaxLoader" style="display:none;"><img src="{{ url('images/loader.gif') }}" style="height:60px" /></span>
                                  </div>
@@ -314,12 +314,12 @@ th{
         			</div>
         			<div class="modal-footer">
         				<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
-        					Close 
+        					Close
         					</button>
         			</div>
         		</div>
         	</div>
-        </div>  
+        </div>
     </div>
  </div>
 

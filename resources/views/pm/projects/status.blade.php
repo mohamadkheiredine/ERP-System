@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
-status.blade.php
+status.blade.php.php
 Product :
 Version : 1.0
 Release : 1
@@ -154,7 +154,7 @@ th{
             				<th style="width:2%" title="#">#</th>
             				<th style="width:2%" title="Id"> ID </th>
             				<th title="Status Name"> Status Name </th>
-            				<th title="Depand On"> Depand On </th> 
+            				<th title="Depand On"> Depand On </th>
             				<th style="width:2px;" nowrap title="edit"> edit </th>
             				<th style="width:2px;" nowrap title="delete"> Delete </th>
             			</tr>

@@ -72,10 +72,10 @@ $(function(){
         										</div>
 												</div>
 												<div class="col-md-4">
-                                                    
+
 												</div>
 												<div class="col-md-4">
-                                                  
+
 												</div>
 											</div>
 										</div>
@@ -102,18 +102,16 @@ $(function(){
                                 		<thead>
                                 			<tr>
                                 				<th>#</th>
-                                				<th title="Id" style="width:50px;white-space: nowrap;"> ID </th>
                                 				<th title="Date" > Date </th>
                                 				<th title="User" > User </th>
                                 				<th title="Warehouse"> Warehouse Source  </th>
                                 				<th title="Warehouse" > Warehouse Destination  </th>
-                                				<th title="Total price" > Total price  </th>
                                 				<th title="Total Quantity" > Total Quantity  </th>
                                 			</tr>
                                 		</thead>
                                     	<tbody  id="LstTransferStocks" ></tbody>
                                     </table>
-                                    									
+
 								</div>
 								<!--end: Datatable -->
 								<div class="row">

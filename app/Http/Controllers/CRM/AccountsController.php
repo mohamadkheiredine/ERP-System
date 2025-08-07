@@ -18,6 +18,8 @@ Page Description :
 namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
+use App\models\System\Areas;
+use App\models\System\Regions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -56,33 +58,33 @@ class AccountsController extends Controller
         );
         return Response()->view('accounts.accounts',$data);
     }
-    
+
     /**
      * display list of clients saved in the database
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function DisplayList(Request $request)
     {
-        $account_category       = $request->input("account_category"); 
+        $account_category       = $request->input("account_category");
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        
+
         $accounts_cond = CRMAccounts::whereCaIsDeleted(0);
-        
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-        
+
         if( $account_category > 0 )
         {
             $accounts_cond = $accounts_cond->whereCaAccountCategory($account_category);
         }
-        
+
         if( strlen($general_search)  > 0)
         {
               $accounts_cond = $accounts_cond->where('ca_contract_code','LIKE','%' . $general_search . '%');
@@ -92,50 +94,50 @@ class AccountsController extends Controller
               $accounts_cond = $accounts_cond->orWhere('ca_account_mobile','LIKE','%' . $general_search . '%');
               $accounts_cond = $accounts_cond->orWhere('ca_account_email','LIKE','%' . $general_search . '%');
         }
-        
 
-        
+
+
           $accounts_count = $accounts_cond->count();
-       
-        
+
+
          $total_pages = ceil( $accounts_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
-        
+
         $lst_accounts = $accounts_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-        
-        
+
+
         $response_array = array();
-        
+
         $data = array(
             "lst_accounts" => $lst_accounts
         );
         $response_array['is_error'] = 0;
         $response_array['total_pages'] = $total_pages;
         $response_array['display'] = view('accounts.displaylist',$data)->render();
-        
+
         return Response()->json($response_array);
     }
-    
-    
-    
+
+
+
     public function GetAccountInfoByCode(Request $request)
     {
-        $ad_account_code = $request->input('ad_account_code'); 
+        $ad_account_code = $request->input('ad_account_code');
         $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->where('ca_account_code','LIKE','%' . $ad_account_code . '%')->get();
         $result_array = array();
-        
+
         if(count($lst_account_info) == 0)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = 'No Account Exist for this Account Code';
             return Response()->json($result_array);
         }
-        
+
         $deal_info = CRMDeals::whereFkAccountId($lst_account_info[0]->ca_id)->whereAdIsDeleted(0)->get();
-        
+
         $contract_type = $lst_account_info[0]->ca_contract_type;
         $ct_info = CRMContractTypes::find($contract_type);
-        
+
         $result_array['is_error'] = 0;
         $result_array['account_info'] = array(
             'ca_account_name' => $lst_account_info[0]->ca_account_name,
@@ -143,21 +145,21 @@ class AccountsController extends Controller
             'ca_billing_address' => $lst_account_info[0]->ca_billing_address,
             'ct_contract_type' => $ct_info->ct_contract_type,
         );
-        
+
         if(count($deal_info) > 0)
         {
             $result_array['account_info']['ad_deal_code'] = $deal_info[0]->ad_deal_code;
         }
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
-    
+
+
+
+
     /**
-     * Page for add new account form 
-     * 
+     * Page for add new account form
+     *
      * @author Moe Mantach
      * @access public
      */
@@ -166,6 +168,8 @@ class AccountsController extends Controller
         $lst_client_categories  = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lst_users              = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_leads              = CRMLeads::whereClIsArchive(0)->whereClIsDeleted(0)->get();
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
         $lst_accounts           = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_industry           = Industry::whereSiIsDeleted(0)->get();
         $lst_countries          = Countries::all();
@@ -173,16 +177,18 @@ class AccountsController extends Controller
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
         $crm_client_select_lead    = Config::get('appconfig.crm_client_select_lead');
         $crm_telemarketing      = Config::get('appconfig.crm_telemarketing');
-        
+
         $count_accounts = CRMAccounts::whereCaIsDeleted(0)->count();
         $count = $count_accounts + 1;
         $client_code = sprintf("%07d", $count);
-        
+
         $data = array(
             "crm_client_select_lead" => $crm_client_select_lead,
             "lst_client_categories" => $lst_client_categories,
             "lst_leads" => $lst_leads,
             "client_code" => $client_code,
+            "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
             "lst_industry" => $lst_industry,
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
@@ -190,17 +196,17 @@ class AccountsController extends Controller
             "lst_contract_types" => $lst_contract_types,
             "lst_users" => $lst_users
         );
-        
+
         if($crm_telemarketing == '0')
             return Response()->view("accounts.addform",$data);
         else
             return Response()->view("accounts.addtform",$data);
-            
+
     }
-    
-    
+
+
     /**
-     * Page for Edit Form 
+     * Page for Edit Form
      * @param unknown $ca_id
      */
     public function EditForm( $ca_id )
@@ -211,17 +217,21 @@ class AccountsController extends Controller
         $lst_leads              = CRMLeads::whereClIsArchive(0)->whereClIsDeleted(0)->get();
         $lst_industry           = Industry::whereSiIsDeleted(0)->get();
         $lst_countries          = Countries::all();
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
         $lst_accounts           = CRMAccounts::whereCaIsDeleted(0)->where('ca_id', '<>', $ca_id)->get();
         $lst_account_types      = CRMAccountTypes::whereAtIsDeleted(0)->get();
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
         $crm_client_select_lead     = Config::get('appconfig.crm_client_select_lead');
         $crm_telemarketing          = Config::get('appconfig.crm_telemarketing');
-        
+
         $data = array(
             "crm_client_select_lead" => $crm_client_select_lead,
             "lst_client_categories" => $lst_client_categories,
             "account_info" => $account_info,
             "lst_leads" => $lst_leads,
+            "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
             "lst_industry" => $lst_industry,
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
@@ -235,10 +245,36 @@ class AccountsController extends Controller
             return Response()->view("accounts.edittform",$data);
     }
 
-    
+    public function GetRegionArea(Request $request)
+    {
+        $lr_area = $request->input('lr_area');
+
+
+
+        $lst_regions = Regions::whereLrArea($lr_area)->get();
+        $regions_array = array();
+
+        foreach ($lst_regions as $key => $value)
+        {
+            $regions_array[$value->lr_region] = $value->lr_region;
+        }
+
+
+        $data = array(
+            "html_array" => $regions_array,
+            "name" => 'ca_billing_region',
+            "id" => 'ca_billing_region'
+        );
+
+        $result_array['dropdown'] = view('html.dropdown',$data)->render();
+
+
+        return Response()->json($result_array);
+    }
+
     /**
      * Save Account Info and Upload Image Profile of this Account to the Main Server
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -259,7 +295,7 @@ class AccountsController extends Controller
         $ca_account_email       = $request->input("ca_account_email");
         $ca_account_mobile      = $request->input("ca_account_mobile");
         $ca_account_site        = $request->input("ca_account_site");
-        $ca_nbr_of_employees    = $request->input("ca_nbr_of_employees"); 
+        $ca_nbr_of_employees    = $request->input("ca_nbr_of_employees");
         $ca_billing_country     = $request->input("ca_billing_country");
         $ca_billing_city        = $request->input("ca_billing_city");
         $ca_billing_state       = $request->input("ca_billing_state");
@@ -281,18 +317,18 @@ class AccountsController extends Controller
         $ca_billing_address         = $request->input("ca_billing_address");
         $ca_account_code          = $request->input("ca_account_code");
         $ca_billing_region          = $request->input("ca_billing_region");
-        
+
         $ca_image_base_src      = "";
         $ca_image_file_name     = "";
         $ca_image_extension     = "";
-        
+
         $AccountInfo = new CRMAccounts();
         $accounts_obj = new AccountsManager();
         if($ca_id != null)
         {
-            $AccountInfo = CRMAccounts::find($ca_id); 
+            $AccountInfo = CRMAccounts::find($ca_id);
         }
-        
+
         if($ca_id == null)
         {
             $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
@@ -311,22 +347,22 @@ class AccountsController extends Controller
              $AccAccounting->aa_sub_account      = $account_info->aa_id;
              $AccAccounting->aa_account_label    = $ca_account_name;
              $AccAccounting->fk_country_id       = 0;
-             $AccAccounting->save(); 
+             $AccAccounting->save();
              $aa_id = $AccAccounting->aa_id;
-             $AccountInfo->ca_accounting_id = $aa_id; 
+             $AccountInfo->ca_accounting_id = $aa_id;
         }
-        
+
         // upload file to the CRM photo
         if(count($_FILES) > 0 )
         {
             $image_data =  $accounts_obj->UploadAvatarAccount($ca_id);
-            
+
             $AccountInfo->ca_image_base_src    = $image_data['data']['ca_image_base_src'];
             $AccountInfo->ca_image_file_name   = $image_data['data']['ca_image_file_name'];
             $AccountInfo->ca_image_extension   = $image_data['data']['ca_image_extension'];
-            
+
         }
-        
+
         $AccountInfo->fk_account_owner_id       = $fk_account_owner_id;
         $AccountInfo->ca_lead_id                = $ca_lead_id;
         $AccountInfo->ca_parent_account         = $ca_parent_account;
@@ -362,15 +398,15 @@ class AccountsController extends Controller
         $AccountInfo->ca_account_code            = $ca_account_code;
         $AccountInfo->ca_nationality_id            = $ca_nationality_id;
         $AccountInfo->save();
-       
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
-        
+
     }
-    
-    
+
+
     /**
      * Delete Account Info from the database by changing the flag from 0 of is_deleted from 0 to 1
      * @param Request $request
@@ -379,56 +415,56 @@ class AccountsController extends Controller
     {
         $ca_id = $request->input('ca_id');
         $result_array = array();
-        
-        
+
+
         $account_info = CRMAccounts::find($ca_id);
         $account_info->ca_is_deleted   = 1;
         $account_info->ca_deleted_by   = session('user_id');
         $account_info->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
+
     /**
      * Convert list of leads to accounts and  complete all the configurations related
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param unknown $cl_ids
      */
     public function ConvertToAccounts( $cl_ids )
     {
-       
+
         $data = array(
             "cl_ids" => $cl_ids
         );
        return response()->view("leads.converttoaccounts",$data);
     }
-    
-    
-    
+
+
+
     public function ConvertLeadtoAccount(Request $request)
     {
         $cl_ids = $request->input("al_ids");
         $lead_ids_array = explode(",", $cl_ids);
         $result_array = array();
         $lst_leads_info = CRMLeads::whereIn('cl_id',$lead_ids_array)->get();
-        
+
         foreach ( $lst_leads_info as $li_index => $li_info )
         {
-            
+
             // check if lead is not converted to client is stop and receive the notificaiton
             if($li_info->fk_lead_status_id != LeadsStatusManager::STATUS_CONVERSION_TO_CLIENT)
             {
                 $result_array['is_error'] = 1;
                 $result_array['error_msg'] = "Invalid Status,you need to select conversion to client status";
-                
+
                 return Response()->json($result_array);
             }
-           
+
             $cl_id =  $li_info->cl_id;
             $AccountObj = new CRMAccounts();
             $AccountObj->fk_account_owner_id    =  $li_info->fk_lead_owner;
@@ -466,18 +502,18 @@ class AccountsController extends Controller
             $AccountObj->ca_shipping_code       =  $li_info->cl_zip_code;
             $AccountObj->ca_shipping_street     =  $li_info->cl_street_name;
             $AccountObj->save();
-            
+
            // change status of lead to converted to client
             $lead_converted = CRMLeads::find($cl_id);
             $lead_converted->fk_lead_status_id = LeadsStatusManager::STATUS_CONVERTED_TO_CLIENT;
             $lead_converted->save();
-            
+
             $lead_converted = null;
             unset($lead_converted);
         }
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
-        
+
         return Response()->json($result_array);
     }
 }

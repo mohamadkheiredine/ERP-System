@@ -48,8 +48,8 @@ th{
             </div>
         </div>
     </div>
-    <div class="card-body"> 
-        
+    <div class="card-body">
+
         <form name="frm_save_bills" id="FRM_SAVE_BILLS">
               <span id="hidden_fields">
                         {!! csrf_field() !!}
@@ -58,48 +58,56 @@ th{
               <div class="row">
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Receipt </label> 
+                          <label>Receipt </label>
                            <input type="text"  autocomplete="off" required="required"  name="ip_billing_nbr" id="IP_BILLING_NBR" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_nbr }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Client Code </label> 
+                          <label>Client Code </label>
                           <input type="text"  autocomplete="off" required="required"  name="ip_client_code" id="IP_CLIENT_CODE" class="form-control"  maxlength="25" value="{{ $bill_info->ip_client_code }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Client NAME </label> 
+                          <label>Client NAME </label>
                           <input type="text"  autocomplete="off" readonly="readonly"  name="ip_client_name" id="IP_CLIENT_NAME" class="form-control"  maxlength="25" value="{{ $bill_info->ip_client_name }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Date </label> 
+                          <label>Date </label>
                            <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_date }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Doc Nbr </label> 
-                          <input type="text"  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_doc }}" />
+                          <label>Doc Nbr </label>
+                          <input type="text" {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_doc }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Amount </label> 
-                          <input type="text"  autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_amount }}" />
+                          <label>Amount </label>
+                          <input type="text"  {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}   autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_amount }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Collector  </label> 
+                          <label>Collector  </label>
                               <select name="ip_collector_id" required="required" id="IP_COLLECTOR_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Collector">
                                   <option value="">-- Select Collector --</option>
                                   <?php foreach ( $lst_collectors as $key => $tech_info ) { ?>
                                           <option {{ $bill_info->ip_collector_id == $tech_info->id ? "selected"  : "" }}  value="<?php echo $tech_info->id;  ?>"><?php echo $tech_info->u_fullname;  ?></option>
                                   <?php  } ?>
+                                  <?php foreach ( $lst_admins as $key => $user_info ) { ?>
+                                  <option  {{ $bill_info->ip_collector_id == $user_info->id ? "selected"  : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                  <?php  } ?>
+
+                                  <?php foreach ( $lst_technicians as $key => $user_info ) { ?>
+                                  <option  {{ $bill_info->ip_collector_id == $user_info->id ? "selected"  : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                  <?php  } ?>
+
                           </select>
                       </div>
                   </div>
@@ -125,6 +133,23 @@ th{
                            </select>
                        </div>
                    </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <br/>
+                          <label class="form-check form-switch form-check-custom form-check-solid">
+                              <input class="form-check-input" type="checkbox" {{  $bill_info->ip_billing_status == 1 ? "checked" : "" }} name="ip_billing_status" id="IP_BILLING_STATUS"   value="1"  />
+                              <span class="form-check-label fw-semibold text-muted">
+                                          Pay Bill
+                                        </span>
+                          </label>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Payment Date </label>
+                          <input type="text"  autocomplete="off" name="ip_pay_date" id="IP_PAY_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_pay_date }}" />
+                      </div>
+                  </div>
               </div>
                         <div class="row" style="height:5px;"></div>
               <div class="row">

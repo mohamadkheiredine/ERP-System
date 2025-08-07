@@ -14,7 +14,7 @@ Page Description :
 
 ?>
 
- 
+
 @extends('layouts.layout',['page_title' => "Product Managemet"])
 
 @section('themes')
@@ -28,7 +28,7 @@ th{
 </style>
 @endsection
 @section('plugins')
-<script type="text/javascript" src="{{ url('js/modules/products.module.js') }}"></script> 
+<script type="text/javascript" src="{{ url('js/modules/products.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/inventory/transferstock.js') }}"></script>
 @endsection
 
@@ -48,7 +48,7 @@ th{
         </div>
     </div>
     <div class="card-body">
-    
+
                <div class="row">
                    <div class="col-md-12">
                        <div class="card shadow-sm">
@@ -69,7 +69,7 @@ th{
                                                     <select   name="mp_product_id" id="MP_PRODUCT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product">
                                                             @foreach( $lst_products as $key => $product_info )
                                                                     <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
-                                                             @endforeach 
+                                                             @endforeach
                                                     </select>
                                                 </div>
                                             </div>
@@ -94,14 +94,14 @@ th{
                                                 <button type="button" id="BACK_FORM" name="back_form" class="btn btn-warning">Back</button>
                                             </div>
                                         </div>
-                                    </form> 
+                                    </form>
                                 </div>
                             </div>
                         </div>
                    </div>
                </div>
-               <div class="row" style="height:15px;"></div>    
-        
+               <div class="row" style="height:15px;"></div>
+
     <form name="frm_transfer_socket" id="FORM_TRANSFER_SOCKET">
             <div class="form-body">
                  <span id="hidden_fields">
@@ -115,7 +115,7 @@ th{
                             <div class="alert alert-danger" style="display:none">
                                     <strong>Error!</strong> You have some form errors. Please check below.
                             </div>
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label> Warehouse Source</label>
@@ -149,7 +149,7 @@ th{
                               <span class="form-check-label fw-semibold text-muted">
                                 Transfer Approved
                               </span>
-                          </label> 
+                          </label>
                     </div>
                 </div>
                <div class="row" style="height:50px;"></div>
@@ -166,7 +166,6 @@ th{
                                         <table class="table table-rounded table-striped border gy-7 gs-7">
                                                 <thead>
                                                         <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                            <th>id</th>
                                                             <th>Code</th>
                                                             <th>Item</th>
                                                             <th>Quantity</th>
