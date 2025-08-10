@@ -45,6 +45,11 @@ clients_module = {
 			var base_url 	= $('input[name=base_url]').val();
 			window.location.href = base_url + "/crm/clients/editcontact/" + ca_id;
 		},
+        ViewAccountInfo : function(){
+            var ca_id 		= $(this).data("ca_id");
+            var base_url 	= $('input[name=base_url]').val();
+            window.location.href = base_url + "/crm/clients/viewfile/" + ca_id;
+        },
 		DeleteAccountInfo : function(){
 			 var ca_id = $(this).data('ca_id');
 				bootbox.confirm("Are you sure you want to delete ?", function(result){

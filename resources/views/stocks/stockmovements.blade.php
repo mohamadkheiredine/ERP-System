@@ -84,7 +84,7 @@ $(function(){
 												<span>
 													<i class="fas fa-user"></i>
 													<span>
-														Move Stock
+														New Transfer
 													</span>
 												</span>
 											</a>
@@ -121,7 +121,7 @@ $(function(){
 												<span>
 													<i class="fas fa-user"></i>
 													<span>
-														Move Stock
+														New Transfer
 													</span>
 												</span>
 											</a>

@@ -85,7 +85,7 @@ Page Description :
 										</div>
 									</div>
 								</div>
-								 
+
 								<div class="table-responsive">
                                                       		<table class="table table-row-dashed table-row-gray-300 gy-7">
                                                                     <thead>
@@ -98,6 +98,7 @@ Page Description :
                                                                                     <th title="Email"> Email </th>
                                                                                     <th title="Email"> Full Address </th>
                                                                                     <th style="width:2px;" nowrap title="#"> edit </th>
+                                                                                    <th style="width:2px;" nowrap title="#"> View </th>
                                                                                     <th style="width:2px;" nowrap title="#"> Delete </th>
                                                                             </tr>
                                                                     </thead>
@@ -105,8 +106,8 @@ Page Description :
 
                                                                     </tbody>
                                                         </table>
-								</div> 
-        
+								</div>
+
                       <div class="row">
                   <div class="col-md-12" style="height:50px" align="right"></div>
               </div>

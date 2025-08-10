@@ -65,11 +65,21 @@ th{
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label> Product</label>
+                                                    <label> Product Code</label>
                                                     <select   name="mp_product_id" id="MP_PRODUCT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product">
-                                                            @foreach( $lst_products as $key => $product_info )
-                                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
-                                                             @endforeach
+                                                        @foreach( $lst_products as $key => $product_info )
+                                                                <option value="{{ $product_info->p_id }}">{{ $product_info->p_barcode }}</option>
+                                                         @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label> Product Name</label><br/>
+                                                    <select   name="mp_product" id="MP_PRODUCT" class="form-control form-select" data-control="select2" data-placeholder="Select Product">
+                                                        @foreach( $lst_products as $key => $product_info )
+                                                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                             </div>
@@ -79,7 +89,7 @@ th{
                                                        <input type="text" maxlength="50" name="mp_movement_quantity" id="MP_MOVEMENT_QUANTITY" class="form-control" required="required"   value="" />
                                                    </div>
                                            </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" style="display: none">
                                                  <div class="form-group">
                                                        <label class="control-label"> Description</label>
                                                        <textarea name="mp_item_notes" id="MP_ITEM_NOTES" class="form-control" style="width:100%;Height:150px;resize:none"></textarea>
@@ -136,7 +146,7 @@ th{
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4"  style="display: none">
                         <div class="form-group">
                             <label> Transfer Label </label>
                             <input type="text" name="sm_movement_label" id="SM_TRANSFER_LABEL" class="form-control" maxlength="255"  value="" />

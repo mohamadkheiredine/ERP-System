@@ -175,7 +175,7 @@ th{
                          	 <div class="form-group">
                                 <br/>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                        <input class="form-check-input"  type="checkbox" name="so_whole_sale" id="SO_WHOLE_SALE" {{ $order_info->so_whole_sale == 1 ? "checked" : "checked" }}  value="1"   />
+                                        <input class="form-check-input"  type="checkbox" name="so_whole_sale" id="SO_WHOLE_SALE" {{ $order_info->so_whole_sale == 1 ? "checked" : "" }}  value="1"   />
                                         <span class="form-check-label fw-semibold text-muted">
                                           Whole Sales
                                         </span>

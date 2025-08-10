@@ -16,6 +16,9 @@ namespace App\Http\Controllers\CallCenter;
 
 use App;
 use App\Http\Controllers\Controller;
+use App\models\Accounting\TransactionMovements;
+use App\models\Accounting\Transactions;
+use App\models\PayRolls\PayrollsComissions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -41,6 +44,9 @@ use App\models\Billing\PaymentTypes;
 use App\models\System\Currency;
 use App\models\CallCenter\CallResults;
 use App\models\CallCenter\CallResultsWorkflow;
+use App\models\Inventory\WareHouses;
+use App\models\Inventory\Stocks;
+use App\models\CallCenter\InboundCallProducts;
 
 
 class InboundController extends Controller
@@ -62,12 +68,14 @@ class InboundController extends Controller
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_currencies = Currency::all();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
 
         $data = array(
             "lst_telemarketings" => $lst_telemarketings,
             "lst_technicians" => $lst_technicians,
             "lst_payment_types" => $lst_payment_types,
+            "lst_products" => $lst_products,
             "lst_currencies" => $lst_currencies,
             "lst_results" => $lst_results,
             "lst_maint_types" => $lst_maint_types
@@ -99,7 +107,7 @@ class InboundController extends Controller
         else
             $skip = 0;
 
-        $inboundcall_cond = InboundCall::whereIcIsDeleted(0);
+        $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcIssueResolved(0);
 
 
 
@@ -212,7 +220,7 @@ class InboundController extends Controller
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
 
-        $inboundcall_cond = InboundCall::whereIcIsDeleted(0);
+        $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcIssueResolved(0);
 
 
 
@@ -268,7 +276,42 @@ class InboundController extends Controller
         return $pdf->inline();
     }
 
+    /**
+     * Add stock to current inboundcall voucher
+     * @param Request $request
+     * @return void
+     */
+    public function AddProductStock(Request $request)
+    {
+        $p_id = $request->input('p_id');
+        $cp_quantity = $request->input('cp_quantity');
+        $products_stock  = $request->input('products_stock');
+        $stock_array = array();
+        $product_info = Products::find($p_id);
+        $result_array = array();
 
+        if($products_stock != "")
+            $stock_array = json_decode($products_stock);
+
+
+        array_push($stock_array,array(
+            'p_id' => $p_id,
+            'cp_quantity' => $cp_quantity,
+            'product_name' => $product_info->p_product_name,
+
+        ));
+
+
+
+
+        $data = array(
+            "product_info" => $product_info,
+            "cp_quantity" => $cp_quantity
+        );
+        $result_array['display'] = view('callcenter.voucherstockrecord',$data)->render();
+        $result_array['products_stock'] = $stock_array;
+        return Response()->json($result_array);
+    }
 
     /**
      * Function of Adding a new Cost Center category
@@ -333,6 +376,11 @@ class InboundController extends Controller
         $ic_payment_type = $request->input('ic_payment_type');
         $ic_visit_price = $request->input('ic_visit_price');
         $ic_currency_id = $request->input('ic_currency_id');
+        $products_stock = $request->input('products_stock');
+        $products_stock_array = json_decode($products_stock);
+
+
+
 
         $voucher_info = InboundCall::find($ic_ids);
         $voucher_info->ic_resolution_date = $ic_resolution_date;
@@ -342,9 +390,121 @@ class InboundController extends Controller
         $voucher_info->ic_payment_type = $ic_payment_type;
         $voucher_info->ic_visit_price = $ic_visit_price;
         $voucher_info->ic_currency_id = $ic_currency_id;
+        $voucher_info->ic_closed_voucher = 1;
         $voucher_info->ic_issue_resolved = 1;
 
         $voucher_info->save();
+
+
+
+
+
+        // get client info
+        $client_info = CRMAccounts::whereCaAccountCode($voucher_info->ic_client_code)->first();
+        $ca_id = $client_info->ca_id;
+        // save stock for calls and remove quantity from stock
+        //w_linked_to
+        $ic_technician_id = $voucher_info->ic_technician_id;
+
+        // add comission for technician for voucher
+
+        $payroll_comissions = new PayrollsComissions();
+        $payroll_comissions->pc_employee_id = $ic_technician_id;
+        $payroll_comissions->pc_company_id = session('company_id');
+        $payroll_comissions->pc_comission_value = $ic_comission;
+        $payroll_comissions->pc_currency_id = $ic_currency_id;
+        $payroll_comissions->pc_effective_date = date('Y-m-d');
+        $payroll_comissions->pc_comission_label = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name . " For Maintenance voucher " . $ic_doc_number;
+        $payroll_comissions->pc_deal_id = 0;
+        $payroll_comissions->save();
+
+
+
+        $warehouse_info = WareHouses::whereWIsDeleted(0)->WhereWLinkedTo($ic_technician_id)->get();
+        $warehouse_info = $warehouse_info[0];
+
+        $warehouse_id = $warehouse_info->w_id;
+        $parts_total_cost = 0;
+        foreach ($products_stock_array as $index => $stock)
+        {
+
+
+            $stock_info = Stocks::whereFkWarehouseId($warehouse_id)->whereFkProductId($stock['p_id'])->where('is_quantity','>=',$stock['cp_quantity'])->first();
+
+            if(count($stock_info) == 0)
+                continue;
+
+            $stock_info = $stock_info[0];
+            $stock_info->is_quanity = $stock_info->is_quanity - $stock['cp_quantity'];
+            $stock_info->save();
+
+
+            $cp_total_cost = $stock_info->is_price_item * $stock['cp_quantity'];
+            $price_item = $stock_info->is_price_item;
+
+
+
+
+            //save callcenter client product
+            $call_product = new InboundCallProducts();
+            $call_product->cp_client_id = $ca_id;
+            $call_product->fk_call_id = $ic_ids;
+            $call_product->cp_product_id = $stock['p_id'];
+            $call_product->cp_technician_id = $ic_technician_id;
+            $call_product->cp_quantity = $stock['cp_quantity'];
+            $call_product->cp_total_cost = $cp_total_cost;
+            $call_product->cp_total_price = $cp_total_cost;
+            $call_product->cp_total_price_item = $price_item;
+            $call_product->save();
+
+
+            // save accounting Record for Every Product
+            $parts_total_cost = $parts_total_cost + $stock_info->is_price_item;
+
+        }
+
+        $transaction_id = $voucher_info->ic_transaction_id;
+
+        // save accounting records
+        $delete = Transactions::whereAtId($transaction_id)->delete();
+        $delete = TransactionMovements::whereFkTranId($transaction_id)->delete();
+
+        $transaction = new Transactions();
+        $todays_date = date('Y-m-d');
+
+
+        $transaction->at_transaction_date   = $todays_date;
+        $transaction->at_creation_date      = $todays_date;
+        $transaction->at_accounting_doc     = "Transaction For Products on MV Call #" . $ic_doc_number;
+        $transaction->fk_acc_journal_id     = 1;
+        $transaction->at_currency_id        = $ic_currency_id;
+        $transaction->save();
+        $at_id = $transaction->at_id;
+
+        $trans_mov= new TransactionMovements();
+        $trans_mov->fk_tran_id              = $at_id;
+        $trans_mov->tm_ledger_account       = 6231;
+        $trans_mov->tm_sub_ledger_account   = 6231 ;
+        $trans_mov->tm_debit                = $parts_total_cost;
+        $trans_mov->tm_credit               = 0;
+        $trans_mov->tm_creation_date        = date('Y-m-d');
+        $trans_mov->tm_transaction_date        = date('Y-m-d');
+        $trans_mov->tm_currency_id          = $ic_currency_id;
+        $trans_mov->tm_ledger_label         = "Debit Products For MV Call  #" . $ic_doc_number;
+        $trans_mov->save();
+
+        $trans_mov= new TransactionMovements();
+        $trans_mov->fk_tran_id              = $at_id;
+        $trans_mov->tm_ledger_account       = 6011;
+        $trans_mov->tm_sub_ledger_account   = 6011 ;
+        $trans_mov->tm_debit                = 0;
+        $trans_mov->tm_credit               = $parts_total_cost;
+        $trans_mov->tm_creation_date        = date('Y-m-d');
+        $trans_mov->tm_transaction_date        = date('Y-m-d');
+        $trans_mov->tm_currency_id          = $ic_currency_id;
+        $trans_mov->tm_ledger_label         = "Credit Products For MV Call  #" . $ic_doc_number;
+        $trans_mov->save();
+
 
         // add new maintenance call on save
         if($voucher_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_RO || $voucher_info->ic_maintenance_type == MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN)
@@ -411,7 +571,6 @@ class InboundController extends Controller
         $ic_technician_id                  = $request->input('ic_technician_id');
         $ic_result_id                  = $request->input('ic_result_id');
         $ic_maintenance_type                  = $request->input('ic_maintenance_type');
-
 
         $result_array = array();
 

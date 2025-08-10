@@ -18,6 +18,8 @@ Page Description :
 namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
+use App\models\Billing\InvoicePayments;
+use App\models\CallCenter\InboundCall;
 use App\models\System\Areas;
 use App\models\System\Regions;
 use Validator;
@@ -204,6 +206,31 @@ class AccountsController extends Controller
 
     }
 
+
+    /**
+     * View FIle Info For Account
+     *
+     * @author Moe Mantach
+     * @param $ca_id
+     * @return
+     */
+    public function ViewFile( $ca_id )
+    {
+        $client_info = CRMAccounts::find($ca_id);
+        $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpBillingStatus(0)->get();
+        $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpBillingStatus(1)->get();
+        $lst_pendingcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcClientCode($client_info->ca_account_code)->get();
+        $lst_closedcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(1)->whereIcClientCode($client_info->ca_account_code)->get();
+
+        $data = array(
+           "client_info" => $client_info,
+           "lst_bills_unpaid" => $lst_bills_unpaid,
+           "lst_pendingcalls" => $lst_pendingcalls,
+           "lst_closedcalls" => $lst_closedcalls,
+           "lst_bills_paid" => $lst_bills_paid
+        );
+        return Response()->view("accounts.viewaccountfile",$data);
+    }
 
     /**
      * Page for Edit Form

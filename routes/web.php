@@ -237,6 +237,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/crm/clients','CRM\AccountsController@index');
     Route::get('/crm/clients/addform','CRM\AccountsController@AddForm');
     Route::get('/crm/clients/editcontact/{ca_id}','CRM\AccountsController@EditForm');
+    Route::get('/crm/clients/viewfile/{ca_id}','CRM\AccountsController@ViewFile');
 
     Route::get('/crm/accounts/deals','CRM\DealsController@index');
     Route::get('/crm/accounts/deals/addform','CRM\DealsController@AddForm');

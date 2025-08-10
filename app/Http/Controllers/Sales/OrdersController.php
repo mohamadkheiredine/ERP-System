@@ -416,6 +416,7 @@ class OrdersController extends Controller
         $so_payment_type            = $request->input('so_payment_type');
         $so_order_label             = $request->input('so_order_label');
         $so_order_note              = $request->input('so_order_note');
+        $so_product_type              = $request->input('so_product_type');
         $so_order_date              = $request->input('so_order_date');
         $so_order_date              = date("Y-m-d",strtotime($so_order_date));
         $so_delivery_date           = $request->input('so_delivery_date');
@@ -456,6 +457,7 @@ class OrdersController extends Controller
         $Orders->so_vat_id           = $so_vat_id;
         $Orders->so_order_currency   = $so_order_currency;
         $Orders->fk_warehouse_id     = $fk_warehouse_id;
+        $Orders->so_product_type     = $so_product_type;
         $Orders->so_vendor_id        = $so_vendor_id;
         $Orders->so_whole_sale       = $so_whole_sale;
 
@@ -533,47 +535,74 @@ class OrdersController extends Controller
 
         $order_info = Orders::find($order_id);
         // Get Stock information for the product
-        $product_stock = Stocks::whereFkProductId($order_product_id)->whereFkWarehouseId($warehouse_id)->get();
-
-        if(count($product_stock) == 0)
-        {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = "We dont have any stock for this Product in this warehouse";
-            return Response()->json($result_array);
-        }
-
-        $stock_serial_info = StockIds::whereSiStockUid($so_product_serial)->get();
-
-        // check if we have the queanty ordered
-        if($product_stock[0]['is_quanity'] < $so_product_quantity)
-        {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = "We don't have quantity in the stock for this product ";
-            return Response()->json($result_array);
-        }
 
 
-      /**  $product_cost       = $so_product_cost;**/
         $product_currency_id   = $product_info->p_product_currency;
         $so_order_currency_id  = $order_info->so_order_currency;
 
         $today_date         = date("Y-m-d");
-        $currency_exchange  = CurrencyExchangeRates::whereErFromCurrency($product_currency_id)->whereErToCurrency($so_order_currency_id)->where('er_date_exchange','=',$today_date)->get();
         $op_product_cost    = $so_product_cost;
         $exchange_rate      = 0;
 
-
-
         $order_products = new OrderProducts();
-        $order_products->fk_order_id            = $order_id;
-        $order_products->fk_product_id          = $order_product_id;
-        $order_products->so_product_quantity    = $so_product_quantity;
-        $order_products->so_product_cost        = $op_product_cost;
-        $order_products->so_product_price       = $op_product_cost * $so_product_quantity;
-        $order_products->so_product_currency    = $so_order_currency_id;
-        $order_products->so_exchange_rate       = $exchange_rate;
-        $order_products->so_stock_id            = $product_stock[0]['is_id'];
-        $order_products->save();
+
+        if($product_info->Category->pc_use_serial_number == 1)
+        {
+            $stock_serial_info = StockIds::whereSiStockUid($so_product_serial)->whereSiStockSold(0)->get();
+
+            if(count($stock_serial_info) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Serial Number Not Found In";
+                return Response()->json($result_array);
+            }
+
+            $order_products->fk_order_id            = $order_id;
+            $order_products->fk_product_id          = $order_product_id;
+            $order_products->so_product_quantity    = $so_product_quantity;
+            $order_products->so_product_cost        = $op_product_cost;
+            $order_products->so_product_price       = $op_product_cost * $so_product_quantity;
+            $order_products->so_product_currency    = $so_order_currency_id;
+            $order_products->so_exchange_rate       = $exchange_rate;
+            $order_products->so_stock_id            = $stock_serial_info[0]['fk_stock_id'];
+            $order_products->save();
+        }
+        else
+        {
+            $product_stock = Stocks::whereFkProductId($order_product_id)->whereFkWarehouseId($warehouse_id)->where('is_quanity','>',0)->get();
+
+            if(count($product_stock) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "We dont have any stock for this Product in this warehouse";
+                return Response()->json($result_array);
+            }
+
+            // check if we have the queanty ordered
+            if($product_stock[0]['is_quanity'] < $so_product_quantity)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "We don't have quantity in the stock for this product ";
+                return Response()->json($result_array);
+            }
+
+
+
+
+            $order_products->fk_order_id            = $order_id;
+            $order_products->fk_product_id          = $order_product_id;
+            $order_products->so_product_quantity    = $so_product_quantity;
+            $order_products->so_product_cost        = $op_product_cost;
+            $order_products->so_product_price       = $op_product_cost * $so_product_quantity;
+            $order_products->so_product_currency    = $so_order_currency_id;
+            $order_products->so_exchange_rate       = $exchange_rate;
+            $order_products->so_stock_id            = $product_stock[0]['is_id'];
+            $order_products->save();
+
+        }
+
+
+
 
 
 
@@ -745,12 +774,38 @@ class OrdersController extends Controller
         foreach ($lst_order_items as $key => $oi_info ) {
             $product_id = $oi_info->fk_product_id;
             $stock_id   = $oi_info->so_stock_id;
+            $so_stock_serial  = $oi_info->so_stock_serial;
+            $so_serial_number  = $oi_info->so_serial_number;
 
-            $stock_info = Stocks::find($stock_id);
-            $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
-            $stock_info->is_quanity = $is_quanity;
-            $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
-            $stock_info->save();
+            if($so_stock_serial > 1)
+            {
+                $stock_info = Stocks::find($stock_id);
+                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+                $stock_info->is_quanity = $is_quanity;
+                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+                $stock_info->save();
+
+                // get serial number sold
+
+                $serial_stock = StockIds::whereFkStockId($stock_id)->whereSiStockUid($so_serial_number)->get();
+
+                $serial_stock = $serial_stock[0];
+                $si_id = $serial_stock->si_id;
+                $stockid_info = StockIds::find($si_id);
+                $stockid_info->si_stock_sold = 1;
+                $stockid_info->save();
+            }
+            else
+            {
+                $stock_info = Stocks::find($stock_id);
+                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+                $stock_info->is_quanity = $is_quanity;
+                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+                $stock_info->save();
+            }
+
+
+
         }
 
         $result_array['is_error']   = 0;

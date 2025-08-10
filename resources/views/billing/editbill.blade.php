@@ -36,8 +36,16 @@ th{
 
 @section('content')
 <div class="card shadow-sm">
+
+    <form name="frm_save_bills" id="FRM_SAVE_BILLS">
     <div class="card-header">
         <h3 class="card-title">Edit Bill Info</h3>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Date </label>
+                <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_date }}" />
+            </div>
+        </div>
         <div class="card-toolbar">
             <div class="btn-group">
               <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -49,8 +57,6 @@ th{
         </div>
     </div>
     <div class="card-body">
-
-        <form name="frm_save_bills" id="FRM_SAVE_BILLS">
               <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="ip_id" value="{{ $bill_info->ip_id }}" />
@@ -76,14 +82,14 @@ th{
                   </div>
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Date </label>
-                           <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_date }}" />
+                          <label>Doc Nbr </label>
+                          <input type="text" {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_doc }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
-                       <div class="form-group">
-                          <label>Doc Nbr </label>
-                          <input type="text" {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}  autocomplete="off" required="required"  name="ip_payment_doc" id="IP_PAYMENT_DOC" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_doc }}" />
+                      <div class="form-group">
+                          <label>Payment Date </label>
+                          <input type="text"  autocomplete="off" name="ip_pay_date" id="IP_PAY_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_pay_date }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
@@ -144,12 +150,6 @@ th{
                           </label>
                       </div>
                   </div>
-                  <div class="col-md-6">
-                      <div class="form-group">
-                          <label>Payment Date </label>
-                          <input type="text"  autocomplete="off" name="ip_pay_date" id="IP_PAY_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_pay_date }}" />
-                      </div>
-                  </div>
               </div>
                         <div class="row" style="height:5px;"></div>
               <div class="row">
@@ -159,8 +159,8 @@ th{
                       <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
                   </div>
               </div>
-          </form>
     </div>
+    </form>
  </div>
 
 @endsection

@@ -157,12 +157,6 @@ orders_module = {
                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
             },
             submitHandler: function (form) {
-            	let barecode = $('#SO_PRODUCT_SERIAL').val();
-        		if(barecode == '')
-        			bootbox.alert({
-            			message : 'Please Add A valid SerialNumber' ,
-            			 className: 'rubberBand animated'
-            		});
                success3.show();
                error3.hide();
                $("#AjaxLoader").css({'display':'block'});

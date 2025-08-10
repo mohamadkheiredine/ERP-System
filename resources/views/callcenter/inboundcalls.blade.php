@@ -257,6 +257,7 @@ th{
               <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="ic_ids" value="0" />
+                    <input type="hidden" name="products_stock"  value="" />
               </span>
               <div class="row">
                    <div class="col-md-6">
@@ -267,7 +268,7 @@ th{
                    </div>
                    <div class="col-md-6">
                         <div class="form-group">
-                           <label class="control-label"> Doc Number </label><br/>
+                           <label class="control-label"> MV Number </label><br/>
                            <input type="text" name="ic_doc_number"  required="required" id="IC_DOC_NUMBER" maxlength="25" class="form-control" value="" />
                         </div>
                    </div>
@@ -280,13 +281,13 @@ th{
                    <div class="col-md-6">
                         <div class="form-group">
                            <label class="control-label"> Comission </label><br/>
-                           <input type="text" name="ic_comission"  required="required" id="IC_COMISSION" maxlength="25" class="form-control" value="" />
+                           <input type="text" name="ic_comission"  required="required" id="IC_COMISSION" maxlength="25" class="form-control" value="0" />
                         </div>
                    </div>
                    <div class="col-md-6">
                         <div class="form-group">
                            <label class="control-label"> Visit Price </label><br/>
-                           <input type="text" name="ic_visit_price"  required="required" id="IC_VISIT_PRICE" maxlength="25" class="form-control" value="" />
+                           <input type="text" name="ic_visit_price"  required="required" id="IC_VISIT_PRICE" maxlength="25" class="form-control" value="0" />
                         </div>
                    </div>
                     <div class="col-md-4">
@@ -295,7 +296,7 @@ th{
                            <select name="ic_currency_id" required="required" id="IC_CURRENCY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Currency" style="width:100%">
                                    <option value="">-- Select Currency --</option>
                                    @foreach ( $lst_currencies as $key => $currency_info )
-                                           <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
+                                           <option {{ Session('company_currency') == $currency_info->cc_id ? "selected='selected'" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
                                    @endforeach
                            </select>
                        </div>
@@ -311,6 +312,41 @@ th{
                                 </select>
                             </div>
                         </div>
+                  <div class="col-md-12">&nbsp;</div>
+                  <div class="col-md-12">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                  <select class="form-control form-select" id="CP_PRODUCT_ID" name="cp_product_id" data-control="select2" data-placeholder="Select Product">
+                                      <option value="">-- Select Product --</option>
+                                      @foreach($lst_products as $index => $product_info)
+                                          <option value="{{ $product_info->p_id }}">{{ $product_info->p_barcode }}</option>
+                                      @endforeach
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="col-md-3"><label></label><br/><label class="text-info ProductName"></label></div>
+                          <div class="col-md-3"><input type="text" name="cp_quantity" class="form-control" value="" /> </div>
+                          <div class="col-md-3"><button type="button" name="btn_add_stock" class="btn btn-info" >Add Stock</button> </div>
+                      </div>
+                  </div>
+                  <div class="col-md-12">&nbsp;</div>
+                  <div class="col-md-12">
+                      <div class="table-responsive">
+                          <table class="table table-rounded table-striped border gy-7 gs-7">
+                              <thead>
+                              <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                  <th>Code</th>
+                                  <th>Item</th>
+                                  <th>Quantity</th>
+                              </tr>
+                              </thead>
+                              <tbody class="LstMaintenanceProducts">
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  <div class="col-md-12">&nbsp;</div>
                   <div class="col-md-12" style="text-align: right">
                       <button type="submit" name="btn_save_mv" id="BTN_SAVE_MV" class="btn btn-primary">Save changes</button>
                   </div>
@@ -318,7 +354,7 @@ th{
           </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" name="btn_close" data-bs-dismiss="modal" >Close</button>
       </div>
     </div>
   </div>

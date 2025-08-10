@@ -694,7 +694,7 @@ class DealsController extends Controller
             $count_calls = InboundCall::whereIcIsDeleted(0)->count();
             $index = $count_calls + 1;
             $call_index = "CC" . sprintf('%05d', $index);
-
+            $today = date('Y-m-d');
             $call_info = new InboundCall();
             $call_info->ic_call_index      = $call_index;
             $call_info->ic_sales_id      = $fk_sales_id;
@@ -703,7 +703,7 @@ class DealsController extends Controller
             $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
             $call_info->ic_contract_code      = $account_deal->ad_deal_code;
             $call_info->ic_serial_number      = $ad_serial_number;
-            $call_info->ic_call_date      = $ad_first_bill_date;
+            $call_info->ic_call_date            = $today;
             $call_info->ic_call_start_time      = "00:00";
             $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;
             $call_info->save();

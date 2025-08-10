@@ -56,6 +56,30 @@ inboundcalls_module = {
 	    });
 
 	},
+    ResetValues : function(){
+        $('.LstMaintenanceProducts').html("");
+        $('input[name=products_stock]').html("");
+        $('#FRM_SAVE_VOUCHER').resetForm();
+    },
+    DisplayProductDescriptionInStockTransfer : function(){
+        let  base_url 			= $('input[name=base_url]').val();
+        let _token 				= $('input[name=_token]').val();
+        let p_id 				= $(this).val();
+
+        $.ajax
+        ({
+            url : base_url + "/request/stock/getproductinfo",
+            data : {p_id : p_id ,_token : _token },
+            method : 'post',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                $('.ProductName').html(response.p_product_name);
+
+            }
+        });
+    },
     SelectCallRecord : function(){
         $('#LstInboundCalls tr').each((index,item) => {
             $(item).find('input[type=checkbox]').removeAttr('checked');
@@ -63,6 +87,29 @@ inboundcalls_module = {
         })
         $(this).find('input[type=checkbox]').attr('checked',true);
         $(this).addClass('SelectedRow');
+    },
+    AddProductStock : function(){
+        let  base_url 			= $('input[name=base_url]').val();
+        let _token 				= $('input[name=_token]').val();
+        let p_id 				= $("#CP_PRODUCT_ID").val();
+        let cp_quantity 				= $("input[name=cp_quantity]").val();
+        let products_stock 				= $("input[name=products_stock]").val();
+
+        $.ajax
+        ({
+            url : base_url + "/request/inboundcall/addproductstock",
+            data : {p_id : p_id , cp_quantity : cp_quantity , products_stock : products_stock ,_token : _token },
+            method : 'post',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                let products = $('.LstMaintenanceProducts').html();
+                $('.LstMaintenanceProducts').html(products + response.display);
+                $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
+
+            }
+        });
     },
     QuickAction : function(){
       var action_type = $(this).data('action_type');
@@ -431,6 +478,8 @@ inboundcalls_module = {
                             $('input[name=ic_visit_price]').val('');
                             $('select[name=ic_currency_id]').val('');
                             $('select[name=ic_payment_type]').val('');
+                            $('#FRM_SAVE_VOUCHER').resetForm();
+                            $('.LstMaintenanceProducts').html('');
                            $('#AddMainVoucher').modal('toggle');
                      }
                    }

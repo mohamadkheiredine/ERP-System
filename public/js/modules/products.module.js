@@ -160,10 +160,30 @@ products_module = {
 	            },
 		        success : function(response){
 		        	$('#MP_ITEM_NOTES').val(response.p_product_description);
+                    $('#MP_PRODUCT').val(response.p_id).trigger('change.select2');
 
 		        }
 		    });
                 },
+    DisplayPProductDescriptionInStockTransfer : function(){
+        let  base_url 			= $('input[name=base_url]').val();
+        let _token 				= $('input[name=_token]').val();
+        let p_id 				= $('select[name=mp_product]').val();
+
+        $.ajax
+        ({
+            url : base_url + "/request/stock/getproductinfo",
+            data : {p_id : p_id ,_token : _token },
+            method : 'post',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                $('#MP_PRODUCT_ID').val(response.p_id).trigger('change.select2');
+
+            }
+        });
+    },
 		CalculateDiscountedPrice : function(){
 			var $this = $(this);
 			var discount = $this.val();

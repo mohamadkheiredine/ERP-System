@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 $(function(){
@@ -12,7 +12,7 @@ $(function(){
          console.error( error );
      } );
 	 $('select').select2();
-	 
+
 	 new tempusDominus.TempusDominus(document.getElementById('BI_INVOICE_DATE'),{
 		 display: {
 			  components: {
@@ -20,7 +20,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -30,43 +30,43 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
-        if($('#IP_BILLING_DATE').length > 0 )
-	 new tempusDominus.TempusDominus(document.getElementById('IP_BILLING_DATE'),{
-		 display: {
-			  components: {
-			      calendar: true,
-			      date: true,
-			      month: true,
-			      year: true,
-			      decades: true, 
-			      clock: false,
-			      hours: false,
-			      minutes: false,
-			      seconds: false,
-			      useTwentyfourHour: undefined
-			    }
-		 },
-		 localization: {
-			 format : "L"
-			 
-		 }
-	});
-        
-        
-        
+     if($('#IP_BILLING_DATE').length > 0 )
+         new tempusDominus.TempusDominus(document.getElementById('IP_BILLING_DATE'),{
+             display: {
+                  components: {
+                      calendar: true,
+                      date: true,
+                      month: true,
+                      year: true,
+                      decades: true,
+                      clock: false,
+                      hours: false,
+                      minutes: false,
+                      seconds: false,
+                      useTwentyfourHour: undefined
+                    }
+             },
+             localization: {
+                 format : "L"
+
+             }
+        });
+
+
+
 	$('#BI_INVOICE_DATE').on('changeDate', function() {
 	   var current_date = $('#BI_INVOICE_DATE').val();
-	   
+
 	   invoices_module.GenerateInvoiceCode(current_date);
 	});
 	$("#BTN_SAVE_INVOICE").on("click",invoices_module.SaveInvoiceInfo);
 	$("#BTN_SAVE_NEW").on("click",invoices_module.SavenNewInvoiceInfo);
-	
-	
-	var bi_id = $("input[name=bi_id]").val(); 
+
+
+	var bi_id = $("input[name=bi_id]").val();
 	if(bi_id != null)
 	{
 		invoices_module.DisplayListInvoiceProducts();
@@ -85,9 +85,9 @@ $(function(){
 		$(".quickactions").on("click",invoices_module.QuickActions);
 		$(window).on("click",".DeleteRow",invoices_module.RemoveCurrentRow);
 		$('#LstPaymentSplits').on("click",".EditPayment",invoices_module.EditPaymentInfo);
-		$("#LstReceipts").on('click',"a[id*=PAY_]",invoices_module.PayReceipt); 
-		$("#LstReceipts").on('click',"a[id*=EDIT_IRECEIPT_]",invoices_module.EditIReceiptForm); 
-		$("#LstProducts").on('click',"a[id*=DELETE_ITEM_]",invoices_module.DeleteItemFromInvoice); 
+		$("#LstReceipts").on('click',"a[id*=PAY_]",invoices_module.PayReceipt);
+		$("#LstReceipts").on('click',"a[id*=EDIT_IRECEIPT_]",invoices_module.EditIReceiptForm);
+		$("#LstProducts").on('click',"a[id*=DELETE_ITEM_]",invoices_module.DeleteItemFromInvoice);
 		$("#LstProducts").on('click',"a[id*=EDIT_ITEM_]",invoices_module.GetItemInvoiceInfo);
                 $("#BTN_CLOSE").on('click',function(){
                     $("#InserItems").modal('toggle');
@@ -96,9 +96,9 @@ $(function(){
 	}
 	$("#BI_ACCOUNT_NUMBER").on("change",invoices_module.GetAccountInformation);
 	$("#BI_ACCOUNT_NUMBER").on("blur",invoices_module.GetAccountInformation);
-        
-        
+
+
        $("#INVOICE_ACCOUNT_ID").select2('destroy').attr("disabled", true);
-       
-	
+
+
 })

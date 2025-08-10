@@ -654,6 +654,7 @@ Route::post('/request/inboundcall/generateanddownloadlist','CallCenter\InboundCo
 Route::get('/request/call/getlistcallresults','CallCenter\InboundController@GetListCallResul');
 Route::post('/request/inboundcall/savecallresult','CallCenter\InboundController@SaveCallResultInfo');
 Route::get('/request/mvoucher/getnewmaintenancenumber','CallCenter\InboundController@GetNewMaintenanceNumber');
+Route::post('/request/inboundcall/addproductstock','CallCenter\InboundController@AddProductStock');
 
 Route::post('/request/outboundcall/displaylist','CallCenter\OutboundController@DisplayList');
 Route::post('/request/outboundcall/saveinfo','CallCenter\OutboundController@SaveOutboundCallInfo');

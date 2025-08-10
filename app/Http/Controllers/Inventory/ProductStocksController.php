@@ -840,6 +840,7 @@ class ProductStocksController extends Controller
           $bar_code_png = $barcode_obj->getBarcodePNG($product_info->p_barcode , "C39+",150 , 50 );
 
         $result_array['barcode_img']                = "data:image/png;base64," . $bar_code_png;
+        $result_array['p_id']                = $p_id;
         $result_array['image_base_src']             = $product_info->p_product_profile_base_src;
         $result_array['image_file_name']            = $product_info->p_product_profile_file_name;
         $result_array['image_extention']            = $product_info->p_product_profile_extention;

@@ -52,7 +52,7 @@ class SystemStatusController extends Controller
     {
         $ss_status_type = $request->input('ss_status_type');
 
-        $lst_status = SystemStatus::whereSsIsDeleted(0)->get();
+        $lst_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType($ss_status_type)->get();
         $data = array(
             'ss_status_type' => $ss_status_type,
             'lst_statuses' => $lst_status
@@ -121,8 +121,8 @@ class SystemStatusController extends Controller
     public function AddForm(Request $request)
     {
 
-        $lst_system_status = SystemStatus::whereSsIsDeleted(0)->get();
         $ss_status_type = $request->input('ss_status_type');
+        $lst_system_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType($ss_status_type)->get();
 
         $data = array(
             "lst_statuses" => $lst_system_status,

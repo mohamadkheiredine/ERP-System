@@ -19,6 +19,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Inventory\unknown;
 use App\Http\Controllers\Inventory\View;
 use App\models\Accounting\ChartAccounts;
+use App\models\Billing\PaymentTypes;
 use App\models\CostCenter\CostCenters;
 use App\models\Expenses\Expenses;
 use App\models\System\Currency;
@@ -55,7 +56,7 @@ class ExpensesController extends Controller
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
 
         $data = array(
-            "lst_expenses_categories" => $lst_expenses_categories,
+            "lst_categories" => $lst_expenses_categories,
             "lst_employees" => $lst_employees,
             "lst_cost_centers" => $lst_cost_centers,
         );
@@ -64,7 +65,7 @@ class ExpensesController extends Controller
 
 
     /**
-     * Display list of Expense categories
+     * Display list of Expenses
      *
      * @author Moe Mantach
      * @param Request $request
@@ -100,7 +101,7 @@ class ExpensesController extends Controller
         $total_pages = intval($total_pages);
 
 
-        $lst_expenses = $expenses_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('ec_name', 'ASC')->get();
+        $lst_expenses = $expenses_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('ac_id', 'ASC')->get();
 
         $data = array(
             "lst_expenses" => $lst_expenses
@@ -129,14 +130,16 @@ class ExpensesController extends Controller
         $lst_expenses_categories = ExpensesCategories::whereEcIsDeleted(0)->get();
         $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_expenses_status = SystemStatus::whereSsStatusType("expenses_status")->whereSsIsDeleted(0)->get();
 
         $data = array(
             'lst_currencies' => $lst_currencies,
-            'lst_expenses_categories' => $lst_expenses_categories,
+            'lst_categories' => $lst_expenses_categories,
             'lst_employees' => $lst_employees,
             'lst_expenses_status' => $lst_expenses_status,
             'lst_cost_centers' => $lst_cost_centers,
+            'lst_payment_types' => $lst_payment_types,
         );
         return view('expenses.addexpense',$data);
     }
@@ -208,13 +211,15 @@ class ExpensesController extends Controller
         $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
         $lst_expenses_status = SystemStatus::whereSsStatusType("expenses_status")->whereSsIsDeleted(0)->get();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
 
         $data = array(
             "expenses_info" => $expenses_info,
             'lst_currencies' => $lst_currencies,
-            'lst_expenses_categories' => $lst_expenses_categories,
+            'lst_categories' => $lst_expenses_categories,
             'lst_employees' => $lst_employees,
             'lst_expenses_status' => $lst_expenses_status,
+            'lst_payment_types' => $lst_payment_types,
             'lst_cost_centers' => $lst_cost_centers
         );
         return view('expenses.addexpense',$data);

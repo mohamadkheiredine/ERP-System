@@ -481,7 +481,7 @@ Page Description :
                                     @endif
 							@endif
 
-                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">
@@ -541,7 +541,7 @@ Page Description :
                                         </div>
                                     </div>
                                 </div>
-                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">
@@ -581,7 +581,7 @@ Page Description :
                                         </div>
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
-                                            <a class="menu-link" href="#">
+                                            <a class="menu-link" href="{{ url('/expenses') }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
@@ -1988,7 +1988,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-paint-roller fa-xl"></i>
 										</span>
-                                                                                Call's Module
+                                                                                Maintenance Module
 									</span>
 									<!--end:Menu link-->
 									<!--begin:Menu sub-->
