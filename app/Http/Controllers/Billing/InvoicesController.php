@@ -57,6 +57,7 @@ use App\models\Inventory\StockIds;
 use App\models\Inventory\Stocks;
 use Dompdf\Dompdf;
 use App\models\CRM\CRMServicesPaymentTypes;
+use App\models\Inventory\WareHouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 
@@ -669,6 +670,7 @@ class InvoicesController extends Controller
         $lst_payment_terms  = PaymentTerms::wherePtIsDeleted(0)->get();
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
         $lst_vat_accounts   = VatAccounts::whereAvIsDeleted(0)->get();
+        $lst_warehouses   = WareHouses::whereWIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
         $currencies_array = CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
         $list_customers     = Customers::whereIcIsDeleted(0)->get();
@@ -680,6 +682,7 @@ class InvoicesController extends Controller
 
         $data = array(
             "invoice_info" => $invoice_info,
+            "lst_warehouses" => $lst_warehouses,
             "list_accounts" => $list_accounts,
             "lst_banks_info" => $lst_banks_info,
             "lst_products" => $lst_products,
@@ -819,6 +822,101 @@ class InvoicesController extends Controller
             $invoice_product->save();
 
 
+
+
+            // save total invoice value in the database
+            $AccountingManager = new AccountingManager();
+            $params_array = array(
+                "invoice_info" => $invoice_info
+            );
+            $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+
+            // save the updated total cost and price to the database
+            $invoice_info->bi_total_cost = $total_array['total_cost'];
+            $invoice_info->bi_total_price   = $total_array['total_price'];
+            $invoice_info->save();
+
+            unset($AccountingManager);
+
+            $result_array['is_error'] = 0;
+            $result_array['error_msg'] = "Operation Completed Successfully";
+            return Response()->json($result_array);
+    }
+
+
+    public function LinkInvoiceItems(Request $request)
+    {
+        $item_id            = $request->input("item_id");
+        $invoice_id         = $request->input("bi_invoice_id");
+        $ii_warehouse_id    = $request->input("ii_warehouse_id");
+        $bi_product         = $request->input("bi_product_id");
+        $bi_quanity         = $request->input("bi_quanity");
+        $invoice_type_item  = $request->input("invoice_type_item");
+        $ii_product_serial_number  = $request->input("ii_product_serial_number");
+        $ii_payment_type    = $request->input("ii_payment_type");
+        $bi_item_price    = $request->input("bi_item_price");
+        $product_info       = Products::find($bi_product);
+        $invoice_info       = Invoices::find($invoice_id);
+        $result_array       = array();
+
+        // validate existing of serial number
+
+
+        if($ii_product_serial_number != "")
+        {
+            if($product_info->Category->pc_use_serial_number == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Please use a Product Need Serial Number";
+                return Response()->json($result_array);
+            }
+
+            $stock = StockIds::whereSiStockUid($ii_product_serial_number)->whereSiStockSold(0)->get();
+
+            if(count($stock) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "this Serial Number Not Found";
+                return Response()->json($result_array);
+            }
+
+            $invoice_product = new InvoiceProducts();
+            $invoice_product->fk_invoice_id     = $invoice_id;
+            $invoice_product->ii_item_id        = $bi_product;
+            $invoice_product->ii_item_type      = 1;
+            $invoice_product->ii_product_serial_number      = $ii_product_serial_number;
+            $invoice_product->ii_item_label     = $product_info->p_product_name;
+            $invoice_product->ii_price_currency = $product_info->p_product_currency;
+            $invoice_product->ii_item_qyt       = $bi_quanity;
+            $invoice_product->ii_payment_type   = $ii_payment_type;
+            $invoice_product->ii_item_price     = $bi_item_price;
+            $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
+            $invoice_product->save();
+        }
+        else
+        {
+            $stock_info = Stocks::whereFkProductId($bi_product)->whereFkWarehouseId($ii_warehouse_id)->get();
+
+            if(count($stock_info) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "we dont have any stock for this product in warehouse";
+                return Response()->json($result_array);
+            }
+
+            $invoice_product = new InvoiceProducts();
+            $invoice_product->fk_invoice_id     = $invoice_id;
+            $invoice_product->ii_item_id        = $bi_product;
+            $invoice_product->ii_item_type      = 1;
+            $invoice_product->ii_product_serial_number      = $ii_product_serial_number;
+            $invoice_product->ii_item_label     = $product_info->p_product_name;
+            $invoice_product->ii_price_currency = $product_info->p_product_currency;
+            $invoice_product->ii_item_qyt       = $bi_quanity;
+            $invoice_product->ii_payment_type   = $ii_payment_type;
+            $invoice_product->ii_item_price     = $bi_item_price;
+            $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
+            $invoice_product->save();
+        }
 
 
             // save total invoice value in the database

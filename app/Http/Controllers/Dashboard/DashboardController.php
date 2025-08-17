@@ -103,7 +103,7 @@ class DashboardController extends Controller
 
     public function GetStockByProducts(Request $request)
     {
-        $query = "SELECT p_product_name , SUM(stock.is_quanity) as stock_quantity FROM inventory_stocks as stock left join inventory_products as p on p.p_id = stock.fk_product_id where is_is_deleted=0 and stock.is_quanity > 0 group by stock.fk_product_id;";
+        $query = "SELECT p_product_name , SUM(stock.is_quanity) as stock_quantity FROM inventory_stocks as stock left join inventory_products as p on p.p_id = stock.fk_product_id where is_is_deleted=0 and is_quanity > 0 group by stock.fk_product_id;";
 
 
         $total_stock_products = DB::select($query);
@@ -128,7 +128,7 @@ class DashboardController extends Controller
 
     public function GetStockByWarehouse(Request $request)
     {
-        $query = "SELECT fk_warehouse_id , SUM(is_quanity)  as total_stock ,w_warehouse_name FROM inventory_stocks left join inventory_warehouses on w_id = fk_warehouse_id group by fk_warehouse_id;";
+        $query = "SELECT fk_warehouse_id , SUM(is_quanity)  as total_stock ,w_warehouse_name FROM inventory_stocks left join inventory_warehouses on w_id = fk_warehouse_id where is_quanity > 0 group by fk_warehouse_id;";
 
 
         $total_stock_warehouse = DB::select($query);

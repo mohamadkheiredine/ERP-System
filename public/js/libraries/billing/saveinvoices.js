@@ -96,6 +96,9 @@ $(function(){
 	}
 	$("#BI_ACCOUNT_NUMBER").on("change",invoices_module.GetAccountInformation);
 	$("#BI_ACCOUNT_NUMBER").on("blur",invoices_module.GetAccountInformation);
+    $("#BI_PRODUCT_ID").on("change",invoices_module.SwitchOtherDropdownForProduct);
+    $("#BI_PRODUCT_CODE_ID").on("change",invoices_module.SwitchPOtherDropdownForProduct);
+    $("#BTN_LINK_ITEM").on("click",invoices_module.SaveLinkItem);
 
 
        $("#INVOICE_ACCOUNT_ID").select2('destroy').attr("disabled", true);

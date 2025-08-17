@@ -464,6 +464,7 @@ class OrdersController extends Controller
         $Orders->save();
 
         $result_array['is_error']  = 0;
+        $result_array['so_id']  = $Orders->so_id;
         $result_array['error_msg'] = 'Order Information Has been saved';
 
         return Response()->json($result_array);
@@ -721,12 +722,14 @@ class OrdersController extends Controller
         foreach ($lst_order_items as $key => $oi_info ) {
            $invoice_items = new InvoiceProducts();
            $stock_id = $oi_info->so_stock_id;
+           $fk_product_id = $oi_info->fk_product_id;
            $stock_info = Stocks::find($stock_id);
+           $product_info = Products::find($fk_product_id);
            $invoice_items->fk_invoice_id = $bi_id;
-           $invoice_items->ii_item_id           = $oi_info->fk_product_id;
+           $invoice_items->ii_item_id           = $fk_product_id;
            $invoice_items->ii_stock_id          = $stock_id;
            $invoice_items->ii_item_type         = $order_info->so_product_type;
-           $invoice_items->ii_item_label        = $stock_info->products->p_product_name;
+           $invoice_items->ii_item_label        = $product_info->p_product_name;
            $invoice_items->ii_item_price        = $oi_info->so_product_price;
            $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
            $invoice_items->ii_price_currency    = $oi_info->so_product_currency;

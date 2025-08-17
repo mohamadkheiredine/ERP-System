@@ -1,6 +1,43 @@
-ALTER TABLE `payrolls_comissions` ADD COLUMN `pc_is_paid` TINYINT NULL DEFAULT 0 AFTER `pc_comission_label`;
-ALTER TABLE `payrolls_salary_details` ADD COLUMN `pd_salary_paid` TINYINT NULL DEFAULT 0 AFTER `pd_end_date`;
-ALTER TABLE `payrolls_salary_details` ADD COLUMN `pd_payroll_transaction` INT NULL DEFAULT 0 AFTER `pd_salary_paid`;
-ALTER TABLE `payrolls_transactions` ADD COLUMN `ot_total_comissions` DECIMAL NULL DEFAULT 0 AFTER `pt_total_deductions`;
-ALTER TABLE  `payrolls_transactions` ADD COLUMN `pt_transaction_id` INT NULL DEFAULT 0 AFTER `pt_status`;
-ALTER TABLE `payrolls_transactions` ADD COLUMN `pt_transaction_date` DATE NULL DEFAULT NULL AFTER `ot_total_comissions`, CHANGE COLUMN `pt_total_deductions` `pt_total_deductions` DECIMAL(10,2) NULL DEFAULT '0.00' AFTER `pt_transaction_id`;
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('13', 'show_product_image', 'Show Product Image in Stock List', '0', '1', '1');
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('14', 'ability_edit_stock_price', 'Ability to Edit Stock Price when transfer', '0', '1', '1');
+
+
+CREATE TABLE `billing_bills_rvs` (
+ `br_id` INT NOT NULL AUTO_INCREMENT,
+ `br_deal_id` INT NULL DEFAULT 0,
+ `br_bill_id` INT NULL DEFAULT 0,
+ `br_client_id` MEDIUMINT NULL DEFAULT 0,
+ `br_client_code` VARCHAR(15) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+ `br_client_name` VARCHAR(255) NULL DEFAULT NULL,
+ `br_bill_amount` DECIMAL NULL DEFAULT 0,
+ `br_paid_amount` DECIMAL NULL DEFAULT 0,
+ `br_remaining_amount` DECIMAL NULL DEFAULT 0,
+ `br_is_deleted` TINYINT NULL DEFAULT 0,
+ `br_deleted_by` INT NULL DEFAULT 0,
+ PRIMARY KEY (`br_id`),
+ INDEX `idx_br_bill_amount` (`br_bill_amount` ASC) INVISIBLE,
+ INDEX `idx_br_paid_amount` (`br_paid_amount` ASC) INVISIBLE,
+ INDEX `idx_br_remaining_amount` (`br_remaining_amount` ASC) INVISIBLE,
+ INDEX `idx_br_client_id` USING BTREE (`br_client_id`) VISIBLE,
+ INDEX `fk_br_bill_id_idx` (`br_bill_id` ASC) VISIBLE,
+ CONSTRAINT `fk_br_client_id`
+     FOREIGN KEY (`br_client_id`)
+         REFERENCES `crm_accounts` (`ca_id`)
+         ON DELETE CASCADE
+         ON UPDATE CASCADE,
+ CONSTRAINT `fk_br_bill_id`
+     FOREIGN KEY (`br_bill_id`)
+         REFERENCES `billing_invoice_payments` (`ip_id`)
+         ON DELETE CASCADE
+         ON UPDATE CASCADE)
+    ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+
+ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_payment_status` TINYINT NULL DEFAULT 0 AFTER `ip_payment_type`;
+ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_deal_id` INT NULL DEFAULT 0 AFTER `fk_invoice_id`;
+
+
+ALTER TABLE `billing_invoice_items` ADD COLUMN `ii_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `fk_invoice_id`;
+

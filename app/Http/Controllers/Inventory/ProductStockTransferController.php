@@ -85,11 +85,23 @@ class ProductStockTransferController extends Controller
         $mp_product_id                  = $request->input('mp_product_id');
         $mp_movement_quantity           = $request->input('mp_movement_quantity');
         $mp_item_notes                  = $request->input('mp_item_notes');
+        $warehouse_source                  = $request->input('warehouse_source');
+        $warehouse_destination                  = $request->input('warehouse_destination');
         $result_array = array();
         $lst_items = array();
         if($list_transfer_items != "")
         {
             $lst_items = json_decode($list_transfer_items);
+        }
+        // validate if quantity for this product exist in this warehoouse
+        $lst_stock_info = DB::select("SELECT stock.fk_product_id , product.p_barcode , product.p_product_name , stock.fk_warehouse_id , w_warehouse_name , SUM(stock.is_quanity) as total_quantity  FROM inventory_stocks stock left join inventory_warehouses warehouse on warehouse.w_id = stock.fk_warehouse_id left join inventory_products product on product.p_id = stock.fk_product_id where stock.is_quanity > 0 and stock.fk_product_id=" . $mp_product_id ." and stock.fk_warehouse_id=" . $warehouse_source . " group by fk_warehouse_id , fk_product_id;");
+
+        if(count($lst_stock_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'this item is out of Stock from Selected Warehouse';
+
+            return Response()->json($result_array);
         }
 
         $product_info = Products::find($mp_product_id);
@@ -99,7 +111,7 @@ class ProductStockTransferController extends Controller
             'mp_movement_quantity' => $mp_movement_quantity,
             'mp_item_notes' => $mp_item_notes,
             'mp_product_name' => $product_info->p_product_name,
-            'mp_product_ref' => $product_info->p_product_ref
+            'p_barcode' => $product_info->p_barcode
         );
 
         $lst_items[] = $item;

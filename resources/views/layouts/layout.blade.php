@@ -481,7 +481,7 @@ Page Description :
                                     @endif
 							@endif
 
-                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div style="display:none" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">

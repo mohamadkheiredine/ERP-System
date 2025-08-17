@@ -400,6 +400,8 @@ Route::get('/request/billing/getproductdata','Billing\InvoicesController@GetProd
 Route::get('/request/bills/getpaymentinfo','Billing\InvoicesController@GetPaymentBillsInfo');
 Route::post('/request/billing/savebillinfo','Billing\InvoicesController@SaveInvoicePayment');
 
+Route::post('/request/billing/linkinvoiceitems','Billing\InvoicesController@LinkInvoiceItems');
+
 Route::post('/request/billing/generatecode','Utilities\ConfigurationController@GenerateVoucherCode');
 
 

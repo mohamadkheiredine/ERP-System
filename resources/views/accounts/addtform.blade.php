@@ -119,16 +119,27 @@ th{
                                 <label>Nationality </label>
                                 <select name="ca_nationality_id" required="required"  id="CA_NATIONALITY_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Nationality">
                                         <option value="">-- Select Nationality --</option>
-                                        @foreach( $lst_countries as $key => $country_info )
-                                          <option value="{{ $country_info->id }}">{{ $country_info->code . " - " . $country_info->name }}</option>
+                                        @foreach( $lst_nationalities as $key => $nat_info )
+                                          <option value="{{ $nat_info->sn_id }}">{{ $nat_info->sn_nationality_fem_ar }}</option>
                                         @endforeach
 
                                 </select>
                             </div>
                         </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Paper Type </label>
+                                <select name="ca_paper_type" required="required"  id="CA_PAPER_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Paper Type">
+                                    <option value="">-- Select Paper Type --</option>
+                                    @foreach( $lst_paper_types as $key => $pt_info )
+                                      <option value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_description }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">National ID <span class="required"> * </span></label>
+                                <label class="control-label">ID <span class="required"> * </span></label>
                                 <input type="text" name="ca_national_id" required="required"  id="CA_NATIONAL_ID" class="form-control"  maxlength="255"  value="" />
                             </div>
                         </div>

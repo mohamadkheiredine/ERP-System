@@ -21,6 +21,8 @@ use App\Http\Controllers\Controller;
 use App\models\Billing\InvoicePayments;
 use App\models\CallCenter\InboundCall;
 use App\models\System\Areas;
+use App\models\System\Nationalities;
+use App\models\System\PaperTypes;
 use App\models\System\Regions;
 use Validator;
 use Input;
@@ -179,6 +181,8 @@ class AccountsController extends Controller
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
         $crm_client_select_lead    = Config::get('appconfig.crm_client_select_lead');
         $crm_telemarketing      = Config::get('appconfig.crm_telemarketing');
+        $lst_nationalities = Nationalities::all();
+        $lst_paper_types      = PaperTypes::wherePtIsDeleted(0)->get();
 
         $count_accounts = CRMAccounts::whereCaIsDeleted(0)->count();
         $count = $count_accounts + 1;
@@ -187,6 +191,7 @@ class AccountsController extends Controller
         $data = array(
             "crm_client_select_lead" => $crm_client_select_lead,
             "lst_client_categories" => $lst_client_categories,
+            "lst_paper_types" => $lst_paper_types,
             "lst_leads" => $lst_leads,
             "client_code" => $client_code,
             "lst_areas" => $lst_areas,
@@ -194,6 +199,7 @@ class AccountsController extends Controller
             "lst_industry" => $lst_industry,
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
+            "lst_nationalities" => $lst_nationalities,
             "lst_account_types" => $lst_account_types,
             "lst_contract_types" => $lst_contract_types,
             "lst_users" => $lst_users
@@ -249,8 +255,10 @@ class AccountsController extends Controller
         $lst_accounts           = CRMAccounts::whereCaIsDeleted(0)->where('ca_id', '<>', $ca_id)->get();
         $lst_account_types      = CRMAccountTypes::whereAtIsDeleted(0)->get();
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
+        $lst_paper_types      = PaperTypes::wherePtIsDeleted(0)->get();
         $crm_client_select_lead     = Config::get('appconfig.crm_client_select_lead');
         $crm_telemarketing          = Config::get('appconfig.crm_telemarketing');
+        $lst_nationalities = Nationalities::all();
 
         $data = array(
             "crm_client_select_lead" => $crm_client_select_lead,
@@ -262,8 +270,10 @@ class AccountsController extends Controller
             "lst_industry" => $lst_industry,
             "lst_accounts" => $lst_accounts,
             "lst_countries" => $lst_countries,
+            "lst_nationalities" => $lst_nationalities,
             "lst_account_types" => $lst_account_types,
             "lst_contract_types" => $lst_contract_types,
+            "lst_paper_types" => $lst_paper_types,
             "lst_users" => $lst_users
         );
         if($crm_telemarketing == '0')
@@ -344,6 +354,7 @@ class AccountsController extends Controller
         $ca_billing_address         = $request->input("ca_billing_address");
         $ca_account_code          = $request->input("ca_account_code");
         $ca_billing_region          = $request->input("ca_billing_region");
+        $ca_paper_type          = $request->input("ca_paper_type");
 
         $ca_image_base_src      = "";
         $ca_image_file_name     = "";
@@ -424,6 +435,7 @@ class AccountsController extends Controller
         $AccountInfo->ca_billing_address            = $ca_billing_address;
         $AccountInfo->ca_account_code            = $ca_account_code;
         $AccountInfo->ca_nationality_id            = $ca_nationality_id;
+        $AccountInfo->ca_paper_type            = $ca_paper_type;
         $AccountInfo->save();
 
 

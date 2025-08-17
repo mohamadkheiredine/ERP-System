@@ -1,9 +1,9 @@
 /**
- * 
+ *
  */
 
 invoices_module = {
-		DisplayListInvoices : function(){ 
+		DisplayListInvoices : function(){
 			var base_url 			= $('input[name=base_url]').val();
 			var _token 				= $('input[name=_token]').val();
 			var invoice_customer 	= $('#INVOICE_CUSTOMER').val();
@@ -31,7 +31,7 @@ invoices_module = {
                               $(this).prop("checked", checked);
                           });
                           $.uniform.update(set);
-                      }); 
+                      });
                      $.pagination = $('#InvoicesPagination').twbsPagination({
                            totalPages: response.total_pages,
                            visiblePages: 7,
@@ -40,39 +40,80 @@ invoices_module = {
                                 invoices_module.DisplayListInvoices();
                            }
                        });
-					
+
 					$("a[id*=EDIT_INVOICE_]").on('click',invoices_module.EditInvoiceInfo);
 					$("a[id*=DELETE_INVOICE_]").on('click',invoices_module.DeleteInvoiceData);
 				}
 			});
 		},
-                GetAccountInformation : function(){
-                    	var base_url        = $('input[name=base_url]').val();
-			var _token          = $('input[name=_token]').val();
-			var bi_account_number          = $('input[name=bi_account_number]').val();
-                        var params = { bi_account_number : bi_account_number , _token : _token };
-                        
-                        $.ajax
-			({
-				url : base_url + "/request/billing/getaccountinfo",
-				data : params,
-				method : 'get',
-				dataType : "json",
-				beforeSend : function(){
-				},
-				success : function(response){
-                                    if(response.is_error == 0)
-                                    {
-                                        $("#INVOICE_ACCOUNT").val(response.account_info.account_id);
-                                        $("#INVOICE_ACCOUNT").attr('value',response.account_info.account_id);
-                                        $("#INVOICE_ACCOUNT_ID").val(response.account_info.account_id).trigger('change');
-                                    }
-                                    
-                                }
-                            });
-                        
-                        
+        SwitchOtherDropdownForProduct : function(){
+            $("#BI_PRODUCT_CODE_ID").val($(this).val()).trigger('change.select2');
+            let product_id = $(this).val();
+            var base_url = $('#BASE_URL').val();
+            var _token = $('input[name=_token]').val();
+            $.ajax({
+                url : base_url + "/request/billing/getproductdata",
+                data : { _token : _token , product_id },
+                method : 'get',
+                dataType : "json",
+                beforeSend : function(){
                 },
+                success : function(response){
+                    if(response.is_error == 0)
+                    {
+                        $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
+                    }
+                }
+            });
+
+        },
+        SwitchPOtherDropdownForProduct : function(){
+            $("#BI_PRODUCT_ID").val($(this).val()).trigger('change.select2');
+            let product_id = $(this).val();
+            var base_url = $('#BASE_URL').val();
+            var _token = $('input[name=_token]').val();
+            $.ajax({
+                url : base_url + "/request/billing/getproductdata",
+                data : { _token : _token , product_id },
+                method : 'get',
+                dataType : "json",
+                beforeSend : function(){
+                },
+                success : function(response){
+                    if(response.is_error == 0)
+                    {
+                        $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
+                    }
+                }
+            });
+        },
+        GetAccountInformation : function(){
+                var base_url        = $('input[name=base_url]').val();
+                var _token          = $('input[name=_token]').val();
+                var bi_account_number          = $('input[name=bi_account_number]').val();
+                            var params = { bi_account_number : bi_account_number , _token : _token };
+
+                            $.ajax
+                ({
+                    url : base_url + "/request/billing/getaccountinfo",
+                    data : params,
+                    method : 'get',
+                    dataType : "json",
+                    beforeSend : function(){
+                    },
+                    success : function(response){
+                                        if(response.is_error == 0)
+                                        {
+                                            $("#INVOICE_ACCOUNT").val(response.account_info.account_id);
+                                            $("#INVOICE_ACCOUNT").attr('value',response.account_info.account_id);
+                                            $("#INVOICE_ACCOUNT_ID").val(response.account_info.account_id).trigger('change');
+                                        }
+
+                                    }
+                                });
+
+
+        },
 		ShowPaymentType : function() {
 			var selected = $(this).val();
 			var statusvalidate = $(this).find('option:selected').data('validatept');
@@ -90,7 +131,7 @@ invoices_module = {
 			 var bi_id 		= $("input[name=bi_id]").val();
 			 var base_url 	= $('input[name=base_url]').val();
 			 var item_id 	= $(this).data('item_id');
-			 
+
 			Swal.fire({
 				  title: 'Are you sure you want to delete ?',
 				  text: "You won't be able to revert this!",
@@ -115,13 +156,13 @@ invoices_module = {
 						});
 				  }
 				})
-			 
+
 		},
 		GenerateInvoiceCode : function(selected_date){
 			var _token 		= $("input[name=_token]").val();
 			var base_url 	= $('input[name=base_url]').val();
 			 var pi_id 	= $('input[name=pi_id]').val();
-			 
+
 			 if(pi_id != undefined)
 				 return false;
 			$.ajax
@@ -137,14 +178,14 @@ invoices_module = {
 					$("#BI_INVOICE_CODE").val(response.code);
 				}
 			});
-			
+
 		},
 		GetItemInvoiceInfo : function(){
 			var _token 		= $("input[name=_token]").val();
 			 var bi_id 		= $("input[name=bi_id]").val();
 			 var base_url 	= $('input[name=base_url]').val();
 			 var item_id 	= $(this).data('item_id');
-			 
+
 			 $.ajax
 				({
 					url : base_url + "/request/billing/getinvoiceitem",
@@ -161,8 +202,8 @@ invoices_module = {
 							 $("#InserItems").modal('toggle');
 						 }
 						 else
-						{ 
-							 
+						{
+
 							 $("input[name=item_id]").val(response.item_array.id);
 							 $("#BI_SERVICE_ID").val(response.item_array.ii_item_id);
 							 $("#BI_SERVICE_ID").trigger('change');
@@ -175,11 +216,11 @@ invoices_module = {
 						}
 					}
 				});
-			 
+
 		},
 		DisplayListInvoiceProducts : function(){
 			var base_url 			= $('input[name=base_url]').val();
-			var _token 				= $('input[name=_token]').val(); 
+			var _token 				= $('input[name=_token]').val();
 			var bi_id 				= $('input[name=bi_id]').val();
 			$('#LstProducts').html("<img src='" + base_url + "/images/loader.gif' style='height:75px' />");
 			$.ajax
@@ -197,8 +238,8 @@ invoices_module = {
 		},
 		DisplayListInvoicePayments : function(){
 			var base_url 			= $('input[name=base_url]').val();
-			var _token 				= $('input[name=_token]').val(); 
-			var bi_id 				= $('input[name=bi_id]').val(); 
+			var _token 				= $('input[name=_token]').val();
+			var bi_id 				= $('input[name=bi_id]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/billing/displaylistpaymentsinvoice",
@@ -214,7 +255,7 @@ invoices_module = {
 		},
 		CreateRemoveNumberofRows : function(){
 			var new_rows 		= $("#NUMBER_PAYMENT").val();
-			
+
 			var existing_rows 	= $('table#LstPayments tr.Invoices').length;
 
 			if(new_rows > existing_rows) // if new row value grater then the existing row we create the remaining number of rows
@@ -243,12 +284,12 @@ invoices_module = {
                 EditPaymentInfo : function(){
                     var ip_id = $(this).data('ip_id');
                     $('input[name=ip_id]').val(ip_id);
-                   $('#EditBills').modal('toggle'); // Opens the modal 
+                   $('#EditBills').modal('toggle'); // Opens the modal
                 },
                 GetPaymentBillInfo : function(){
 			var base_url 			= $('input[name=base_url]').val();
-			var _token 				= $('input[name=_token]').val(); 
-			var ip_id 				= $('input[name=ip_id]').val(); 
+			var _token 				= $('input[name=_token]').val();
+			var ip_id 				= $('input[name=ip_id]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/bills/getpaymentinfo",
@@ -273,8 +314,8 @@ invoices_module = {
 			var ip_payment_percentage = $("input[name='ip_payment_percentage[]']").map(function(){return $(this).val();}).get();
 			var ip_payment_type = $("select[name='ip_payment_type[]']").map(function(){return $(this).val();}).get();
 			var base_url 			= $('input[name=base_url]').val();
-			var _token 				= $('input[name=_token]').val(); 
-			var bi_id 				= $('input[name=bi_id]').val(); 
+			var _token 				= $('input[name=_token]').val();
+			var bi_id 				= $('input[name=bi_id]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/billing/savesplitpayments",
@@ -287,7 +328,7 @@ invoices_module = {
 		        	$('#LstPaymentSplits').html(response.display);
 		        }
 		    });
-			
+
 		},
 		QuickActions : function(){
 			var action_type = $(this).data('action_type');
@@ -376,7 +417,7 @@ invoices_module = {
 			var bi_id = $("input[name=bi_id]").val();
 			var base_url = $('#BASE_URL').val();
 			window.location.href = base_url + "/billing/receipts/editireceipt/" + bi_id + "/" + br_id;
-			
+
 		},
 		DownloadpdfInvoice : function(){
 			var bi_id = $('input[name=bi_id]').val();
@@ -454,7 +495,7 @@ invoices_module = {
 		},
                 SavePaymentInvoiceSubmitHandler : function(){
                     var InvoiceBillForm = $('#FRM_SAVE_BILL');
-	        
+
 			InvoiceBillForm.validate({
 	             errorElement: 'span', //default input error message container
 	             errorClass: 'help-block help-block-error', // default input error message class
@@ -505,7 +546,7 @@ invoices_module = {
 	                //error3.hide();
 	                var base_url = $('#BASE_URL').val();
 	    	       // var _token = $('input[name=_token]').val();
-	    	         
+
 	    	        var str_params = $("#FRM_SAVE_BILL").serialize();
 	    	         $.ajax
 	    	        ({
@@ -532,7 +573,7 @@ invoices_module = {
 		},
 		SaveServiceSubmitHandler : function(){
 			var InvoiceServicesForm = $('#FRM_INVOICE_SERVICES');
-	        
+
 			InvoiceServicesForm.validate({
 	             errorElement: 'span', //default input error message container
 	             errorClass: 'help-block help-block-error', // default input error message class
@@ -597,7 +638,7 @@ invoices_module = {
 	                //error3.hide();
 	                var base_url = $('#BASE_URL').val();
 	    	       // var _token = $('input[name=_token]').val();
-	    	         
+
 	    	        var str_params = $("#FRM_INVOICE_SERVICES").serialize();
 	    	         $.ajax
 	    	        ({
@@ -643,7 +684,7 @@ invoices_module = {
 			 var base_url = $('#BASE_URL').val();
   	       	 var _token = $('input[name=_token]').val();
 			var params = { _token : _token , bi_id : bi_id };
- 
+
 			$.ajax
 	        ({
 	            url : base_url + "/request/billing/revertinvoicedraft",
@@ -659,16 +700,109 @@ invoices_module = {
 	              }
 	            }
 	        });
-			 
+
 		},
-		SaveItemsInfo : function(){
+    SaveLinkItem : function(){
+			return invoices_module.SaveLinkItemSubmitHandler();
+		},
+        SaveLinkItemSubmitHandler : function(){
+            var InvoiceItemsForm = $('#FORM_LINK_PRODUCT');
+            //var error3 = $('.alert-danger', InvoiceItemsForm);
+            //var success3 = $('.alert-success', InvoiceItemsForm);
+
+            InvoiceItemsForm.validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block help-block-error', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "", // validate all fields including form hidden input
+                rules: {
+                    ii_warehouse_id : {
+                        required: true
+                    },
+                    bi_product_id : {
+                        required: true
+                    },
+                    bi_quanity : {
+                        required: true,
+                        number : true
+                    },
+                    bi_item_price : {
+                        required: true,
+                        number : true
+                    }
+                },
+
+                messages: { // custom messages for radio buttons and checkboxes
+
+                },
+                errorPlacement: function (error, element) { // render error placement for each input type
+                    if (element.parent(".input-group").length > 0) {
+                        error.insertAfter(element.parent(".input-group"));
+                    } else if (element.attr("data-error-container")) {
+                        error.appendTo(element.attr("data-error-container"));
+                    } else if (element.parents('.radio-list').length > 0) {
+                        error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+                    } else if (element.parents('.radio-inline').length > 0) {
+                        error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+                    } else if (element.parents('.checkbox-list').length > 0) {
+                        error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+                    } else if (element.parents('.checkbox-inline').length > 0) {
+                        error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+                    } else {
+                        error.insertAfter(element); // for other inputs, just perform default behavior
+                    }
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success3.hide();
+                    error3.show();
+                },
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+                submitHandler: function (form) {
+                    //success3.show();
+                    //error3.hide();
+                    var base_url = $('#BASE_URL').val();
+                    // var _token = $('input[name=_token]').val();
+
+                    var str_params = $("#FORM_LINK_PRODUCT").serialize();
+                    $.ajax
+                    ({
+                        url : base_url + "/request/billing/linkinvoiceitems",
+                        data : str_params,
+                        method : 'post',
+                        dataType : "json",
+                        beforeSend : function(){
+                        },
+                        success : function(response){
+                            if(response.is_error == 0)
+                            {
+                                invoices_module.DisplayListInvoiceProducts();
+                            }
+                        }
+                    });
+                }
+
+            });
+        },
+        SaveItemsInfo : function(){
 			return invoices_module.SaveInsertItemsSubmitHandler();
 		},
 		SaveInsertItemsSubmitHandler : function(){
 			 var InvoiceItemsForm = $('#FRM_INVOICE_ITEMS');
 	         //var error3 = $('.alert-danger', InvoiceItemsForm);
 	         //var success3 = $('.alert-success', InvoiceItemsForm);
-	        
+
 	         InvoiceItemsForm.validate({
 	             errorElement: 'span', //default input error message container
 	             errorClass: 'help-block help-block-error', // default input error message class
@@ -730,7 +864,7 @@ invoices_module = {
 	                //error3.hide();
 	                var base_url = $('#BASE_URL').val();
 	    	       // var _token = $('input[name=_token]').val();
-	    	         
+
 	    	        var str_params = $("#FRM_INVOICE_ITEMS").serialize();
 	    	         $.ajax
 	    	        ({
@@ -758,7 +892,7 @@ invoices_module = {
 		SaveInvoiceInfo(){
 			return invoices_module.SaveInvoiceInfoSubmitHandler();
 		},
-		SaveInvoicenNewInfoSubmitHandler : function(){ 
+		SaveInvoicenNewInfoSubmitHandler : function(){
 			var InvoiceForm = $('#FORM_SAVE_INVOICE');
 	         var error3 = $('.alert-danger', InvoiceForm);
 	         var success3 = $('.alert-success', InvoiceForm);
@@ -779,7 +913,7 @@ invoices_module = {
 	                       required: true
 	                 },
 	                 bi_invoice_currency : {
-	                	required :true 
+	                	required :true
 	                 },
                     bi_invoice_items_type : {
                    	 required: true
@@ -831,7 +965,7 @@ invoices_module = {
 
 	                $("#BTN_SAVE_INVOICE").attr('disabled','disabled');
 	   	         $("#BTN_SAVE_NEW").attr('disabled','disabled');
-	 
+
 	    	        var str_params = $("#FORM_SAVE_INVOICE").serialize();
 	    	         $.ajax
 	    	        ({
@@ -843,7 +977,7 @@ invoices_module = {
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
-	    	              { 
+	    	              {
 	    	            	  window.location.href = base_url + "/billing/invoices/addform";
 	    	              }
 	    	            }
@@ -872,7 +1006,7 @@ invoices_module = {
 	                       required: true
 	                 },
 	                 bi_invoice_currency : {
-	                	required :true 
+	                	required :true
 	                 },
                      bi_invoice_items_type : {
                     	 required: true
@@ -924,7 +1058,7 @@ invoices_module = {
 
 	                $("#BTN_SAVE_INVOICE").attr('disabled','disabled');
 		   	         $("#BTN_SAVE_NEW").attr('disabled','disabled');
-	 
+
 	    	        var str_params = $("#FORM_SAVE_INVOICE").serialize();
 	    	         $.ajax
 	    	        ({
@@ -936,7 +1070,7 @@ invoices_module = {
 	    	            },
 	    	            success : function(response){
 	    	              if(response.is_error == 0)
-	    	              { 
+	    	              {
 	    	            	 if(response.action == "add")
 	    	            		 window.location.href = base_url + "/billing/invoices/editform/" + response.bi_id;
 	    	            	 else

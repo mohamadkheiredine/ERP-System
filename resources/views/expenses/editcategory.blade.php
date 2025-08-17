@@ -71,8 +71,8 @@ Page Description :
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Max Amount <span class="required"> * </span></label>
-                                <input type="text" name="ec_max_amount" id="EC_MAX_AMOUNT" class="form-control" required="required" maxlength="15" value="{{ $category_info->ec_max_amount }}" />
+                                <label class="control-label">Max Amount </label>
+                                <input type="text" name="ec_max_amount" id="EC_MAX_AMOUNT" class="form-control"  maxlength="15" value="{{ $category_info->ec_max_amount }}" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -82,6 +82,17 @@ Page Description :
                                     <option value="">Currency</option>
                                     @foreach ( $lst_currencies as $key => $currency_info )
                                         <option {{ $category_info->ec_currency_id == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_name }}&nbsp;(&nbsp;{{ $currency_info->cc_currency_code }}&nbsp;)</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Account Linked To</label>
+                                <select  name="ec_gl_account_id" id="EC_GL_ACCOUNT_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Account Linked To">
+                                    <option value="">Currency</option>
+                                    @foreach ( $lst_accounts as $key => $account_info )
+                                        <option {{ $category_info->ec_gl_account_id == $account_info->aa_id ? "selected" : "" }} value="{{ $account_info->aa_id }}">{{ $account_info->aa_account }}&nbsp;(&nbsp;{{ $account_info->aa_account_label }}&nbsp;)</option>
                                     @endforeach
                                 </select>
                             </div>

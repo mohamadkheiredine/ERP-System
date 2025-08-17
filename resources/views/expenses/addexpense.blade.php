@@ -122,7 +122,7 @@ Page Description :
                                 <select  name="ac_payment_type" id="AC_PAYMENT_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Payment Type">
                                     <option value="">Payment Type</option>
                                     @foreach ( $lst_payment_types as $key => $type_info )
-                                        <option value="{{ $type_info->pt_id }}">{{ $type_info->pt_payment_type }}&nbsp;)</option>
+                                        <option value="{{ $type_info->pt_id }}">{{ $type_info->pt_payment_type }}</option>
                                     @endforeach
                                 </select>
                             </div>

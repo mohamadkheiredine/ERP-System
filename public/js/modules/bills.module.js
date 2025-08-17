@@ -52,6 +52,44 @@ bills_module = {
 
 
 	},
+    CalculateRemainingAmount : function(){
+        let ip_payment_amount = $("input[name=ip_payment_amount]").val();
+        let ip_remaining_amount = $('input[name=ip_remaining_amount]').val();
+        let ip_paid_amount = $('input[name=ip_paid_amount]').val();
+        let ip_initial_amount = $('input[name=ip_initial_amount]').val();
+
+       // $('input[name=ip_paid_amount]').val(ip_payment_amount);
+
+
+        let remaining_amount = parseInt(ip_initial_amount) - ( parseInt(ip_paid_amount) + parseInt(ip_payment_amount) );
+        console.log('ip_initial_amount',ip_initial_amount);
+        console.log('ip_paid_amount',ip_paid_amount);
+        console.log('ip_payment_amount',ip_payment_amount);
+
+        $('.PaidAmount').html(parseInt(ip_paid_amount) + parseInt(ip_payment_amount));
+        if( remaining_amount >= 0 )
+        {
+            $('input[name=ip_remaining_amount]').val(remaining_amount);
+            $('.RemainingAmount').html(remaining_amount);
+        }
+        else {
+            $('input[name=ip_extra_amount]').val(remaining_amount * (-1));
+            $('input[name=ip_remaining_amount]').val(0);
+            $('.RemainingAmount').html(0);
+        }
+
+    },
+    ValidateBillPaymentToPay : function() {
+        if ($(this).is(':checked')) {
+            console.log('Checkbox is checked');
+            let ip_remaining_amount = $('input[name=ip_remaining_amount]').val();
+            if(ip_remaining_amount > 0)
+            {
+                $(this).removeAttr('checked');
+                $(this).trigger('click');
+            }
+        }
+    },
         getclientinfo : function(){
             var base_url 	= $('input[name=base_url]').val();
             var _token 		= $('input[name=_token]').val();
@@ -72,6 +110,7 @@ bills_module = {
             }
         },
 	SaveBillInfo : function(){
+        $('input[name=ip_paid_amount]').val($('.PaidAmount').html());
 		return bills_module.SaveBillSubmitHandler();
 	},
 	SaveBillSubmitHandler : function(){

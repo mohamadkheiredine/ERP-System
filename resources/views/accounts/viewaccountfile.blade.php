@@ -64,7 +64,7 @@ Page Description :
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Client Name </label>
-                                <span class="text-success">{{ $client_info->ca_account_code }}</span>
+                                <span class="text-success">{{ $client_info->ca_account_name }}</span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -122,8 +122,7 @@ Page Description :
                                 <th title="Voucher Date"> Date </th>
                                 <th title="Client Code"> Client Code </th>
                                 <th title="Client Name"> Client Name </th>
-                                <th title="Total Price"> Total Price </th>
-                                <th style="width:2px;" nowrap title="#"> view </th>
+                                <th title="Total Price"> Bill Amount </th>
                             </tr>
                             </thead>
                             <tbody id="LstUBills">
@@ -154,8 +153,7 @@ Page Description :
                                 <th title="Voucher Date"> Date </th>
                                 <th title="Client Code"> Client Code </th>
                                 <th title="Client Name"> Client Name </th>
-                                <th title="Total Price"> Total Price </th>
-                                <th style="width:2px;" nowrap title="#"> view </th>
+                                <th title="Total Price"> Bill Amount</th>
                             </tr>
                             </thead>
                             <tbody id="LstPBills">
@@ -189,7 +187,6 @@ Page Description :
                                 <th>Address</th>
                                 <th>Phone</th>
                                 <th>Result</th>
-                                <th style="width: 2px;white-space: nowrap;">view</th>
                             </tr>
                             </thead>
                             <tbody class="LstPendingCalls" id="LstPendingCalls">
@@ -224,7 +221,6 @@ Page Description :
                                 <th>Address</th>
                                 <th>Phone</th>
                                 <th>Result</th>
-                                <th style="width: 2px;white-space: nowrap;">view</th>
                             </tr>
                             </thead>
                             <tbody class="LstClosedCalls" id="LstClosedCalls">

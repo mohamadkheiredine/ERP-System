@@ -115,6 +115,14 @@ products_module = {
                         let list_transfer_items = $('input[name=list_transfer_items]').val();
                         data.append( "list_transfer_items", list_transfer_items );
 
+                     var name = "warehouse_source";
+                     var val = $("select[name=warehouse_source]").val();
+                     data.append( name, val );
+
+                     var name = "warehouse_destination";
+                     var val = $("select[name=warehouse_destination]").val();
+                     data.append( name, val );
+
 	    	         $.ajax
 	    	        ({
 	    	            url : base_url + "/request/movements/additems",
@@ -138,6 +146,10 @@ products_module = {
                                  $("#MP_ITEM_NOTES").val("");
 
 	    	              }
+                          else
+                          {
+                              bootbox.alert(response.error_msg);
+                          }
 	    	            }
 	    	        });
 
@@ -165,25 +177,25 @@ products_module = {
 		        }
 		    });
                 },
-    DisplayPProductDescriptionInStockTransfer : function(){
-        let  base_url 			= $('input[name=base_url]').val();
-        let _token 				= $('input[name=_token]').val();
-        let p_id 				= $('select[name=mp_product]').val();
+        DisplayPProductDescriptionInStockTransfer : function(){
+            let  base_url 			= $('input[name=base_url]').val();
+            let _token 				= $('input[name=_token]').val();
+            let p_id 				= $('select[name=mp_product]').val();
 
-        $.ajax
-        ({
-            url : base_url + "/request/stock/getproductinfo",
-            data : {p_id : p_id ,_token : _token },
-            method : 'post',
-            dataType : "json",
-            beforeSend : function(){
-            },
-            success : function(response){
-                $('#MP_PRODUCT_ID').val(response.p_id).trigger('change.select2');
+            $.ajax
+            ({
+                url : base_url + "/request/stock/getproductinfo",
+                data : {p_id : p_id ,_token : _token },
+                method : 'post',
+                dataType : "json",
+                beforeSend : function(){
+                },
+                success : function(response){
+                    $('#MP_PRODUCT_ID').val(response.p_id).trigger('change.select2');
 
-            }
-        });
-    },
+                }
+            });
+        },
 		CalculateDiscountedPrice : function(){
 			var $this = $(this);
 			var discount = $this.val();

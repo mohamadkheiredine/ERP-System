@@ -272,6 +272,11 @@ class InboundController extends Controller
 
 
        $pdf = App::make('snappy.pdf.wrapper');
+        $pdf->setOption('encoding', 'UTF-8');
+        $pdf->setOption('margin-top', 10);
+        $pdf->setOption('margin-bottom', 10);
+        $pdf->setOption('margin-left', 10);
+        $pdf->setOption('margin-right', 10);
         $pdf->loadHTML($contract_document);
         return $pdf->inline();
     }
@@ -394,10 +399,6 @@ class InboundController extends Controller
         $voucher_info->ic_issue_resolved = 1;
 
         $voucher_info->save();
-
-
-
-
 
         // get client info
         $client_info = CRMAccounts::whereCaAccountCode($voucher_info->ic_client_code)->first();

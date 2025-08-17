@@ -34,7 +34,7 @@ class CRMDeals extends Model
 
     public function Currency()
     {
-        return $this->hasOne('App\models\System\Currency', 'cc_id','ad_currency_id');
+        return $this->hasOne('App\models\System\SysCurrency', 'cc_id','ad_currency_id');
     }
 
 

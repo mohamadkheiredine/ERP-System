@@ -24,6 +24,8 @@ Page Description :
    <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_code : "-" }}</td>
    <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_name : "-" }}</td>
    <td>{{ $bill_info->ip_payment_amount }}&nbsp;<b>{{ $bill_info->Currency ? $bill_info->Currency->cc_currency_code : "-" }}</b></td>
+   <td>{{ $bill_info->ip_remaining_amount }}&nbsp;<b>{{ $bill_info->Currency ? $bill_info->Currency->cc_currency_code : "-" }}</b></td>
+   <td>{{ $bill_info->ip_payment_status == 1 ? "Partial Paid" : ( $bill_info->ip_payment_status == 2 ? "Paid" : "Not Paid" ) }}</b></td>
    <td></td>
     <td><a href="#" data-ip_id="{{ $bill_info->ip_id }}" id="EDIT_IP_{ $voucher_info->pv_id }}" ><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="#" data-ip_id="{{ $bill_info->ip_id }}"  id="DELETE_IP_{ $voucher_info->pv_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>

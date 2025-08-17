@@ -27,7 +27,7 @@
     <h2 style="text-align: center;">
         إقرار و تعهد
     </h2>
-    <p style="text-align: right;">أقر انا الموقع ادناه  %FULLNAME%  احمل بطاقة شخصية ذات الرقم المدني <span class="large-text">%NATIONAL_ID%</span> %NATIONALITY% الجنسية</p>
+    <p style="text-align: right;">أقر انا الموقع ادناه  %FULLNAME%  احمل %PAPERTYPE% ذات الرقم  <span class="large-text">%NATIONAL_ID%</span> %NATIONALITY% الجنسية</p>
     <p style="text-align: right;"> %ADDRESS% <span class="large-text">%PHONE_NUMBER%</span></p>
     <p style="text-align: right;">بأني مدين لشركة %COMPANY_NAME_TRANSLATION%  و سأقوم بتسديد مبلغ و قدره <span class="large-text">%TOTAL_PRICE%</span> %CURRENCY% و ألتزم بسداد هذا المبلغ على شكل أقساط شهرية لمدة %NUMBER_PAYMENTS% أشهر. يتم سداد القسط الأول في %FIRSTINVOICE% .</p>
 

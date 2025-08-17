@@ -222,12 +222,14 @@ th{
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">{{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }}</a>
                                 </li>
+                                @if(Config::get("appconfig.crm_telemarketing") == 0)
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#tabPayments">Bills</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#tabReceipts">Receipts</a>
                                 </li>
+                                    @endif
                             </ul>
 
                             <div class="tab-content" id="myTabContent">
@@ -295,6 +297,104 @@ th{
                     </div>
                 </div>
             </form>
+        <div class="row" style="height:15px;"></div>
+        <div class="row">
+            @if(Config::get("appconfig.crm_telemarketing") == 1)
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">Insert Product</h3>
+                            <div class="card-toolbar">
+                                {{--                                           <button type="button" class="btn btn-sm btn-light">--}}
+                                {{--                                               Action--}}
+                                {{--                                           </button>--}}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form name="frm_link_product" id="FORM_LINK_PRODUCT">
+                                <div class="form-body">
+                                     <span id="hidden_fields">
+                                      <div class="form-group">
+                                        {!! csrf_field() !!}
+                                        <input type="hidden" name="bi_invoice_id" id="BI_invoice_ID" value="{{ $invoice_info->bi_id }}" />
+                                         </div>
+                                    </span>
+                                    <div class="alert alert-success" style="display:none">
+                                        <strong>Success!</strong> Product information is saved successfully!
+                                    </div>
+                                    <div class="alert alert-danger" style="display:none">
+                                        <strong>Error!</strong> You have some form errors. Please check below.
+                                    </div>
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Warehouse </label><br/>
+                                                    <select   name="ii_warehouse_id" id="II_WAREHOUSE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Warehouse">
+                                                        <option value=""> -- Warehouse -- </option>
+                                                        @foreach($lst_warehouses as $key => $warehouse_info)
+                                                            <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Products Name </label><br/>
+                                                    <select   name="bi_product_id" id="BI_PRODUCT_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
+                                                        <option value=""> -- Product -- </option>
+                                                        @foreach($lst_products as $key => $product_info)
+                                                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Products Code </label><br/>
+                                                    <select   name="bi_product_code_id" id="BI_PRODUCT_CODE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product Code">
+                                                        <option value=""> -- Product -- </option>
+                                                        @foreach($lst_products as $key => $product_info)
+                                                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Serial Number </label><br/>
+                                                    <input type="text"  autocomplete="off" name="ii_product_serial_number" class="form-control" value="" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Quanity </label><br/>
+                                                    <input type="number"  autocomplete="off" name="bi_quanity" class="form-control" max="99999999" min="1" step="1" value="1" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label"> Price </label><br/>
+                                                    <input type="text"  autocomplete="off" name="bi_item_price" class="form-control" value="1" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="padding-top:20px;">
+                                                <button id="BTN_reset" name="btn_reset" type="reset" class="btn btn-secondary">
+                                                    Reset
+                                                </button>
+                                                <button type="submit" name="btn_link_item" id="BTN_LINK_ITEM" class="btn btn-primary">
+                                                    Insert
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
 	</div>
 </div>
 <!-- Insert Product -->

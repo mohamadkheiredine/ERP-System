@@ -25,20 +25,19 @@ class InvoicePayments extends Model
 {
     protected   $table          = 'billing_invoice_payments';
     public      $timestamps     = false;
-    protected   $primaryKey     = "ip_id";  
-    
+    protected   $primaryKey     = "ip_id";
+
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','ip_currency_id');
     }
-    
-    
+
     public function Collector()
     {
         return $this->hasOne('App\models\Users\Users', 'id','ip_collector_id');
     }
-    
-    
+
+
         public function Client()
     {
         return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','ip_client_id');

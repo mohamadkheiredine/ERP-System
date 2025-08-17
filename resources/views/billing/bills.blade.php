@@ -116,7 +116,9 @@ th{
             				<th title="Voucher Date"> Date </th>
             				<th title="Client Code"> Client Code </th>
             				<th title="Client Name"> Client Name </th>
-            				<th title="Total Price"> Total Price </th>
+            				<th title="Total Price"> Bill Amount </th>
+            				<th title="Total Price"> Remaining </th>
+            				<th title="Total Price"> Bill Status </th>
             				<th style="width:2px;" nowrap title="#"> edit </th>
             				<th style="width:2px;" nowrap title="#"> Delete </th>
             			</tr>

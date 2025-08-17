@@ -108,10 +108,12 @@ class ExpenseCategoriesController extends Controller
     public function AddForm()
     {
         $lst_currencies = Currency::all();
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->get();
 
         $data = array(
             'lst_currencies' => $lst_currencies,
+            'lst_accounts' => $lst_accounts,
             'lst_categories' => $lst_categories
         );
         return view('expenses.addcategory',$data);
@@ -136,7 +138,7 @@ class ExpenseCategoriesController extends Controller
         $ec_currency_id                         = $request->input('ec_currency_id');
         $ec_parent_category                         = $request->input('ec_parent_category');
         $ec_require_receipt                     = $request->has('ec_require_receipt') ? 1 : 0;
-        $ec_gl_account_id                       = 0;
+        $ec_gl_account_id                       = $request->input('ec_gl_account_id');
         $result_array = array();
 
 
@@ -144,26 +146,6 @@ class ExpenseCategoriesController extends Controller
         if($ec_id != null)
         {
             $expense_categories = ExpensesCategories::find($ec_id);
-        }
-        else
-        {
-            $account_info   = ChartAccounts::where("aa_account_ref","=","212")->get();
-            $account_info = $account_info[0];
-
-            $count   = ChartAccounts::where("aa_account_ref","LIKE","212%")->count();
-
-            $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (String)$new_count;
-
-            $AccAccounting = new ChartAccounts();
-            $AccAccounting->aa_parent_account   = $account_info->aa_id;
-            $AccAccounting->aa_account_ref      = $aa_account_ref;
-            $AccAccounting->aa_account          = $aa_account_ref;
-            $AccAccounting->aa_sub_account      = $account_info->aa_id;
-            $AccAccounting->aa_account_label    = "Expenses Category " . $ec_name;
-            $AccAccounting->fk_country_id       = 0;
-            $AccAccounting->save();
-            $ec_gl_account_id = $AccAccounting->aa_id;
         }
 
         $expense_categories->ec_name                  = $ec_name;
@@ -196,11 +178,13 @@ class ExpenseCategoriesController extends Controller
     {
         $category_info        = ExpensesCategories::find($ec_id);
         $lst_currencies = Currency::all();
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereNotIn('ec_id',array( $ec_id ))->get();
 
         $data = array(
             "category_info" => $category_info,
             "lst_currencies" => $lst_currencies,
+            "lst_accounts" => $lst_accounts,
             "lst_categories" => $lst_categories
         );
         return view('expenses.editcategory',$data);

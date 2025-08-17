@@ -40,10 +40,23 @@ th{
     <form name="frm_save_bills" id="FRM_SAVE_BILLS">
     <div class="card-header">
         <h3 class="card-title">Edit Bill Info</h3>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="form-group">
-                <label>Date </label>
-                <input type="text"  autocomplete="off" name="ip_billing_date" id="IP_BILLING_DATE" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_date }}" />
+                <label>Date : </label><br/>
+                <span class="text-success">{{ $bill_info->ip_billing_date }}</span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Client Code : </label><br/>
+                <span class="text-success" >{{ $bill_info->ip_client_code }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Client NAME : </label><br/>
+                <span class="text-success">{{ $bill_info->ip_client_name }}</span>
             </div>
         </div>
         <div class="card-toolbar">
@@ -60,24 +73,16 @@ th{
               <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="ip_id" value="{{ $bill_info->ip_id }}" />
+                        <input type="hidden" name="ip_paid_amount" value="{{ $bill_info->ip_paid_amount }}" />
+                        <input type="hidden" name="ip_remaining_amount" value="{{ $bill_info->ip_remaining_amount }}" />
+                        <input type="hidden" name="ip_initial_amount" value="{{ $bill_info->ip_payment_amount }}" />
+                        <input type="hidden" name="ip_extra_amount" value="0" />
               </span>
               <div class="row">
                   <div class="col-md-6">
                        <div class="form-group">
                           <label>Receipt </label>
                            <input type="text"  autocomplete="off" required="required"  name="ip_billing_nbr" id="IP_BILLING_NBR" class="form-control"  maxlength="50" value="{{ $bill_info->ip_billing_nbr }}" />
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                       <div class="form-group">
-                          <label>Client Code </label>
-                          <input type="text"  autocomplete="off" required="required"  name="ip_client_code" id="IP_CLIENT_CODE" class="form-control"  maxlength="25" value="{{ $bill_info->ip_client_code }}" />
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                       <div class="form-group">
-                          <label>Client NAME </label>
-                          <input type="text"  autocomplete="off" readonly="readonly"  name="ip_client_name" id="IP_CLIENT_NAME" class="form-control"  maxlength="25" value="{{ $bill_info->ip_client_name }}" />
                       </div>
                   </div>
                   <div class="col-md-6">
@@ -95,7 +100,19 @@ th{
                   <div class="col-md-6">
                        <div class="form-group">
                           <label>Amount </label>
-                          <input type="text"  {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}   autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_amount }}" />
+                          <input type="text"  {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}   autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_amount - $bill_info->ip_paid_amount }}" />
+                      </div>
+                  </div>
+                  <div class="col-md-6" style="height:50px;vertical-align: middle;margin-top: 20px;">
+                      <div class="form-group">
+                          <label>Paid Amount </label><br/>
+                          <span class="text-success PaidAmount">{{ $bill_info->ip_paid_amount }}</span>
+                      </div>
+                  </div>
+                  <div class="col-md-6" style="height:50px;vertical-align: middle;margin-top: 20px;">
+                      <div class="form-group">
+                          <label>Remaining Amount </label><br/>
+                          <span class="text-success RemainingAmount">{{ $bill_info->ip_remaining_amount }}</span>
                       </div>
                   </div>
                   <div class="col-md-6">
@@ -161,6 +178,11 @@ th{
               </div>
     </div>
     </form>
+    <div class="row">
+        <div class="col-md-12 RVSPayments">
+
+        </div>
+    </div>
  </div>
 
 @endsection

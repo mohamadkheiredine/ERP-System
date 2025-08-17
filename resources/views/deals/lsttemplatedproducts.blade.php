@@ -14,7 +14,7 @@ Page Description :
 
 ?>
 
-@for ($i =1; $i <= ( count($lst_invoice_payments) - 1); $i++)
+@for ($i =0; $i <= ( count($lst_invoice_payments) - 1); $i++)
 <tr  class="odd gradeX">
    <td>{{ $lst_invoice_payments[$i]->ip_billing_nbr }}</td>
    <td>{{ $lst_invoice_payments[$i]->ip_billing_date }}</td>

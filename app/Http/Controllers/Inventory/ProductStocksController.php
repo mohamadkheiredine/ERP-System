@@ -718,7 +718,14 @@ class ProductStocksController extends Controller
         {
             $product_info = Products::find($item_info->mp_product_id);
 
-            $StockProductWarehouse = Stocks::whereFkProductId($item_info->mp_product_id)->whereFkWarehouseId($warehouse_source)->get();
+           // $StockProductWarehouse = Stocks::whereFkProductId($item_info->mp_product_id)->whereFkWarehouseId($warehouse_source)->get();
+            $lst_stock_info = DB::select("SELECT stock.fk_product_id , product.p_barcode , product.p_product_name , stock.fk_warehouse_id , w_warehouse_name , SUM(stock.is_quanity) as total_quantity  FROM inventory_stocks stock left join inventory_warehouses warehouse on warehouse.w_id = stock.fk_warehouse_id left join inventory_products product on product.p_id = stock.fk_product_id where stock.is_quanity > 0 and stock.fk_product_id=" . $item_info->mp_product_id ." and stock.fk_warehouse_id=" . $warehouse_source . " group by fk_warehouse_id , fk_product_id;");
+
+            if(count($lst_stock_info) == 0)
+            {
+               continue;
+            }
+
 
             $transfer_stock_items = new StockMovementItems();
             $transfer_stock_items->mp_movement_id = $sm_id;

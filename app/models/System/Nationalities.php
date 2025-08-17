@@ -1,10 +1,10 @@
 <?php
 /***********************************************************
-CRMAccounts.php
+Countries.php
 Product :
 Version : 1.0
 Release : 1
-Date Created : Jul 16, 2019
+Date Created : Jul 6, 2019
 Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
@@ -12,7 +12,7 @@ Page Description :
 
 ***********************************************************/
 
-namespace App\models\CRM;
+namespace App\models\System;
 
 use DB;
 use Illuminate\Http\Request;
@@ -20,20 +20,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class CRMAccounts extends Model
+class Nationalities extends Model
 {
-    protected   $table          = 'crm_accounts';
+    protected   $table          = 'sys_nationalities';
     public      $timestamps     = false;
-    protected   $primaryKey     = "ca_id";
-
-    public function Nationality()
-    {
-        return $this->hasOne('App\models\System\Nationalities', 'sn_id','ca_nationality_id');
-    }
-
-    public function PaperType()
-    {
-        return $this->hasOne('App\models\System\PaperTypes', 'pt_id','ca_paper_type');
-    }
-
+    protected   $primaryKey     = "sn_id";
 }
+
