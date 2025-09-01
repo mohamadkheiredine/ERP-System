@@ -106,7 +106,7 @@ body {
     <div class="invoice-container">
         <header class="invoice-header">
             <div class="company-details">
-                <h2>%company_name%</h2>
+                <h2><u>%company_name%</u></h2>
                 <h2 style="float:right">%company_name_translation%</h2>
                 <p>%company_address%</p>
                 <p>Phone: %company_phone%</p>

@@ -1,9 +1,9 @@
 /**
- * 
+ *
  */
 
-projectstatus_module = {
-	DisplayListProjectStatus : function(){
+projectroles_module = {
+	DisplayListProjectRoles : function(){
 		var base_url 	= $('input[name=base_url]').val();
 	    var _token 		= $('input[name=_token]').val();
 	    $.ajax
@@ -15,18 +15,16 @@ projectstatus_module = {
             beforeSend : function(){
             },
 	        success : function(response){
-	        	$('#LstProjectTypes').html(response.display);
+	        	$('#LstProjectStatuses').html(response.display);
 	        	$.pagination = $('#ProjectStatusesPagination').twbsPagination({
                     totalPages: response.total_pages,
                     visiblePages: 7,
                     onPageClick: function (event, page) {
                          $('input[name=page_number]').val(page);
-                         products_module.DisplayListStock();
+                        projectstatus_module.DisplayListStock();
                     }
                 });
-				
-				$("a[id*=EDIT_STATUS_]").on('click',projectstatus_module.EditProjectStatusInfo);
-				$("a[id*=DELETE_STATUS_]").on('click',projectstatus_module.DeleteProjectStatusData);
+
 	        }
 	    });
 	},
@@ -130,7 +128,7 @@ projectstatus_module = {
 			            type : "POST",
 			            success : function(response){
 			              if(response.is_error == 0)
-			              { 
+			              {
 			            	  projectstatus_module.DisplayListProjectStatus();
 			              }
 			            }

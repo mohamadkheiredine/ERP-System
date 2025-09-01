@@ -13,10 +13,10 @@ class UserTeam extends Model
     protected   $table          = 'usr_teams';
     public      $timestamps     = false;
     protected   $primaryKey     = "ut_id";
-    
-    
-    public function TeamMembers()
+
+
+    public function Team()
     {
-        return $this->hasMany('App\models\Users\TeamMembers', 'fk_team_id','ut_id');
+        return $this->hasMany('App\models\Users\UserTeam', 'fk_team_id','ut_id');
     }
 }

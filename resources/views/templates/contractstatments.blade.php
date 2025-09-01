@@ -13,18 +13,25 @@
             border: 1px solid black;
             text-align: center;
             padding: 8px;
+            font-size: 16px;
+            height: 40px;
         }
         .Payments th {
             background-color: #f2f2f2;
+            font-size: 16px;
+            height: 40px;
         }
         .signature-section {
             margin-top: 20px;
             text-align: right;
         }
+        p,span{
+            font-size: 16px;
+        }
     </style>
 </head>
 <body dir="rtl">
-    <h2 style="text-align: center;">
+    <h2 style="text-align: center;text-decoration: underline">
         إقرار و تعهد
     </h2>
     <p style="text-align: right;">أقر انا الموقع ادناه  %FULLNAME%  احمل %PAPERTYPE% ذات الرقم  <span class="large-text">%NATIONAL_ID%</span> %NATIONALITY% الجنسية</p>
@@ -45,7 +52,7 @@
         </tbody>
     </table>
 
-    <div style="width:100%;height: 400px"></div>
+    <div style="width:100%;height: 100px"></div>
     <br/><br/>
     <table dir="rtl" border="0">
         <tr>
@@ -53,12 +60,21 @@
             <td style="width:80%"></td>
         </tr>
         <tr>
+            <td colspan="2" style="height:20px;">&nbsp;</td>
+        </tr>
+        <tr>
             <td style="width:20%" dir="rtl">التوقيع:</td>
             <td style="width:80%"></td>
         </tr>
         <tr>
+            <td colspan="2" style="height:20px;">&nbsp;</td>
+        </tr>
+        <tr>
             <td style="width:20%" dir="rtl">ختم و توقيع الشركة:</td>
             <td style="width:80%"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height:20px;">&nbsp;</td>
         </tr>
         <tr>
             <td style="width:20%" dir="rtl">التاريخ:</td>

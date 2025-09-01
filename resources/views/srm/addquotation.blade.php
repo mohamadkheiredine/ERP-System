@@ -24,6 +24,9 @@ th{
 #ModelPopUp{
 	width:800px;
 }
+.dropdown-menu{
+    width:300px !important;
+}
 </style>
 @endsection
 @section('plugins')
@@ -98,6 +101,12 @@ th{
                              <div class="form-group">
                                 <label class="control-label">Due Date <span class="required"> * </span></label>
                                 <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label">Invoice Number</label>
+                                <input type="text" name="sq_invoice_number" id="SQ_INVOICE_NUMBER" class="form-control"  maxlength="255"  value="" />
                             </div>
                         </div>
                         <div class="col-md-4">

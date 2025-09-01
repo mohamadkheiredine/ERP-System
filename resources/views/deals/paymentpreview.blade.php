@@ -19,6 +19,6 @@ Page Description :
    <td>{{ $payment_info['bill_nbr'] }}</td>
    <td>{{ $payment_info['value_date'] }}</td>
    <td>{{ $payment_info['bill_status'] }}</td>
-   <td>{{ $payment_info['bill_amount'] }}</td>
+   <td><input type="text" name="bill_amount[]" value="{{ $payment_info['bill_amount'] }}" class="form-control" /></td>
 </tr>
 @endforeach

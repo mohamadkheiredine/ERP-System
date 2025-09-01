@@ -101,7 +101,14 @@ class SupplierQuotationsController extends Controller
         $lst_supplier_quotations = SupplierQuotations::whereSqIsDeleted(0);
 
         if(strlen($search_query) > 0)//
+        {
             $lst_supplier_quotations = $lst_supplier_quotations->where('sq_quotation_notes','LIKE','%' . $search_query . '%');
+            $lst_supplier_quotations = $lst_supplier_quotations->orWhere('sq_container_number','LIKE','%' . $search_query . '%');
+            $lst_supplier_quotations = $lst_supplier_quotations->orWhere('sq_invoice_number','LIKE','%' . $search_query . '%');
+        }
+
+
+
         if( $quotation_warehouse > 0 )//
             $lst_supplier_quotations = $lst_supplier_quotations->where('sq_warehouse_id','=',$quotation_warehouse);
         if( $quotation_supplier > 0 )//
@@ -362,6 +369,7 @@ class SupplierQuotationsController extends Controller
         $sq_forwarding_amount       = $request->input('sq_forwarding_amount');
         $sq_insurance_amount        = $request->input('sq_insurance_amount');
         $sq_broker_amount           = $request->input('sq_broker_amount');
+        $sq_invoice_number           = $request->input('sq_invoice_number');
         $sq_approve_quotation       = $request->has('sq_approve_quotation') ? 1 : 0;
         $warehouse_id               = session('warehouse_id');
         $todays_date = date('Y-m-d');
@@ -404,6 +412,7 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->sq_insurance_amount         = $sq_insurance_amount;
         $supplier_quotation->sq_enable_broker         = $sq_enable_broker;
         $supplier_quotation->sq_broker_amount         = $sq_broker_amount;
+        $supplier_quotation->sq_invoice_number         = $sq_invoice_number;
         $supplier_quotation->sq_tva_id         = $sq_tva_id;
         $supplier_quotation->save();
 
@@ -472,9 +481,6 @@ class SupplierQuotationsController extends Controller
                 if($is_id != 0)
                     $stock_info = Stocks::find($is_id);
                 else
-                    $stock_info = new Stocks();
-
-                if($stock_info->fk_warehouse_id == null)
                     $stock_info = new Stocks();
 
                     $stock_info->fk_warehouse_id                = $sq_warehouse_id;

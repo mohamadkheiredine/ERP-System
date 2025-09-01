@@ -10,10 +10,11 @@ products_module = {
 			var stock_warehouse = $('select[name=stock_warehouse]').val();
 			var stock_product	= $('select[name=stock_product]').val();
 			var stock_currency 	= $('select[name=stock_currency]').val();
+			var list_type 	= $('input[name=list_type]').val();
 			$.ajax
 			({
 				url : base_url + "/request/displayliststock",
-				data : { _token : _token , page_number : page_number , stock_warehouse : stock_warehouse , stock_product : stock_product , stock_currency : stock_currency , general_search : general_search },
+				data : { _token : _token , page_number : page_number ,  list_type : list_type , stock_warehouse : stock_warehouse , stock_product : stock_product , stock_currency : stock_currency , general_search : general_search },
 				method : 'post',
 				dataType : "json",
 				beforeSend : function(){
@@ -21,7 +22,7 @@ products_module = {
 				success : function(response){
 					$('#LstProductStocks').html(response.display);
 					$('.TotalCost').html(response.total_amount_block);
-					$.pagination = $('#StocksPagination').twbsPagination({
+					$('#StocksPagination').twbsPagination({
 	                    totalPages: response.total_pages,
 	                    visiblePages: 7,
 	                    onPageClick: function (event, page) {
@@ -29,134 +30,141 @@ products_module = {
 	                         products_module.DisplayListStock();
 	                    }
 	                });
-					$("a[id*=EDIT_STOCK_]").on('click',products_module.EditStockInfo);
-					$("a[id*=DELETE_STOCK_]").on('click',products_module.DeleteStockInfo);
 				}
 			});
 		},
-                AddTransferItems : function(){
-                    products_module.AddTransferItemsSubmitHandler();
+        CalculateTotalPurchaseStock : function(){
+            let quantity = $("#STOCK_QUANTITY").val();
+            let is_price_stock = $("input[name=is_price_stock]").val();
+            let is_selling_price = $("input[name=is_selling_price]").val();
+            let total_price_stock = parseFloat(is_price_stock) * parseFloat(quantity);
+            let total_selling_price = parseFloat(is_selling_price) * parseFloat(quantity);
+            $("#TOTAL_PURCHASE_STOCK").html(total_price_stock);
+            $("#TOTAL_SELLING_STOCK").html(total_selling_price);
+        },
+        AddTransferItems : function(){
+            products_module.AddTransferItemsSubmitHandler();
+        },
+        AddTransferItemsSubmitHandler : function(){
+                 var SaveTransferItems = $('#FORM_TRANSFER_ITEMS');
+     var error3 = $('.alert-danger', SaveTransferItems);
+     var success3 = $('.alert-success', SaveTransferItems);
+
+     SaveTransferItems.validate({
+         errorElement: 'span', //default input error message container
+         errorClass: 'help-block help-block-error', // default input error message class
+         focusInvalid: false, // do not focus the last invalid input
+         ignore: "", // validate all fields including form hidden input
+         rules: {
+             mp_product_id : {
+                 required: true
+             },
+                 mp_movement_quantity : {
+                     required : true,
+                     number : true
+                 },
+                 mp_item_notes : {
+                     required : true
+                 }
+         },
+         messages: { // custom messages for radio buttons and checkboxes
+
+         },
+         errorPlacement: function (error, element) { // render error placement for each input type
+             if (element.parent(".input-group").length > 0) {
+                 error.insertAfter(element.parent(".input-group"));
+             } else if (element.attr("data-error-container")) {
+                 error.appendTo(element.attr("data-error-container"));
+             } else if (element.parents('.radio-list').length > 0) {
+                 error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+             } else if (element.parents('.radio-inline').length > 0) {
+                 error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+             } else if (element.parents('.checkbox-list').length > 0) {
+                 error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+             } else if (element.parents('.checkbox-inline').length > 0) {
+                 error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+             } else {
+                 error.insertAfter(element); // for other inputs, just perform default behavior
+             }
+         },
+         invalidHandler: function (event, validator) { //display error alert on form submit
+             success3.hide();
+             error3.show();
+         },
+         success: function (label) {
+             label
+                 .closest('.form-group').removeClass('has-error'); // set success class to the control group
+         },
+         highlight: function (element) { // hightlight error inputs
+             $(element)
+                 .closest('.form-group').addClass('has-error'); // set error class to the control group
+         },
+
+         unhighlight: function (element) { // revert the change done by hightlight
+             $(element)
+                 .closest('.form-group').removeClass('has-error'); // set error class to the control group
+         },
+         submitHandler: function (form) {
+            success3.show();
+            error3.hide();
+            var base_url = $('#BASE_URL').val();
+
+            var FormDataFields = $("form[id=FORM_TRANSFER_ITEMS]");
+
+            var data = new FormData();
+            var index = 0;
+
+            FormDataFields.find('input,select,textarea').each(function(){
+                    var name = $(this).attr('name');
+                    var val = $(this).val();
+                    data.append( name, val );
+
+            });
+                let list_transfer_items = $('input[name=list_transfer_items]').val();
+                data.append( "list_transfer_items", list_transfer_items );
+
+             var name = "warehouse_source";
+             var val = $("select[name=warehouse_source]").val();
+             data.append( name, val );
+
+             var name = "warehouse_destination";
+             var val = $("select[name=warehouse_destination]").val();
+             data.append( name, val );
+
+             $.ajax
+            ({
+                url : base_url + "/request/movements/additems",
+                data : data,
+                async: false,
+                cache: false,
+                method : 'post',
+                contentType: false,
+                processData: false,
+                dataType : "json",
+                beforeSend : function(){
                 },
-                AddTransferItemsSubmitHandler : function(){
-                    	 var SaveTransferItems = $('#FORM_TRANSFER_ITEMS');
-	         var error3 = $('.alert-danger', SaveTransferItems);
-	         var success3 = $('.alert-success', SaveTransferItems);
+                success : function(response){
+                  if(response.is_error == 0)
+                  {
+                         $("#LST_TRANSFER_ITEMS").val(response.lst_items);
+                         $("#LstTransferItems").html(response.display);
 
-	         SaveTransferItems.validate({
-	             errorElement: 'span', //default input error message container
-	             errorClass: 'help-block help-block-error', // default input error message class
-	             focusInvalid: false, // do not focus the last invalid input
-	             ignore: "", // validate all fields including form hidden input
-	             rules: {
-	                 mp_product_id : {
-	                     required: true
-	                 },
-                         mp_movement_quantity : {
-                             required : true,
-                             number : true
-                         },
-                         mp_item_notes : {
-                             required : true
-                         }
-	             },
-	             messages: { // custom messages for radio buttons and checkboxes
+                         $("#MP_PRODUCT_ID").val(0);
+                         $("#MP_MOVEMENT_QUANTITY").val("");
+                         $("#MP_ITEM_NOTES").val("");
 
-	             },
-	             errorPlacement: function (error, element) { // render error placement for each input type
-	                 if (element.parent(".input-group").length > 0) {
-	                     error.insertAfter(element.parent(".input-group"));
-	                 } else if (element.attr("data-error-container")) {
-	                     error.appendTo(element.attr("data-error-container"));
-	                 } else if (element.parents('.radio-list').length > 0) {
-	                     error.appendTo(element.parents('.radio-list').attr("data-error-container"));
-	                 } else if (element.parents('.radio-inline').length > 0) {
-	                     error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
-	                 } else if (element.parents('.checkbox-list').length > 0) {
-	                     error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
-	                 } else if (element.parents('.checkbox-inline').length > 0) {
-	                     error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
-	                 } else {
-	                     error.insertAfter(element); // for other inputs, just perform default behavior
-	                 }
-	             },
-	             invalidHandler: function (event, validator) { //display error alert on form submit
-	                 success3.hide();
-	                 error3.show();
-	             },
-	             success: function (label) {
-	                 label
-	                     .closest('.form-group').removeClass('has-error'); // set success class to the control group
-	             },
-	             highlight: function (element) { // hightlight error inputs
-	                 $(element)
-	                     .closest('.form-group').addClass('has-error'); // set error class to the control group
-	             },
+                  }
+                  else
+                  {
+                      bootbox.alert(response.error_msg);
+                  }
+                }
+            });
 
-	             unhighlight: function (element) { // revert the change done by hightlight
-	                 $(element)
-	                     .closest('.form-group').removeClass('has-error'); // set error class to the control group
-	             },
-	             submitHandler: function (form) {
-	                success3.show();
-	                error3.hide();
-	                var base_url = $('#BASE_URL').val();
+         }
 
-	                var FormDataFields = $("form[id=FORM_TRANSFER_ITEMS]");
-
-	    	        var data = new FormData();
-	    	        var index = 0;
-
-	    	        FormDataFields.find('input,select,textarea').each(function(){
-                            var name = $(this).attr('name');
-                            var val = $(this).val();
-                            data.append( name, val );
-
-	    	        });
-                        let list_transfer_items = $('input[name=list_transfer_items]').val();
-                        data.append( "list_transfer_items", list_transfer_items );
-
-                     var name = "warehouse_source";
-                     var val = $("select[name=warehouse_source]").val();
-                     data.append( name, val );
-
-                     var name = "warehouse_destination";
-                     var val = $("select[name=warehouse_destination]").val();
-                     data.append( name, val );
-
-	    	         $.ajax
-	    	        ({
-	    	            url : base_url + "/request/movements/additems",
-	    	            data : data,
-	    	            async: false,
-	    	            cache: false,
-	    	            method : 'post',
-	    	            contentType: false,
-	    	            processData: false,
-	    	            dataType : "json",
-	    	            beforeSend : function(){
-	    	            },
-	    	            success : function(response){
-	    	              if(response.is_error == 0)
-	    	              {
-                                 $("#LST_TRANSFER_ITEMS").val(response.lst_items);
-                                 $("#LstTransferItems").html(response.display);
-
-                                 $("#MP_PRODUCT_ID").val(0);
-                                 $("#MP_MOVEMENT_QUANTITY").val("");
-                                 $("#MP_ITEM_NOTES").val("");
-
-	    	              }
-                          else
-                          {
-                              bootbox.alert(response.error_msg);
-                          }
-	    	            }
-	    	        });
-
-	             }
-
-	         });
-                },
+     });
+        },
                 DisplayProductDescriptionInStockTransfer : function(){
                     let  base_url 			= $('input[name=base_url]').val();
 			let _token 				= $('input[name=_token]').val();
@@ -540,6 +548,8 @@ products_module = {
 		        		if(old_quantity <= 1)
 		        			$('input[name=is_quanity]').val(1);
 	        		}
+
+                    products_module.CalculateTotalPurchaseStock();
 		        }
 		    });
 		},

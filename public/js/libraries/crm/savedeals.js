@@ -85,7 +85,26 @@ $(function(){
         if(ad_id != null)
         {
             deals_module.GenerateContractPayment();
+            var contract_type = $("#AD_CONTRACT_TYPE").val();
+            if(contract_type == 1)
+            {
+                $('.DownPaymentHolder').css({display : "none"});
+                $('.NumberofPaymentHolder').css({display : "none"});
+                $('.RemainingPaymentHolder').css({display : "none"});
+                $('#AD_NBR_OF_PAYMENT').val(1);
+                $('.LabelBill').html("Date of Payment <span class='required'> * </span>");
+            }
+            else
+            {
+                $('.DownPaymentHolder').css({display : ""});
+                $('.NumberofPaymentHolder').css({display : ""});
+                $('.RemainingPaymentHolder').css({display : ""});
+                $('.LabelBill').html("First Bill Date <span class='required'> * </span>")
+            }
         }
+
+
+
 
 
 	 $(".DownloadContract").on('click',deals_module.GenerateAndDownloadContract);

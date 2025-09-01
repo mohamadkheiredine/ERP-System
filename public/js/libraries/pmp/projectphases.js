@@ -1,0 +1,11 @@
+$(function(){
+    projectphases_module.DisplayListProjectPhases();
+    $("#generalSearch").on('keyup',function(){
+        $('input[name=page_number]').val(1);
+        $.pagination.twbsPagination('destroy');
+        projectphases_module.DisplayListProjectPhases();
+    });
+    $('select[name=fk_project_id]').on('change',projectphases_module.DisplayListProjectPhases)
+    $("#LstProjectPhases").on('click',"a[id*=EDIT_PHASE_]",projectphases_module.EditProjectPhasesInfo);
+    $("#LstProjectPhases").on('click',"a[id*=DELETE_PHASE_]",projectphases_module.DeleteProjectPhasesData);
+})

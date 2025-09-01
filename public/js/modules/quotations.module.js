@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 quotations_module = {
 	displayListQuotations : function(){
@@ -17,7 +17,7 @@ quotations_module = {
             dataType : "json",
 	        success : function(response){
 	        	$('#LstQuotations').html(response.display);
-	        	
+
 	        	if(response.total_pages > 0)
         		{
 		        	$('#QuotationsPagination').twbsPagination({
@@ -45,7 +45,7 @@ quotations_module = {
 		    	$(this).val(barcode);
 		    	var base_url = $('#BASE_URL').val();
 	    	    var _token = $('input[name=_token]').val();
-	    	    var params = {_token : _token , barcode : barcode}; 
+	    	    var params = {_token : _token , barcode : barcode};
     	         $.ajax
     	        ({
     	            url : base_url + "/request/srm/findproductbybarcode",
@@ -56,7 +56,7 @@ quotations_module = {
     	              if(response.is_error == 0)
     	              {
     	            	  	 let use_serial_number = response.use_serial_number;
-    	     		        let product_id = response.product_id; 
+    	     		        let product_id = response.product_id;
     	     		        $this.parents('tr').find('.PurchasePrice').val(response.selling_price);
     	     		        $this.parents('tr').find('.SellingPrice').val(response.selling_price);
     	     		        $this.parents('tr').find('.WholeSalePrice').val(response.selling_price);
@@ -76,15 +76,18 @@ quotations_module = {
     	        });
 			}
 		});
-		
+
 	},
 	OpenAddNewProduct : function(){
-		
+
 	},
 	SaveSupplierQuotationInfo : function(){
 		return quotations_module.SaveSupplierQuotationSubmitHandler();
 	},
 	SaveSupplierQuotationSubmitHandler : function(){
+        if($("#BTN_SAVE_QUOTATION").attr('data-disabled'))
+            return false;
+        $("#BTN_SAVE_QUOTATION").attr('data-disabled','disabled');
 		 var QuotationForm = $('#FORM_SAVE_QUOTATION');
          var error3 = $('.alert-danger', QuotationForm);
          var success3 = $('.alert-success', QuotationForm);
@@ -103,7 +106,7 @@ quotations_module = {
 	               },
 	               sq_currency_id : {
 	            	   required : true
-	               } 
+	               }
              },
 
              messages: { // custom messages for radio buttons and checkboxes
@@ -157,6 +160,7 @@ quotations_module = {
     	            method : 'post',
     	            dataType : "json",
     	            success : function(response){
+                        $("#BTN_SAVE_QUOTATION").removeAttr('data-disabled');
     	              if(response.is_error == 0)
     	              {
     	                 window.location.href = base_url + "/srm/bidding/quotations";
@@ -228,14 +232,14 @@ quotations_module = {
 		var $this = $(this);
 		var discount = $this.val();
 		var purchase_price = $this.parents('tr').find('.PurchasePrice').val();
-		
+
 		var new_price = purchase_price - ( purchase_price * discount/100);
-		
+
 		$this.parents('tr').find('.SellingPrice').val(new_price);
-		
+
 		let whole_sales = $this.parents('tr').find('.WholeSalePrice').val();
 		let vendor_price = $this.parents('tr').find('.VendorPrice').val();
-		
+
 		if(whole_sales > new_price)
 			$this.parents('tr').find('.WholeSalePrice').val(new_price);
 		if(vendor_price > new_price)

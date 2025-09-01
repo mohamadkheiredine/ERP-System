@@ -15,7 +15,7 @@ Page Description :
 ?>
 
 @foreach($lst_result_workflow as $index => $cw_info)
-<tr  class="odd gradeX" data-cw_id="{{ $cw_info->cw_id }}">
+<tr  class="odd gradeX CallResultRow"  data-cw_id="{{ $cw_info->cw_id }}">
    <td>{{ $cw_info->cw_creation_date }}</td>
    <td>{{ $cw_info->cw_result_note }}</td>
    <td>{{ $cw_info->Result->cr_result_title }}</td>

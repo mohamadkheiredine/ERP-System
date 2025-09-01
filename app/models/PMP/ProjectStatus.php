@@ -26,4 +26,10 @@ class ProjectStatus extends Model
     protected   $table          = 'pm_project_status';
     public      $timestamps     = false;
     protected   $primaryKey     = "ps_id";
+
+    public function Status()
+    {
+        return $this->hasOne('App\models\PMP\ProjectStatus', 'ps_id','ps_depend_on');
+    }
+
 }

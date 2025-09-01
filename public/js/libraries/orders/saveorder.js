@@ -79,6 +79,7 @@ $(function(){
 	$('#BTN_SAVE_ORDER').on('click',orders_module.SaveOrdersInfo);
 	$('#BTN_PAY_ORDER').on('click',orders_module.PayPaymentOrder);
 	 $('#SO_PRODUCT_SERIAL').on('blur',orders_module.getStockInformation);
+	 $('#BTN_CLOSE').on('blur',orders_module.CloseOrder);
 
 
 

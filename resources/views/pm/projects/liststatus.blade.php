@@ -19,7 +19,8 @@ Page Description :
 <tr  class="odd gradeX" data-ps_id="{{ $ps_info->ps_id }}">
 	<td><input type="checkbox" name="ck_ps_{{ $ps_info->ps_id }}" id="CK_PS_{{ $ps_info->ps_id }}" class="checkboxes" value="{{ $ps_info->ps_id }}" /></td>
    <td>{{ $ps_info->ps_id }}</td>
-   <td>{{ $ps_info->pt_type_name }}</td>  
+   <td>{{ $ps_info->ps_status_title }}</td>
+   <td>{{ $ps_info->Status ? $ps_info->Status->ps_status_title : "N/A" }}</td>
     <td><a href="#" data-ps_id="{{ $ps_info->ps_id }}" id="EDIT_STATUS_{{ $ps_info->ps_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
     <td><a href="#" data-ps_id="{{ $ps_info->ps_id }}"  id="DELETE_STATUS_{{ $ps_info->ps_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 </tr>

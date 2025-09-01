@@ -1,0 +1,14 @@
+$(function(){
+    projects_module.DisplayListProjects();
+    $("#generalSearch").on('keyup',function(){
+        $('input[name=page_number]').val(1);
+        $.pagination.twbsPagination('destroy');
+        projects_module.DisplayListProjects();
+    });
+    $('select[name=fk_company_id]').on('change',projects_module.DisplayListProjects);
+    $('select[name=fk_project_manager_id]').on('change',projects_module.DisplayListProjects);
+    $('select[name=pp_status_id]').on('change',projects_module.DisplayListProjects);
+    $('select[name=fk_project_type_id]').on('change',projects_module.DisplayListProjects);
+    $("#LstProjects").on('click',"a[id*=EDIT_PROJECT_]",projects_module.EditProjectInfo);
+    $("#LstProjects").on('click',"a[id*=DELETE_PROJECT_]",projects_module.DeleteProjectData);
+})

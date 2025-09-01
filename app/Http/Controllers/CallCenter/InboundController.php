@@ -70,6 +70,7 @@ class InboundController extends Controller
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
 
         $data = array(
             "lst_telemarketings" => $lst_telemarketings,
@@ -77,6 +78,7 @@ class InboundController extends Controller
             "lst_payment_types" => $lst_payment_types,
             "lst_products" => $lst_products,
             "lst_currencies" => $lst_currencies,
+            "lst_admins" => $lst_admins,
             "lst_results" => $lst_results,
             "lst_maint_types" => $lst_maint_types
         );
@@ -97,6 +99,7 @@ class InboundController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $ic_technician_id           = $request->input('ic_technician_id');
+        $ic_result_id           = $request->input('ic_result_id');
         $ic_maintenance_type           = $request->input('ic_maintenance_type');
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
@@ -140,6 +143,10 @@ class InboundController extends Controller
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_issue_resolved','=',$ic_archived_call);
         }
+        if($ic_result_id > 0 )
+        {
+             $inboundcall_cond = $inboundcall_cond->where('ic_result_id','=',$ic_result_id);
+        }
 
         $inboundcall_count = $inboundcall_cond->count();
 
@@ -182,6 +189,28 @@ class InboundController extends Controller
     }
 
 
+    /**
+     * get info of call result workflow
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetResultWorkflowinfo(Request $request)
+    {
+        $cw_id = $request->input('cw_id');
+        $result_array = array();
+
+        $res_workflow = CallResultsWorkflow::find($cw_id);
+
+        $result_array['is_error'] = 0;
+        $result_array['cw_result_id'] = $res_workflow->cw_result_id;
+        $result_array['cw_result_note'] = $res_workflow->cw_result_note;
+        $result_array['cw_assigned_to'] = $res_workflow->cw_assigned_to;
+        $result_array['cw_creation_date'] = $res_workflow->cw_creation_date;
+
+        return Response()->json($result_array);
+    }
+
+
     public function SaveCallResultInfo(Request $request)
     {
         $ic_call_id           = $request->input('ic_call_ids');
@@ -219,6 +248,7 @@ class InboundController extends Controller
         $ic_maintenance_type           = $request->input('ic_maintenance_type');
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
+        $ic_result_id           = $request->input('ic_result_id');
 
         $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcIssueResolved(0);
 
@@ -252,9 +282,10 @@ class InboundController extends Controller
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_issue_resolved','=',$ic_archived_call);
         }
-
-
-
+        if($ic_result_id > 0 )
+        {
+             $inboundcall_cond = $inboundcall_cond->where('ic_result_id','=',$ic_result_id);
+        }
 
         $inboundcall_count = $inboundcall_cond->count();
 
@@ -267,8 +298,6 @@ class InboundController extends Controller
         );
 
         $contract_document = view('templates.lstcalls',$data)->render();
-
-
 
 
        $pdf = App::make('snappy.pdf.wrapper');
@@ -333,6 +362,7 @@ class InboundController extends Controller
         $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
 
         $count_calls = InboundCall::whereIcIsDeleted(0)->count() + 1;
         $ic_call_index = str_pad($count_calls, 7, '0', STR_PAD_LEFT);
@@ -343,6 +373,7 @@ class InboundController extends Controller
             "lst_maint_types" => $lst_maint_types,
             "lst_technicians" => $lst_technicians,
             "lst_sales" => $lst_sales,
+            "lst_admins" => $lst_admins,
             "lst_results" => $lst_results,
             "ic_call_index" => $ic_call_index,
         );
@@ -421,9 +452,14 @@ class InboundController extends Controller
 
 
 
-        $warehouse_info = WareHouses::whereWIsDeleted(0)->WhereWLinkedTo($ic_technician_id)->get();
+        $warehouse_info = WareHouses::whereWIsDeleted(0)->whereWLinkedTo($ic_technician_id)->get();
         $warehouse_info = $warehouse_info[0];
-
+        if(count($warehouse_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = "Warehouse not found";
+            return Response()->json($result_array);
+        }
         $warehouse_id = $warehouse_info->w_id;
         $parts_total_cost = 0;
         foreach ($products_stock_array as $index => $stock)

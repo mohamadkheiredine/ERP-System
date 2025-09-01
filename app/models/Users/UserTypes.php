@@ -45,5 +45,6 @@ class UserTypes extends Model
     const USER_TYPE_COLLECTOR = 16;
 
     const USER_TYPE_GENERAL_MANAGER = 17;
+    const USER_TYPE_PROJECT_MANAGER = 18;
 
 }

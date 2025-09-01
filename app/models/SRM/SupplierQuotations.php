@@ -15,14 +15,22 @@ Page Description :
 
 namespace App\models\SRM;
 
-use DB; 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class SupplierQuotations extends Model
-{ 
+{
     protected   $table          = 'srm_supplier_quotations';
     public      $timestamps     = false;
     protected   $primaryKey     = "sq_id";
-    
-    
+
+    public function Supplier()
+    {
+        return $this->hasOne('App\models\SRM\Suppliers', 'ss_id','fk_supplier_id');
+    }
+
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','sq_warehouse_id');
+    }
 }

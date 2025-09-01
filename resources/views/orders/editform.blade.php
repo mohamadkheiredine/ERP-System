@@ -27,12 +27,23 @@ th{
 	width:800px;
 }
 </style>
+
 @endsection
 @section('plugins')
 		<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
     	<script type="text/javascript" src="{{ url('default/assets/plugins/jquery-scanner-detection/jquery.scannerdetection.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/modules/orders.module.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/libraries/orders/saveorder.js') }}"></script>
+    <script>
+        $(function(){
+            $('#ORDER_PRODUCT').select2({
+                dropdownParent: $('#OrderProductsModel'),
+                placeholder: 'Select Product',
+                allowClear: true
+            });
+        })
+
+    </script>
 @endsection
 
 @section('content')
@@ -210,6 +221,7 @@ th{
                              <button type="button" name="btn_pay_order" id="BTN_PAY_ORDER"  class="btn btn-danger">Pay Order</button>
                         @endif
                             <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                            <button type="button" id="BTN_CLOSE_PAGE" name="btn_close_page" class="btn btn-success">Close</button>
                         </div>
                     </div>
                 </div>

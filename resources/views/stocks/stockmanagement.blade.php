@@ -50,6 +50,7 @@ th{
     <div class="card-body">
     <span id="hiddenP_fields">
 			<input type="hidden" name="page_number" id="PAGE_NUMBER" value="1" />
+			<input type="hidden" name="list_type" id="LIST_TYPE" value="list" />
 		</span>
 		<!--begin: Search Form -->
 		<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
@@ -71,16 +72,16 @@ th{
                             <br/>
                         </div>
 						<div class="col-md-4">
-							<select class="bs-select form-control" name="stock_warehouse" id="STOCK_WAREHOUSE" data-actions-box="true">
-                                    <option value="">Select Warehouse</option>
+							<select  name="stock_warehouse" id="STOCK_WAREHOUSE" data-actions-box="true" class="form-control form-select" data-control="select2" data-placeholder="Select warehouse">
+                                    <option value="0">Select Warehouse</option>
                                     @foreach ( $lst_warehouse as $key => $warehouse_info )
                                             <option value="{{ $warehouse_info->w_id  }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                     @endforeach
                             </select>
 						</div>
 						<div class="col-md-4">
-							<select class="bs-select form-control" name="stock_product" id="STOCK_PRODUCT" data-actions-box="true">
-                                    <option value="">Select Product</option>
+							<select  name="stock_product" id="STOCK_PRODUCT" class="form-control form-select" data-control="select2" data-placeholder="Select Product" >
+                                    <option value="0">Select Product</option>
                                     @foreach ( $lst_products as $key => $product_info )
                                             <option value="{{ $product_info->p_id  }}">{{  $product_info->p_product_name  }}</option>
                                     @endforeach
@@ -89,8 +90,8 @@ th{
 						</div>
 						<div class="col-md-12" style="height:15px;">&nbsp</div>
 						<div class="col-md-4">
-							<select class="bs-select form-control" name="stock_currency" id="STOCK_CURRENCY" data-actions-box="true">
-                                    <option value="">Select Currency</option>
+							<select name="stock_currency" id="STOCK_CURRENCY" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                    <option value="0">Select Currency</option>
                                     <?php foreach ( $lst_currencies as $key => $currency_info ) { ?>
                                             <option value="<?php echo $currency_info->cc_id;  ?>"><?php echo $currency_info->cc_currency_code;  ?>&nbsp;-&nbsp;<?php echo $currency_info->cc_currency_name;  ?></option>
                                     <?php  } ?>
@@ -110,6 +111,12 @@ th{
 					</a>
 					<div class="m-separator m-separator--dashed d-xl-none"></div>
 				</div>
+                <div class="col-xl-12 order-1 order-xl-2 align-right">&nbsp;</div>
+                <div class="col-xl-12 order-1 order-xl-2 align-right">
+                    <a href="#" class="SwitchView" title="List Stock By Group" data-view="group"><i class="fas fa-object-group" style="font-size:24px;" ></i></a>
+                    <a href="#" class="SwitchView" title="list stock by transaction" data-view="list"><i class="fas fa-list" style="font-size:24px;" ></i></a>
+                </div>
+                <div class="col-xl-12 order-1 order-xl-2 align-right">&nbsp;</div>
 			</div>
 		</div>
 		<!--end: Search Form -->

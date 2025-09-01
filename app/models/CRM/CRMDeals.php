@@ -48,4 +48,19 @@ class CRMDeals extends Model
         return $this->hasOne('App\models\Users\Users', 'id','fk_telemarketing_id');
     }
 
+    public function Manager()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_manager_id');
+    }
+
+    public function Technician()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_technician_id');
+    }
+
+    public function Supervisor()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','fk_supervisor_id');
+    }
+
 }

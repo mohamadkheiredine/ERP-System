@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 $(function(){
@@ -11,6 +11,5 @@ $(function(){
     .catch( error => {
         console.error( error );
     } );
-	$('select').select2();
 	$("#BTN_SAVE_TYPE").on('click',projecttypes_module.SaveProjectTypeInfo);
 })

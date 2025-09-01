@@ -8,9 +8,13 @@ inboundcalls_module = {
 	    var ic_telemarketing_id = $('select[name=ic_telemarketing_id]').val();
 	    var ic_maintenance_type = $('select[name=ic_maintenance_type]').val();
 	    var ic_technician_id = $('select[name=ic_technician_id]').val();
+	    var ic_result_id = $('select[name=ic_result_id]').val();
 	    var ic_call_date = $('input[name=ic_call_date]').val();
-            if(ic_maintenance_type.length == 0)
-                return false
+            if(ic_maintenance_type.length == 0 || ic_call_date.length == 0)
+            {
+                return false;
+            }
+
 	    $.ajax
 	    ({
 	        url : base_url + "/request/inboundcall/displaylist",
@@ -18,6 +22,7 @@ inboundcalls_module = {
                     page_number : page_number ,
                     general_search : general_search ,
                     ic_technician_id : ic_technician_id ,
+                ic_result_id : ic_result_id ,
                     ic_telemarketing_id : ic_telemarketing_id,
                     ic_maintenance_type : ic_maintenance_type,
                     ic_archived_call : ic_archived_call,
@@ -56,6 +61,27 @@ inboundcalls_module = {
 	    });
 
 	},
+    GetResultRecordInfo : function(){
+        let cw_id = $(this).data('cw_id');
+        let _token 				= $('input[name=_token]').val();
+        let base_url = $("#BASE_URL").val();
+        $.ajax
+        ({
+            url : base_url + "/request/inboundcall/getresultworkflowinfo",
+            data : {cw_id : cw_id ,_token : _token },
+            method : 'get',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                $('input[name=cw_creation_date]').val(response.cw_creation_date);
+                $('select[name=cw_result_id]').val(response.cw_result_id).trigger('change.select2');
+                $('select[name=cw_assigned_to]').val(response.cw_assigned_to).trigger('change.select2');
+                $('input[name=cw_result_note]').val(response.cw_result_note);
+
+            }
+        });
+    },
     ResetValues : function(){
         $('.LstMaintenanceProducts').html("");
         $('input[name=products_stock]').html("");
@@ -151,11 +177,12 @@ inboundcalls_module = {
 	    var ic_telemarketing_id = $('select[name=ic_telemarketing_id]').val();
 	    var ic_maintenance_type = $('select[name=ic_maintenance_type]').val();
 	    var ic_technician_id = $('select[name=ic_technician_id]').val();
+	    var ic_result_id = $('select[name=ic_result_id]').val();
 	    var ic_call_date = $('input[name=ic_call_date]').val();
              $.ajax
             ({
                 url : base_url + "/request/inboundcall/generateanddownloadlist",
-                data : { _token : _token , general_search : general_search , ic_archived_call : ic_archived_call , ic_telemarketing_id : ic_telemarketing_id , ic_maintenance_type : ic_maintenance_type , ic_technician_id : ic_technician_id , ic_call_date : ic_call_date},
+                data : { _token : _token , general_search : general_search , ic_archived_call : ic_archived_call ,ic_result_id : ic_result_id, ic_telemarketing_id : ic_telemarketing_id , ic_maintenance_type : ic_maintenance_type , ic_technician_id : ic_technician_id , ic_call_date : ic_call_date},
                 method : 'post',
                  xhrFields: {
                     responseType: 'blob' // Set the response type to blob
@@ -315,6 +342,10 @@ inboundcalls_module = {
                    success : function(response){
                      if(response.is_error == 0)
                      {
+                          $('#CW_CREATION_DATE').val('');
+                          $('#CW_RESULT_NOTE').val('');
+                          $('#CW_ASSIGNED_TO').val('').trigger('change.select2');
+                          $('#CW_RESULT_ID').val('').trigger('change.select2');
                           inboundcalls_module.DisplayListInboundCalls();
                           inboundcalls_module.getListofCallResults();
                      }
@@ -475,9 +506,11 @@ inboundcalls_module = {
                             $('input[name=ic_doc_number]').val('');
                             $('input[name=ic_call_index]').val('');
                             $('input[name=ic_comission]').val('');
-                            $('input[name=ic_visit_price]').val('');
-                            $('select[name=ic_currency_id]').val('');
-                            $('select[name=ic_payment_type]').val('');
+                            $('input[name=ic_visit_price]').val('')
+                            $('select[name=ic_currency_id]').val('').trigger('change.select2');
+                            $('select[name=ic_payment_type]').val('').trigger('change.select2');
+                            $('select[name=ic_payment_type]').val('').trigger('change.select2');
+                            $('select[name=cp_product_id]').val('').trigger('change.select2');
                             $('#FRM_SAVE_VOUCHER').resetForm();
                             $('.LstMaintenanceProducts').html('');
                            $('#AddMainVoucher').modal('toggle');

@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
 class InboundCall extends Model
-{ 
+{
     protected   $table          = 'callcenter_inbound_calls';
     public      $timestamps     = false;
     protected   $primaryKey     = "ic_id";
@@ -31,26 +31,29 @@ class InboundCall extends Model
     {
         return $this->hasOne('App\models\Users\Users', 'id','fk_agent_id');
     }
-    
+
     public function Salesman()
     {
         return $this->hasOne('App\models\Users\Users', 'id','ic_sales_id');
     }
-    
+
     public function Telemarketing()
     {
         return $this->hasOne('App\models\Users\Users', 'id','ic_telemarketing_id');
+    }    public function Technician()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','ic_technician_id');
     }
-    
+
     public function Client()
     {
         return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','fk_customer_id');
     }
-    
+
      public function CallResult()
     {
         return $this->hasOne('App\models\CallCenter\CallResults', 'cr_id','ic_result_id');
     }
-    
-    
+
+
 }

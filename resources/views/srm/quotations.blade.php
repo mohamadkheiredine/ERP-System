@@ -104,7 +104,9 @@ th{
                 		<thead>
                 			<tr class="fw-bold fs-6 text-gray-800">
                 				<th title="#">#</th>
-                				<th title="Id"> ID </th> 
+                				<th title="Id"> ID </th>
+                				<th title="Invoice Number"> Invoice Number </th>
+                				<th title="Container Number"> Container Number </th>
                 				<th title="Supplier"> Supplier </th>
                 				<th title="Date Submit"> Date Submit </th>
                 				<th title="Total Price"> Total Price </th>
@@ -118,9 +120,9 @@ th{
                 		<tbody id="LstQuotations">
                 		</tbody>
                 </table>
-			</div> 
+			</div>
 		</div>
-		
+
 		<div class="row">
 			<div class="col-md-12" style="height: 25px">&nbsp;</div>
 		</div>

@@ -1,9 +1,10 @@
 $(function(){
-	inboundcalls_module.DisplayListInboundCalls();
+    $("#IC_CALL_DATE").on('keyup',inboundcalls_module.DisplayListInboundCalls);
 	$("#generalSearch").on('keyup',inboundcalls_module.DisplayListInboundCalls);
 	$("select[name=ic_technician_id]").on('change',inboundcalls_module.DisplayListInboundCalls);
 	$("select[name=ic_maintenance_type]").on('change',inboundcalls_module.DisplayListInboundCalls);
 	$("select[name=ic_archived_call]").on('change',inboundcalls_module.DisplayListInboundCalls);
+	$("select[name=ic_result_id]").on('change',inboundcalls_module.DisplayListInboundCalls);
 	$("input").on('change',inboundcalls_module.DisplayListInboundCalls);
 	$(".dropdown-item").on('click',inboundcalls_module.QuickAction);
 	$("#BTN_SAVE_MV").on('click',inboundcalls_module.SaveMaintenanceVoucherInfo);
@@ -12,6 +13,7 @@ $(function(){
     $("#LstInboundCalls").on("click","tr",inboundcalls_module.SelectCallRecord);
 	$('#LstInboundCalls').on('click',"a[id*=EDIT_CALL_]",inboundcalls_module.EditInboundCallInfo);
 	$('#LstInboundCalls').on('click',"a[id*=DELETE_CALL_]",inboundcalls_module.DeleteInboundCallData);
+	$('.LstCallWResults').on('dblclick',".CallResultRow",inboundcalls_module.GetResultRecordInfo);
     $("#CP_PRODUCT_ID").on("change",inboundcalls_module.DisplayProductDescriptionInStockTransfer);
     $("button[name=btn_add_stock]").on("click",inboundcalls_module.AddProductStock);
     $("button[name=btn_close]").on("click",inboundcalls_module.ResetValues);

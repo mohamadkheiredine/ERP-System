@@ -1,25 +1,33 @@
 /**
- * 
+ *
  */
 
 projecttypes_module = {
 	DisplayListProjectTypes : function(){
 		var base_url 	= $('input[name=base_url]').val();
 	    var _token 		= $('input[name=_token]').val();
+	    var page_number 		= $('input[name=page_number]').val();
 	    $.ajax
 	    ({
 	        url : base_url + "/request/projects/displaylisttypes",
-	        data : { _token : _token },
+	        data : { _token : _token , page_number : page_number },
             method : 'post',
             dataType : "json",
             beforeSend : function(){
             },
 	        success : function(response){
 	        	$('#LstProjectTypes').html(response.display);
-				 
-				
-				$("a[id*=EDIT_TYPE_]").on('click',projecttypes_module.EditProjectTypeInfo);
-				$("a[id*=DELETE_TYPE_]").on('click',projecttypes_module.DeleteProjectTypeData);
+                if(response.total_pages > 1)
+                {
+                    $.pagination = $('#ProjectTypesPagination').twbsPagination({
+                        totalPages: response.total_pages,
+                        visiblePages: 7,
+                        onPageClick: function (event, page) {
+                            $('input[name=page_number]').val(page);
+                            projecttypes_module.DisplayListProjectTypes();
+                        }
+                    });
+                }
 	        }
 	    });
 	},

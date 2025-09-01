@@ -242,6 +242,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/crm/accounts/deals','CRM\DealsController@index');
     Route::get('/crm/accounts/deals/addform','CRM\DealsController@AddForm');
     Route::get('/crm/accounts/deals/editform/{ad_id}','CRM\DealsController@EditForm');
+    Route::get('/crm/accounts/deals/viewform/{ad_id}','CRM\DealsController@ViewDealForm');
 
 
     Route::get('/crm/contacts','CRM\ContactsController@index');
@@ -437,6 +438,22 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/projects/statuses','PM\ProjectStatusesController@index');
     Route::get('/projects/statuses/addform','PM\ProjectStatusesController@AddForm');
     Route::get('/projects/statuses/editform/{ps_id}','PM\ProjectStatusesController@EditForm');
+
+
+    Route::get('/projects/roles','PM\ProjectRolesController@index');
+    Route::get('/projects/roles/addform','PM\ProjectRolesController@AddForm');
+    Route::get('/projects/roles/editform/{pr_id}','PM\ProjectRolesController@EditForm');
+
+
+    Route::get('/pm/projects','PM\ProjectsController@index');
+    Route::get('/pm/projects/addform','PM\ProjectsController@AddForm');
+    Route::get('/pm/projects/editform/{pp_id}','PM\ProjectsController@EditForm');
+
+
+    Route::get('/projects/phases','PM\ProjectPhasesController@index');
+    Route::get('/projects/phases/addform','PM\ProjectPhasesController@AddForm');
+    Route::get('/projects/phases/editform/{pp_id}','PM\ProjectPhasesController@EditForm');
+
 
     Route::get('/hr/payrollsperiods','PayRoll\PayRollsPeriodController@index');
     Route::get('/hr/payrollsperiods/addform','PayRoll\PayRollsPeriodController@AddForm');

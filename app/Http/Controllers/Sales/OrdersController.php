@@ -433,10 +433,11 @@ class OrdersController extends Controller
 
 
         $Orders = new Orders();
-
+        $is_new = 1;
         if( $so_id != null )
         {
             $Orders= Orders::find($so_id);
+            $is_new = 0;
         }
         else {
             $so_creation_date           = date("Y-m-d");
@@ -465,6 +466,7 @@ class OrdersController extends Controller
 
         $result_array['is_error']  = 0;
         $result_array['so_id']  = $Orders->so_id;
+        $result_array['is_new']  = $is_new;
         $result_array['error_msg'] = 'Order Information Has been saved';
 
         return Response()->json($result_array);

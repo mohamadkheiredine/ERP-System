@@ -142,6 +142,7 @@ class ProductStocksController extends Controller
         $stock_warehouse                = $request->input('stock_warehouse');
         $stock_product                  = $request->input('stock_product');
         $stock_currency                 = $request->input('stock_currency');
+        $list_type                 = $request->input('list_type');
         $nbr_rows_per_pages             = Config::get('appconfig.max_rows_per_page');
 
         if($page_number > 1)
@@ -152,39 +153,75 @@ class ProductStocksController extends Controller
 
         $result_array =array();
 
-        $lst_stocks     =Stocks::whereIsIsDeleted(0);
-        if( $stock_warehouse > 0 )
-            $lst_stocks= $lst_stocks->whereFkWarehouseId($stock_warehouse);
-        if( $stock_product > 0 )
-            $lst_stocks= $lst_stocks->whereFkProductId($stock_product);
-        if( $stock_currency > 0 )
-            $lst_stocks= $lst_stocks->whereIsStockCurrency($stock_currency);
+        if($list_type == 'list')
+        {
+            $lst_stocks     =Stocks::whereIsIsDeleted(0);
+            if( $stock_warehouse > 0 )
+                $lst_stocks= $lst_stocks->whereFkWarehouseId($stock_warehouse);
+            if( $stock_product > 0 )
+                $lst_stocks= $lst_stocks->whereFkProductId($stock_product);
+            if( $stock_currency > 0 )
+                $lst_stocks= $lst_stocks->whereIsStockCurrency($stock_currency);
 
             $count_stocks = $lst_stocks->count();
             $total_list_stocks = $lst_stocks->get();
-        $lst_stocks = $lst_stocks->skip($skip)->take($nbr_rows_per_pages)->get();
+            $lst_stocks = $lst_stocks->skip($skip)->take($nbr_rows_per_pages)->get();
 
-        $total_pages = ceil( $count_stocks/$nbr_rows_per_pages );
-        $total_pages = intval($total_pages);
+            $total_pages = ceil( $count_stocks/$nbr_rows_per_pages );
+            $total_pages = intval($total_pages);
 
-        $stock_management = new WarehouseManager();
-        $data_array = array(
-            "lst_stocks" => $total_list_stocks
-        );
-        $total_stock_amount = $stock_management->getTotalStockAmount( $data_array );
-        $view_data = array(
-            "total_stock_amount" => $total_stock_amount
-        );
-        $total_amount_block = view('templates.displaytotalblock',$view_data )->render();
+            $stock_management = new WarehouseManager();
+            $data_array = array(
+                "lst_stocks" => $total_list_stocks
+            );
+            $total_stock_amount = $stock_management->getTotalStockAmount( $data_array );
+            $view_data = array(
+                "total_stock_amount" => $total_stock_amount
+            );
+            $total_amount_block = view('templates.displaytotalblock',$view_data )->render();
 
-        $data = array(
-            "currency_array" => $currency_array,
-            "lst_stock" => $lst_stocks
-        );
-        $result_array['is_error'] = 0;
-        $result_array['total_pages']      = $total_pages;
-        $result_array['total_amount_block']      = $total_amount_block;
-        $result_array['display']  = view("stocks.displayliststock",$data)->render();
+            $data = array(
+                "currency_array" => $currency_array,
+                "lst_stock" => $lst_stocks
+            );
+            $result_array['is_error'] = 0;
+            $result_array['total_pages']      = $total_pages;
+            $result_array['total_amount_block']      = $total_amount_block;
+            $result_array['display']  = view("stocks.displayliststock",$data)->render();
+        }
+        else
+        {
+            $query_cond = " AND is_is_deleted = 0";
+            if( $stock_warehouse > 0 )
+                $query_cond .= " AND fk_warehouse_id = " . $stock_warehouse;
+            if( $stock_product > 0 )
+                $query_cond .= " AND fk_product_id = " . $stock_product;
+            if( $stock_currency > 0 )
+                $query_cond .= " AND is_stock_currency = " . $stock_currency;
+
+            $query = "SELECT products.p_product_name,warehouses.w_warehouse_name,SUM(stock.is_quanity) as total_stock,currency.cc_currency_code FROM inventory_stocks as stock left join inventory_products as products on products.p_id = stock.fk_product_id left join inventory_warehouses as warehouses on warehouses.w_id = stock.fk_warehouse_id left join currency on currency.cc_id = stock.is_price_currency where 1 ". $query_cond ." group by stock.fk_warehouse_id,stock.fk_product_id,stock.is_price_currency;";
+            $lst_stocks = DB::select($query);
+            $total_stocks = count($lst_stocks);
+
+            $total_pages = ceil( $total_stocks/$nbr_rows_per_pages );
+            $total_pages = intval($total_pages);
+
+
+            $query = "SELECT   products.p_id, products.p_product_name,warehouses.w_warehouse_name, SUM(is_selling_price) as total_selling_price , SUM(stock.is_quanity) as total_stock,currency.cc_currency_code FROM inventory_stocks as stock left join inventory_products as products on products.p_id = stock.fk_product_id left join inventory_warehouses as warehouses on warehouses.w_id = stock.fk_warehouse_id left join currency on currency.cc_id = stock.is_price_currency where 1 ". $query_cond ." group by stock.fk_warehouse_id,stock.fk_product_id,stock.is_price_currency LIMIT " . $skip . "," . $nbr_rows_per_pages . ";";
+            $lst_stocks = DB::select($query);
+
+            $data = array(
+                "lst_stock" => $lst_stocks
+            );
+            $result_array['is_error'] = 0;
+            $result_array['total_pages']      = $total_pages;
+            $result_array['total_amount_block']      = "";
+            $result_array['display']  = view("stocks.groupstock",$data)->render();
+
+        }
+
+
+
 
         return Response()->json($result_array);
     }
@@ -368,7 +405,7 @@ class ProductStocksController extends Controller
         $trans_mov->fk_tran_id              = $at_id;
         $trans_mov->tm_ledger_account       = 601;
         $trans_mov->tm_sub_ledger_account   = 601;
-        $trans_mov->tm_debit                = $is_selling_price;
+        $trans_mov->tm_debit                = $is_selling_price * $is_quanity;
         $trans_mov->tm_credit               = 0;
         $trans_mov->tm_creation_date        = date('Y-m-d');
         $trans_mov->tm_transaction_date        = date('Y-m-d');

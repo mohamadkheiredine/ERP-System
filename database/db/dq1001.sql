@@ -39,5 +39,25 @@ ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_payment_status` TINYINT NU
 ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_deal_id` INT NULL DEFAULT 0 AFTER `fk_invoice_id`;
 
 
-ALTER TABLE `billing_invoice_items` ADD COLUMN `ii_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `fk_invoice_id`;
+ALTER TABLE `billing_invoice_items` ADD COLUMN `ii_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `fk_invoice_id`
+
+
+
+ALTER TABLE `srm_supplier_products`
+    CHANGE COLUMN `sp_product_pruchase_price` `sp_product_pruchase_price` DECIMAL(10,3) NULL DEFAULT '0' ,
+    CHANGE COLUMN `sp_product_selling_price` `sp_product_selling_price` DECIMAL(10,3) NULL DEFAULT '0' ,
+    CHANGE COLUMN `sp_product_wholesale_price` `sp_product_wholesale_price` DECIMAL(10,3) NULL DEFAULT '0' ,
+    CHANGE COLUMN `sp_product_vendor_price` `sp_product_vendor_price` DECIMAL(10,3) NULL DEFAULT '0' ,
+    CHANGE COLUMN `sp_product_discount` `sp_product_discount` DECIMAL(10,3) NULL DEFAULT '0' ;
+
+
+ALTER TABLE `inventory_stocks`
+    CHANGE COLUMN `is_wholesale_price` `is_wholesale_price` DECIMAL(10,2) NULL DEFAULT NULL ,
+    CHANGE COLUMN `is_price_stock` `is_price_stock` DECIMAL(10,2) NULL DEFAULT '0' ,
+    CHANGE COLUMN `is_price_item` `is_price_item` DECIMAL(10,2) NULL DEFAULT '0' ,
+    CHANGE COLUMN `is_selling_price` `is_selling_price` DECIMAL(10,2) NULL DEFAULT '0' ,
+    CHANGE COLUMN `is_vendor_price` `is_vendor_price` DECIMAL(10,2) NULL DEFAULT '0' ,
+    CHANGE COLUMN `is_discount` `is_discount` DECIMAL(10,2) NULL DEFAULT '0' ;
+
+
 

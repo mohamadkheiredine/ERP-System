@@ -237,7 +237,6 @@ class DealsController extends Controller
         $ad_id = $request->input('ad_id');
         $deal_info = CRMDeals::find($ad_id);
         $company_info = Companies::find(session('company_id'));
-
         $contract_document = view('templates.contractstatments')->render();
         $contract_document = str_replace("%FULLNAME%", $deal_info->Account->ca_account_name, $contract_document);
         $contract_document = str_replace("%COMPANY_NAME_TRANSLATION%", $company_info->cd_company_name, $contract_document);
@@ -400,6 +399,7 @@ class DealsController extends Controller
         $ad_manager_comm                        = $request->input('ad_manager_comm');
         $ad_contract_type                        = $request->input('ad_contract_type');
         $bill_sales_commission                        = $request->input('bill_sales_commission');
+        $bill_amount                                = $request->input('bill_amount');
 
         $result_array = array();
 
@@ -614,8 +614,8 @@ class DealsController extends Controller
                         $invoice_payment->ip_deal_id = $ad_id;
                         $invoice_payment->ip_client_id = $fk_account_id;
                         $invoice_payment->ip_payment_percentage = $percentage_near_amount;
-                        $invoice_payment->ip_payment_amount = $neareset_amount;
-                        $invoice_payment->ip_remaining_amount = $neareset_amount;
+                        $invoice_payment->ip_payment_amount = $action == 'add' ? $bill_amount[$index - 1]  : $neareset_amount;
+                        $invoice_payment->ip_remaining_amount = $action == 'add' ? $bill_amount[$index - 1]  : $neareset_amount;
                         $invoice_payment->ip_client_code = $client_info->ca_account_code;
                         $invoice_payment->ip_client_name = $client_info->ca_account_name;
                         $invoice_payment->ip_currency_id = $ad_currency_id;
@@ -634,8 +634,8 @@ class DealsController extends Controller
                     $invoice_payment->ip_deal_id = $ad_id;
                     $invoice_payment->ip_client_id = $fk_account_id;
                     $invoice_payment->ip_payment_percentage = $percentage_last_amount;
-                    $invoice_payment->ip_payment_amount = $last_payment;
-                    $invoice_payment->ip_remaining_amount = $last_payment;
+                    $invoice_payment->ip_payment_amount = $action == 'add' ? $bill_amount[$ad_nbr_of_payments - 1]  : $last_payment;;
+                    $invoice_payment->ip_remaining_amount = $action == 'add' ? $bill_amount[$ad_nbr_of_payments - 1]  : $last_payment;;
                     $invoice_payment->ip_payment_type = 2;
                     $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
                     $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
@@ -643,7 +643,7 @@ class DealsController extends Controller
                     $invoice_payment->ip_client_code = $client_info->ca_account_code;
                     $invoice_payment->ip_client_name = $client_info->ca_account_name;
                     $invoice_payment->ip_currency_id = $ad_currency_id;
-                    $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$ad_nbr_of_payments]) ? $bill_sales_commission[$ad_nbr_of_payments] : 0;
+                    $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$ad_nbr_of_payments - 1]) ? $bill_sales_commission[$ad_nbr_of_payments - 1] : 0;
                     $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
                     $invoice_payment->save();
                 }
@@ -691,6 +691,7 @@ class DealsController extends Controller
                 $call_info->ic_call_index      = $call_index;
                 $call_info->ic_sales_id      = $fk_sales_id;
                 $call_info->fk_customer_id      = $fk_account_id;
+                $call_info->ic_technician_id      = $fk_technician_id;
                 $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
                 $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
                 $call_info->ic_contract_code      = $account_deal->ad_deal_code;
@@ -709,6 +710,7 @@ class DealsController extends Controller
                 $call_info->ic_call_index      = $call_index;
                 $call_info->ic_sales_id      = $fk_sales_id;
                 $call_info->fk_customer_id      = $fk_account_id;
+                $call_info->ic_technician_id      = $fk_technician_id;
                 $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
                 $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
                 $call_info->ic_contract_code      = $account_deal->ad_deal_code;
@@ -773,6 +775,54 @@ class DealsController extends Controller
             "lst_contacts" => $lst_contacts
         );
         return Response()->view('accounts.editdeals',$data);
+    }
+
+
+    /**
+     * View Deal Form Information Saved in the database
+     *
+     * @author Moe Mantach
+     * @access public
+     * @param $ad_id
+     * @return void
+     */
+    public function ViewDealForm($ad_id)
+    {
+        $lst_accounts   = CRMAccounts::whereCaIsDeleted(0)->get();
+        $lst_leads      = CRMLeads::whereClIsDeleted(0)->get();
+        $lst_contacts   = CRMContacts::whereCcIsDeleted(0)->get();
+        $deal_info      = CRMDeals::find($ad_id);
+        $lst_users      = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $lst_deal_stages    = CRMDealStages::whereCsIsDeleted(0)->get();
+        $lst_products       = Products::wherePProductIsDeleted(0)->get();
+        $lst_currencies     = SysCurrency::all();
+        $lst_contract_types = CRMContractTypes::whereCtIsDeleted(0)->get();
+
+        $lst_telemarketing      = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_supervisors        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SUPERVISOR)->get();
+        $lst_technicians        = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_general_managers   = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_GENERAL_MANAGER)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+
+        $data = array(
+            "lst_accounts" => $lst_accounts,
+            "lst_general_managers" => $lst_general_managers,
+            "lst_leads" => $lst_leads,
+            "lst_products" => $lst_products,
+            "deal_info" => $deal_info,
+            "lst_users" => $lst_users,
+            "lst_deal_stages" => $lst_deal_stages,
+            "lst_currencies" => $lst_currencies,
+            "lst_user_telemarketing" => $lst_telemarketing,
+            "lst_contract_types" => $lst_contract_types,
+            "lst_supervisors" => $lst_supervisors,
+            "lst_user_sales" => $lst_sales,
+            "lst_admins" => $lst_admins,
+            "lst_technicians" => $lst_technicians,
+            "lst_contacts" => $lst_contacts
+        );
+        return Response()->view('deals.viewdeal',$data);
     }
 
 
@@ -861,7 +911,7 @@ class DealsController extends Controller
             $data = array(
                 "payments_array"   => $payments_array
             );
-            $result_array['display'] = view('deals.paymentpreview',$data)->render();
+            $result_array['display'] = view('deals.rpaymentpreview',$data)->render();
             $result_array['billscoms'] = view('deals.billscoms',$data)->render();
 
         }

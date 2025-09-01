@@ -111,7 +111,7 @@ Route::post('/request/stocktransfer/generatetransfervoucher','Inventory\ProductS
 
 Route::post('/request/displayliststock','Inventory\ProductStocksController@DisplayList');
 Route::post('/request/savestockinfo','Inventory\ProductStocksController@SaveProductStockInfo');
-Route::post('/request/deletestock','Inventory\ProductStocksController@DeleteStockData');
+Route::post('/request/deletestock','Inventory\ProductStocksController@DeleteStockInfo');
 
 Route::post('/request/displaylistvendors','Inventory\VendorsController@DisplayList');
 Route::post('/request/savevendorinfo','Inventory\VendorsController@SaveVendorInfo');
@@ -588,6 +588,28 @@ Route::post('/request/projects/savetypeinfo','PM\ProjectTypesController@Saveinfo
 Route::post('/request/projects/deletetypeinfo','PM\ProjectTypesController@DeleteData');
 
 
+Route::post('/request/projects/displaylistroles','PM\ProjectRolesController@DisplayList');
+Route::post('/request/projects/saveroleinfo','PM\ProjectRolesController@SaveInfo');
+Route::post('/request/projects/deleteroleinfo','PM\ProjectRolesController@DeleteProjectRole');
+
+Route::get('/request/projects/listteams','PM\ProjectsController@DisplayListProjectTeams');
+Route::get('/request/projects/displaylist','PM\ProjectsController@DisplayList');
+Route::post('/request/projects/saveinfo','PM\ProjectsController@SaveInfo');
+Route::delete('/request/projects/deleteinfo','PM\ProjectsController@DeleteProjectInfo');
+
+Route::get('/request/projects/listmmilestones','PM\ProjectsController@DisplayListProjectMilestones');
+Route::get('/request/projects/listphases','PM\ProjectsController@DisplayListProjectPhases');
+Route::get('/request/projects/listjobs','PM\ProjectsController@DisplayListProjectJobs');
+Route::get('/request/projects/listtasks','PM\ProjectsController@DisplayListProjectTasks');
+Route::put('/request/projects/linkprojectteam','PM\ProjectsController@LinkProjectTeam');
+
+
+Route::get('/request/projects/displaylistphases','PM\ProjectPhasesController@DisplayList');
+Route::post('/request/projects/savephasesinfo','PM\ProjectPhasesController@Saveinfo');
+Route::delete('/request/projects/deletephasesinfo','PM\ProjectPhasesController@DeleteData');
+Route::get('/request/projects/generatephasecode','PM\ProjectPhasesController@GeneratePhaseCode');
+
+
 Route::post('/request/lines/displaylist','Phones\PhoneLinesController@DisplayList');
 Route::post('/phones/lines/savelineinfo','Phones\PhoneLinesController@SaveLineInfo');
 Route::post('/phones/lines/deleteline','Phones\PhoneLinesController@DeleteLineInfo');
@@ -657,6 +679,8 @@ Route::get('/request/call/getlistcallresults','CallCenter\InboundController@GetL
 Route::post('/request/inboundcall/savecallresult','CallCenter\InboundController@SaveCallResultInfo');
 Route::get('/request/mvoucher/getnewmaintenancenumber','CallCenter\InboundController@GetNewMaintenanceNumber');
 Route::post('/request/inboundcall/addproductstock','CallCenter\InboundController@AddProductStock');
+
+Route::get('/request/inboundcall/getresultworkflowinfo','CallCenter\InboundController@GetResultWorkflowinfo');
 
 Route::post('/request/outboundcall/displaylist','CallCenter\OutboundController@DisplayList');
 Route::post('/request/outboundcall/saveinfo','CallCenter\OutboundController@SaveOutboundCallInfo');

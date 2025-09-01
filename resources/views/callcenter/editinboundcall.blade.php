@@ -51,7 +51,7 @@ th{
     <div class="card-body">
     <form name="frm_save_inbound" id="FORM_SAVE_INBOUND">
                 <div class="form-body">
-                     <span id="hidden_fields"> 
+                     <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="ic_id" value="{{ $inboundcall_info->ic_id }}" />
                     </span>
@@ -60,7 +60,7 @@ th{
             			</div>
             			<div class="alert alert-danger" style="display:none">
             				<strong>Error!</strong> You have some form errors. Please check below.
-            			</div>  
+            			</div>
                     <div class="row">
                          <div class="col-md-4">
                             <div class="form-group">
@@ -72,7 +72,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Contract Code</label>
-                                <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control" required="required"   maxlength="15"  value="{{ $inboundcall_info->ic_contract_code }}" /> 
+                                <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control" required="required"   maxlength="15"  value="{{ $inboundcall_info->ic_contract_code }}" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -106,14 +106,20 @@ th{
                                   <?php foreach ( $lst_sales as $key => $user_info ) { ?>
                                           <option {{ $inboundcall_info->ic_sales_id == $user_info->id ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
                                   <?php  } ?>
+                                  <?php foreach ( $lst_admins as $key => $user_info ) { ?>
+                                          <option {{ $inboundcall_info->ic_sales_id == $user_info->id ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                  <?php  } ?>
                           </select>
                       </div>
-                  </div> 
+                  </div>
                         <div class="col-md-4">
                         <label class="control-label">Technician</label>
                         <select name="ic_technician_id" id="IC_TECHNICIAN_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
                                <option value="">-- Select Technician --</option>
                                @foreach ( $lst_technicians as $key => $user_info )
+                                       <option {{ $inboundcall_info->ic_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                               @endforeach
+                               @foreach ( $lst_admins as $key => $user_info )
                                        <option {{ $inboundcall_info->ic_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                @endforeach
                        </select>
@@ -134,7 +140,7 @@ th{
                                             @endforeach
                                     </select>
                                 </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label"> Product Serial Number <span class="required"> * </span></label><br/>
@@ -149,7 +155,7 @@ th{
                                       <span class="form-check-label fw-semibold text-muted">
                                          Under Warranty
                                       </span>
-                                  </label>  
+                                  </label>
                              </div>
                         </div>
                          <div class="col-md-4">
@@ -170,7 +176,7 @@ th{
                                 <input type="text" name="ic_call_start_time" required="required" id="IC_CALL_START_TIME" class="form-control" value="{{ $inboundcall_info->ic_call_start_time }}" />
                              </div>
                         </div>
-                        <div class="col-md-4"> 
+                        <div class="col-md-4">
                             <label class="control-label">Maintenance Type</label>
                             <select name="ic_maintenance_type" id="IC_MAINTENANCE_ID"  required   class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
                                    <option value="">-- Select Telemarketing --</option>
@@ -187,7 +193,7 @@ th{
                                       <span class="form-check-label fw-semibold text-muted">
                                          Issue Resolved
                                       </span>
-                                  </label>  
+                                  </label>
                              </div>
                         </div>
                         <div class="col-md-12">

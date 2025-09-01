@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 $(function(){
@@ -13,7 +13,6 @@ $(function(){
      } );
 	 $("#BTN_SAVE_QUOTATION").on('click',quotations_module.SaveSupplierQuotationInfo);
 	$("#BTN_APPROVE_QUOTATION").on('click',quotations_module.ApproveSupplierQuotation);
-	$('select').select2();
 
 	 new tempusDominus.TempusDominus(document.getElementById('SQ_DUE_DATE'),{
 		 display: {
@@ -22,7 +21,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -31,12 +30,12 @@ $(function(){
 			    }
 		 },
 		 localization: {
-			 format : "L"
-			 
+			 format : "yyyy-MM-dd"
+
 		 }
 	});
-	 
-	
+
+
 	var base_url 	= $('input[name=base_url]').val();
 	var _token 		= $('input[name=_token]').val();
 	$.ajax
@@ -49,7 +48,7 @@ $(function(){
 		},
 		success : function(response){
 			localStorage.setItem('products_cache_url',response.cache_url);
-			
+
 		    $(".ProductNameField")
 		      .bsSuggest("init", {
 		        clearable: true,
@@ -59,7 +58,7 @@ $(function(){
 			      effectiveFields: ["product_name"],
 		            searchFields: [ "product_name"]
 		      })
-		      .on("onDataRequestSuccess", function(e, result) { 
+		      .on("onDataRequestSuccess", function(e, result) {
 		      })
 		      .on("onSetSelectValue", function(e, keyword, data) {
 		    	 let use_serial_number = data.product_use_serial;
@@ -89,12 +88,12 @@ $(function(){
 		      .on("onHideDropdown", function(e, data) {
 		        console.log("onHideDropdown", e.target.value, data);
 		      })
-			
-			  
+
+
 		}
 	});
-	
-	
+
+
 	$('#ADD_PRODUCT').on('click',function(){
 		let row_count = $("#ListProducts tr.QuotationItems").length;
 		let new_count = 0;
@@ -116,7 +115,7 @@ $(function(){
 		clone_row.find('.DeleteCode').css('display','');
 		clone_row.data('index',new_count);
 		clone_row.attr('data-index',new_count);
-		$('#ListProducts').append(clone_row); 
+		$('#ListProducts').append(clone_row);
 		$(".ProductNameField:last").bsSuggest("init", {
 	        clearable: true,
 	        url:product_cache,
@@ -125,7 +124,7 @@ $(function(){
 		      effectiveFields: ["product_name"],
 	            searchFields: [ "product_name"],
 	      })
-	      .on("onDataRequestSuccess", function(e, result) { 
+	      .on("onDataRequestSuccess", function(e, result) {
 	      })
 	      .on("onSetSelectValue", function(e, keyword, data) {
 	        let product_id = data.id;
@@ -154,13 +153,13 @@ $(function(){
 	      .on("onHideDropdown", function(e, data) {
 	        console.log("onHideDropdown", e.target.value, data);
 	      });
-		
+
 	});
 	$('#ListProducts').on('keyup','.ProductDiscount',quotations_module.CalculateDiscountedPrice);
-	 
+
 	$('#ListProducts').on('focus','.ProductCode',quotations_module.GetProductInfoByBarCode);
 	$('#ListProducts').on('focus','.SerialNumbers',quotations_module.OpenAddNewProduct);
-	
+
 	$('.ListSerialNumbers').on('click',function(){
 		let index = $(this).parents('tr').data('index');
 		let serial_numbers = $(this).parents('tr').find('.SerialNumbers').val();

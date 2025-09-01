@@ -481,13 +481,13 @@ Page Description :
                                     @endif
 							@endif
 
-                                <div style="display:none" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                <div  data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-boxes-stacked fa-xl"></i>
 										</span>
-                                                                            Purchasing Module
+                                        Purchasing Module
 									</span>
                                     <!--end:Menu link-->
                                     <!--begin:Menu sub-->
@@ -1686,10 +1686,20 @@ Page Description :
 											<!--end:Menu link-->
 										</div>
                                         @endif
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('system/statuses?ss_status_type=phase_status') }}">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                                <span class="menu-title">Phases Status</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
                                         @if(CheckPrivilage('erp_job_status') == "allow")
 										 <div class="menu-item">
 											<!--begin:Menu link-->
-											<a class="menu-link" href="#">
+											<a class="menu-link" href="{{ url('system/statuses?ss_status_type=job_status') }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
@@ -1698,6 +1708,44 @@ Page Description :
 											<!--end:Menu link-->
 										</div>
                                         @endif
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('system/statuses?ss_status_type=task_status') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Task Statuses</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('projects/roles') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Project Roles</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('pm/projects') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Project Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('projects/phases') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Project Phases Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
 									</div>
 									<!--end:Menu sub-->
 								</div>

@@ -46,6 +46,11 @@ orders_module = {
 				}
 			});
 		},
+        CloseOrder : function()
+        {
+            var base_url 	= $('input[name=base_url]').val();
+            window.location.href = base_url + "/sales/orders";
+        },
 		PayPaymentOrder : function(){
 			var base_url 	= $('input[name=base_url]').val();
 		    var _token 		= $('input[name=_token]').val();
@@ -176,7 +181,6 @@ orders_module = {
 	   	              $("#AjaxLoader").css({'display':'none'});
 	   	              if(response.is_error == 0)
 	   	              {
-	            	  	$.op_datatable.destroy();
 	            	  	orders_module.DisplayListOrderProducts();
 	            		$('#OrderProductsModel').modal('toggle');
 	   	              }
@@ -288,7 +292,10 @@ orders_module = {
     	            success : function(response){
     	              if(response.is_error == 0)
     	              {
-    	                 window.location.href = base_url + "/sales/orders";
+                          if(response.is_new == 0)
+                              window.location.href = base_url + "/sales/orders";
+                          else
+                              window.location.href = base_url + "/sales/orders/editform/" + response.so_id;
     	              }
     	            }
     	        });

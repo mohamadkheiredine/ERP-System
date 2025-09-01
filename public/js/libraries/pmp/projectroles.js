@@ -1,0 +1,10 @@
+$(function(){
+    projectroles_module.DisplayListProjectRoles();
+    $("#generalSearch").on('keyup',function(){
+        $('input[name=page_number]').val(1);
+        $.pagination.twbsPagination('destroy');
+        projectroles_module.DisplayListProjectRoles();
+    });
+    $("#LstProjectRoles").on('click',"a[id*=EDIT_ROLE_]",projectroles_module.EditProjectRoleInfo);
+    $("#LstProjectRoles").on('click',"a[id*=DELETE_ROLE_]",projectroles_module.DeleteProjectRoleData);
+})

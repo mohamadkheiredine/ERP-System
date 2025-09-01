@@ -27,6 +27,7 @@ Page Description :
                         <th>Address</th>
                         <th>Phone</th>
                         <th>Contract Code</th>
+                        <th>Result</th>
                         <th>Description</th>
                 </tr>
         </thead>
@@ -36,11 +37,12 @@ Page Description :
                <td>{{ $inboundcall_info->ic_id }}</td>
                <td>{{ $inboundcall_info->ic_call_date }}</td>
                <td>{{ $inboundcall_info->ic_call_start_time }}</td>
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_code : "-" }}&nbsp;{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_name : "-" }}</td> 
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_address : "-" }}</td> 
-               <td>{{ $inboundcall_info->ic_contract_code }}</td> 
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_phone : "-" }}</td> 
-               <td>{{ strip_tags($inboundcall_info->ic_notes) }}</td>
+               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_code : "-" }}&nbsp;{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_name : "-" }}</td>
+               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_address : "-" }}</td>
+               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_phone : "-" }}</td>
+                <td>{{ $inboundcall_info->ic_contract_code }}</td>
+                <td>{{ $inboundcall_info->CallResult ? $inboundcall_info->CallResult->cr_result_title : "-" }}</td>
+                <td>{{ strip_tags($inboundcall_info->ic_notes) }}</td>
             </tr>
             @endforeach
         </tbody>

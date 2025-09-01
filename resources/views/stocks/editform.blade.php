@@ -78,7 +78,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
-                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true">
+                                                        <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Warehouse">
                                                         		<option value="-1">Select Warehouse</option>
                                                                 @foreach( $lst_warehouse as $key => $warehouse_info )
                                                                         <option {{ $InventoryStock->fk_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
@@ -90,7 +90,7 @@ th{
                                                     <div class="form-group">
                                                         <label> Warehouse Zone </label>
                                                         <div class="WarehouseZone">
-                                                        	<select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        	<select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Zone">
                                                                     <option value="0">Select Zone</option>
                                                             </select>
                                                         </div>
@@ -99,7 +99,7 @@ th{
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Product </label>
-                                                        <select class="bs-select form-control" name="p_id" id="P_ID" data-actions-box="true">
+                                                        <select name="p_id" id="P_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Product">
                                                                 @foreach( $lst_products as $key => $product_info )
                                                                         <option {{ $InventoryStock->fk_product_id == $product_info->p_id ? "selected" : "" }} value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
                                                                  @endforeach
@@ -115,7 +115,7 @@ th{
                                                  <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Supplier </label>
-                                                        <select class="bs-select form-control" name="is_supplier_id" id="IS_SUPPLIER_ID" data-actions-box="true">
+                                                        <select name="is_supplier_id" id="IS_SUPPLIER_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Supplier">
                                                                 @foreach( $lst_suppliers as $key => $sup_info )
                                                                         <option {{ ( $InventoryStock->is_supplier_id == $sup_info->ss_id ) ? "selected" : "" }} value="{{ $sup_info->ss_id }}">{{ $sup_info->ss_supplier_name }}</option>
                                                                  @endforeach
@@ -130,15 +130,27 @@ th{
                                                 </div>
                                                   <div class="col-md-4">
                                                       <div class="form-group">
-                                                            <label class="control-label"> Pruchase Stock</label>
+                                                            <label class="control-label"> Pruchase Item</label>
                                                             <input type="text" maxlength="255" name="is_price_stock" id="IS_PRICE_STOCK" class="form-control" required="required"   value="{{ $InventoryStock->is_price_stock }}" />
                                                         </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Total Pruchase Stock</label><br/>
+                                                        <span id="TOTAL_PURCHASE_STOCK" class="text-primary fs-2"></span>
+                                                    </div>
+                                                </div>
                                                  <div class="col-md-4">
                                                       <div class="form-group">
-                                                            <label class="control-label"> Selling Stock </label>
+                                                            <label class="control-label"> Selling Item </label>
                                                             <input type="text" maxlength="255" name="is_selling_price" id="IS_SELLING_STOCK" class="form-control" required="required"   value="{{ $InventoryStock->is_selling_price }}" />
                                                         </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Total Selling Stock</label><br/>
+                                                        <span id="TOTAL_SELLING_STOCK" class="text-primary fs-2"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                       <div class="form-group">
@@ -161,7 +173,7 @@ th{
                                                  <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Currency </label>
-                                                        <select class="bs-select form-control" name="is_stock_currency" id="IS_STOCK_CURRENCY" data-actions-box="true">
+                                                        <select name="is_stock_currency" id="IS_STOCK_CURRENCY"  class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                                                 @foreach( $lst_currencies as $key => $curr_info )
                                                                         <option {{ $InventoryStock->is_stock_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
                                                                  @endforeach

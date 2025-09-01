@@ -84,6 +84,9 @@ th{
                                                            @foreach ( $lst_technicians as $key => $user_info )
                                                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                            @endforeach
+                                                           @foreach ( $lst_admins as $key => $user_info )
+                                                                   <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                           @endforeach
                                                    </select>
                                                 </div>
 						<div class="col-md-4">
@@ -95,6 +98,7 @@ th{
                                                             <?php  } ?>
                                                    </select>
 						</div>
+
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                        <label class="control-label"> Date</label><br/>
@@ -109,6 +113,15 @@ th{
                                                            <option value="1">Archived</option>
                                                    </select>
 						</div>
+                        <div class="col-md-4">
+                            <label class="control-label">Result</label>
+                            <select name="ic_result_id" id="IC_RESULT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Call Result">
+                                <option value="0">-- Select Result --</option>
+                                <?php foreach ( $lst_results as $key => $res_info ) { ?>
+                                <option value="{{ $res_info->cr_id }}">{{ $res_info->cr_result_title }}</option>
+                                <?php  } ?>
+                            </select>
+                        </div>
 					</div>
 				</div>
 				<div class="col-xl-4 order-1 order-xl-2 align-right">
@@ -207,6 +220,9 @@ th{
                     <label class="control-label">Technician</label>
                     <select name="cw_assigned_to" id="CW_ASSIGNED_TO"  class="form-control form-select" data-control="select2" data-placeholder="Select Assigned To">
                            <option value="">-- Select Technician --</option>
+                        @foreach ( $lst_admins as $key => $user_info )
+                            <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                        @endforeach
                            @foreach ( $lst_technicians as $key => $user_info )
                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                            @endforeach

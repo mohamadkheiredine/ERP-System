@@ -180,7 +180,44 @@ th{
     </form>
     <div class="row">
         <div class="col-md-12 RVSPayments">
-
+            @foreach($lst_rvc_payments as $index => $rvc_info )
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h3 class="card-title"> {{  $rvc_info->br_client_code }}-{{  $rvc_info->br_client_name }}</h3>
+                        <div class="card-toolbar">
+                            <button type="button" class="btn btn-sm btn-light">
+                                Action
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Collector : </label><br/>
+                                <span class="text-success">{{  $rvc_info->Bill->Collector->u_fullname }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Bill Amount : </label><br/>
+                                <span class="text-success">{{ $rvc_info->br_bill_amount }}&nbsp;<b>{{ $rvc_info->Currency->cc_currency_code }}</b></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Bill Amount Paid : </label><br/>
+                                <span class="text-success">{{ $rvc_info->br_paid_amount }}&nbsp;<b>{{ $rvc_info->Currency->cc_currency_code }}</b></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Bill Amount Remaining : </label><br/>
+                                <span class="text-success">{{ $rvc_info->br_remaining_amount }}&nbsp;<b>{{ $rvc_info->Currency->cc_currency_code }}</b></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
  </div>

@@ -24,6 +24,9 @@ th{
 #ModelPopUp{
 	width:800px;
 }
+.dropdown-menu{
+    width:300px !important;
+}
 </style>
 @endsection
 @section('plugins')
@@ -90,7 +93,13 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Due Date <span class="required"> * </span></label>
-                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ date('d/m/Y',strtotime($supplier_quotation->sq_due_date)) }}" />
+                                <input type="text" name="sq_due_date" id="SQ_DUE_DATE" class="form-control" required="required" maxlength="11" readonly="readonly"  value="{{ date('Y-m-d',strtotime($supplier_quotation->sq_due_date)) }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Invoice Number</label>
+                                <input type="text" name="sq_invoice_number" id="SQ_INVOICE_NUMBER" class="form-control"  maxlength="255"  value="{{ $supplier_quotation->sq_invoice_number }}" />
                             </div>
                         </div>
                             <div class="col-md-4">
@@ -218,7 +227,6 @@ th{
                             </div>
                         </div>
                         <div class="col-md-4">&nbsp;</div>
-                        @if( $supplier_quotation->sq_quotation_approve == 0 )
                          <div class="col-md-4"><br/>
                             <label class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input"  type="checkbox" id="SQ_APPROVE_QUOTATION" name="sq_approve_quotation" {{ $supplier_quotation->sq_quotation_approve == 1 ? 'checked="checked"' : "" }}  value="1" />
@@ -227,14 +235,10 @@ th{
                                 </span>
                             </label>
                         </div>
-                        @else
-                        	<input type="hidden" name="sq_approve_quotation" value="1" />
-                        @endif
                         <div class="col-md-12">&nbsp;</div>
                         <div class="col-md-4">
                         	<button type="button" name="btnAddProduct" id="btnAddProduct" class="btn btn-info"  data-bs-toggle="modal" data-bs-target="#AddNewProduct">Add Product</button>
                         </div>
-
                          <div class="col-md-12">
                          		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                                 <li class="nav-item">

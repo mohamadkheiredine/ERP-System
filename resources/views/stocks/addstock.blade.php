@@ -11,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 Page Description :
 
 ***********************************************************/
- 
+
 ?>
 
 @extends('layouts.layout',['page_title' => "Product Managemet"])
@@ -42,7 +42,7 @@ th{
                 Action
               </button>
               <ul class="dropdown-menu">
-              @if($product_info->Category->pc_use_serial_number == 1) 
+              @if($product_info->Category->pc_use_serial_number == 1)
                <li><a href="#" id="AddUnit" class="dropdown-item"> <i class="fa-solid fa-plus fa-lg"></i> Add Unit Ids Stock </a></li>
               @endif
               </ul>
@@ -50,7 +50,7 @@ th{
         </div>
     </div>
     <div class="card-body">
-    
+
     <form name="frm_save_socket" id="FORM_SAVE_SOCKET">
                                         <div class="form-body">
                                              <span id="hidden_fields">
@@ -68,40 +68,40 @@ th{
                                     			</div>
                                             <div class="row">
                                             	<div class="col-md-12">
-                                            		<div class="row"> 
+                                            		<div class="row">
                                             			<div class="col-md-4">
                                             				 <img id="BARECODE_IMAGE" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150"   /><br/>
                                                  			<label class="BareCodeLabel">{{ $rand_barcode }}</label>
-                                            			</div> 
+                                            			</div>
                                             			<div class="col-md-4">
-                                            				
+
                                             			</div>
                                             			<div class="col-md-4">
                                             				 <label>Initial Currency : </label><br/>
                                             				 <span class="IntialCurrency">{{ $currency_array[ $company_currency ]['cc_currency_code'] . " - " . $currency_array[ $company_currency ]['cc_currency_name'] }}</span>
                                             			</div>
                                             		</div>
-                                            	</div> 
+                                            	</div>
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock barecode </label>
                                                             <input type="text" maxlength="50" name="is_stock_barcode" id="IS_STOCK_BARCODE" class="form-control" required="required"   value="{{ $rand_barcode }}" />
                                                     </div>
-                                                </div> 
+                                                </div>
                                             	 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Supplier </label>
-                                                        <select class="bs-select form-control" name="is_supplier_id" id="IS_SUPPLIER_ID" data-actions-box="true">
+                                                        <select name="is_supplier_id" id="IS_SUPPLIER_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Supplier">
                                                                 @foreach( $lst_suppliers as $key => $sup_info )
                                                                         <option value="{{ $sup_info->ss_id }}">{{ $sup_info->ss_supplier_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Warehouse</label>
-                                                        <select class="bs-select form-control" name="fk_warehouse_id" id="FK_WAREHOUSE_ID" data-actions-box="true">
+                                                        <select name="fk_warehouse_id" id="FK_WAREHOUSE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Warehouse">
                                                                 <?php foreach ( $lst_warehouse as $key => $warehouse_info ) { ?>
                                                                         <option value="<?php echo $warehouse_info->w_id;  ?>"><?php echo $warehouse_info->w_warehouse_name;  ?></option>
                                                                 <?php  } ?>
@@ -112,7 +112,7 @@ th{
                                                     <div class="form-group">
                                                         <label> Warehoue Zones</label>
                                                         <div class="WarehouseZonesDropDown">
-                                                        <select class="bs-select form-control" name="fk_zone_id" id="FK_ZONE_ID" data-actions-box="true">
+                                                        <select  name="fk_zone_id" id="FK_ZONE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Zones">
                                                         <option value="-1">Select Zone</option>
                                                         </select>
                                                         </div>
@@ -136,11 +136,23 @@ th{
                                                             <input type="text" maxlength="255" name="is_price_stock" id="IS_PRICE_STOCK" class="form-control" required="required"   value="" />
                                                         </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Total Pruchase Stock</label><br/>
+                                                        <span id="TOTAL_PURCHASE_STOCK" class="text-primary fs-2"></span>
+                                                    </div>
+                                                </div>
                                                  <div class="col-md-4">
                                                       <div class="form-group">
-                                                            <label class="control-label"> Selling Stock </label>
+                                                            <label class="control-label"> Selling Item </label>
                                                             <input type="text" maxlength="255" name="is_selling_price" id="IS_SELLING_STOCK" class="form-control" required="required"   value="" />
                                                         </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Total Selling Stock</label><br/>
+                                                        <span id="TOTAL_SELLING_STOCK" class="text-primary fs-2"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                       <div class="form-group">
@@ -163,10 +175,10 @@ th{
                                                  <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label> Stock Currency </label>
-                                                        <select class="bs-select form-control" name="is_stock_currency" id="IS_STOCK_CURRENCY" data-actions-box="true">
+                                                        <select name="is_stock_currency" id="IS_STOCK_CURRENCY" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                                                 @foreach( $lst_currencies as $key => $curr_info )
                                                                         <option  value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                                                 @endforeach 
+                                                                 @endforeach
                                                         </select>
                                                     </div>
                                                 </div>

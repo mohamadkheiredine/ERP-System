@@ -51,15 +51,15 @@ th{
     <div class="card-body">
     <form name="frm_save_inbound" id="FORM_SAVE_INBOUND">
                 <div class="form-body">
-                     <span id="hidden_fields"> 
-                        {!! csrf_field() !!} 
+                     <span id="hidden_fields">
+                        {!! csrf_field() !!}
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Create Call Information is saved successfully!
             			</div>
             			<div class="alert alert-danger" style="display:none">
             				<strong>Error!</strong> You have some form errors. Please check below.
-            			</div>  
+            			</div>
                     <div class="row">
                      <div class="col-md-4">
                         <div class="form-group">
@@ -71,7 +71,7 @@ th{
                      <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Contract Code</label>
-                            <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control" required="required"  maxlength="15"  value="" /> 
+                            <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control" required="required"  maxlength="15"  value="" />
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -105,6 +105,9 @@ th{
                                   <?php foreach ( $lst_sales as $key => $user_info ) { ?>
                                           <option value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
                                   <?php  } ?>
+                                  <?php foreach ( $lst_admins as $key => $user_info ) { ?>
+                                          <option value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                  <?php  } ?>
                           </select>
                       </div>
                   </div>
@@ -113,6 +116,9 @@ th{
                         <select name="ic_technician_id" id="IC_TECHNICIAN_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
                                <option value="">-- Select Technician --</option>
                                @foreach ( $lst_technicians as $key => $user_info )
+                                       <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                               @endforeach
+                               @foreach ( $lst_admins as $key => $user_info )
                                        <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                @endforeach
                        </select>
@@ -133,7 +139,7 @@ th{
                                             @endforeach
                                     </select>
                                 </div>
-                        </div> 
+                        </div>
                        <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label"> Product Serial Number</label><br/>
@@ -148,7 +154,7 @@ th{
                                       <span class="form-check-label fw-semibold text-muted">
                                          Under Warranty
                                       </span>
-                                  </label>  
+                                  </label>
                              </div>
                         </div>
                          <div class="col-md-4">
@@ -169,7 +175,7 @@ th{
                                 <input type="text" name="ic_call_start_time" id="IC_CALL_START_TIME" class="form-control" value="{{ date('H:i:s') }}" />
                              </div>
                         </div>
-                        <div class="col-md-4"> 
+                        <div class="col-md-4">
                             <label class="control-label">Maintenance Type</label>
                             <select name="ic_maintenance_type" required id="IC_MAINTENANCE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
                                    <option value="">-- Select Telemarketing --</option>
@@ -177,7 +183,7 @@ th{
                                             <option value="{{ $type_info->mt_id }}">{{ $type_info->mt_type }}</option>
                                     <?php  } ?>
                            </select>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                  <br/>
@@ -186,7 +192,7 @@ th{
                                       <span class="form-check-label fw-semibold text-muted">
                                          Issue Resolved
                                       </span>
-                                  </label>  
+                                  </label>
                              </div>
                         </div>
                         <div class="col-md-12">

@@ -70,7 +70,7 @@ th{
                                                 <!--end::Input group-->
                                             </div>
                                     </div>
-                                   
+
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -95,9 +95,9 @@ th{
                                                       </span>
                                               </a>
                                     </div>
-                                       
+
                                 </div>
-                </div> 
+                </div>
         </div>
         </div>
             <div class="row">
@@ -114,6 +114,7 @@ th{
                                         <th title="Account Name"> Client Name </th>
                                         <th title="Contract Name"> Contract Amount </th>
                                         <th style="width:4px !important;" nowrap title="#">edit</th>
+                                        <th style="width:4px !important;" nowrap title="#">view</th>
                                         <th style="width:4px !important;" nowrap title="#">Delete</th>
                                 </tr>
                         </thead>
@@ -140,5 +141,5 @@ th{
     </div>
 </div>
 
- 
+
 @endsection
