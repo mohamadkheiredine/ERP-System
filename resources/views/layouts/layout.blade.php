@@ -1746,6 +1746,24 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
                                         </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('projects/jobs') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Project Jobs Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link" href="{{ url('projects/tasks') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Project Tasks Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
 									</div>
 									<!--end:Menu sub-->
 								</div>

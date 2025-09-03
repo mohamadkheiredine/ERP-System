@@ -3,7 +3,6 @@ $(function(){
     if($('input[name=pp_phase_id]').length == 0)
     {
         $('#FK_PROJECT_ID').on('change',projectphases_module.GeneratePhaseCode);
-
     }
 
     new tempusDominus.TempusDominus(document.getElementById('PP_PLANNED_START'),{

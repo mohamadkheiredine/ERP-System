@@ -355,9 +355,9 @@ class ProductsController extends Controller
             $products[ $product_info->p_id ]['product_avatar']   = $img_src;
         }
 
-        $result_array['is_error']       = 0;
-        $result_array['products']       = $products;
-        $result_array['total_pages']       = $total_pages;
+        $result_array['is_error']           = 0;
+        $result_array['products']           = $products;
+        $result_array['total_pages']        = $total_pages;
 
 
         return Response()->json($result_array);
@@ -1271,6 +1271,7 @@ class ProductsController extends Controller
             }
 
             $items_array[$index]['product_image']    = $img_src;
+            $items_array[$index]['product_price']    = $product_info->p_product_selling_price;
             $index++;
         }
 

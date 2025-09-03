@@ -26,7 +26,7 @@ $(function(){
 		$("#ReceiptsPagination").twbsPagination('destroy');
 		receipts_module.displayListOnePageReceipts();
 	});
-        
+
 	new tempusDominus.TempusDominus(document.getElementById('START_DATE'),{
 		 display: {
 			  components: {
@@ -34,7 +34,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -44,7 +44,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
@@ -54,7 +54,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -64,7 +64,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
         	new tempusDominus.TempusDominus(document.getElementById('BR_RECEIPT_DATE'),{
@@ -74,7 +74,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -84,13 +84,14 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	$(".LstReceiptsGrid").on('click',"a[id*=DELETE_RECEIPT_]",receipts_module.DeleteReceiptForm);
 	$(".LstOneReceiptsGrid").on('dblclick',"td",receipts_module.GetSelectedReceiptInfo);
 	$("input[name=br_payment_value],input[name=br_payment_value]").on('change', receipts_module.GenerateReceiptCode);
 	$("#BTN_SAVE_RECEIPT").on("click",receipts_module.SaveReceiptInfo);
+	$("#BTN_SAVE_RECEIPT_MAIN").on("click",receipts_module.SaveReceiptInfo);
 	$("button[name=btn_new_receipt]").on("click",receipts_module.NewReceipt);
 	$("#BR_PAYMENT_VALUE").on("keyup",receipts_module.CalculateSecondaryAmountValue);
 	$("#BR_EXCHANGE_RATE").on("keyup",receipts_module.CalculateSecondaryAmountValue);

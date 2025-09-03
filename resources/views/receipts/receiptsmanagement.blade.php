@@ -97,17 +97,6 @@ th{
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4" >
-                             <div class="form-group">
-                                <label class="control-label"> Received To <span class="required"> * </span></label><br/>
-                                 <select required="required" id="BR_ACCOUNT_ID" name="br_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
-                        			<option value="0">-- Select Account --</option>
-                                    @foreach($lst_accounts as $index => $acc_info)
-                                      <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account }}&nbsp;-&nbsp;{{ $acc_info->aa_account_label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> 
                         <div class="col-md-4">
                             <div class="form-group">
                             		<label class="control-label">Client</label><br/>
@@ -192,10 +181,10 @@ th{
                                                                           <span class="form-check-label fw-semibold text-muted">
                                                                             Receipt Paid
                                                                           </span>
-                                                                      </label>  
+                                                                      </label>
 								</div>
 								</div>
-                                                        </div> 
+                                                        </div>
                                                         <div class="col-md-12">
                                                              <div class="form-group">
                                                                 <label class="control-label">Receipt Notes</label>
@@ -215,12 +204,12 @@ th{
                               </div>
                               <div style="height:50px" class="col-md-12"></div>
                               <div style="text-align: right" class="col-md-12">
-                                  <button name="btn_save_receipt" class="btn btn-primary" type="submit">Save Info</button>
+                                  <button name="btn_save_receipt_main" id="BTN_SAVE_RECEIPT_MAIN" class="btn btn-primary" type="submit">Save Info</button>
                                   <button name="btn_new_receipt" class="btn btn-success" type="submit">New Receipt</button>
                                   <button name="btn_reset" class="btn btn-danger" type="reset">Reset</button>
                               </div>
-                          </div> 
-                      </div> 
+                          </div>
+                      </div>
                   </div>
             </form>
         </div>
@@ -248,12 +237,12 @@ th{
                                   <option value="{{ $client_info->ca_id }}">( {{ $client_info->ca_account_code }} ) &nbsp;-&nbsp;{{ $client_info->ca_account_name }}</option>
                                 @endforeach
                             </select>
-                        </div>  
+                        </div>
                         <div class="col-md-4">
                             	 <div class="form-group">
                                 <input type="text" placeholder=" From Date" name="start_date" id="START_DATE" value="" class="form-control" />
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-12" style="height:10px;"></div>
                          <div class="col-md-4">
                              <div class="form-group">
@@ -268,7 +257,7 @@ th{
                 </div>
 
             </div>
-        </div> 
+        </div>
          <div class="row">
     		<div class="col-md-12">
     		 <div class="table-responsive">
@@ -281,7 +270,7 @@ th{
     						<th>Receipt Label</th>
     						<th>Receipt Note</th>
     						<th>Receipt Date</th>
-    						<th>Receipt Amount</th> 
+    						<th>Receipt Amount</th>
     						<th style="width:4px;white-space: nowrap;text-align: center">Download</th>
     						<th style="width:4px;white-space: nowrap;text-align: center">Delete</th>
     					</tr>
@@ -289,7 +278,7 @@ th{
     				<tbody  class="LstOneReceiptsGrid"></tbody>
     			</table>
     		 </div>
-    			
+
     		</div>
     	</div>
     	 <div class="row">
@@ -314,5 +303,5 @@ th{
     </div>
 </div>
 
- 
+
 @endsection

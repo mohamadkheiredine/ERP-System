@@ -546,12 +546,17 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->save();
         if($sq_approve_quotation == 1)
         {
+
             $at_id  = $supplier_quotation->sq_trans_id;
             $mov_id = $supplier_quotation->sq_mov_id;
 
             // stock accounting records
             if($at_id != 0 )
+            {
                 $transaction = Transactions::find($at_id);
+                if($transaction == null)
+                    $transaction = new Transactions();
+            }
             else
                 $transaction = new Transactions();
 

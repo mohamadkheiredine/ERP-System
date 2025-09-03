@@ -173,7 +173,8 @@ class ReceiptsController extends Controller
      */
     public function GenerateReceiptcode(Request $request)
     {
-        $receipt_code = $AccountingManager->GenerateReceiptCode();
+        $AccountingManager = new AccountingManager();
+        $receipt_code = $AccountingManager->GenerateReceiptCode(0,date('Y'));
         $result_array = array();
 
 
@@ -504,12 +505,14 @@ class ReceiptsController extends Controller
             $at_id = $AccTransaction->at_id;
             $crm_telemarketing    = Config::get('appconfig.crm_telemarketing');
             $customer_info  = Customers::find($br_customer_id);
-            $client_info  = Customers::find($br_client_id);
+            $client_info  = CRMAccounts::find($br_client_id);
             /*
              * check if telemarketing enable we get accoutn from client
              * if client not selected we get account from account from dropdown
              * selected in form
              */
+
+
             $account_number = ($crm_telemarketing == '0') ?  $customer_info->ic_account_number : ($br_client_id != 0 ? $client_info->ca_accounting_id : $br_account_from ) ;
             $payment_info   = PaymentTypes::find($fk_payment_type);
 
@@ -542,11 +545,11 @@ class ReceiptsController extends Controller
             $TransactionMovement->save();
 
             $receipt_info = Receipts::find($br_id);
-        if($at_id != null)
-        {
-                $receipt_info->br_trans_id = $at_id;
-        }
-        $receipt_info->save();
+            if($at_id != null)
+            {
+                    $receipt_info->br_trans_id = $at_id;
+            }
+            $receipt_info->save();
         }
         else
         {

@@ -546,8 +546,7 @@ class DealsController extends Controller
         // payments
         {
             // delete old invoice and payments exist
-            $delete_invoice = Invoices::whereBiId($account_deal->ad_invoice_id)->delete();
-            $delete_payments = InvoicePayments::whereFkInvoiceId($account_deal->ad_invoice_id)->delete();
+            $delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
 
 
             if($fk_account_id == 0)
@@ -623,7 +622,7 @@ class DealsController extends Controller
                         $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
                         $invoice_payment->ip_billing_nbr = "00" . $index;
                         $invoice_payment->ip_billing_status = 0;
-                        $invoice_payment->ip_sales_comission = $bill_sales_commission[$index -1];
+                        $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$index -1]) ? $bill_sales_commission[$index -1] : 0;
                         $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
                         $invoice_payment->save();
                     }
@@ -894,18 +893,59 @@ class DealsController extends Controller
         else
         {
             $deal_info = CRMDeals::find($ad_id);
-            $lst_invoice_payment = InvoicePayments::whereFkInvoiceId($deal_info->ad_invoice_id)->get();
+            $lst_invoice_payment = InvoicePayments::whereIpDealId($ad_id)->get();
             $payments_array = array();
 
-            foreach ($lst_invoice_payment as $index => $payment_info) {
-                $payments_array[] =array(
-                    'bill_nbr' => $payment_info->ip_billing_nbr,
-                    'value_date' => $payment_info->ip_billing_date,
-                    'bill_status' => $payment_info->ip_billing_status == 0 ? "Pending" : "Paid",
-                    'bill_amount' => $payment_info->ip_payment_amount,
-                    'bill_sales_commission' => $payment_info->ip_sales_comission,
-                );
+            if(count($lst_invoice_payment) > 0)
+            {
+                foreach ($lst_invoice_payment as $index => $payment_info) {
+                    $payments_array[] =array(
+                        'bill_nbr' => $payment_info->ip_billing_nbr,
+                        'value_date' => $payment_info->ip_billing_date,
+                        'bill_status' => $payment_info->ip_billing_status == 0 ? "Pending" : "Paid",
+                        'bill_amount' => $payment_info->ip_payment_amount,
+                        'bill_sales_commission' => $payment_info->ip_sales_comission,
+                    );
+                }
             }
+            else
+            {
+                $remaining_amount = $ad_deal_amount - $ad_down_payment;
+
+                $payment_amount = $remaining_amount / $ad_nbr_of_payment;
+
+                $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
+
+                $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
+
+                $neareset_amount = ceil($payment_amount);
+                $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
+                $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payment - 1);
+                $last_payment = $payment_amount + $total;
+
+                for ($index = 1; $index < $ad_nbr_of_payment; $index++)
+                {
+                    $bill_nbr = sprintf("%07d",$index);
+                    $payments_array[] =array(
+                        'bill_nbr' => $bill_nbr,
+                        'value_date' => date("Y-m-d",strtotime($ad_first_bill_date ." + " . ( $index - 1 ) . " months")),
+                        'bill_status' => "Pending",
+                        'bill_amount' => $neareset_amount,
+                        'bill_sales_commission' => 0
+                    );
+                }
+
+                $bill_nbr = sprintf("%07d",$index);
+                $payments_array[] =array(
+                    'bill_nbr' => $bill_nbr,
+                    'value_date' => date("Y-m-d",strtotime($ad_first_bill_date ." + " . ($ad_nbr_of_payment - 1) . " months")),
+                    'bill_status' => "Pending",
+                    'bill_amount' => $last_payment,
+                    'bill_sales_commission' => 0
+                );
+
+            }
+
 
             $result_array['is_error'] = 0;
             $data = array(

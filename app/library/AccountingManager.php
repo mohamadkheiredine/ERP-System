@@ -483,12 +483,13 @@ class AccountingManager
      */
     public function GenerateReceiptCode( $bi_id = 0 , $fyear = "")
     {
-        $fyear          = ($fyear != "") ? $fyear : date("Y");
+        $fyear          = date("Y");
 
         $company_id     = session('company_id');
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
         $year           = $fyear;
+
         $count_receipts = Receipts::whereYear('br_creation_date' , $year)->count();
 
         $index = $count_receipts + 1;

@@ -238,7 +238,7 @@ th{
 											<div class="col-md-12" id="LstProducts" align="center"></div>
 										</div>
 										<div class="row">
-											<div class="col-md-12" align="right">
+											<div class="col-md-12" align="right" style="display: none">
 												@if($invoice_info->bi_invoice_status == 0)
     												@if($invoice_info->bi_invoice_type == 1)
     													<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-danger">Add Product</button>
