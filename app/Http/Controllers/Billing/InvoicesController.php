@@ -1610,9 +1610,11 @@ class InvoicesController extends Controller
 
         if($lst_payments ==0)
         {
+
+            $invoice_currency = $invoice_info->bi_invoice_currency;
             if($second_currency > 0)
             {
-                $total_price= $total_price * $second_exchange_rate;
+                $total_second_price= $total_price * $second_exchange_rate;
                 $invoice_currency = $second_currency;
             }
 
@@ -1621,7 +1623,7 @@ class InvoicesController extends Controller
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $account_id;
             $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
-            $TransactionMovement->tm_debit              = $total_price;
+            $TransactionMovement->tm_debit              = $total_second_price;
             $TransactionMovement->tm_credit             = 0;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
             $TransactionMovement->tm_currency_id        = $invoice_currency;
@@ -1657,12 +1659,18 @@ class InvoicesController extends Controller
             else{
                 $product_id = $item_info->ii_item_id;
                 $product_info = Products::find($product_id);
-                $stock_info = Stocks::whereFkProductId($product_id)->orderBy('is_id', 'asc')->get();
+                $stock_info = Stocks::whereFkProductId($product_id)->where('fk_warehouse_id','=',$item_info->ii_warehouse_id)->where('is_quanity','>=',$item_info->ii_item_qyt)->orderBy('is_id', 'asc')->get();
                 if(count($stock_info) > 0)
                 {
                     $stock_info = $stock_info[0];
                     $stock_info->is_quanity = $stock_info->is_quanity - $item_info->ii_item_qyt;
                     $stock_info->save();
+                }
+                else
+                {
+                    $result_array['is_error']   = 1;
+                    $result_array['error_msg']  = "Stock For Product Not Exist in the related warehouse";
+                    return Response()->json($result_array);
                 }
 
             }

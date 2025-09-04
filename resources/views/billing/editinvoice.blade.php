@@ -55,8 +55,9 @@ th{
         </div>
     </div>
     <div class="card-body">
-     <form name="frm_save_invoice" id="FORM_SAVE_INVOICE">
-                <div class="form-body">
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <form name="frm_save_invoice" id="FORM_SAVE_INVOICE">
                      <span id="hidden_fields">
                       <div class="form-group">
                         {!! csrf_field() !!}
@@ -65,112 +66,112 @@ th{
                          </div>
                     </span>
                     <div class="alert alert-success" style="display:none">
-            				<strong>Success!</strong> Invoice information is saved successfully!
-            			</div>
-            			<div class="alert alert-danger" style="display:none">
-            				<strong>Error!</strong> You have some form errors. Please check below.
-            			</div>
+                        <strong>Success!</strong> Invoice information is saved successfully!
+                    </div>
+                    <div class="alert alert-danger" style="display:none">
+                        <strong>Error!</strong> You have some form errors. Please check below.
+                    </div>
                     <div class="row">
 
                         <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Invoice Date </label><br/>
-                                    <input type="text"  autocomplete="off" name="bi_invoice_date" id="BI_INVOICE_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('m/d/Y',strtotime($invoice_info->bi_invoice_date)) }}" />
-                                </div>
-                        </div>
-                        <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Invoice Ref </label><br/>
-                                    <input type="text" name="bi_invoice_ref" id="BI_INVOICE_REF" class="form-control"  maxlength="15"  value="{{ $invoice_info->bi_invoice_ref }}" />
-                                </div>
-                        </div>
-                        <div class="col-md-4">
-                                <div class="form-group">
-                                  <label class="control-label"> Client Code </label><br/>
-                                  <input type="text" autocomplete="off" name="bi_account_number" id="BI_ACCOUNT_NUMBER" class="form-control"  maxlength="50" value="{{  $invoice_info->bi_account_number }}" />
-                              </div>
-                        </div>
-                         @if(Config::get("appconfig.crm_telemarketing") == 1)
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Account <span class="required"> * </span></label><br/>
-                                <select id="INVOICE_ACCOUNT_ID" readonly name="invoice_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
-                        			<option value="0">-- Select Account --</option>
-                                    @foreach($list_accounts as $index => $client_info)
-                                      <option {{ $invoice_info->bi_client_id == $client_info->ca_id ? "selected" : "" }} value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label"> Invoice Date </label><br/>
+                                <input type="text"  autocomplete="off" name="bi_invoice_date" id="BI_INVOICE_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('m/d/Y',strtotime($invoice_info->bi_invoice_date)) }}" />
                             </div>
-                            <input type="hidden" id="INVOICE_ACCOUNT" name="invoice_account" value="{{ $invoice_info->bi_client_id }}" />
                         </div>
-                        @else
                         <div class="col-md-4">
                             <div class="form-group">
-                            		<label class="control-label">Customer <span class="required"> * </span></label><br/>
-                            		<select class="bs-select form-control" id="FK_CUSTOMER_ID" readonly name="fk_customer_id">
-                            			<option value="">-- Select Customer --</option>
-                                        @foreach($list_customers as $index => $customer_info)
-                                          <option {{ $invoice_info->fk_customer_id == $customer_info->ic_id ? "selected" : "" }} value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
+                                <label class="control-label"> Invoice Ref </label><br/>
+                                <input type="text" name="bi_invoice_ref" id="BI_INVOICE_REF" class="form-control"  maxlength="15"  value="{{ $invoice_info->bi_invoice_ref }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Client Code </label><br/>
+                                <input type="text" autocomplete="off" name="bi_account_number" id="BI_ACCOUNT_NUMBER" class="form-control"  maxlength="50" value="{{  $invoice_info->bi_account_number }}" />
+                            </div>
+                        </div>
+                        @if(Config::get("appconfig.crm_telemarketing") == 1)
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Account <span class="required"> * </span></label><br/>
+                                    <select id="INVOICE_ACCOUNT_ID" readonly name="invoice_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
+                                        <option value="0">-- Select Account --</option>
+                                        @foreach($list_accounts as $index => $client_info)
+                                            <option {{ $invoice_info->bi_client_id == $client_info->ca_id ? "selected" : "" }} value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                                <input type="hidden" id="INVOICE_ACCOUNT" name="invoice_account" value="{{ $invoice_info->bi_client_id }}" />
                             </div>
-			</div>
-                         @endif
+                        @else
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Customer <span class="required"> * </span></label><br/>
+                                    <select class="bs-select form-control" id="FK_CUSTOMER_ID" readonly name="fk_customer_id">
+                                        <option value="">-- Select Customer --</option>
+                                        @foreach($list_customers as $index => $customer_info)
+                                            <option {{ $invoice_info->fk_customer_id == $customer_info->ic_id ? "selected" : "" }} value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                         @if(Config::get("appconfig.crm_telemarketing") == 0)
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Bank Account </label><br/>
-                                <select class="bs-select form-control" required="required" id="FK_BANKACCOUNT_ID" name="fk_bankaccount_id">
-                        			<option value="0">-- Select Account --</option>
-                                    @foreach($lst_banks_info as $index => $bank_info)
-                                      <option {{ $invoice_info->fk_bankaccount_id == $bank_info->ba_id ? "selected" : "" }}  value="{{ $bank_info->ba_id }}">{{ $bank_info->ba_account_label }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Bank Account </label><br/>
+                                    <select class="bs-select form-control" required="required" id="FK_BANKACCOUNT_ID" name="fk_bankaccount_id">
+                                        <option value="0">-- Select Account --</option>
+                                        @foreach($lst_banks_info as $index => $bank_info)
+                                            <option {{ $invoice_info->fk_bankaccount_id == $bank_info->ba_id ? "selected" : "" }}  value="{{ $bank_info->ba_id }}">{{ $bank_info->ba_account_label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Payment Terms</label><br/>
-                                <select class="bs-select form-control" id="FK_PAYMENT_TERMS" name="bi_payment_terms">
-                        			<option value="0">-- Select Payment Terms --</option>
-                                    @foreach($lst_payment_terms as $index => $payterms_info)
-                                      <option {{ $invoice_info->bi_payment_terms == $payterms_info->pt_id ? "selected" : "" }} value="{{ $payterms_info->pt_id }}">{{ $payterms_info->pt_payment_terms }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Payment Terms</label><br/>
+                                    <select class="bs-select form-control" id="FK_PAYMENT_TERMS" name="bi_payment_terms">
+                                        <option value="0">-- Select Payment Terms --</option>
+                                        @foreach($lst_payment_terms as $index => $payterms_info)
+                                            <option {{ $invoice_info->bi_payment_terms == $payterms_info->pt_id ? "selected" : "" }} value="{{ $payterms_info->pt_id }}">{{ $payterms_info->pt_payment_terms }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                            @endif
+                        @endif
                         <div class="col-md-4">
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
                                 <select class="bs-select form-control" required="required" id="FK_PAYMENT_TYPE" name="bi_payment_type">
-                        			<option value="">-- Select Payment Type --</option>
+                                    <option value="">-- Select Payment Type --</option>
                                     @foreach($lst_payment_types as $index => $paytype_info)
-                                      <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                        <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-4">
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label class="control-label">Tax Account</label>
                                 <select class="bs-select form-control" id="BI_VAT_ID" name="bi_vat_id">
-                        			<option value="0">-- Select Tax Account --</option>
+                                    <option value="0">-- Select Tax Account --</option>
                                     @foreach($lst_vat_accounts as $index => $vat_info)
-                                      <option {{ $invoice_info->bi_vat_id == $vat_info->av_id ? "selected" : "" }} value="{{ $vat_info->av_id }}">{{ $vat_info->av_vat_label . "(" . $vat_info->av_vat_rate. "%)" }}</option>
+                                        <option {{ $invoice_info->bi_vat_id == $vat_info->av_id ? "selected" : "" }} value="{{ $vat_info->av_id }}">{{ $vat_info->av_vat_label . "(" . $vat_info->av_vat_rate. "%)" }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                         <div class="col-md-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label> Currency <span class="required"> * </span></label><br/>
                                 <select class="bs-select form-control" name="bi_invoice_currency" required="required" id="BI_INVOICE_CURRENCY" data-actions-box="true">
-                                        <option value="">-- Select Currency --</option>
-                                        @foreach ( $lst_currencies as $key => $currency_info )
-                                                <option {{ $invoice_info->bi_invoice_currency  == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
-                                        @endforeach
+                                    <option value="">-- Select Currency --</option>
+                                    @foreach ( $lst_currencies as $key => $currency_info )
+                                        <option {{ $invoice_info->bi_invoice_currency  == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -178,44 +179,160 @@ th{
                             <div class="form-group">
                                 <label> Item Type <span class="required"> * </span> </label><br/>
                                 <select {{  $invoice_info->bi_invoice_status == 1 ? "disabled='disabled'" : "" }} class="bs-select form-control" name="bi_invoice_items_type" id="BI_INVOICE_ITEMS_TYPE" data-actions-box="true">
-                                        <option value="">-- Select Type --</option>
-                                        <option {{ $invoice_info->bi_invoice_type  == 1 ? "selected" : "" }} value="1">Products</option>
-                                        <option {{ $invoice_info->bi_invoice_type  == 2 ? "selected" : "" }} value="2">Services</option>
+                                    <option value="">-- Select Type --</option>
+                                    <option {{ $invoice_info->bi_invoice_type  == 1 ? "selected" : "" }} value="1">Products</option>
+                                    <option {{ $invoice_info->bi_invoice_type  == 2 ? "selected" : "" }} value="2">Services</option>
                                 </select>
                                 <input type="hidden" name="ini_invoice_type" value="{{ $invoice_info->bi_invoice_type }}" />
                             </div>
                         </div>
-                         <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Invoice Discount </label><br/>
-                                    <input type="number"  autocomplete="off" min="0" max="100" step="1.0" name="bi_discount" id="BI_DISCOUNT" class="form-control"  maxlength="15"  value="{{  $invoice_info->bi_discount }}" />
-                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Invoice Discount </label><br/>
+                                <input type="number"  autocomplete="off" min="0" max="100" step="1.0" name="bi_discount" id="BI_DISCOUNT" class="form-control"  maxlength="15"  value="{{  $invoice_info->bi_discount }}" />
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Second Currency</label><br/>
                                 <select class="bs-select form-control" name="bi_second_currency" id="BI_SECOND_CURRENCY" data-actions-box="true">
-                                        <option value="">-- Select Currency --</option>
-                                        @foreach ( $lst_currencies as $key => $currency_info )
-                                                <option {{  $invoice_info->bi_second_currency == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
-                                        @endforeach
+                                    <option value="">-- Select Currency --</option>
+                                    @foreach ( $lst_currencies as $key => $currency_info )
+                                        <option {{  $invoice_info->bi_second_currency == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
-                         <div class="col-md-4">
-                              <div class="form-group">
-                                    <label class="control-label"> Exchange Rate </label><br/>
-                                    <input type="number"  autocomplete="off" min="0" max="9999999" step="0.01" name="bi_exchange_rate" id="BI_EXCHANGE_RATE" class="form-control"  maxlength="15"  value="{{  $invoice_info->bi_exchange_rate }}" />
-                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Exchange Rate </label><br/>
+                                <input type="number"  autocomplete="off" min="0" max="9999999" step="0.01" name="bi_exchange_rate" id="BI_EXCHANGE_RATE" class="form-control"  maxlength="15"  value="{{  $invoice_info->bi_exchange_rate }}" />
+                            </div>
                         </div>
                         <div class="col-md-12">
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label class="control-label">Invoice Notes</label><br/>
                                 <textarea style="width:100%;height: 250px;" class="form-control" name="bi_invoice_note" id="BI_INVOICE_NOTE" >{{ $invoice_info->bi_invoice_note }}</textarea>
                             </div>
                         </div>
                     </div>
-                   <div class="row" style="height:15px;"></div>
+                    <div class="row" style="height:15px;"></div>
+                    <div class="row">
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6" align="right">
+                            <button type="submit" name="btn_save_invoice" id="BTN_SAVE_INVOICE"  class="btn btn-info">Save</button>
+                            <button type="submit" name="btn_save_new" id="BTN_SAVE_NEW"  class="btn btn-info">Save & New</button>
+                            <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6 col-xs-12">
+                <div class="row">
+                    @if(Config::get("appconfig.crm_telemarketing") == 1)
+                        <div class="col-md-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h3 class="card-title">Insert Product</h3>
+                                    <div class="card-toolbar">
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form name="frm_link_product" id="FORM_LINK_PRODUCT">
+                                        <div class="form-body">
+                                     <span id="hidden_fields">
+                                      <div class="form-group">
+                                        {!! csrf_field() !!}
+                                        <input type="hidden" name="bi_invoice_id" id="BI_invoice_ID" value="{{ $invoice_info->bi_id }}" />
+                                         </div>
+                                    </span>
+                                            <div class="alert alert-success" style="display:none">
+                                                <strong>Success!</strong> Product information is saved successfully!
+                                            </div>
+                                            <div class="alert alert-danger" style="display:none">
+                                                <strong>Error!</strong> You have some form errors. Please check below.
+                                            </div>
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Warehouse </label><br/>
+                                                            <select   name="ii_warehouse_id" id="II_WAREHOUSE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Warehouse">
+                                                                <option value=""> -- Warehouse -- </option>
+                                                                @foreach($lst_warehouses as $key => $warehouse_info)
+                                                                    <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Products Name </label><br/>
+                                                            <select   name="bi_product_id" id="BI_PRODUCT_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
+                                                                <option value=""> -- Product -- </option>
+                                                                @foreach($lst_products as $key => $product_info)
+                                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Products Code </label><br/>
+                                                            <select   name="bi_product_code_id" id="BI_PRODUCT_CODE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product Code">
+                                                                <option value=""> -- Product -- </option>
+                                                                @foreach($lst_products as $key => $product_info)
+                                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Serial Number </label><br/>
+                                                            <input type="text"  autocomplete="off" name="ii_product_serial_number" class="form-control" value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Quanity </label><br/>
+                                                            <input type="number"  autocomplete="off" name="bi_quanity" class="form-control" max="99999999" min="1" step="1" value="1" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"> Price </label><br/>
+                                                            <input type="text"  autocomplete="off" name="bi_item_price" class="form-control" value="1" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12" style="padding-top:20px;">
+                                                        <button id="BTN_reset" name="btn_reset" type="reset" class="btn btn-secondary">
+                                                            Reset
+                                                        </button>
+                                                        <button type="submit" name="btn_link_item" id="BTN_LINK_ITEM" class="btn btn-primary">
+                                                            Insert
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                <div class="row" style="height:15px;"></div>
+            </div>
+        </div>
+                <div class="form-body">
+
+                    </div>
+
+                    <div class="row" style="height:15px;"></div>
+
+
+
                    <div class="row">
                    		<div class="col-md-12">
                    			<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
@@ -238,14 +355,16 @@ th{
 											<div class="col-md-12" id="LstProducts" align="center"></div>
 										</div>
 										<div class="row">
-											<div class="col-md-12" align="right" style="display: none">
+											<div class="col-md-12" align="right">
+                                                @if(Config::get("appconfig.crm_telemarketing") == 0)
 												@if($invoice_info->bi_invoice_status == 0)
     												@if($invoice_info->bi_invoice_type == 1)
-    													<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-danger">Add Product</button>
+    													<button  type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-danger">Add Product</button>
     												@else
     													<button type="button" name="btn_add_service" id="BTN_ADD_SERVICE" class="btn btn-danger">Add Service</button>
     												@endif
 												@endif
+                                                    @endif
 											</div>
 										</div>
                                 </div>
@@ -286,117 +405,10 @@ th{
                             </div>
                    		</div>
                    </div>
-                   <div class="row" style="height:15px;"></div>
-                    <div class="row">
-                        <div class="col-md-6"></div>
-                        <div class="col-md-6" align="right">
-                             <button type="submit" name="btn_save_invoice" id="BTN_SAVE_INVOICE"  class="btn btn-info">Save</button>
-                             <button type="submit" name="btn_save_new" id="BTN_SAVE_NEW"  class="btn btn-info">Save & New</button>
-                            <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
-                        </div>
-                    </div>
+
                 </div>
-            </form>
-        <div class="row" style="height:15px;"></div>
-        <div class="row">
-            @if(Config::get("appconfig.crm_telemarketing") == 1)
-                <div class="col-md-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title">Insert Product</h3>
-                            <div class="card-toolbar">
-                                {{--                                           <button type="button" class="btn btn-sm btn-light">--}}
-                                {{--                                               Action--}}
-                                {{--                                           </button>--}}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <form name="frm_link_product" id="FORM_LINK_PRODUCT">
-                                <div class="form-body">
-                                     <span id="hidden_fields">
-                                      <div class="form-group">
-                                        {!! csrf_field() !!}
-                                        <input type="hidden" name="bi_invoice_id" id="BI_invoice_ID" value="{{ $invoice_info->bi_id }}" />
-                                         </div>
-                                    </span>
-                                    <div class="alert alert-success" style="display:none">
-                                        <strong>Success!</strong> Product information is saved successfully!
-                                    </div>
-                                    <div class="alert alert-danger" style="display:none">
-                                        <strong>Error!</strong> You have some form errors. Please check below.
-                                    </div>
-                                    <div class="row">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Warehouse </label><br/>
-                                                    <select   name="ii_warehouse_id" id="II_WAREHOUSE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Warehouse">
-                                                        <option value=""> -- Warehouse -- </option>
-                                                        @foreach($lst_warehouses as $key => $warehouse_info)
-                                                            <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Products Name </label><br/>
-                                                    <select   name="bi_product_id" id="BI_PRODUCT_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
-                                                        <option value=""> -- Product -- </option>
-                                                        @foreach($lst_products as $key => $product_info)
-                                                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Products Code </label><br/>
-                                                    <select   name="bi_product_code_id" id="BI_PRODUCT_CODE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product Code">
-                                                        <option value=""> -- Product -- </option>
-                                                        @foreach($lst_products as $key => $product_info)
-                                                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Serial Number </label><br/>
-                                                    <input type="text"  autocomplete="off" name="ii_product_serial_number" class="form-control" value="" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Quanity </label><br/>
-                                                    <input type="number"  autocomplete="off" name="bi_quanity" class="form-control" max="99999999" min="1" step="1" value="1" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="control-label"> Price </label><br/>
-                                                    <input type="text"  autocomplete="off" name="bi_item_price" class="form-control" value="1" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12" style="padding-top:20px;">
-                                                <button id="BTN_reset" name="btn_reset" type="reset" class="btn btn-secondary">
-                                                    Reset
-                                                </button>
-                                                <button type="submit" name="btn_link_item" id="BTN_LINK_ITEM" class="btn btn-primary">
-                                                    Insert
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </div>
+
 	</div>
-</div>
 <!-- Insert Product -->
 <div class="modal fade" id="InserItems" tabindex="-1" role="dialog" aria-labelledby="InserItemsModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">

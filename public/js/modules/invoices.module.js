@@ -382,6 +382,10 @@ invoices_module = {
 				              {
 				            	 window.location.reload();
 				              }
+                              else
+                              {
+                                  bootbox.alert(response.error_msg);
+                              }
 				            }
 				        });
 				}

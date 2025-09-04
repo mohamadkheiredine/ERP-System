@@ -591,7 +591,7 @@ class AccountingManager
             $total_invoice_value        = $total_invoice_value + $item_price;
             $index++;
         }
-        $av_vat_rate = ( $tax_id == 0 ) ? 0 : $tax_info->av_vat_rate;
+        $av_vat_rate = ( $tax_info == null ) ? 0 : $tax_info->av_vat_rate;
         $result_array['items_array']    = $items_array;
         $result_array['total_cost']     = $total_invoice_value;
         $result_array['total_discount'] = $invoice_info->bi_discount;
