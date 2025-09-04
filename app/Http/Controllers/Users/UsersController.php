@@ -16,8 +16,10 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\models\Billing\PaymentTypes;
 use App\models\PayRolls\PayrollsPaymentMethods;
 use App\models\Accounting\ChartAccounts;
+use Faker\Provider\Payment;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -138,6 +140,7 @@ class UsersController extends Controller {
         $lst_langs = Languages::all();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
 
         $rand = rand(9, 99999);
         $data = array(
@@ -148,6 +151,7 @@ class UsersController extends Controller {
             "lst_departments" => $lst_departments,
             "lst_langs" => $lst_langs,
             "lst_warhouses" => $lst_warhouses,
+            "lst_payment_types" => $lst_payment_types,
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,
             "lst_companies" => $lst_companies
@@ -167,6 +171,7 @@ class UsersController extends Controller {
         $lst_roles = Roles::whereRoleIsDeleted(0)->get();
         $lst_employment_type = EmploymentType::whereEtIsDeleted(0)->get();
         $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_langs = Languages::all();
         $rand = rand(9, 99999);
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
@@ -186,6 +191,7 @@ class UsersController extends Controller {
             "lst_departments" => $lst_departments,
             "lst_langs" => $lst_langs,
             "lst_warhouses" => $lst_warhouses,
+            "lst_payment_types" => $lst_payment_types,
             "rand" => $rand,
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,

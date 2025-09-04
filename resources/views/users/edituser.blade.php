@@ -13,7 +13,6 @@
  ***********************************************************/
 
 
-
 {
     $image_src_url  = url('/')."/".Config::get('constants.USERS_PATH').$user_info->u_avatar_base_src.$user_info->u_avatar_filename.".".$user_info->u_avatar_extentions;
     $image_src_path = public_path(). "/" .Config::get('constants.USERS_PATH').$user_info->u_avatar_base_src.$user_info->u_avatar_filename.".".$user_info->u_avatar_extentions;
@@ -58,7 +57,7 @@ th{
             <div  class="form-body">
              <span id="hidden_fields">
                              <input type="hidden" name="user_id" value="{{ $user_info->id }}" />
-                             <input type="hidden" name="pm_id" value="{{ isset($payroll_paymentmethod) && count($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_id : 0 }}" />
+                             <input type="hidden" name="pm_id" value="{{ isset($payroll_paymentmethod)  ? $payroll_paymentmethod->pm_id : 0 }}" />
                         {!! csrf_field() !!}
             </span>
                     <div class="alert alert-success" style="display:none">
@@ -420,7 +419,7 @@ th{
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="control-label">Account Number</label>
-                                        <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{ count($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_account_number : ""  }}" />
+                                        <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{ isset($payroll_paymentmethod) ? $payroll_paymentmethod->pm_account_number : ""  }}" />
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -428,9 +427,9 @@ th{
                                         <label class="control-label">Payroll Payment Type</label>
                                         <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
                                             <option value="">--Select One--</option>
-                                            <option value="bank-transkfer"  {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "bank-transfer" ? "selected" : "" }} >Bank Transfer</option>
-                                            <option value="cash" {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "cash" ? "selected" : "" }}>Cash</option>
-                                            <option value="Check"  {{ count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == "Check" ? "selected" : "" }} >Check</option>
+                                            @foreach($lst_payment_types as $index => $pt_info)
+                                                <option {{ isset($payroll_paymentmethod) && $payroll_paymentmethod->pm_payment_method == $pt_info->pt_id  ? "selected" : "" }} value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

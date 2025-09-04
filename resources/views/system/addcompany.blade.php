@@ -107,6 +107,12 @@ th{
                         </div>
                         <div class="col-md-4">
                               <div class="form-group">
+                                    <label class="control-label"> Registration Number </label>
+                                    <input type="text" name="cd_register_number" id="CD_REGISTER_NUMBER" class="form-control" required="required" maxlength="150"  value="" />
+                                </div>
+                        </div>
+                        <div class="col-md-4">
+                              <div class="form-group">
                                     <label class="control-label"> Company Owner <span class="required"> * </span></label>
                                     <input type="text" name="cd_company_owner" id="CD_COMPANY_OWNER" class="form-control" required="required" maxlength="255"  value="" />
                                 </div>
@@ -178,7 +184,7 @@ th{
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_countries as $index => $count_info)
                                         <option value="{{ $count_info->id }}">{{ $count_info->name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>
@@ -189,7 +195,7 @@ th{
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_taxes as $index => $tax_info)
                                         <option value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_label }}&nbsp;(&nbsp;{{ $tax_info->av_vat_rate }}&nbsp;%&nbsp;)&nbsp;</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>
@@ -200,7 +206,7 @@ th{
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_currencies as $index => $curr_info)
                                         <option value="{{ $curr_info->cc_id }}">{{  $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>
@@ -211,7 +217,7 @@ th{
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_currencies as $index => $curr_info)
                                         <option value="{{ $curr_info->cc_id }}">{{  $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>

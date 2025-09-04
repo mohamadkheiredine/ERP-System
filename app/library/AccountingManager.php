@@ -558,6 +558,7 @@ class AccountingManager
                         $items_array[$index]['p_id']                = $product_info ? $product_info->p_id : 0;
                         $items_array[$index]['p_product_ref']       = $product_info ? $product_info->p_product_ref : "-";
                         $items_array[$index]['label']               = $product_info ? $product_info->p_product_name : "-";
+                        $items_array[$index]['serialnumber']            = $item_info->ii_product_serial_number;
                         $items_array[$index]['quantity']            = $item_info->ii_item_qyt;
                         $items_array[$index]['price']       = $item_price;
                         $items_array[$index]['cost']        = $item_cost;

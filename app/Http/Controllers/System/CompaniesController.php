@@ -54,8 +54,8 @@ class CompaniesController extends Controller
         $data = array();
         return Response()->view('system.companies',$data);
     }
-    
-    
+
+
     /**
      * Display list of Companies saved in the system
      *
@@ -66,18 +66,18 @@ class CompaniesController extends Controller
     public function DisplayList(Request $request)
     {
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        
+
         $data = array(
             "lst_companies" => $lst_companies
         );
-        
+
         $result_array = array();
         $result_array['display'] = view("system.listcompanies",$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Function of Adding a new Company Info
      *
@@ -90,7 +90,7 @@ class CompaniesController extends Controller
         $lst_countries = Countries::all();
         $lst_currencies = Currency::all();
         $lst_taxes      = VatAccounts::whereAvIsDeleted(0)->get();
-        
+
         $data = array(
             "lst_countries" => $lst_countries,
             "lst_taxes" => $lst_taxes,
@@ -98,8 +98,8 @@ class CompaniesController extends Controller
         );
         return view('system.addcompany',$data);
     }
-    
-    
+
+
     /**
      * Save Company Details Info to the database
      *
@@ -123,35 +123,36 @@ class CompaniesController extends Controller
         $cd_company_name_translation        = $request->input("cd_company_name_translation");
         $cd_company_country         = $request->input("cd_company_country");
         $cd_primary_company         = $request->input("cd_primary_company");
+        $cd_register_number         = $request->input("cd_register_number");
         $cd_company_address         = $request->input("cd_company_address");
         $cd_contact_name            = $request->input("cd_contact_name");
         $cd_contact_mobile          = $request->input("cd_contact_mobile");
         $cd_contact_email           = $request->input("cd_contact_email");
         $cd_transportation_fees     = $request->input("cd_transportation_fees");
-        $cd_company_tax             = $request->input('cd_company_tax'); 
+        $cd_company_tax             = $request->input('cd_company_tax');
         $cd_default_item            = $request->input('cd_default_item');
         $cd_secondary_currency      = $request->input('cd_secondary_currency');
         $cd_starting_date      = $request->input('cd_starting_date');
         $cd_exchange_rate      = $request->input('cd_exchange_rate');
         $cd_company_homepage        = $request->input('cd_company_homepage');
-       
-        $result_array = array(); 
+
+        $result_array = array();
         $CompanyManager  = new CompaniesManager();
         $cd_logo_base_src       = "";
         $cd_logo_file_name      = "";
         $cd_logo_file_extension = "";
-        
+
         if(count($_FILES) > 0)
         {
-            
+
             $image_data =  $CompanyManager->UploadCompanyLogo(null);
-            
+
             $cd_logo_base_src           = $image_data['data']['cd_logo_base_src'];
             $cd_logo_file_name          = $image_data['data']['cd_logo_file_name'];
             $cd_logo_file_extension     = $image_data['data']['cd_logo_file_extension'];
-            
+
         }
-        
+
         // check if the company is primary we need to make sure that we don't have any other
         // compoany is pramiry because we cannot have 2 companies primary
         if($cd_primary_company == 1 )
@@ -163,22 +164,22 @@ class CompaniesController extends Controller
                 $CheckPrimaryObj = $CheckPrimary->where('cd_id',"!=",$cd_id);
             }
             $count = $CheckPrimaryObj->count();
-            
+
             if($count > 0)
             {
                 $result_array['is_error']  = 1;
                 $result_array['error_msg'] = 'We cannot put a Company As Primary Twice !!';
-                
+
                 return Response()->json($result_array);
             }
         }
-        
+
         $CompanyDetails = new Companies();
         if( $cd_id != null )
         {
             $CompanyDetails = Companies::find( $cd_id );
         }
-        
+
         $CompanyDetails->cd_company_name            = $cd_company_name;
         $CompanyDetails->cd_about_company           = $cd_about_company;
         $CompanyDetails->cd_company_owner           = $cd_company_owner;
@@ -198,27 +199,28 @@ class CompaniesController extends Controller
         $CompanyDetails->cd_secondary_currency      = $cd_secondary_currency;
         $CompanyDetails->cd_default_item            = $cd_default_item;
         $CompanyDetails->cd_company_homepage        = $cd_company_homepage;
+        $CompanyDetails->cd_register_number        = $cd_register_number;
         $CompanyDetails->cd_exchange_rate        = $cd_exchange_rate;
         $CompanyDetails->cd_starting_date        = $cd_starting_date;
         $CompanyDetails->cd_company_name_translation        = $cd_company_name_translation;
-        
+
         if(strlen($cd_logo_base_src) > 0)
         {
             $CompanyDetails->cd_logo_base_src          = $cd_logo_base_src;
             $CompanyDetails->cd_logo_file_name         = $cd_logo_file_name;
             $CompanyDetails->cd_logo_file_extension    = $cd_logo_file_extension;
         }
-        
+
         $CompanyDetails->save();
-        
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Company Details Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Display Edit Company Detail Form Page
      *
@@ -232,7 +234,7 @@ class CompaniesController extends Controller
         $lst_countries = Countries::all();
         $lst_currencies = Currency::all();
         $lst_taxes      = VatAccounts::whereAvIsDeleted(0)->get();
-        
+
         $data = array(
             "company_info" => $company_info,
             "lst_taxes" => $lst_taxes,
@@ -241,11 +243,11 @@ class CompaniesController extends Controller
         );
         return view('system.editcompany',$data);
     }
-    
-    
+
+
     /**
      * Delete Company information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -253,18 +255,18 @@ class CompaniesController extends Controller
      */
     public function DeleteCompanyInfo(Request $request)
     {
-        
+
         $cd_id= $request->input('cd_id');
-         
+
         $company = Companies::find( $cd_id);
         $company->cd_is_deleted          = 1;
         $company->cd_deleted_by          = Session('user_id');
         $company->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
 

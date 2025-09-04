@@ -17,7 +17,7 @@ Page Description :
     <tr  class="odd gradeX" data-pd_id="{{ $details_info->pd_id }}">
         <td><input type="checkbox" name="ck_pd_{{ $details_info->pd_id }}" id="CK_PD_{{ $details_info->pd_id }}" class="checkboxes" value="{{ $details_info->pd_id }}" /></td>
         <td>{{ $details_info->pd_id }}</td>
-        <td>{{ $details_info->Company->cd_company_name }}</td>
+        <td>{{ $details_info->Company ? $details_info->Company->cd_company_name : "-" }}</td>
         <td>{{ $details_info->Employee->u_fullname }}</td>
         <td>{{ $details_info->pd_basic_salary }} <b>{{ $details_info->Currency->cc_currency_code }}</b></td>
         <td>{{ $details_info->pd_total_comissions }} <b>{{ $details_info->Currency->cc_currency_code }}</b></td>

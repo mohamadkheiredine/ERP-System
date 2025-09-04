@@ -18,8 +18,12 @@ Page Description :
 namespace App\Http\Controllers\PayRoll;
 
 use App\Http\Controllers\Controller;
+use App\models\Accounting\TransactionMovements;
+use App\models\Accounting\Transactions;
+use App\models\Billing\PaymentTypes;
 use App\models\PayRolls\PayrollsComissions;
 use App\models\PayRolls\PayrollsDeductionsBenefits;
+use App\models\PayRolls\PayrollsPaymentMethods;
 use App\models\PayRolls\PayrollsSalaryDetails;
 use App\models\PayRolls\PayrollsTransactions;
 use App\models\System\Currency;
@@ -133,12 +137,98 @@ class SalaryDetailsController extends Controller
         $lst_currencies = Currency::all();
         $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
 
+        // First day of current month
+        $first_day_month = Carbon::now()->startOfMonth()->format('Y-m-d');
+
+        // Last day of current month
+        $last_day_month = Carbon::now()->endOfMonth()->format('Y-m-d');
+
         $data = array(
             "lst_companies" => $lst_companies,
+            "first_day_month" => $first_day_month,
+            "last_day_month" => $last_day_month,
             "lst_currencies" => $lst_currencies,
             "lst_employees" => $lst_employees
         );
         return view('payrolls.addsalarydetail',$data);
+    }
+
+    /**
+     * Generate All Sallary details record for this month
+     *
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return void
+     */
+    public function GenerateAllRecords(Request $request)
+    {
+        $result_array = array();
+
+        $lst_employees = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+
+        foreach ($lst_employees as $index => $employee_info)
+        {
+            // check if we have record for current month
+            $count_salary_details = PayrollsSalaryDetails::where('pd_user_id',$employee_info->id)->whereMonth('pd_end_date', Carbon::now()->month)->count();
+            if($count_salary_details > 0)
+            {
+                continue;
+            }
+
+            // calculation comissions and deduction and bonus
+            $pd_user_id = $employee_info->id;
+            $user_info = Users::find($pd_user_id);
+
+            $lst_deductions = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('deduction')->whereMonth('db_effective_date', Carbon::now()->format('m'))->whereYear('db_effective_date', Carbon::now()->format('Y'))->get();
+            $lst_benefits = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('benefit')->whereMonth('db_effective_date', Carbon::now()->format('m'))->whereYear('db_effective_date', Carbon::now()->format('Y'))->get();
+            $lst_comissions = PayrollsComissions::wherePcEmployeeId($pd_user_id)->whereBetween('pc_effective_date', [Carbon::now()->format('Y-m-d'), Carbon::now()->format('Y-m-d')])->wherePcIsPaid(0)->get();
+
+            $basic_salary = $user_info->u_user_sallary;
+
+            $total_deductions = 0;
+            $total_benefits = 0;
+            $total_comissions = 0;
+            foreach ($lst_deductions as $deduction) {
+                $total_deductions = $total_deductions + $deduction->db_amount;
+            }
+
+            foreach ($lst_benefits as $benefit) {
+                $total_benefits = $total_benefits + $benefit->db_amount;
+            }
+
+            foreach ($lst_comissions as $comission) {
+                $total_comissions = $total_comissions + $comission->pc_comission_value;
+            }
+
+            $details_info = new PayrollsSalaryDetails();
+
+            // First day of current month
+            $first_day_month = Carbon::now()->startOfMonth()->format('Y-m-d');
+
+            // Last day of current month
+            $last_day_month = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+            $details_info->pd_user_id               = $pd_user_id;
+            $details_info->pd_company_id            = $user_info->fk_company_id;
+            $details_info->pd_basic_salary          = $basic_salary;
+            $details_info->pd_currency_id           = session('company_currency');
+            $details_info->pd_allowances            = $total_benefits;
+            $details_info->pd_deductions            = $total_deductions;
+            $details_info->pd_total_comissions      = $total_comissions;
+            $details_info->pd_effective_date        = $first_day_month;
+            $details_info->pd_end_date              = $last_day_month;
+            $details_info->pd_description           = "";
+            $details_info->save();
+
+
+        }
+
+
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'Generate Records Successfully';
+        return Response()->json($result_array);
     }
 
 
@@ -222,12 +312,14 @@ class SalaryDetailsController extends Controller
     public function GetEmployeeInfo(Request $request)
     {
         $pd_user_id = $request->input('pd_employee_id');
+        $pd_effective_date              = $request->input('pd_effective_date');
+        $pd_end_date              = $request->input('pd_end_date');
 
         $user_info = Users::find($pd_user_id);
 
-        $lst_deductions = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('deduction')->whereMonth('db_effective_date', Carbon::now()->month)->whereYear('db_effective_date', Carbon::now()->year)->get();
-        $lst_benefits = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('benefit')->whereMonth('db_effective_date', Carbon::now()->month)->whereYear('db_effective_date', Carbon::now()->year)->get();
-        $lst_comissions = PayrollsComissions::wherePcEmployeeId($pd_user_id)->wherePcIsPaid(0)->get();
+        $lst_deductions = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('deduction')->whereMonth('db_effective_date', $pd_effective_date)->whereYear('db_effective_date', $pd_effective_date)->get();
+        $lst_benefits = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('benefit')->whereMonth('db_effective_date', $pd_effective_date)->whereYear('db_effective_date', $pd_effective_date)->get();
+        $lst_comissions = PayrollsComissions::wherePcEmployeeId($pd_user_id)->whereBetween('pc_effective_date', [$pd_effective_date, $pd_end_date])->wherePcIsPaid(0)->get();
 
         $basic_salary = $user_info->u_user_sallary;
 
@@ -279,10 +371,24 @@ class SalaryDetailsController extends Controller
         $result_array = array();
 
         $user_info = Users::find($pd_user_id);
+        $detailed_info = PayrollsSalaryDetails::find($pd_id);
+
+
+        $payroll_paymentmethod = PayrollsPaymentMethods::where('pm_employee_id', $pd_user_id)->get();
+        if(count($payroll_paymentmethod) == 0)
+        {
+            $result_array['is_error']  = 1;
+            $result_array['error_msg'] = 'Paymemtn Method for this Employee Not Exist Please Validate inside Employee management Before';
+            return Response()->json($result_array);
+        }
+
+        $pt_id = $payroll_paymentmethod[0]->pm_payment_method;
+        $payment_type = PaymentTypes::find($pt_id);
+        $account_id  = $payment_type->pt_payment_account;
 
         $lst_deductions = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('deduction')->whereMonth('db_effective_date', Carbon::now()->month)->whereYear('db_effective_date', Carbon::now()->year)->get();
         $lst_benefits = PayrollsDeductionsBenefits::whereDbEmployeeId($pd_user_id)->whereDbType('benefit')->whereMonth('db_effective_date', Carbon::now()->month)->whereYear('db_effective_date', Carbon::now()->year)->get();
-        $lst_comissions = PayrollsComissions::wherePcEmployeeId($pd_user_id)->wherePcIsPaid(0)->get();
+        $lst_comissions = PayrollsComissions::wherePcEmployeeId($pd_user_id)->whereBetween('pc_effective_date', [$detailed_info->pd_effective_date, $detailed_info->pd_end_date])->wherePcIsPaid(0)->get();
 
         $basic_salary = $user_info->u_user_sallary;
 
@@ -318,8 +424,62 @@ class SalaryDetailsController extends Controller
         $details_info->pd_payroll_transaction = $payroll_transaction->pt_id;
         $details_info->save();
 
+        foreach ($lst_comissions as $index => $comission_info)
+        {
+                $com_info = PayrollsComissions::find($comission_info->pc_id);
+                $com_info->pc_is_paid = 1;
+                $com_info->save();
+        }
+
+        $creation_date = date('Y-m-d');
+        $currency_id = session('company_currency');;
 
         // add records of transaction and movement in
+        $stock_label = "Salary Transaction Accounting For " . $detailed_info->Employee->u_fullname . " On " . $creation_date;
+        $transactions = new Transactions();
+        $transactions->at_transaction_date  = $creation_date;
+        $transactions->at_creation_date     = $creation_date;
+        $transactions->at_accounting_doc    = $stock_label;
+        $transactions->fk_acc_journal_id    = 3;
+        $transactions->at_currency_id       =$currency_id;
+        $transactions->save();
+        $at_id = $transactions->at_id;
+
+        $transaction_movements = new TransactionMovements();
+        $transaction_movements->fk_tran_id              = $at_id;
+        $transaction_movements->tm_ledger_account       = 6311;
+        $transaction_movements->tm_sub_ledger_account   = 6311;
+        $transaction_movements->tm_ledger_label         = "Salary For " . $detailed_info->Employee->u_fullname . " on date " . date("m-Y",strtotime($creation_date));
+        $transaction_movements->tm_debit                = ($basic_salary + $total_benefits  - $total_deductions);
+        $transaction_movements->tm_credit               = 0;
+        $transaction_movements->tm_creation_date        = $creation_date;
+        $transaction_movements->tm_currency_id          = $currency_id;
+        $transaction_movements->save();
+
+
+        $transaction_movements = new TransactionMovements();
+        $transaction_movements->fk_tran_id              = $at_id;
+        $transaction_movements->tm_ledger_account       = 6318;
+        $transaction_movements->tm_sub_ledger_account   = 6318;
+        $transaction_movements->tm_ledger_label         = "Comission on salary For " . $detailed_info->Employee->u_fullname . " on date " . date("m-Y",strtotime($creation_date));
+        $transaction_movements->tm_debit                = $total_comissions;
+        $transaction_movements->tm_credit               = 0;
+        $transaction_movements->tm_creation_date        = $creation_date;
+        $transaction_movements->tm_currency_id          = $currency_id;
+        $transaction_movements->save();
+
+
+        $transaction_movements = new TransactionMovements();
+        $transaction_movements->fk_tran_id              = $at_id;
+        $transaction_movements->tm_ledger_account       = $account_id;
+        $transaction_movements->tm_sub_ledger_account   = $account_id;
+        $transaction_movements->tm_ledger_label         = "Sallary details " . $detailed_info->Employee->u_fullname . " on date " . date("m-Y",strtotime($creation_date));
+        $transaction_movements->tm_debit                = 0;
+        $transaction_movements->tm_credit               = ($basic_salary + $total_benefits  - $total_deductions + $total_comissions);
+        $transaction_movements->tm_creation_date        = $creation_date;
+        $transaction_movements->tm_currency_id          = $currency_id;
+        $transaction_movements->save();
+
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'PayRoll Transaction Saved Succesfully';

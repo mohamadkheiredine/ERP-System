@@ -16,13 +16,13 @@ Page Description :
 {
     $image_src_url  = url('/')."/".Config::get('constants.COMPANY_PATH').$company_info->cd_logo_base_src.$company_info->cd_logo_file_name.".".$company_info->cd_logo_file_extension;
     $image_src_path = public_path(). "/" .Config::get('constants.COMPANY_PATH').$company_info->cd_logo_base_src.$company_info->cd_logo_file_name.".".$company_info->cd_logo_file_extension;
-    
+
     if(strlen($company_info->cd_logo_base_src) > 0 ){
         $img_src = $image_src_url;
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
+
 }
 
 ?>
@@ -102,12 +102,18 @@ Page Description :
                                     <input type="text"  name="cd_company_name" id="CD_COMPANY_NAME" class="form-control" required="required" maxlength="155"  value="{{ $company_info->cd_company_name }}" />
                                 </div>
                         </div>
-                        
+
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Company Name Translation</label>
                                     <input type="text" name="cd_company_name_translation" id="CD_COMPANY_NAME_TRANSLATION" class="form-control" required="required" maxlength="155"  value="{{ $company_info->cd_company_name_translation }}" />
                                 </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Registration Number </label>
+                                <input type="text" name="cd_register_number" id="CD_REGISTER_NUMBER" class="form-control" required="required" maxlength="150"  value="{{ $company_info->cd_register_number }}" />
+                            </div>
                         </div>
                         <div class="col-md-4">
                               <div class="form-group">
@@ -182,7 +188,7 @@ Page Description :
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_countries as $index => $count_info)
                                         <option {{ $company_info->cd_company_country == $count_info->id ? "selected" : "" }} value="{{ $count_info->id }}">{{ $count_info->name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
 						</div>
@@ -193,7 +199,7 @@ Page Description :
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_taxes as $index => $tax_info)
                                         <option value="{{ $tax_info->av_id }}" {{ $company_info->cd_company_tax == $tax_info->av_id ? "selected" : "" }} >{{ $tax_info->av_vat_label }}&nbsp;(&nbsp;{{ $tax_info->av_vat_rate }}&nbsp;%&nbsp;)&nbsp;</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>
@@ -204,7 +210,7 @@ Page Description :
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_currencies as $index => $curr_info)
                                         <option {{ $company_info->cd_company_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{  $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>
@@ -215,7 +221,7 @@ Page Description :
                                         <option value="0">--Select One--</option>
                                         @foreach($lst_currencies as $index => $curr_info)
                                         <option {{ $company_info->cd_secondary_currency == $curr_info->cc_id ? "selected" : "" }} value="{{ $curr_info->cc_id }}">{{  $curr_info->cc_currency_code . " - " . $curr_info->cc_currency_name }}</option>
-                                        @endforeach 
+                                        @endforeach
                                 </select>
                             </div>
                         </div>

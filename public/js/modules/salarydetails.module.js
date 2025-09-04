@@ -40,14 +40,34 @@ salarydetails_module = {
         });
 
     },
+    GenerateSalaryDetailRecords : function(){
+
+        var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val()
+        $.ajax
+        ({
+            url : base_url + "/request/salarydetails/generateallrecords",
+            data : { _token : _token  },
+            method : 'post',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                $('input[name=page_number]').val(1);
+                salarydetails_module.DisplayListSalaryDetails();
+            }
+        });
+    },
     getEmployeeInfo : function(){
         var base_url = $('#BASE_URL').val();
         var _token = $('input[name=_token]').val();
         var pd_employee_id = $('select[name=pd_user_id]').val();
+        var pd_effective_date = $('input[name=pd_effective_date]').val();
+        var pd_end_date = $('input[name=pd_end_date]').val();
         $.ajax
         ({
             url : base_url + "/request/salarydetails/getemployeeinfo",
-            data : { _token : _token ,  pd_employee_id : pd_employee_id },
+            data : { _token : _token ,  pd_employee_id : pd_employee_id , pd_effective_date : pd_effective_date , pd_end_date : pd_end_date },
             method : 'get',
             dataType : "json",
             beforeSend : function(){
@@ -79,7 +99,14 @@ salarydetails_module = {
             beforeSend : function(){
             },
             success : function(response){
-
+                if(response.is_error == 1)
+                {
+                    bootbox.alert(response.error_msg);
+                }
+                else
+                {
+                    $('#BTN_GENERATE_TRANSACTION').css('display','none');
+                }
 
             }
         });

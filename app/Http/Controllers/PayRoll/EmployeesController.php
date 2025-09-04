@@ -18,6 +18,7 @@ namespace App\Http\Controllers\PayRoll;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Users\Array;
 use App\Http\Controllers\Users\unknown;
+use App\models\Billing\PaymentTypes;
 use App\models\PayRolls\PayrollsPaymentMethods;
 use App\models\Accounting\ChartAccounts;
 use Validator;
@@ -122,6 +123,8 @@ class EmployeesController extends Controller {
         $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
+        $lst_user_roles = Roles::whereRoleIsDeleted(0)->get();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
 
         $rand = rand(9, 99999);
         $data = array(
@@ -130,6 +133,8 @@ class EmployeesController extends Controller {
             "lst_job_roles" => $lst_job_roles,
             "lst_departments" => $lst_departments,
             "lst_warhouses" => $lst_warhouses,
+            "lst_user_roles" => $lst_user_roles,
+            "lst_payment_types" => $lst_payment_types,
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,
             "lst_companies" => $lst_companies
@@ -151,6 +156,8 @@ class EmployeesController extends Controller {
         $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
+        $lst_user_roles = Roles::whereRoleIsDeleted(0)->get();
+        $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
 
         $payroll_paymentmethod = PayrollsPaymentMethods::where('pm_company_id', $user_info->fk_company_id)->get();
 
@@ -163,7 +170,9 @@ class EmployeesController extends Controller {
             "user_info" => $user_info,
             "lst_job_titles" => $lst_job_titles,
             "lst_job_roles" => $lst_job_roles,
+            "lst_user_roles" => $lst_user_roles,
             "lst_departments" => $lst_departments,
+            "lst_payment_types" => $lst_payment_types,
             "lst_warhouses" => $lst_warhouses,
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,

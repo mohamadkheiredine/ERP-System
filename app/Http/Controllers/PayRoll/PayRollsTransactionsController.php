@@ -20,6 +20,7 @@ namespace App\Http\Controllers\PayRoll;
 use App\Http\Controllers\Controller;
 use App\models\Accounting\TransactionMovements;
 use App\models\Accounting\Transactions;
+use App\models\PayRolls\PayrollsPaymentMethods;
 use App\models\PayRolls\PayrollsSalaryDetails;
 use App\models\PayRolls\PayrollsTransactions;
 use App\Models\User;
@@ -157,9 +158,6 @@ class PayRollsTransactionsController extends Controller
         $transaction_info->pt_transaction_id = $at_id;
         $transaction_info->pt_status = 'paid';
         $transaction_info->save();
-
-
-
 
 
         $total_salary = $transaction_info->pt_gross_salary;

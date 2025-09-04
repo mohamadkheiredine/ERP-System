@@ -115,6 +115,17 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label> User Role <span class="required"> * </span></label>
+                                                <select  name="fk_role_id" id="FK_ROLE_ID" class="form-select" data-control="select2" data-placeholder="Select Role">
+                                                    <option value="">Select Role</option>
+                                                    @foreach($lst_user_roles as $key => $role_info)
+                                                        <option value="{{ $role_info->role_id }}">{{ $role_info->role_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="col-md-8">
                                             <div class="form-group">
                                                 <label class="control-label">Address</label>
@@ -376,9 +387,9 @@
                                                 <label class="control-label">Payroll Payment Type</label>
                                                 <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
                                                     <option value="">--Select One--</option>
-                                                    <option value="bank-transkfer">Bank Transfer</option>
-                                                    <option value="cash">Cash</option>
-                                                    <option value="Check">Check</option>
+                                                    @foreach($lst_payment_types as $index => $pt_info)
+                                                        <option value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>

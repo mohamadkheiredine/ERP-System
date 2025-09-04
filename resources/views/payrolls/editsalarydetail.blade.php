@@ -130,6 +130,12 @@ Page Description :
                                 <input type="text" name="pd_effective_date" id="PD_EFFECTIVE_DATE" class="form-control" required="required" maxlength="20"  value="{{ $details_info->pd_effective_date }}" />
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">End Date <span class="required"> * </span></label>
+                                <input type="text" name="pd_end_date" id="PD_END_DATE" class="form-control" required="required" maxlength="20"  value="{{ $details_info->pd_end_date }}" />
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label"> Description</label><br/>

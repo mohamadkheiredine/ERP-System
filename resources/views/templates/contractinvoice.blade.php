@@ -47,11 +47,15 @@ body {
 }
 
 .company-details h2 {
-    font-size: 1.5em;
+    font-size: 1.7em;
+}
+
+.company-details p{
+    font-size: 24px;
 }
 
 .invoice-info h3 {
-    font-size: 1.5em;
+    font-size: 1.7em;
     text-align: right;
 }
 
@@ -70,6 +74,7 @@ body {
     border: 1px solid #000;
     padding: 10px;
     text-align: left;
+    font-size: 16px;
 }
 
 .totals {
@@ -94,6 +99,7 @@ body {
             text-align: center;
             float:left;
             width:23%;
+            font-size: 22px;
             margin:4px;
             padding:4px;
         }
@@ -122,6 +128,7 @@ body {
                         <p style="font-size: 20px"><strong>Date:</strong> %INVOICE_DATE%</p>
                         <p style="font-size: 20px"><strong>Curr:</strong> %INVOICE_CURRENCY%</p>
                         <p style="font-size: 20px"><strong>Sales</strong></p>
+                        <p style="font-size: 20px"><strong>RN:</strong>%registration_number%</p>
                     </div>
                 </div>
                 <div style='width:35%;text-align:left;left:61%;float: right;position: absolute;height:60px;'>
@@ -177,13 +184,13 @@ body {
                 </tr>
             </tfoot>
         </table>
-
+        <div style="height: 150px;width: 100%">&nbsp;</div>
         <footer class="invoice-footer">
-                    <div class="signature">
-            <div>Stock Keeper: ________________<br></div>
-            <div>Representative: ______________<br></div>
-            <div>Manager: ______________<br></div>
-            <div>Client: _______________<br></div>
+         <div class="signature">
+            <div>Stock Keeper:<br> ________________<br></div>
+            <div>Representative:<br> ______________<br></div>
+            <div>Manager:<br> ______________<br></div>
+            <div>Client:<br> _______________<br></div>
         </div>
 
         </footer>

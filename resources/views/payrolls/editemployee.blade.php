@@ -126,6 +126,17 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label> User Role <span class="required"> * </span></label>
+                                                <select  name="fk_role_id" id="FK_ROLE_ID" class="form-select" data-control="select2" data-placeholder="Select Role">
+                                                    <option value="">Select Role</option>
+                                                    @foreach($lst_user_roles as $key => $role_info)
+                                                        <option {{ $user_info->fk_role_id ==  $role_info->role_id ? "selected" : "" }}  value="{{ $role_info->role_id }}">{{ $role_info->role_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="col-md-8">
                                             <div class="form-group">
                                                 <label class="control-label">Address</label>
@@ -383,14 +394,15 @@
                                                 <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{  isset($payroll_paymentmethod) ? $payroll_paymentmethod->pm_account_number : ""  }}" />
                                             </div>
                                         </div>
+
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="control-label">Payroll Payment Type</label>
                                                 <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
                                                     <option value="">--Select One--</option>
-                                                    <option value="bank-transkfer"  {{ $payroll_paymentmethod->pm_payment_method == "bank-transfer" ? "selected" : "" }} >Bank Transfer</option>
-                                                    <option value="cash" {{ $payroll_paymentmethod->pm_payment_method == "cash" ? "selected" : "" }}>Cash</option>
-                                                    <option value="Check"  {{ $payroll_paymentmethod->pm_payment_method == "Check" ? "selected" : "" }} >Check</option>
+                                                    @foreach($lst_payment_types as $index => $pt_info)
+                                                        <option {{ isset($payroll_paymentmethod) && $payroll_paymentmethod->pm_payment_method == $pt_info->pt_id  ? "selected" : "" }} value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>

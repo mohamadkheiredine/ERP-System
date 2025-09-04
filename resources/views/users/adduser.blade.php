@@ -416,9 +416,9 @@ th{
                                            <label class="control-label">Payroll Payment Type</label>
                                            <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
                                                <option value="">--Select One--</option>
-                                               <option value="bank-transkfer">Bank Transfer</option>
-                                               <option value="cash">Cash</option>
-                                               <option value="Check">Check</option>
+                                               @foreach($lst_payment_types as $index => $pt_info)
+                                                   <option value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
+                                               @endforeach
                                            </select>
                                        </div>
                                     </div>
@@ -427,7 +427,6 @@ th{
                         </div>
 					</div>
 				</div>
-
                 <div class="row" style="height:10px;"></div>
                 <div class="row">
                     <div class="col-md-9"></div>

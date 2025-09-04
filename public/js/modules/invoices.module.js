@@ -791,6 +791,10 @@ invoices_module = {
                         success : function(response){
                             if(response.is_error == 0)
                             {
+                                $("#FORM_LINK_PRODUCT")[0].reset();
+                                $("#FORM_LINK_PRODUCT select").each(function (){
+                                    $(this).val(0).trigger('change.select2');
+                                })
                                 invoices_module.DisplayListInvoiceProducts();
                             }
                         }
@@ -804,8 +808,8 @@ invoices_module = {
 		},
 		SaveInsertItemsSubmitHandler : function(){
 			 var InvoiceItemsForm = $('#FRM_INVOICE_ITEMS');
-	         //var error3 = $('.alert-danger', InvoiceItemsForm);
-	         //var success3 = $('.alert-success', InvoiceItemsForm);
+	         var error3 = $('.alert-danger', InvoiceItemsForm);
+	         var success3 = $('.alert-success', InvoiceItemsForm);
 
 	         InvoiceItemsForm.validate({
 	             errorElement: 'span', //default input error message container
@@ -882,6 +886,10 @@ invoices_module = {
 	    	              if(response.is_error == 0)
 	    	              {
 	    	            	  invoices_module.DisplayListInvoiceProducts();
+                              $("#FRM_INVOICE_ITEMS")[0].reset();
+                              $("#FRM_INVOICE_ITEMS").each(function (){
+                                  $(this).val(null);
+                              })
 	    	            	  $("#InserItems").modal('toggle');
 	    	              }
 	    	            }

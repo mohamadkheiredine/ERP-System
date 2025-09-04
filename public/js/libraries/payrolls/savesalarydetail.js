@@ -20,6 +20,27 @@ $(function(){
         }
     });
 
+    new tempusDominus.TempusDominus(document.getElementById('PD_END_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
     ClassicEditor
         .create( document.querySelector( '#PD_DESCRIPTION' ) )
         .then( newEditor => {

@@ -489,7 +489,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_company_id = session('company_id');
             $payroll_comissions->pc_comission_value = $ad_sales_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
-            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_effective_date = $ad_deal_date;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->save();
@@ -500,7 +500,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_company_id = session('company_id');
             $payroll_comissions->pc_comission_value = $ad_technician_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
-            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_effective_date = $ad_deal_date;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
@@ -511,7 +511,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_company_id = session('company_id');
             $payroll_comissions->pc_comission_value = $ad_telemarketing_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
-            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_effective_date = $ad_deal_date;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
@@ -522,7 +522,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_company_id = session('company_id');
             $payroll_comissions->pc_comission_value = $ad_supervisor_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
-            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_effective_date = $ad_deal_date;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
@@ -534,7 +534,7 @@ class DealsController extends Controller
             $payroll_comissions->pc_company_id = session('company_id');
             $payroll_comissions->pc_comission_value = $ad_manager_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
-            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_effective_date = $ad_deal_date;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();

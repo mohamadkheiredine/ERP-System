@@ -510,6 +510,7 @@ Route::post('/request/salarydetails/saveinfo','PayRoll\SalaryDetailsController@S
 Route::delete('/request/salarydetails/deleteinfo','PayRoll\SalaryDetailsController@DeleteSalaryDetailsInfo');
 Route::get('/request/salarydetails/getemployeeinfo','PayRoll\SalaryDetailsController@GetEmployeeInfo');
 Route::post('/request/salarydetails/generatepayrolltransaction','PayRoll\SalaryDetailsController@GeneratePayRollTransaction');
+Route::post('/request/salarydetails/generateallrecords','PayRoll\SalaryDetailsController@GenerateAllRecords');
 
 
 Route::post('/request/ptransactions/payemployeepayroll','PayRoll\PayRollsTransactionsController@PayEmployeePayRoll');

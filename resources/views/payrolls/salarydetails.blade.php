@@ -128,10 +128,10 @@ Page Description :
             </div>
             <!--end: Datatable -->
             <div class="row">
-                <div class="col-md-10 col-lg-10 col-xs-10" align="left">
+                <div class="col-md-7 col-lg-7 col-xs-7" align="left">
                     <ul id="SalDetailsPagination" class="pagination-sm"></ul>
                 </div>
-                <div class="col-md-2 col-lg-2 col-xs-2" align="right">
+                <div class="col-md-5 col-lg-5 col-xs-5" align="right">
                     <a href="{{ url('payroll/salarydetails/addform') }}" class="btn btn-info">
 						<span>
 							<i class="fas fa-user"></i>

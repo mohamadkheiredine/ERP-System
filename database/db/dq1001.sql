@@ -61,3 +61,8 @@ ALTER TABLE `inventory_stocks`
 
 
 
+ALTER TABLE `company_details`
+    ADD COLUMN `cd_register_number` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `cd_contact_email`;
+
+
+
