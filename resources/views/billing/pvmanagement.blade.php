@@ -64,8 +64,9 @@ th{
                 <div class="form-body">
                      <span id="hidden_fields">
                         {!! csrf_field() !!}
-                        <input type="hidden" name="pv_user_id" value="{{ session('user_id') }}" /> 
-                        <input type="hidden" name="pv_id" value="0" /> 
+                        <input type="hidden" name="pv_user_id" value="{{ session('user_id') }}" />
+                        <input type="hidden" name="pv_id" value="0" />
+                        <input type="hidden" name="lr_pv_ids" value="0" />
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong>Payment Voucher information is saved successfully!
@@ -85,7 +86,7 @@ th{
                                     <label class="control-label">Voucher Description</label>
                                     <input type="text" name="pv_voucher_label" id="PV_VOUCHER_LABEL" class="form-control"  maxlength="255"  value="" />
                                 </div>
-                        </div>  
+                        </div>
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Voucher Date </label>
@@ -102,7 +103,7 @@ th{
                                         @endforeach
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                          <div class="col-md-4">
                              <div class="form-group">
                                <label> Account Receivable <span class="required"> * </span></label>
@@ -170,9 +171,9 @@ th{
                              <button type="reset" id="BACK_FORM" name="back_form" class="btn btn-danger">Back</button>
                         </div>
                     </div>
-                </div> 
-                              </div> 
-                            </div> 
+                </div>
+                              </div>
+                            </div>
                   </div>
             </form>
         </div>
@@ -239,7 +240,7 @@ th{
     					</div>
     				</div>
     				<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-    					
+
     				</div>
     			</div>
     		</div>
@@ -269,9 +270,9 @@ th{
                     <ul id="VouchersPagination" class="pagination-sm"></ul>
                  </div>
                  <div class="col-md-2" align="right"></div>
-             </div> 
+             </div>
         </div>
 	</div>
 </div>
- 
+
 @endsection

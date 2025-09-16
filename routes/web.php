@@ -562,4 +562,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/expenses/addform','Expenses\ExpensesController@AddForm');
     Route::get('/expenses/editform/{ac_id}','Expenses\ExpensesController@EditForm');
 
+
+    Route::get('/stores','Sales\StoresController@index');
+    Route::get('/stores/addform','Sales\StoresController@AddForm');
+    Route::get('/stores/editform/{ps_id}','Sales\StoresController@EditForm');
+
 });

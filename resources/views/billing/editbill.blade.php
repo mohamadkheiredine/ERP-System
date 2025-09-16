@@ -100,7 +100,7 @@ th{
                   <div class="col-md-6">
                        <div class="form-group">
                           <label>Amount </label>
-                          <input type="text"  {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}   autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="{{ $bill_info->ip_payment_amount - $bill_info->ip_paid_amount }}" />
+                          <input type="text"  {{  (CheckPrivilage('erp_ability_to_change_bill_fields') == "allow") ? "" : "readonly='readonly'" }}   autocomplete="off" required="required"  name="ip_payment_amount" id="IP_PAYMENT_AMOUNT" class="form-control"  maxlength="25" value="0" />
                       </div>
                   </div>
                   <div class="col-md-6" style="height:50px;vertical-align: middle;margin-top: 20px;">

@@ -119,8 +119,11 @@ th{
                 <div class="col-xl-12 order-1 order-xl-2 align-right">&nbsp;</div>
 			</div>
 		</div>
-		<!--end: Search Form -->
-          <!--begin: Datatable -->
+        <div class="row">
+            <div class="col-md-12" align="left">
+                <ul id="TopStocksPagination" class="pagination-sm"></ul>
+            </div>
+        </div>
 		<div  class="table-responsive" id="LstProductsMain">
             <table class="table table-striped gy-7 gs-7">
                 <thead>
@@ -130,6 +133,7 @@ th{
         				<th title="Product" style="width:250px;white-space: nowrap;"> Product </th>
         				<th title="Warehouse" style="width:150px;white-space: nowrap;"> Warehouse  </th>
         				<th title="Price" style="width:150px;white-space: nowrap;"> Price </th>
+        				<th title="Item Price" style="width:150px;white-space: nowrap;"> Item Price </th>
         				<th title="Quantity" style="width:150px;white-space: nowrap;"> Quantity </th>
         				<th style="width:4px !important;" nowrap title="#"> edit </th>
         				<th style="width:4px !important;" nowrap title="#"> Delete </th>

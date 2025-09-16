@@ -21,9 +21,9 @@ Page Description :
    <td>{{ $voucher_info->pv_id }}</td>
    <td>{{ $voucher_info->pv_creation_date }}</td>
    <td>{{ $voucher_info->pv_code }}</td>
-   <td>{{ $accounts_array[ $voucher_info->pv_account_payable ]['aa_account_label'] }}</td>
-   <td>{{ $accounts_array[ $voucher_info->pv_account_receivable ]['aa_account_label'] }}</td>
-   <td>{{ number_format( $voucher_info->pv_payment_amount + $voucher_info->pv_extra_amount , 2 ) }}</td> 
+   <td>{{ isset($accounts_array[ $voucher_info->pv_account_payable ]) ? $accounts_array[ $voucher_info->pv_account_payable ]['aa_account_label'] : "-" }}</td>
+   <td>{{ isset($accounts_array[ $voucher_info->pv_account_receivable ]) ? $accounts_array[ $voucher_info->pv_account_receivable ]['aa_account_label'] : "-" }}</td>
+   <td>{{ number_format( $voucher_info->pv_payment_amount + $voucher_info->pv_extra_amount , 2 ) }}</td>
    <td><b>{{ $currency_array[ $voucher_info->pv_currency_id ]['cc_currency_code'] }}</b></td>
 </tr>
 @endforeach

@@ -46,6 +46,7 @@ use App\models\CallCenter\CallResults;
 use App\models\CallCenter\CallResultsWorkflow;
 use App\models\Inventory\WareHouses;
 use App\models\Inventory\Stocks;
+use App\models\Accounting\ChartAccounts;
 use App\models\CallCenter\InboundCallProducts;
 
 
@@ -110,7 +111,7 @@ class InboundController extends Controller
         else
             $skip = 0;
 
-        $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcIssueResolved(0);
+        $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0);
 
 
 
@@ -202,6 +203,7 @@ class InboundController extends Controller
         $res_workflow = CallResultsWorkflow::find($cw_id);
 
         $result_array['is_error'] = 0;
+        $result_array['cw_id'] = $res_workflow->cw_id;
         $result_array['cw_result_id'] = $res_workflow->cw_result_id;
         $result_array['cw_result_note'] = $res_workflow->cw_result_note;
         $result_array['cw_assigned_to'] = $res_workflow->cw_assigned_to;
@@ -214,6 +216,7 @@ class InboundController extends Controller
     public function SaveCallResultInfo(Request $request)
     {
         $ic_call_id           = $request->input('ic_call_ids');
+        $cw_id           = $request->input('cw_id');
         $cw_result_id           = $request->input('cw_result_id');
         $cw_creation_date           = $request->input('cw_creation_date');
         $cw_callback_date           = $request->input('cw_callback_date');
@@ -221,7 +224,10 @@ class InboundController extends Controller
         $cw_result_note           = $request->input('cw_result_note');
 
         $result_array = array();
-        $result_info = new CallResultsWorkflow();
+        if($cw_id == 0)
+            $result_info = new CallResultsWorkflow();
+        else
+            $result_info = CallResultsWorkflow::find($cw_id);
         $result_info->cw_call_id = $ic_call_id;
         $result_info->cw_result_id = $cw_result_id;
         $result_info->cw_creation_date = $cw_creation_date;
@@ -234,6 +240,7 @@ class InboundController extends Controller
 
         $call_info = InboundCall::find($ic_call_id);
         $call_info->ic_result_id = $cw_result_id;
+        $call_info->ic_result_notes = $cw_result_note;
         $call_info->save();
 
         $result_array['is_error'] = 0;
@@ -439,16 +446,19 @@ class InboundController extends Controller
         $ic_technician_id = $voucher_info->ic_technician_id;
 
         // add comission for technician for voucher
+        if($ic_comission > 0)
+        {
+            $payroll_comissions = new PayrollsComissions();
+            $payroll_comissions->pc_employee_id = $ic_technician_id;
+            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_comission_value = $ic_comission;
+            $payroll_comissions->pc_currency_id = $ic_currency_id;
+            $payroll_comissions->pc_effective_date = date('Y-m-d');
+            $payroll_comissions->pc_comission_label = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name . " For Maintenance voucher " . $ic_doc_number;
+            $payroll_comissions->pc_deal_id = 0;
+            $payroll_comissions->save();
+        }
 
-        $payroll_comissions = new PayrollsComissions();
-        $payroll_comissions->pc_employee_id = $ic_technician_id;
-        $payroll_comissions->pc_company_id = session('company_id');
-        $payroll_comissions->pc_comission_value = $ic_comission;
-        $payroll_comissions->pc_currency_id = $ic_currency_id;
-        $payroll_comissions->pc_effective_date = date('Y-m-d');
-        $payroll_comissions->pc_comission_label = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name . " For Maintenance voucher " . $ic_doc_number;
-        $payroll_comissions->pc_deal_id = 0;
-        $payroll_comissions->save();
 
 
 
@@ -464,8 +474,6 @@ class InboundController extends Controller
         $parts_total_cost = 0;
         foreach ($products_stock_array as $index => $stock)
         {
-
-
             $stock_info = Stocks::whereFkWarehouseId($warehouse_id)->whereFkProductId($stock['p_id'])->where('is_quantity','>=',$stock['cp_quantity'])->first();
 
             if(count($stock_info) == 0)
@@ -541,6 +549,25 @@ class InboundController extends Controller
         $trans_mov->tm_currency_id          = $ic_currency_id;
         $trans_mov->tm_ledger_label         = "Credit Products For MV Call  #" . $ic_doc_number;
         $trans_mov->save();
+
+        if($ic_visit_price > 0)
+        {
+            $type_info = PaymentTypes::find($ic_payment_type);
+            $pt_payment_account = $type_info->pt_payment_account;
+            $acc_info = ChartAccounts::find($pt_payment_account);
+
+            $trans_mov= new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = $acc_info->aa_account;
+            $trans_mov->tm_sub_ledger_account   = $acc_info->aa_account;
+            $trans_mov->tm_debit                = 0;
+            $trans_mov->tm_credit               = $ic_visit_price;
+            $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
+            $trans_mov->tm_currency_id          = $ic_currency_id;
+            $trans_mov->tm_ledger_label         = "Credit Visit Price For MV Call  #" . $ic_doc_number;
+            $trans_mov->save();
+        }
 
 
         // add new maintenance call on save
@@ -625,6 +652,11 @@ class InboundController extends Controller
             $inboundcall_info->ic_created_at = date('Y-m-d');
         }
 
+        $count_calls = InboundCall::whereIcIsDeleted(0)->count();
+        $index = $count_calls + 1;
+        $call_index = "CC" . sprintf('%05d', $index);
+
+        $inboundcall_info->ic_call_index               = $call_index;
         $inboundcall_info->fk_customer_id               = $fk_customer_id;
         $inboundcall_info->ic_sales_id               = $ic_sales_id;
         $inboundcall_info->ic_client_code               = $ic_client_code;
@@ -673,11 +705,14 @@ class InboundController extends Controller
         $lst_maint_types = MaintenanceTypes::whereMtIsDeleted(0)->get();
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
 
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+
 
         $data = array(
             "inboundcall_info" => $inboundcall_info,
             "lst_sales" => $lst_sales,
             "lst_clients" => $lst_clients,
+            "lst_admins" => $lst_admins,
             "lst_results" => $lst_results,
             "lst_technicians" => $lst_technicians,
             "lst_products" => $lst_products,

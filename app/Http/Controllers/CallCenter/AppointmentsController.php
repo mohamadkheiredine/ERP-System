@@ -405,8 +405,9 @@ class AppointmentsController extends Controller
         $ld_to_apt_date = $request->input('ld_to_apt_date');
         $ca_salesman_id = $request->input('ca_salesman_id');
         $ap_apt_result = $request->input('ap_apt_result');
+        $phone_number = $request->input('phone_number');
 
-        $apt_cond = Appointments::whereCaIsDeleted(0);
+        $apt_cond = Appointments::whereCaIsDeleted(0)->leftJoin('crm_leads', 'callcenter_lead_appointments.ca_lead_id', '=', 'crm_leads.cl_id');
 
         if($lead_id > 0 || $lead_id != '')
         {
@@ -421,6 +422,10 @@ class AppointmentsController extends Controller
         if($ld_apt_date != '')
         {
             $apt_cond = $apt_cond->whereCaAptDate($ld_apt_date);
+        }
+        if($phone_number != '')
+        {
+            $apt_cond = $apt_cond->where('cl_mobile','LIKE','%'.$phone_number.'%');
         }
 
         if($ca_salesman_id != '0')

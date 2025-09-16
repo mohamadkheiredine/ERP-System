@@ -127,4 +127,9 @@ use Illuminate\Http\Request;
     Route::post('/request/api/gettotalordersbydate','Api\DashboardController@GetListOfOrdersByDate');
 
 
+
+    Route::get('/request/api/getlistexpensecategories','Api\ExpensesController@GetListExpenseCategories');
+    Route::post('/request/api/submitnewexpense','Api\ExpensesController@SubmitNewexpense');
+
+
 //});

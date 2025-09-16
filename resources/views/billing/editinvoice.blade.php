@@ -287,7 +287,7 @@ th{
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-6 SerialNumberHolder">
                                                         <div class="form-group">
                                                             <label class="control-label"> Serial Number </label><br/>
                                                             <input type="text"  autocomplete="off" name="ii_product_serial_number" class="form-control" value="" />

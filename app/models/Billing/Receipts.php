@@ -26,26 +26,38 @@ class Receipts extends Model
 {
     protected   $table          = 'billing_receipts';
     public      $timestamps     = false;
-    protected   $primaryKey     = "br_id"; 
-    
+    protected   $primaryKey     = "br_id";
+
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','br_receipt_currency');
-    } 
-    
+    }
+
     public function Invoice()
     {
         return $this->hasOne('App\models\Billing\Invoices', 'bi_id','fk_invoice_id');
-    } 
-    
+    }
+
      public function AccountPayable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','br_account_from');
     }
-    
-    
+
+
       public function AccountReceivable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','br_account_id');
+    }
+
+
+    public function Client()
+    {
+        return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','br_client_id');
+    }
+
+
+    public function Customer()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','br_customer_id');
     }
 }

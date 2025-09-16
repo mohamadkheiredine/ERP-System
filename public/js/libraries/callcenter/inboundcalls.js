@@ -14,9 +14,26 @@ $(function(){
 	$('#LstInboundCalls').on('click',"a[id*=EDIT_CALL_]",inboundcalls_module.EditInboundCallInfo);
 	$('#LstInboundCalls').on('click',"a[id*=DELETE_CALL_]",inboundcalls_module.DeleteInboundCallData);
 	$('.LstCallWResults').on('dblclick',".CallResultRow",inboundcalls_module.GetResultRecordInfo);
+    $("#IC_VISIT_PRICE").on("keyup",inboundcalls_module.ShowOrHidePaymentType);
     $("#CP_PRODUCT_ID").on("change",inboundcalls_module.DisplayProductDescriptionInStockTransfer);
     $("button[name=btn_add_stock]").on("click",inboundcalls_module.AddProductStock);
     $("button[name=btn_close]").on("click",inboundcalls_module.ResetValues);
+    $('#IC_PAYMENT_TYPE').val(2).trigger('change.select2')
+
+    $(".LstMaintenanceProducts").on("click","#DeleteProductCall",function(){
+
+        let p_id = $(this).data('p_id');
+
+       let products_stock =  $('input[name=products_stock]').val();
+        products_stock = JSON.parse(products_stock);
+
+        const index = products_stock.findIndex(item => item.p_id === p_id);
+        if (index !== -1) {
+            products_stock.splice(index, 1);
+        }
+        $('input[name=products_stock]').val(JSON.stringify(products_stock));
+        $(this).parents('tr').remove();
+    });
 
              new tempusDominus.TempusDominus(document.getElementById('IC_CALL_DATE'),{
                     display: {

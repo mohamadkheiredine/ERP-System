@@ -155,7 +155,7 @@ vouchers_module = {
         CalculateSecondaryAmountValue : function(){
             var pv_payment_amount = $('input[name=pv_payment_amount]').val();
             var pv_exchange_rate = $('input[name=pv_exchange_rate]').val();
-            var secondary_currency_amount = pv_payment_amount / pv_exchange_rate;
+            var secondary_currency_amount = pv_payment_amount * pv_exchange_rate;
             $('input[name=pv_amount_secondary_amount]').val(secondary_currency_amount.toFixed(2))
         },
         GenerateVoucherCode : function(){

@@ -16,7 +16,11 @@ Page Description :
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
+use App\models\CallCenter\CallResults;
+use App\models\CallCenter\CallResultsWorkflow;
+use App\models\CallCenter\InboundCall;
 use App\models\PayRolls\PayrollsComissions;
+use League\Csv\Writer;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -54,6 +58,7 @@ use App\models\Users\Users;
 use App\models\Users\UserTypes;
 use App\models\Billing\BillsRvs;
 use App\models\CRM\CRMDeals;
+use App\models\Billing\BillsResultsWorkflow;
 use Dompdf\Dompdf;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
@@ -64,10 +69,60 @@ class InvoicePaymentsController extends Controller
     public function index()
     {
 
-        $data = array();
+        $lst_results = CallResults::whereCrIsDeleted(0)->get();
+        $lst_collecters = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
+        $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+
+        $data = array(
+            "lst_results" => $lst_results,
+            "lst_collecters" => $lst_collecters,
+            "lst_admins" => $lst_admins
+        );
         return Response()->view('billing.bills',$data);
     }
 
+    /**
+     * Save result for call bill
+     *
+     * @author  Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function SaveBillResultInfo(Request $request)
+    {
+        $ip_bill_id           = $request->input('ip_bill_id');
+        $bw_id           = $request->input('bw_id');
+        $bw_result_id           = $request->input('bw_result_id');
+        $bw_creation_date           = $request->input('bw_creation_date');
+        $bw_callback_date           = $request->input('bw_callback_date');
+        $bw_assigned_to           = $request->input('bw_assigned_to');
+        $bw_result_note           = $request->input('bw_result_note');
+
+        $result_array = array();
+        if($bw_id == 0)
+            $result_info = new BillsResultsWorkflow();
+        else
+            $result_info = BillsResultsWorkflow::find($bw_id);
+        $result_info->bw_bill_id = $ip_bill_id;
+        $result_info->bw_result_id = $bw_result_id;
+        $result_info->bw_creation_date = $bw_creation_date;
+        $result_info->bw_assigned_to = $bw_assigned_to;
+        $result_info->bw_result_note = $bw_result_note;
+        if($bw_result_id == 1)
+            $result_info->bw_callback_date = $bw_callback_date;
+        $result_info->save();
+
+
+        $bill_info = InvoicePayments::find($ip_bill_id);
+        $bill_info->ip_call_result_id = $bw_result_id;
+        $bill_info->ip_result_notes = $bw_result_note;
+        $bill_info->save();
+
+        $result_array['is_error'] = 0;
+
+        return Response()->json($result_array);
+    }
 
 
 
@@ -82,10 +137,11 @@ class InvoicePaymentsController extends Controller
      */
     public function DisplayList(Request $request)
     {
-        $general_search              = $request->input('general_search');
+        $general_search             = $request->input('general_search');
         $pi_start_date              = $request->input('pi_start_date');
         $pi_end_date                = $request->input('pi_end_date');
-        $pi_upto_date                = $request->input('pi_upto_date');
+        $pi_upto_date               = $request->input('pi_upto_date');
+        $ip_payment_status          = $request->input('ip_payment_status');
         $page_number                = $request->input("page_number");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
 
@@ -109,6 +165,9 @@ class InvoicePaymentsController extends Controller
         if(strlen($pi_upto_date) > 0)
             $bills_cond = $bills_cond->where('ip_billing_date','<=',$pi_upto_date);
 
+        if(strlen($ip_payment_status) > 0)
+            $bills_cond = $bills_cond->where('ip_payment_status','=',$ip_payment_status);
+
 
 
         $bills_count =     $bills_cond->count();
@@ -120,6 +179,14 @@ class InvoicePaymentsController extends Controller
         $lst_currency           = Currency::all();
         $currency_array         = CreateDatabaseArrayByIndex($lst_currency,"cc_id");
 
+        // calculate total amount
+        $total_amount = 0;
+
+        foreach ($lst_bills_info as $index => $bill_info) {
+            $total_amount = $total_amount + $bill_info->ip_payment_amount;
+        }
+
+
 
         $data = array(
             "lst_bills_info" => $lst_bills_info,
@@ -128,8 +195,107 @@ class InvoicePaymentsController extends Controller
 
         $result_array = array();
         $result_array['total_pages'] = $total_pages;
+        $result_array['total_amount'] = number_format($total_amount);
         $result_array['display'] = view("billing.lstbills",$data)->render();
 
+        return Response()->json($result_array);
+    }
+
+
+    public function CSVDownloadBillsReport(Request $request)
+    {
+        $general_search              = $request->input('general_search');
+        $pi_start_date              = $request->input('pi_start_date');
+        $pi_end_date                = $request->input('pi_end_date');
+        $pi_upto_date                = $request->input('pi_upto_date');
+        $ip_payment_status                = $request->input('ip_payment_status');
+
+
+
+
+        $bills_cond = InvoicePayments::whereIpIsDeleted(0);
+
+
+
+        if(strlen($pi_start_date) > 0)
+            $bills_cond = $bills_cond->where('ip_billing_date','>=',$pi_start_date);
+        if(strlen($pi_end_date) > 0)
+            $bills_cond = $bills_cond->where('ip_billing_date','<',$pi_end_date);
+
+        if(strlen($pi_upto_date) > 0)
+            $bills_cond = $bills_cond->where('ip_billing_date','<=',$pi_upto_date);
+
+        if(strlen($ip_payment_status) > 0)
+            $bills_cond = $bills_cond->where('ip_payment_status','=',$ip_payment_status);
+
+
+
+        $bills_count =     $bills_cond->count();
+
+        $lst_bills_info   = $bills_cond->get();
+
+        $data = array();
+        $data[] = [
+            ' Ref',
+            ' Bill Nbr',
+            ' Date',
+            ' Client Code',
+            ' Client Name',
+            ' Region',
+            ' Area',
+            ' Phone',
+            ' Full Address',
+            ' Bill Amount',
+            ' Remaining',
+            ' Bill Status',
+        ];
+
+        foreach ($lst_bills_info as $index => $bill_info)
+        {
+            $data[] = [
+                $bill_info->ip_payment_doc,
+                $bill_info->ip_billing_nbr,
+                $bill_info->ip_billing_date,
+                ($bill_info->Client ? $bill_info->Client->ca_account_code : "-"),
+                ($bill_info->Client ? $bill_info->Client->ca_account_name : "-"),
+                ($bill_info->Client ? $bill_info->Client->ca_billing_region : "-"),
+                ( $bill_info->Client ? $bill_info->Client->ca_billing_area : "-" ),
+                ( $bill_info->Client ? $bill_info->Client->ca_account_mobile : "-" ),
+                (  $bill_info->Client ? $bill_info->Client->ca_billing_address : "-" ),
+                ( $bill_info->ip_payment_amount . " ".  ($bill_info->Currency ? $bill_info->Currency->cc_currency_code : "-") ),
+                ( $bill_info->ip_remaining_amount . " ".  ($bill_info->Currency ? $bill_info->Currency->cc_currency_code : "-") ),
+                ( $bill_info->ip_payment_status == 1 ? "Partial Paid" : ( $bill_info->ip_payment_status == 2 ? "Paid" : "Not Paid" ) ),
+            ];
+        }
+
+
+        $csv = Writer::createFromFileObject(new \SplTempFileObject());
+
+// Ensure BOM for UTF-8 (important for Excel)
+        $csv->setOutputBOM(Writer::BOM_UTF8);
+
+// Insert your data
+        $csv->insertAll($data);
+
+// Return response with correct headers
+        return response((string) $csv)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="bills-reports.csv"');
+
+    }
+
+
+    public function GetListBillResult(Request $request)
+    {
+        $ip_id = $request->input('ip_id');
+        $result_array = array();
+
+        $lst_billresult_workflow = BillsResultsWorkflow::whereBwIsDeleted(0)->whereBwBillId($ip_id)->orderBy('bw_creation_date','DESC')->get();
+        $data = array(
+            "lst_billresult_workflow" => $lst_billresult_workflow
+        );
+        $result_array['is_error'] = 0;
+        $result_array['display'] = view('billing.listbillresults',$data)->render();
         return Response()->json($result_array);
     }
 
@@ -239,6 +405,15 @@ class InvoicePaymentsController extends Controller
             $is_new = false;
         }
 
+        if($ip_client_id == null)
+        {
+            $client_code = $bills_info->ip_client_code;
+            $client_info = CRMAccounts::whereCaAccountCode($client_code)->first();
+
+            $ip_client_id = $client_info->ca_id;
+        }
+
+
         if($ip_remaining_amount > 0) // partial payment
         {
             $ip_payment_status = 1;
@@ -248,13 +423,12 @@ class InvoicePaymentsController extends Controller
             $ip_payment_status = 2;
         }
 
+
         $client_info = CRMAccounts::find($ip_client_id);
         $account_id = $client_info->ca_accounting_id;
-
         $payment_type = PaymentTypes::find($ip_payment_type_id);
         $pt_payment_account = $payment_type->pt_payment_account;
         $transaction_id = $bills_info->ip_transaction_id;
-
 
         $bills_info->ip_payment_doc                     = $ip_payment_doc;
         $bills_info->ip_client_id                       = $ip_client_id;

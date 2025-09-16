@@ -147,6 +147,7 @@ class InvoicesController extends Controller
             "p_product_description" => $product_info->p_product_description,
             "p_product_selling_price" => $product_info->p_product_selling_price,
             "p_product_cost_price" => $product_info->p_product_cost_price,
+            "p_use_serialnumber" => $product_info->Category->pc_use_serial_number,
         );
 
         return Response()->json($result_array);
@@ -1624,7 +1625,7 @@ class InvoicesController extends Controller
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $account_id;
             $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
-            $TransactionMovement->tm_debit              = $total_second_price;
+            $TransactionMovement->tm_debit              = $total_price;
             $TransactionMovement->tm_credit             = 0;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
             $TransactionMovement->tm_currency_id        = $invoice_currency;

@@ -1,8 +1,8 @@
 /**
- * 
+ *
  */
-$(function(){  
-    
+$(function(){
+
         if($('#CL_LEAD_DESCRIPTION').length > 0)
         {
 	 ClassicEditor
@@ -12,7 +12,7 @@ $(function(){
            } )
             .catch( error => {
                 console.error( error );
-            } );            
+            } );
         }
 
 	 $('#CL_AVATAR_PIC').on('change', function () {
@@ -43,7 +43,7 @@ $(function(){
 	 $("#BTN_SAVE_LEAD").on("click",leads_module.SaveLeadsInfo);
 	 $("#CL_MOBILE").on('blur',leads_module.DisplayExistingRecordLead);
 	 var cl_id = $("input[name=cl_id]").val();
-		 
+
 	 if(cl_id > 0)
 	 {
 		 leads_module.DisplayNotesTab();
@@ -69,7 +69,7 @@ $(function(){
 				{
 					$("#TABITEMS").addClass("disabled");
 				}
-				
+
 			}
 			else
 			{
@@ -97,12 +97,12 @@ $(function(){
             accept: function(file, done) {
                 if (file.name == "justinbieber.jpg") {
                     done("Naha, you don't.");
-                } else { 
-                    done(); 
+                } else {
+                    done();
                 }
-            }   
+            }
         };
-		 
+
 		 var type =   $("#CL_TYPE_ITEMS").val();
 		if(type == 1)
 		{
@@ -110,15 +110,16 @@ $(function(){
 			{
 				$("#TABITEMS").addClass("disabled");
 			}
-			
+
 		}
 		else
 		{
 			 leads_module.DisplayListItemsTab();
-		} 
+		}
 	 }
-         
-         
+    $("#CL_AREA").on("change",leads_module.getlistofregions);
+
+
          $(document).on("keydown", function (e) {
             if (e.key === "Enter") {
                 let $current = $(":focus");

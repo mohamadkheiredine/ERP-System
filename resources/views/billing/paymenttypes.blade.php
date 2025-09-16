@@ -27,7 +27,7 @@ th{
 }
 </style>
 @endsection
-@section('plugins') 
+@section('plugins')
 <script type="text/javascript" src="{{ url('js/libraries/billing/paymenttypes.js') }}"></script>
 @endsection
 
@@ -68,7 +68,7 @@ th{
                 					<th scope="row">{{ $pt_info->pt_id }}<input type="hidden" name="pt_id[]" value="{{ $pt_info->pt_id }}" /></th>
                 					<td><input  class="form-control" maxlength="255" type="text" name="pt_payment_type[]" value="{{ $pt_info->pt_payment_type }}" /></td>
                 					<td>
-                						 <select class="form-control" name="pt_payment_account[]">
+                						 <select  name="pt_payment_account[]" class="form-select form-control" data-control="select2" data-placeholder="Select Paymemt Type">
                                                     <option value="">Payment Type Account</option>
                                                     @foreach ( $lst_chart_accounts as $key => $acc_info )
                                                             <option {{ $pt_info->pt_payment_account == $acc_info->aa_id ? "selected" : ""  }} value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account . " - " . $acc_info->aa_account_label  }}</option>
@@ -93,5 +93,5 @@ th{
     </div>
 </div>
 
- 
+
 @endsection

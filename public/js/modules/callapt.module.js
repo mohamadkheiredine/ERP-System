@@ -253,7 +253,8 @@ callapt_module = {
                 var ld_to_apt_date	 	= $('input[name=ld_to_apt_date]').val();
                 var ca_salesman_id	 	= $('select[name=ca_salesman_id]').val();
                 var ap_apt_result	 	= $('select[name=ap_apt_result]').val();
-                var params = { _token : _token , ap_apt_result : ap_apt_result ,  lead_id : lead_id , ca_salesman_id : ca_salesman_id , ld_apt_date : ld_apt_date , ld_from_apt_date : ld_from_apt_date , ld_to_apt_date : ld_to_apt_date };
+                var phone_number	 	= $('#PHONE_NUMBER').val();
+                var params = { _token : _token , phone_number : phone_number ,  ap_apt_result : ap_apt_result ,  lead_id : lead_id , ca_salesman_id : ca_salesman_id , ld_apt_date : ld_apt_date , ld_from_apt_date : ld_from_apt_date , ld_to_apt_date : ld_to_apt_date };
 		$.ajax
 	        ({
 	            url : base_url + "/request/callcenter/displaylistappointments",

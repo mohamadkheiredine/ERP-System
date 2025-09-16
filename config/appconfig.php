@@ -1,5 +1,5 @@
-<?php
- return [
+<?php 
+ return [ 
 
 	"max_upload_size"=>"10240",
 "min_transportation_hours"=>"5",
@@ -10,9 +10,9 @@
 "hourly_rate_sallary"=>"1",
 "crm_client_select_lead"=>"0",
 "crm_telemarketing"=>"1",
-"billing_pv_one_page"=>"1",
-"billing_rv_one_page"=>"1",
+"billing_pv_one_page"=>"0",
+"billing_rv_one_page"=>"0",
 "enable_shipping_module"=>"1",
 "show_product_image"=>"0",
-"ability_edit_stock_price"=>"1"];
+"ability_edit_stock_price"=>"1"]; 
 ?>

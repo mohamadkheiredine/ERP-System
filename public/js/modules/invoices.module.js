@@ -60,8 +60,17 @@ invoices_module = {
                 },
                 success : function(response){
                     if(response.is_error == 0)
-                    {
+                    {//p_use_serialnumber
                         $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
+                        if(response.product_data.p_use_serialnumber == 1)
+                        {
+                            $('.SerialNumberHolder').css({display : "block"});
+                        }
+                        else
+                        {
+                            $('.SerialNumberHolder').css({display : "none"});
+                        }
+
                     }
                 }
             });
@@ -791,12 +800,17 @@ invoices_module = {
                         success : function(response){
                             if(response.is_error == 0)
                             {
-                                $("#FORM_LINK_PRODUCT")[0].reset();
-                                $("#FORM_LINK_PRODUCT select").each(function (){
-                                    $(this).val(0).trigger('change.select2');
-                                })
                                 invoices_module.DisplayListInvoiceProducts();
                             }
+                            else
+                            {
+                                bootbox.alert(response.error_msg);
+                            }
+
+                            $("#FORM_LINK_PRODUCT button[type=reset]").trigger('click');
+                            $("#FORM_LINK_PRODUCT select").trigger('change.select2');
+                            $("#FORM_LINK_PRODUCT input[type=text]").val('');
+                            $("#FORM_LINK_PRODUCT input[type=number]").val('0');
                         }
                     });
                 }
@@ -892,6 +906,12 @@ invoices_module = {
                               })
 	    	            	  $("#InserItems").modal('toggle');
 	    	              }
+                          else
+                          {
+                              bootbox.alert(response.error_msg);
+                          }
+
+                            $("#FRM_INVOICE_ITEMS")[0].reset();
 	    	            }
 	    	        });
 	             }

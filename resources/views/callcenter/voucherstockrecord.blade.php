@@ -13,8 +13,11 @@
 
 ?>
 
-<tr>
+<tr data-p_id="{{ $product_info->p_id }}">
     <td>{{ $product_info->p_barcode }}</td>
     <td>{{ $product_info->p_product_name }}</td>
     <td>{{ $cp_quantity }}</td>
+    <td>
+        <a href="#"   id="DeleteProductCall" ><i class="fa-solid fa-trash"></i></a>
+    </td>
 </tr>

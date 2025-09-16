@@ -162,16 +162,17 @@ class DealsController extends Controller
 
         $deal_info = $deal_info[0];
 
-        $invoice_id = $deal_info->ad_invoice_id;
+        $ip_deal_id = $deal_info->ip_deal_id;
 
-        $total_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->count();
-        $paid_count = Receipts::whereBrIsDeleted(0)->whereFkInvoiceId($invoice_id)->whereBrReceiptPaid(1)->count();
+        $total_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->count();
+        $paid_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->where('ip_payment_status','=',2)->count();
 
         $result_array['is_error'] = 0;
         $result_array['deal_info'] = array(
             'fk_sales_id' => $deal_info->fk_sales_id,
             'billing_situation' => $paid_count . "/" .$total_count,
-            'fk_telemarketing_id' => $deal_info->fk_telemarketing_id
+            'fk_telemarketing_id' => $deal_info->fk_telemarketing_id,
+            'ad_serial_number' => $deal_info->ad_serial_number
         );
 
         return Response()->json($result_array);

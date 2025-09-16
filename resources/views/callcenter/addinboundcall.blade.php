@@ -71,7 +71,7 @@ th{
                      <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Contract Code</label>
-                            <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control" required="required"  maxlength="15"  value="" />
+                            <input type="text" name="ic_contract_code" id="IC_CONTRACT_CODE" class="form-control"   maxlength="15"  value="" />
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -83,7 +83,7 @@ th{
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Client Address</label>
-                            <input type="text" name="ca_account_address" id="CA_ACCOUNT_ADDRESS" class="form-control" required="required" readonly="readonly"  maxlength="255"  value="" />
+                            <input type="text" name="ca_account_address" id="CA_ACCOUNT_ADDRESS" class="form-control"  readonly="readonly"  maxlength="255"  value="" />
                         </div>
                     </div>
                      <div class="col-md-4" style="display:none">

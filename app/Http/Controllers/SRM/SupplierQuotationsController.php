@@ -491,7 +491,8 @@ class SupplierQuotationsController extends Controller
                     $stock_info->is_created_by                  = session('user_id');
                     $stock_info->is_quanity                     = $pr_quantity[$i];
                     $stock_info->is_creation_date               = $todays_date;
-                    $stock_info->is_price_stock                 = $pr_pruchase_price[$i];
+                    $stock_info->is_price_stock                 = $pr_pruchase_price[$i] * $pr_quantity[$i];
+                    $stock_info->is_price_item                 = $pr_pruchase_price[$i];
                     $stock_info->is_selling_price               = $pr_selling_price[$i];
                     $stock_info->is_wholesale_price             = $pr_wholesale_price[$i];
                     $stock_info->is_vendor_price                = $pr_vendor_price[$i];

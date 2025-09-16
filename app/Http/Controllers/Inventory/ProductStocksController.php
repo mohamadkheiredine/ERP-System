@@ -605,6 +605,9 @@ class ProductStocksController extends Controller
             $movememnt_obj      = TransactionMovements::find($mov_id);
         }
 
+        if($movememnt_obj == null)
+            $movememnt_obj = new TransactionMovements();
+
 
         // create transaction if not exist
         if($at_id == 0)
@@ -624,6 +627,7 @@ class ProductStocksController extends Controller
         {
             $movememnt_obj->tm_debit                = $price_stock;
             $movememnt_obj->tm_credit               = 0;
+            $movememnt_obj->fk_tran_id              = $at_id;
             $movememnt_obj->tm_currency_id          = $is_stock_currency;
             $movememnt_obj->save();
         }

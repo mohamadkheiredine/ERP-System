@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 $(function(){
 	 ClassicEditor
@@ -24,7 +24,7 @@ $(function(){
 	                {
 	                    var reader = new FileReader();
 	                    reader.onload = function (e) {
-	                        var base_url = $('#BASE_URL').val();  
+	                        var base_url = $('#BASE_URL').val();
 
 	                        $("#AVATAR_PIC").attr('src', e.target.result);
 	                    }
@@ -35,7 +35,6 @@ $(function(){
 	            }
 	        }
 	    });
-	$('select').select2();
 	$("select[name=aa_parent_account]").select2('destroy');
 	$("button[id*=BTN_SAVE_SUPPLIER]").on("click",suppliers_module.SaveSupplierInfo);
 	 $("#BTN_ADD_ACCOUNT").on('click',suppliers_module.AddNewAccount);

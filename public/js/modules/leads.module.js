@@ -212,7 +212,7 @@ leads_module = {
 
                                       let cl_sheet_number = $('input[name=cl_sheet_number]').val();
                                       let cl_full_name = $('input[name=cl_full_name]').val();
-                                      let cl_region = $('input[name=cl_region]').val();
+                                      let cl_region = $('select[name=cl_region]').val();
                                       let cl_area = $('select[name=cl_area]').val();
                                       let cl_sales_id = $('select[name=cl_sales_id] option:selected').text();
                                       let cl_telemarketing_id = $('select[name=cl_telemarketing_id] option:selected').text();
@@ -251,6 +251,23 @@ leads_module = {
 
 	         });
 		},
+        getlistofregions : function(){
+            var base_url 			= $('input[name=base_url]').val();
+            var _token	 			= $('input[name=_token]').val();
+            var lr_area	 	= $(this).val();
+            var params = { _token : _token , lr_area : lr_area };
+            $.ajax
+            ({
+                url : base_url + "/request/leads/getregionarea",
+                data : params,
+                dataType : "json",
+                type : "POST",
+                success : function(response){
+                    $('#REGION_DROPDOWN').html(response.dropdown);
+                    $('select[name=cl_region]').select2();
+                }
+            });
+        },
                 DisplayExistingRecordLead : function(){
                     var cl_mobile = $("#CL_MOBILE").val();
                     var base_url =  $('input[name=base_url]').val();

@@ -1815,7 +1815,54 @@ Page Description :
 									</div>
 									<!--end:Menu sub-->
 								</div>
-									@endif
+							@endif
+                                @if($license_array->SALES_MODULE == 1 && CheckPrivilage('erp_pos_management') == "allow")
+                                    <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                        <!--begin:Menu link-->
+                                        <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-universal-access fa-xl"></i>
+										</span>
+                                            Sales Module
+									</span>
+                                        <!--end:Menu link-->
+                                        <!--begin:Menu sub-->
+                                        <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                            <div class="menu-item">
+                                                <!--begin:Menu content-->
+                                                <div class="menu-content">
+                                                    <span class="menu-section fs-5 fw-bolder ps-1 py-1">Stores Management</span>
+                                                </div>
+                                                <!--end:Menu content-->
+                                            </div>
+                                            @if(CheckPrivilage('erp_pos_stores') == "allow")
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{ url('stores') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                        <span class="menu-title">Stores Management</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
+                                            @endif
+                                            @if(CheckPrivilage('erp_store_locations') == "allow")
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{ url('store/locations') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                        <span class="menu-title">Store Locations Management</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <!--end:Menu sub-->
+                                    </div>
+                                @endif
 							@if($license_array->CRM_MODULE == 1 && CheckPrivilage('erp_manage_orders') == "allow")
 
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">

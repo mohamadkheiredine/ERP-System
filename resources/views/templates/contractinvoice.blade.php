@@ -128,7 +128,7 @@ body {
                         <p style="font-size: 20px"><strong>Date:</strong> %INVOICE_DATE%</p>
                         <p style="font-size: 20px"><strong>Curr:</strong> %INVOICE_CURRENCY%</p>
                         <p style="font-size: 20px"><strong>Sales</strong></p>
-                        <p style="font-size: 20px"><strong>RN:</strong>%registration_number%</p>
+                        <p style="font-size: 20px"><strong>CR:</strong>%registration_number%</p>
                     </div>
                 </div>
                 <div style='width:35%;text-align:left;left:61%;float: right;position: absolute;height:60px;'>

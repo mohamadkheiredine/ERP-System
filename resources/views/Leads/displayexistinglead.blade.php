@@ -16,7 +16,7 @@ Page Description :
 
 
 @foreach($lst_leads  as $index => $lead_info)
- 
+ <?php printr($lead_info) ?>
     <tr>
         <td></td>
         <td>{{ $lead_info->cl_sheet_number }}</td>

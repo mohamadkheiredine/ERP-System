@@ -306,6 +306,7 @@ Route::put('/request/leads/converttoaccounts','CRM\AccountsController@ConvertLea
 Route::get('/request/account/getaccountinfobycode','CRM\AccountsController@GetAccountInfoByCode');
 Route::post('/request/account/generatedealpaymentspreview','CRM\DealsController@GenerateDealPaymentsPreview');
 Route::post('/request/clients/getregionarea','CRM\AccountsController@GetRegionArea');
+Route::post('/request/leads/getregionarea','CRM\LeadsController@GetRegionArea');
 
 Route::post('/request/services/displaylistcategory','CRM\ServiceCategoriesController@DisplayList');
 Route::post('/request/services/savecategoryinfo','CRM\ServiceCategoriesController@SaveServiceCategoryInfo');
@@ -399,6 +400,9 @@ Route::get('/request/billing/getaccountinfo','Billing\InvoicesController@GetAcco
 Route::get('/request/billing/getproductdata','Billing\InvoicesController@GetProductDataInfo');
 Route::get('/request/bills/getpaymentinfo','Billing\InvoicesController@GetPaymentBillsInfo');
 Route::post('/request/billing/savebillinfo','Billing\InvoicesController@SaveInvoicePayment');
+Route::get('/request/bills/downloadbillsreport','Billing\InvoicePaymentsController@CSVDownloadBillsReport');
+Route::get('/request/bills/getlistbillresults','Billing\InvoicePaymentsController@GetListBillResult');
+Route::post('/request/bills/savecallbillresult','Billing\InvoicePaymentsController@SaveBillResultInfo');
 
 Route::post('/request/billing/linkinvoiceitems','Billing\InvoicesController@LinkInvoiceItems');
 
@@ -709,3 +713,9 @@ Route::delete('/request/expenses/deletecategoryinfo','Expenses\ExpenseCategories
 Route::get('/request/expenses/displaylist','Expenses\ExpensesController@DisplayList');
 Route::post('/request/expenses/saveexpenseinfo','Expenses\ExpensesController@SaveExpenseInfo');
 Route::delete('/request/expenses/deleteexpenseinfo','Expenses\ExpensesController@DeleteExpensesInfo');
+
+
+Route::get('/request/stores/displaylist','Sales\StoresController@DisplayList');
+Route::post('/request/stores/saveinfo','Sales\StoresController@SaveStoreInfo');
+Route::delete('/request/stores/deletestoreinfo','Sales\StoresController@DeleteStoreInfo');
+Route::get('/request/stores/getlistwarehouses','Sales\StoresController@GetListWarehouses');

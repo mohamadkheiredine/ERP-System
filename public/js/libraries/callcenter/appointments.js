@@ -114,6 +114,7 @@ $(function(){
   $('input[name=ld_apt_date]').on('change',function(){
       callapt_module.DisplayListAllAppointments();
   });
+  $('#PHONE_NUMBER').on('keyup',callapt_module.DisplayListAllAppointments);
    $('input[name=ld_from_apt_date]').on('change',function(){
       callapt_module.DisplayListAllAppointments();
   });

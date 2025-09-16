@@ -30,6 +30,14 @@ products_module = {
 	                         products_module.DisplayListStock();
 	                    }
 	                });
+                    $('#TopStocksPagination').twbsPagination({
+	                    totalPages: response.total_pages,
+	                    visiblePages: 7,
+	                    onPageClick: function (event, page) {
+	                         $('input[name=page_number]').val(page);
+	                         products_module.DisplayListStock();
+	                    }
+	                });
 				}
 			});
 		},

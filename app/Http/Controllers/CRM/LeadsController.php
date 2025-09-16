@@ -18,6 +18,7 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\models\System\Areas;
+use App\models\System\Regions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -345,7 +346,8 @@ class LeadsController extends Controller
         $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get();
         $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries      = Countries::all();
-        $lst_areas          = Areas::all();
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
 
@@ -359,6 +361,7 @@ class LeadsController extends Controller
             'lst_telemarketing' => $lst_telemarketing,
             'lst_lead_types' => $lst_lead_types,
             'lst_areas' => $lst_areas,
+            'lst_regions' => $lst_regions,
             'lst_sales' => $lst_sales,
             'lst_countries' => $lst_countries,
             'lst_lead_source' => $lst_lead_source
@@ -389,10 +392,11 @@ class LeadsController extends Controller
         $lst_industries                 = Industry::whereSiIsDeleted(0)->get();
         $lst_lead_source                = CRMLeadSources::whereLsIsDeleted(0)->get();
         $lst_countries                  = Countries::all();
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
         $lst_service_categories         = CRMServiceCategories::whereScIsDeleted(0)->get();
         $crm_telemarketing              = Config::get('appconfig.crm_telemarketing');
         $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
-        $lst_areas          = Areas::all();
 
         $data = array(
             'lead_categories' => $lead_categories,
@@ -401,6 +405,7 @@ class LeadsController extends Controller
             'lst_telemarketing' => $lst_telemarketing,
             'lst_sales' => $lst_sales,
             'lst_areas' => $lst_areas,
+            'lst_regions' => $lst_regions,
             'lst_lead_types' => $lst_lead_types,
             'lst_industries' => $lst_industries,
             'lst_lead_source' => $lst_lead_source,
@@ -412,6 +417,34 @@ class LeadsController extends Controller
             return Response()->view('leads.editlead',$data);
         else
             return Response()->view('leads.edittlead',$data);
+    }
+
+
+    public function GetRegionArea(Request $request)
+    {
+        $lr_area = $request->input('lr_area');
+
+
+
+        $lst_regions = Regions::whereLrArea($lr_area)->get();
+        $regions_array = array();
+
+        foreach ($lst_regions as $key => $value)
+        {
+            $regions_array[$value->lr_region] = $value->lr_region;
+        }
+
+
+        $data = array(
+            "html_array" => $regions_array,
+            "name" => 'cl_region',
+            "id" => 'CL_REGION'
+        );
+
+        $result_array['dropdown'] = view('html.dropdown',$data)->render();
+
+
+        return Response()->json($result_array);
     }
 
 
@@ -527,6 +560,7 @@ class LeadsController extends Controller
             $LeadInfo->cl_image_extension   = $image_data['data']['cl_image_extension'];
 
         }
+
 
 
         $LeadInfo->fk_lead_owner        = $fk_lead_owner;

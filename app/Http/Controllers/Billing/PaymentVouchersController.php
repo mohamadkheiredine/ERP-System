@@ -616,11 +616,11 @@ class PaymentVouchersController extends Controller
             $org_payment_amount = $pv_payment_amount;
             $payment_currency = $pv_currency_id;
             $payment_amount = $org_payment_amount;
-             if(strlen($pv_sec_currency_id) > 0)
-             {
-             $payment_amount = $org_payment_amount * $pv_exchange_rate;
-             $payment_currency= $pv_sec_currency_id;
-             }
+//             if(strlen($pv_sec_currency_id) > 0)
+//             {
+//             $payment_amount = $org_payment_amount * $pv_exchange_rate;
+//             $payment_currency= $pv_sec_currency_id;
+//             }
 
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();

@@ -409,10 +409,10 @@ receipts_module = {
 		    	})
 
 		},
-                 CalculateSecondaryAmountValue : function(){
-                    var br_payment_amount = $('input[name=br_payment_value]').val();
-                    var br_exchange_rate = $('input[name=br_exchange_rate]').val();
-                    var secondary_currency_amount = br_payment_amount / br_exchange_rate;
-                    $('input[name=br_amount_secondary_amount]').val(secondary_currency_amount.toFixed(2))
-                },
+         CalculateSecondaryAmountValue : function(){
+            var br_payment_amount = $('input[name=br_payment_value]').val();
+            var br_exchange_rate = $('input[name=br_exchange_rate]').val();
+            var secondary_currency_amount = br_payment_amount * br_exchange_rate;
+            $('input[name=br_amount_secondary_amount]').val(secondary_currency_amount.toFixed(2))
+        }
 };

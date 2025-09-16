@@ -42,4 +42,9 @@ class InvoicePayments extends Model
     {
         return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','ip_client_id');
     }
+
+    public function Result()
+    {
+        return $this->hasOne('App\models\CallCenter\CallResults', 'cr_id','ip_call_result_id');
+    }
 }

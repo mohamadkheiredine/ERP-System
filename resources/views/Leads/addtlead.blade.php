@@ -80,20 +80,27 @@ Page Description :
                             </div>
                         </div>
                         <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Region <span class="required"> * </span> </label>
-                                <input type="text" name="cl_region"  required="required"  id="CL_REGION" class="form-control" maxlength="255" tabindex="3"  value="" />
+                            <div class="form-group">
+                                <label class="control-label">Area <span class="required"> * </span> </label>
+                                <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                    <option value="">-- Select Area --</option>
+                                    <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                    <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                    <?php  } ?>
+                                </select>
                             </div>
                         </div>
-                          <div class="col-md-4">
-                             <div class="form-group">
-                                <label class="control-label">Area <span class="required"> * </span> </label>
-                                 <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
-                                     <option value="">-- Select Area --</option>
-                                     <?php foreach ( $lst_areas as $key => $area_info ) { ?>
-                                     <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
-                                     <?php  } ?>
-                                 </select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Region</label>
+                                <div class="col-md-12" id="REGION_DROPDOWN">
+                                    <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="3" data-control="select2" data-placeholder="Select Region">
+                                        <option value="">-- Select Region --</option>
+                                        @foreach( $lst_regions as $key => $region_info )
+                                            <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">

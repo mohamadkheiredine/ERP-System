@@ -47,8 +47,8 @@ class ProductCategoriesController extends Controller
         $data = array();
         return Response()->view('products.categories.categories',$data);
     }
-    
-    
+
+
     /**
      * Display list of product categories
      *
@@ -65,62 +65,62 @@ class ProductCategoriesController extends Controller
           $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
           $skip = 0;
-        
-         
-            
+
+
+
         $product_categories_count = ProductCategories::wherePcIsDeleted(0);
-        
+
         if(strlen($search_query) > 0)
             $product_categories_count = $product_categories_count->where('pc_category' , 'LIKE' , '%' . $search_query . '%');
-        
+
         $product_categories_count = $product_categories_count->count();
-        
-        
+
+
         $total_pages = ceil( $product_categories_count /$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
+
         $product_categories = ProductCategories::wherePcIsDeleted(0);
-        
+
         if(strlen($search_query) > 0)
             $product_categories= $product_categories->where('pc_category' , 'LIKE' , '%' . $search_query . '%');
-        
+
         $product_categories = $product_categories->skip($skip)->take($nbr_rows_per_pages)->orderBy('fk_pc_id', 'ASC')->get();
-            
+
         $product_categories_array   = array();
         $lst_product_categories     = ProductCategories::wherePcIsDeleted(0)->get();
-        foreach ( $lst_product_categories as $key => $pc_info ) 
+        foreach ( $lst_product_categories as $key => $pc_info )
         {
             $product_categories_array[ $pc_info->pc_id ] =  $pc_info->pc_category;
-        } 
+        }
         $data = array(
             "product_categories" => $product_categories,
             "product_categories_array" => $product_categories_array
         );
-        
+
         $result_array = array();
-        
+
         $result_array['total_pages'] = $total_pages;
         $result_array['display'] = view("products.categories.displaylist",$data)->render();
-        
+
         return Response()->json($result_array);
     }
-    
+
     /**
      * Page to display list of products inside pc_id category
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Integer $pc_id
      */
     public function ListProducts($pc_id)
     {
-        
+
         $data = array(
             "pc_id" => $pc_id
         );
         return Response()->view('products.categories.itemscategory',$data);
     }
-    
+
     /**
      * Function of Adding a new Category
      *
@@ -130,16 +130,16 @@ class ProductCategoriesController extends Controller
      */
     public function AddForm()
     {
-        
+
         $lst_product_categories = ProductCategories::wherePcIsDeleted(0)->get();
-        
+
         $data = array(
             "lst_product_categories" => $lst_product_categories,
         );
         return view('products.categories.addcategory',$data);
     }
-    
-    
+
+
     /**
      * Save Product Category Info to the database
      *
@@ -157,35 +157,35 @@ class ProductCategoriesController extends Controller
         $pc_cat_ref                 = str_replace(" ", "", $pc_cat_ref);
         $pc_cat_ref                 = substr($pc_cat_ref, 0,3);
         $pc_description             = $request->input('pc_description');
-        $pc_use_serial_number       = $request->has('pc_use_serial_number') ? 1 : 0;
-        $pc_maintenance_category    = $request->has('pc_maintenance_category') ? 1 : 0;
-        $pc_is_returnable           = $request->has('pc_is_returnable') ? 1 : 0;
-        $pc_is_perishable           = $request->has('pc_is_perishable') ? 1 : 0;
-       
+        $pc_use_serial_number       = $request->input('pc_use_serial_number');
+        $pc_maintenance_category    = $request->input('pc_maintenance_category');
+        $pc_is_returnable           = $request->input('pc_is_returnable');
+        $pc_is_perishable           = $request->input('pc_is_perishable');
+
         $pc_id                      = $request->input( "pc_id");
         $result_array = array();
         $ProductCategoriesManager  = new ProductCategoriesManager();
         $pc_avatar_base_src     = "";
         $pc_avatar_file_name    = "";
         $pc_avatar_extension    = "";
-        
+
         if(count($_FILES) > 0)
         {
-            
+
             $image_data =  $ProductCategoriesManager->UploadAvatarCategory(null);
-            
+
             $pc_avatar_base_src      = $image_data['data']['pc_avatar_base_src'];
             $pc_avatar_file_name     = $image_data['data']['pc_avatar_file_name'];
             $pc_avatar_extension     = $image_data['data']['pc_avatar_extentions'];
-            
+
         }
-        
+
         $ProductCategory = new ProductCategories();
         if($pc_id != null)
         {
             $ProductCategory = ProductCategories::find($pc_id);
         }
-        
+
         $ProductCategory->fk_pc_id                  = $fk_pc_id;
         $ProductCategory->pc_category               = $pc_category;
         $ProductCategory->pc_description            = $pc_description;
@@ -194,24 +194,24 @@ class ProductCategoriesController extends Controller
         $ProductCategory->pc_maintenance_category   = $pc_maintenance_category;
         $ProductCategory->pc_is_returnable          = $pc_is_returnable;
         $ProductCategory->pc_is_perishable          = $pc_is_perishable;
-        
+
         if(strlen($pc_avatar_base_src) > 0)
         {
             $ProductCategory->pc_avatar_base_src      = $pc_avatar_base_src;
             $ProductCategory->pc_avatar_file_name     = $pc_avatar_file_name;
             $ProductCategory->pc_avatar_extension     = $pc_avatar_extension;
         }
-        
+
         $ProductCategory->save();
-        
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Product Category Information Has been saved';
-        
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     /**
      * Display Edit Product Category Form Page
      *
@@ -221,21 +221,21 @@ class ProductCategoriesController extends Controller
      */
     public function EditForm( $pc_id )
     {
-        $product_categories        = ProductCategories::find($pc_id); 
-        
+        $product_categories        = ProductCategories::find($pc_id);
+
         $lst_product_categories = ProductCategories::wherePcIsDeleted(0)->whereNotIn("pc_id",array($pc_id))->get();
-        
+
         $data = array(
             "product_categories" => $product_categories,
             "lst_product_categories" => $lst_product_categories
         );
         return view('products.categories.editcategory',$data);
     }
-    
-    
+
+
     /**
      * Delete product category information
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -243,25 +243,25 @@ class ProductCategoriesController extends Controller
      */
     public function DeleteProductCategoryInfo(Request $request)
     {
-        
+
         $pc_id= $request->input('pc_id');
-         
+
         $product_category = ProductCategories::find( $pc_id);
         $product_category->pc_is_deleted          = 1;
         $product_category->pc_deleted_by          = Session('user_id');
         $product_category->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Display list items in the selecvted pc_id category
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -276,37 +276,37 @@ class ProductCategoriesController extends Controller
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
-            
-            
-            
+
+
+
         $products_count = Products::wherePProductIsDeleted(0)->whereFkPcId($pc_id);
-         
+
         if(strlen($search_query) > 0)
             $products_count= $products_count->where('p_product_name' , 'LIKE' , '%' . $search_query . '%');
-            
+
             $products_count= $products_count->count();
-        
-        
+
+
             $total_pages = ceil( $products_count /$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
+
         $lst_products = Products::wherePProductIsDeleted(0)->whereFkPcId($pc_id);
-        
-      
+
+
         if(strlen($search_query) > 0)
             $lst_products=  $lst_products->where('p_product_name' , 'LIKE' , '%' . $search_query . '%');
-            
+
             $lst_products= $lst_products->skip($skip)->take($nbr_rows_per_pages)->orderBy('p_product_name', 'ASC')->get();
-            
-            $data = array( 
+
+            $data = array(
                 "lst_products" => $lst_products
             );
-            
+
             $result_array = array();
-            
+
             $result_array['total_pages'] = $total_pages;
             $result_array['display'] = view("products.categories.displaylistitems",$data)->render();
-            
+
             return Response()->json($result_array);
     }
 

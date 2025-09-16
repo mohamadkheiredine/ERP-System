@@ -46,17 +46,17 @@ use App\models\CRM\CRMAccounts;
 
 class CustomersController extends Controller
 {
-    
+
     /**
      * Main Page to display the leads management
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @return Response
      */
     public function index()
     {
-        
+
         $data = array();
         return Response()->view("customers.customers",$data);
     }
@@ -64,7 +64,7 @@ class CustomersController extends Controller
 
     /**
      * Display list of the Customers based on selected fields
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -72,7 +72,7 @@ class CustomersController extends Controller
      */
     public function DisplayList(Request $request)
     {
-        
+
         $page_number            = $request->input('page_number');
         $search_query           = $request->input('search_query');
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
@@ -80,7 +80,7 @@ class CustomersController extends Controller
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
             else
                 $skip = 0;
-        
+
         $customers_cond     = Customers::whereIcIsDeleted(0);
         if(strlen($search_query) > 0)
         {
@@ -89,16 +89,16 @@ class CustomersController extends Controller
             $customers_cond = $customers_cond->orWhere('ic_customer_code','LIKE','%' . $search_query. '%');
             $customers_cond = $customers_cond->orWhere('ic_customer_email','LIKE','%' . $search_query. '%');
         }
-        
-        
+
+
         $count              = $customers_cond->count();
-       
+
         $total_pages = ceil( $count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
-        
-         
+
+
         $lst_customers_obj    = $customers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-        
+
 
         $response_array = array();
 
@@ -120,17 +120,17 @@ class CustomersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function AddForm()
-    { 
-        $lst_countries          = Countries::all(); 
-        $lst_vendors_info       = Vendors::whereIvIsDeleted(0)->get(); 
+    {
+        $lst_countries          = Countries::all();
+        $lst_vendors_info       = Vendors::whereIvIsDeleted(0)->get();
         $CustomerManagement     = new CustomersManager();
         $customer_code          = $CustomerManagement->GenerateCustomerCode();
         $lst_vat_tax            = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_accounts           = ChartAccounts::whereAaIsDeleted(0)->get();
         $customer_account_info  = DefaultAccounts::whereDaAccountCode("ACCOUNT_CUSTOMER")->get();
         $customer_account_id    = $customer_account_info[0]['da_account_value'];
-        
-        $data = array( 
+
+        $data = array(
             'customer_code' => $customer_code,
             'lst_vendors_info' => $lst_vendors_info,
             'lst_countries' => $lst_countries,
@@ -150,22 +150,22 @@ class CustomersController extends Controller
     public function EditForm($ic_id)
     {
         $customer_info          = Customers::find($ic_id);
-        $lst_vendors_info       = Vendors::whereIvIsDeleted(0)->get(); 
+        $lst_vendors_info       = Vendors::whereIvIsDeleted(0)->get();
         $lst_countries          = Countries::all();
         $lst_vat_tax            = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->get();
         $customer_account_info  = DefaultAccounts::whereDaAccountCode("ACCOUNT_CUSTOMER")->get();
         $customer_account_id    = $customer_account_info[0]['da_account_value'];
-        
+
         $customer_code = "";
         if($customer_info->ic_customer_code == null)
         {
             $CustomerManagement = new CustomersManager();
             $customer_code      = $CustomerManagement->GenerateCustomerCode();
         }
-     
-        
-        $data = array( 
+
+
+        $data = array(
             'customer_info'     => $customer_info,
             'lst_countries'     => $lst_countries,
             'customer_code'     => $customer_code,
@@ -174,11 +174,11 @@ class CustomersController extends Controller
             'lst_accounts' => $lst_accounts,
             'customer_account_id' => $customer_account_id
         );
-        
+
         return Response()->view('customers.editform',$data);
 
     }
-    
+
     /**
      * Download CSV template
      * @author Moe Mantach
@@ -198,21 +198,21 @@ class CustomersController extends Controller
        return $csv->output('data.csv');
 
     }
-    
-    
+
+
     /**
      * import list of all customers from a template already used
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function ImportListCustomers(Request $request)
     {
-        
+
         $result_array = array();
         $file_path = $_FILES['cc_customers_list']['tmp_name'];
-        
+
          // Create a new CsvReader instance
         $csvReader = Reader::createFromPath($file_path, 'r');
 
@@ -227,7 +227,7 @@ class CustomersController extends Controller
             $address        = trim($record[3]);
             $phone          = trim($record[4]);
             $mobile         = trim($record[5]);
-            
+
             if($code != 'Code' && $full_name != 'Full Name')
             {
                 $customer_info = new Customers();
@@ -237,17 +237,17 @@ class CustomersController extends Controller
                 $customer_info->ic_customer_address = $address;
                 $customer_info->ic_customer_phone = $phone;
                 $customer_info->ic_customer_mobile = $mobile;
-                
-                
+
+
                  $customer_info->ic_date_creation = date("Y-m-d");
-            
-                $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+
+                $account_info   = ChartAccounts::where("aa_account_ref","=","4111")->get();
                 $account_info = $account_info[0];
 
-                $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+                $count   = ChartAccounts::where("aa_account_ref","LIKE","4111%")->count();
 
                 $new_count      = $count + 1;
-                $aa_account_ref = $account_info->aa_account . (String)$new_count;
+                $aa_account_ref = $account_info->aa_account . (String)sprintf('%05d', $new_count);
 
                 $AccAccounting = new ChartAccounts();
                 $AccAccounting->aa_parent_account   = $account_info->aa_id;
@@ -256,29 +256,28 @@ class CustomersController extends Controller
                 $AccAccounting->aa_sub_account      = $account_info->aa_id;
                 $AccAccounting->aa_account_label    = $full_name;
                 $AccAccounting->fk_country_id       = 0;
-                $AccAccounting->save(); 
+                $AccAccounting->save();
                 $aa_id = $AccAccounting->aa_id;
                 $customer_info->ic_account_number = $aa_id;
-                
-                
+
                 $customer_info->save();
-                
+
             }
-            
+
         }
 
-    
-        
+
+
         $result_array['is_error'] = 0;
-        
-        
+
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Save Account Accounting and link it to the current customer
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -287,19 +286,19 @@ class CustomersController extends Controller
     {
         $account_ref        = $request->input("account_ref");
         $parent_account     = $request->input("parent_account");
-        $account_label      = $request->input("account_label"); 
+        $account_label      = $request->input("account_label");
         $country_id         = session("company_country");
         $result_array       = array();
-       
+
         $acc_info           = ChartAccounts::find($parent_account);
         $count_ref_account  = ChartAccounts::whereAaAccountRef($parent_account)->count();
-        
-        
+
+
         // check if this account exist
         $account_info   = ChartAccounts::where("aa_account_ref","LIKE",$acc_info->aa_account_ref . "%")->get();
         $new_count      = count($account_info) + 1;
         $aa_account_ref = $acc_info->aa_account . (String)$new_count;
-        
+
         $AccAccounting = new ChartAccounts();
         $AccAccounting->aa_parent_account   = $parent_account;
         $AccAccounting->aa_account_ref      = $aa_account_ref;
@@ -308,10 +307,10 @@ class CustomersController extends Controller
         $AccAccounting->aa_account_label    = $account_label;
         $AccAccounting->fk_country_id       = $country_id;
         $AccAccounting->save();
-        
+
         $aa_id = $AccAccounting->aa_id;
-        
-        
+
+
         $result_array['is_error']           = 0;
         $result_array['error_msg']          = "Operation Complete Successfully";
         $result_array['accounting_label']   = $aa_account_ref . " - " . $account_label;
@@ -328,8 +327,8 @@ class CustomersController extends Controller
      * @param Request $request
      */
     public function SaveCustomerInfo(Request $request)
-    { 
-        
+    {
+
         $ic_id                  = $request->input('ic_id');
         $ic_customer_name         = $request->input('ic_customer_name');
         $ic_customer_description  = $request->input('ic_customer_description');
@@ -347,26 +346,26 @@ class CustomersController extends Controller
         $ic_customer_tax_id       = $request->input('ic_customer_tax_id');
         $ic_vendor_id               = $request->input('ic_vendor_id');
         $ic_vendor_id               = ($ic_vendor_id == "null") ? 0 : $ic_vendor_id;
-        
-        $ic_default_customer        = $request->input('ic_default_customer'); 
+
+        $ic_default_customer        = $request->input('ic_default_customer');
         $CustomerInfo = new Customers();
-        $CustomerManager = new CustomersManager(); 
+        $CustomerManager = new CustomersManager();
         if($ic_id != null)
         {
             $CustomerInfo = Customers::find( $ic_id );
         }
-        else 
+        else
         {
             $CustomerInfo->ic_date_creation = date("Y-m-d");
-            
+
             $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
             $account_info = $account_info[0];
-         
+
             $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
-            
+
             $new_count      = $count + 1;
             $aa_account_ref = $account_info->aa_account . (String)$new_count;
-           
+
             $AccAccounting = new ChartAccounts();
             $AccAccounting->aa_parent_account   = $account_info->aa_id;
             $AccAccounting->aa_account_ref      = $aa_account_ref;
@@ -374,40 +373,40 @@ class CustomersController extends Controller
             $AccAccounting->aa_sub_account      = $account_info->aa_id;
             $AccAccounting->aa_account_label    = $ic_customer_name;
             $AccAccounting->fk_country_id       = 0;
-            $AccAccounting->save(); 
+            $AccAccounting->save();
             $aa_id = $AccAccounting->aa_id;
             $CustomerInfo->ic_account_number = $aa_id;
-            
+
         }
-        
+
         // upload file to the CRM photo
         if(count($_FILES) > 0 )
         {
-            $image_data =  $CustomerManager->UploadCustomersAvatar($ic_id); 
+            $image_data =  $CustomerManager->UploadCustomersAvatar($ic_id);
             $CustomerInfo->ic_image_base_src      = $image_data['data']['ic_image_base_src'];
             $CustomerInfo->ic_image_file_name     = $image_data['data']['ic_file_name'];
             $CustomerInfo->ic_image_extension     = $image_data['data']['ic_file_extension'];
-            
-        }
-        
-     
-        $CustomerInfo->ic_customer_name         = $ic_customer_name; 
-        $CustomerInfo->ic_customer_description  = $ic_customer_description; 
-        $CustomerInfo->ic_customer_code         = $ic_customer_code; 
-        $CustomerInfo->ic_customer_address      = $ic_customer_address; 
-        $CustomerInfo->ic_customer_country      = $ic_customer_country; 
-        $CustomerInfo->ic_customer_email        = $ic_customer_email; 
-        $CustomerInfo->ic_customer_website      = $ic_customer_website; 
-        $CustomerInfo->ic_customer_phone        = $ic_customer_phone; 
-        $CustomerInfo->ic_customer_mobile       = $ic_customer_mobile; 
-        $CustomerInfo->ic_customer_sales_tax    = $ic_customer_sales_tax;  
-        $CustomerInfo->ic_vendor_id             = $ic_vendor_id;  
-        $CustomerInfo->ic_default_customer      = $ic_default_customer;  
-        $CustomerInfo->ic_created_by            = session('user_id');  
 
-        
-        
-        
+        }
+
+
+        $CustomerInfo->ic_customer_name         = $ic_customer_name;
+        $CustomerInfo->ic_customer_description  = $ic_customer_description;
+        $CustomerInfo->ic_customer_code         = $ic_customer_code;
+        $CustomerInfo->ic_customer_address      = $ic_customer_address;
+        $CustomerInfo->ic_customer_country      = $ic_customer_country;
+        $CustomerInfo->ic_customer_email        = $ic_customer_email;
+        $CustomerInfo->ic_customer_website      = $ic_customer_website;
+        $CustomerInfo->ic_customer_phone        = $ic_customer_phone;
+        $CustomerInfo->ic_customer_mobile       = $ic_customer_mobile;
+        $CustomerInfo->ic_customer_sales_tax    = $ic_customer_sales_tax;
+        $CustomerInfo->ic_vendor_id             = $ic_vendor_id;
+        $CustomerInfo->ic_default_customer      = $ic_default_customer;
+        $CustomerInfo->ic_created_by            = session('user_id');
+
+
+
+
         $CustomerInfo->save();
 
         $result_array['is_error']   = 0;
@@ -415,13 +414,13 @@ class CustomersController extends Controller
         return Response()->json($result_array);
 
     }
-    
-    
-     
-    
+
+
+
+
     /**
      * Delete Customer  info and check all condition before begin deleted
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -432,7 +431,7 @@ class CustomersController extends Controller
         $ic_id = $request->input('ic_id');
         $result_array = array();
 
-        
+
         $customer_info = Customers::find($ic_id);
         $customer_info->ic_is_deleted   = 1;
         $customer_info->ic_deleted_by   = session('user_id');
@@ -443,9 +442,9 @@ class CustomersController extends Controller
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
     public function SaveMainCustomerInfo( Request $request )
     {
         $user_id                = Session('user_id');
@@ -457,13 +456,13 @@ class CustomersController extends Controller
         $ic_customer_phone      = $request->input('ic_customer_phone');
         $ic_customer_mobile     = $request->input('ic_customer_mobile');
         $user_info              = Users::find($user_id);
-        
+
         $customer_manager = new CustomersManager();
         $params = array(
             'company_id' => $user_info->fk_company_id
         );
         $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
-        
+
         if($customer_id != 0)
         {
             $customer_info = Customers::find($customer_id);
@@ -472,33 +471,33 @@ class CustomersController extends Controller
         {
             $customer_info = new Customers();
         }
-        
-        
-        
+
+
+
         $customer_info->ic_customer_code    = $ic_customer_code;
         $customer_info->ic_customer_name    = $ic_customer_name;
         $customer_info->ic_customer_address = $ic_customer_address;
         $customer_info->ic_customer_email   = $ic_customer_email;
         $customer_info->ic_customer_website = $ic_customer_website;
-        
-        
+
+
         if(count($_FILES) > 0 )
         {
             $image_data =  $customer_manager->UploadCustomersAvatar($customer_id);
             $customer_info->ic_image_base_src      = $image_data['data']['ic_image_base_src'];
             $customer_info->ic_image_file_name     = $image_data['data']['ic_file_name'];
             $customer_info->ic_image_extension     = $image_data['data']['ic_file_extension'];
-            
+
         }
-        
+
         $customer_info->save();
-        
-        
+
+
         $result_array['is_error'] = 0;
         $result_array['customer_id'] = $customer_info->ic_id;
         $result_array['customer_name'] = $ic_customer_name;
         return Response()->json($result_array);
     }
-     
+
 
 }

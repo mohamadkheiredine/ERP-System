@@ -305,6 +305,20 @@ Page Description :
                                                         <input type="text" name="ld_to_apt_date" id="LD_TO_APT_DATE" class="form-control" value="" />
                                                      </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <label>&nbsp;</label>
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Input group-->
+                                                        <div class="position-relative w-md-600px me-md-2">
+                                                            <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                            <input type="text" class="form-control form-control-solid ps-10" name="phone_number" id="PHONE_NUMBER" value="" placeholder="Phone Number" />
+                                                        </div>
+                                                        <!--end::Input group-->
+                                                    </div>
+                                                </div>
                                                  <div class="col-md-6">
                                                         <div class="form-group">
                                                           <label>Salesman  </label>

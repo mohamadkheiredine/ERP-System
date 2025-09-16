@@ -452,7 +452,7 @@ class ReceiptsController extends Controller
         $receipt_info->br_receipt_number = $br_receipt_number;
         $receipt_info->br_account_id        = $br_account_id;
         $receipt_info->br_customer_id       = $br_customer_id;
-        $receipt_info->br_customer_id       = $br_customer_id;
+        $receipt_info->br_client_id         = $br_client_id;
         $receipt_info->br_receipt_label     = $br_receipt_label;
         $receipt_info->br_receipt_date      = $br_receipt_date;
         $receipt_info->br_creation_date     = date("Y-m-d");
@@ -514,6 +514,7 @@ class ReceiptsController extends Controller
 
 
             $account_number = ($crm_telemarketing == '0') ?  $customer_info->ic_account_number : ($br_client_id != 0 ? $client_info->ca_accounting_id : $br_account_from ) ;
+
             $payment_info   = PaymentTypes::find($fk_payment_type);
 
             $pt_payment_account = $payment_info->pt_payment_account;
@@ -522,7 +523,7 @@ class ReceiptsController extends Controller
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+            $TransactionMovement->tm_ledger_account     = $account_number;
             $TransactionMovement->tm_sub_ledger_account = $account_number;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
             $TransactionMovement->tm_debit              = 0;
@@ -537,11 +538,11 @@ class ReceiptsController extends Controller
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
-            $TransactionMovement->tm_debit              = $amount_value;
+            $TransactionMovement->tm_debit              = $br_payment_value;
             $TransactionMovement->tm_credit             = 0;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
             $TransactionMovement->tm_transaction_date   = $br_receipt_date;
-            $TransactionMovement->tm_currency_id        = $amount_currency;
+            $TransactionMovement->tm_currency_id        = $br_receipt_currency;
             $TransactionMovement->save();
 
             $receipt_info = Receipts::find($br_id);
@@ -764,9 +765,19 @@ class ReceiptsController extends Controller
 
 
         $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+        $display = str_replace("%registration_number%",$company_info->cd_register_number, $display);
         $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
-        $display = str_replace("%account_to%",$receipt_info->AccountReceivable->aa_account_label, $display);
-        $display = str_replace("%account_ledger_to%",$receipt_info->AccountReceivable->aa_account_ref, $display);
+        if(Config::get('appconfig.crm_telemarketing') == 1)
+        {
+            $display = str_replace("%account_to%",$receipt_info->Client->ca_account_name, $display);
+            $display = str_replace("%account_ledger_to%",$receipt_info->Client->ca_accounting_id, $display);
+        }
+        else
+        {
+            $display = str_replace("%account_to%",$receipt_info->Customer->ic_customer_name, $display);
+            $display = str_replace("%account_ledger_to%",$receipt_info->Customer->ic_account_number, $display);
+        }
+
         $display = str_replace("%paied_account%",$receipt_info->AccountPayable->aa_account_label, $display);
         $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
         $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);

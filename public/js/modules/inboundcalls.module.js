@@ -61,6 +61,17 @@ inboundcalls_module = {
 	    });
 
 	},
+    ShowOrHidePaymentType : function(){
+        let voucher_price = $("#IC_VISIT_PRICE").val();
+        if(voucher_price > 0)
+        {
+            $('.PaymentTypesDropdown').css({display : "block"});
+        }
+        else
+        {
+            $('.PaymentTypesDropdown').css({display : "none"});
+        }
+    },
     GetResultRecordInfo : function(){
         let cw_id = $(this).data('cw_id');
         let _token 				= $('input[name=_token]').val();
@@ -74,6 +85,7 @@ inboundcalls_module = {
             beforeSend : function(){
             },
             success : function(response){
+                $('input[name=cw_id]').val(response.cw_id);
                 $('input[name=cw_creation_date]').val(response.cw_creation_date);
                 $('select[name=cw_result_id]').val(response.cw_result_id).trigger('change.select2');
                 $('select[name=cw_assigned_to]').val(response.cw_assigned_to).trigger('change.select2');
@@ -113,6 +125,21 @@ inboundcalls_module = {
         })
         $(this).find('input[type=checkbox]').attr('checked',true);
         $(this).addClass('SelectedRow');
+        inboundcalls_module.DisplayListofCallResult($(this).data("ic_id"));
+    },
+    DisplayListofCallResult : function(ic_id){
+        var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val();
+        $.ajax
+        ({
+            url : base_url + "/request/call/getlistcallresults",
+            data : { _token : _token , ic_id : ic_id },
+            method : 'get',
+            dataType : "json",
+            success : function(response){
+                $('#LstMainCallResult').html(response.display);
+            }
+        });
     },
     AddProductStock : function(){
         let  base_url 			= $('input[name=base_url]').val();
@@ -133,6 +160,9 @@ inboundcalls_module = {
                 let products = $('.LstMaintenanceProducts').html();
                 $('.LstMaintenanceProducts').html(products + response.display);
                 $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
+                $("input[name=cp_quantity]").val('1');
+                $("#CP_PRODUCT_ID").val(0).trigger('change.select2');
+                $('.ProductName').html('');
 
             }
         });
@@ -417,6 +447,7 @@ inboundcalls_module = {
                     $('#IC_SALES_ID').val(response.deal_info.fk_sales_id).trigger('change');
                     $('#IC_TELEMARKETING_ID').val(response.deal_info.fk_telemarketing_id).trigger('change');
                     $('#IC_BILL_SITUATION').val(response.deal_info.billing_situation);
+                    $('#IC_PRODUCT_MACHINE_ID').val(response.deal_info.ad_serial_number);
             }
         });
     },

@@ -145,9 +145,12 @@ th{
 						<th>Date</th>
 						<th>Time</th>
 						<th>Client</th>
+						<th>Region</th>
+						<th>Area</th>
 						<th>Address</th>
 						<th>Phone</th>
 						<th>Result</th>
+						<th>Call Result</th>
 						<th style="width: 2px;white-space: nowrap;">edit</th>
 						<th style="width: 2px;white-space: nowrap;">Delete</th>
 					</tr>
@@ -175,6 +178,25 @@ th{
 				</a>
 			</div>
 		</div>
+
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;height:700px;overflow: scroll">
+                <div class="table-responsive">
+                    <table id="TableMainCallResults" class="table table-striped gy-7 gs-7">
+                        <thead>
+                        <tr
+                            class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                            <th>Date</th>
+                            <th>Note</th>
+                            <th>Result</th>
+                            <th>Assign To</th>
+                        </tr>
+                        </thead>
+                        <tbody class="LstMainCallResult" id="LstMainCallResult"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 	</div>
 </div>
 
@@ -191,6 +213,7 @@ th{
               <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="ic_call_ids" id="IC_CALL_IDS" value="0" />
+                        <input type="hidden" name="cw_id" id="CW_ID" value="0" />
               </span>
                 <div class="col-md-6">
                     <div class="form-group">
@@ -317,10 +340,10 @@ th{
                            </select>
                        </div>
                    </div>
-                   <div class="col-md-6">
+                   <div class="col-md-6 PaymentTypesDropdown" style="display:none">
                              <div class="form-group">
-                                <label class="control-label">Payment Type <span class="required"> * </span> </label><br/>
-                                <select class="form-control form-select" required="required" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
+                                <label class="control-label">Payment Type </label><br/>
+                                <select class="form-control form-select" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
                         			<option value="">-- Select Payment Type --</option>
                                     @foreach($lst_payment_types as $index => $paytype_info)
                                       <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
@@ -333,8 +356,8 @@ th{
                       <div class="row">
                           <div class="col-md-3">
                               <div class="form-group">
-                                  <select class="form-control form-select" id="CP_PRODUCT_ID" name="cp_product_id" data-control="select2" data-placeholder="Select Product">
-                                      <option value="">-- Select Product --</option>
+                                  <select class="form-control form-select" id="CP_PRODUCT_ID" name="cp_product_id" data-control="select2" data-placeholder="Select used items">
+                                      <option value="0">-- Select used items --</option>
                                       @foreach($lst_products as $index => $product_info)
                                           <option value="{{ $product_info->p_id }}">{{ $product_info->p_barcode }}</option>
                                       @endforeach
@@ -342,7 +365,7 @@ th{
                               </div>
                           </div>
                           <div class="col-md-3"><label></label><br/><label class="text-info ProductName"></label></div>
-                          <div class="col-md-3"><input type="text" name="cp_quantity" class="form-control" value="" /> </div>
+                          <div class="col-md-3"><input type="text" name="cp_quantity" class="form-control" value="1" /> </div>
                           <div class="col-md-3"><button type="button" name="btn_add_stock" class="btn btn-info" >Add Stock</button> </div>
                       </div>
                   </div>
@@ -355,6 +378,7 @@ th{
                                   <th>Code</th>
                                   <th>Item</th>
                                   <th>Quantity</th>
+                                  <th>Delete</th>
                               </tr>
                               </thead>
                               <tbody class="LstMaintenanceProducts">
