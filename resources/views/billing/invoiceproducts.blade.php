@@ -26,7 +26,7 @@ Page Description :
 	<tbody>
 		@foreach( $items_array as $index => $item_info )
 		<tr>
-			<td style="height:45px;text-align: left !important;border-top:solid 1px black" align="center">{{ $item_info['label'] }} {{ $item_info['serialnumber'] }}</td>
+			<td style="height:45px;text-align: left !important;border-top:solid 1px black" align="center">{{ $item_info['label'] }} {{ isset($item_info['serialnumber']) ? $item_info['serialnumber'] : "" }}</td>
 			<td style="height:45px;border-top:solid 1px black" align="center">{{ $item_info['cost'] }}&nbsp;&nbsp;{{ $item_info['currency'] }}</td>
 			<td style="height:45px;border-top:solid 1px black" align="center">{{ $item_info['quantity'] }}</td>
 			<td style="height:45px;border-top:solid 1px black" align="center">{{ $item_info['price'] }}&nbsp;&nbsp;{{ $item_info['currency'] }}</td>
