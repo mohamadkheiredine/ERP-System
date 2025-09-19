@@ -169,6 +169,7 @@ ON UPDATE CASCADE)
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
+ALTER TABLE `acc_expenses` ADD COLUMN `ac_is_paid` TINYINT NULL DEFAULT 0 AFTER `ac_payment_type`;
 
 
 

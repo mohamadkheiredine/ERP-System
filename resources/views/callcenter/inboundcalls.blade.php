@@ -31,6 +31,7 @@ th{
 @section('plugins')
 <script type="text/javascript" src="{{ url('default/assets/plugins/tablesorter/dist/js/jquery.tablesorter.js') }}"></script>
 <script type="text/javascript" src="{{ url('default/assets/plugins/tablesorter/dist/js/jquery.tablesorter.widgets.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/inboundcalls.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/callcenter/inboundcalls.js') }}"></script>
 @endsection
@@ -80,7 +81,7 @@ th{
                                                 <div class="col-md-4">
                                                     <label class="control-label">Technician</label>
                                                     <select name="ic_technician_id" id="IC_TECHNICIAN_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
-                                                           <option value="">-- Select Technician --</option>
+                                                           <option value="0">-- Select Technician --</option>
                                                            @foreach ( $lst_technicians as $key => $user_info )
                                                                    <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                                            @endforeach
@@ -92,7 +93,7 @@ th{
 						<div class="col-md-4">
                                                     <label class="control-label">Maintenance Type</label>
                                                     <select name="ic_maintenance_type" id="IC_MAINTENANCE_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Maintenance Type">
-                                                           <option value="">-- Select Maintenance Type --</option>
+                                                           <option value="0">-- Select Maintenance Type --</option>
                                                             <?php foreach ( $lst_maint_types as $key => $type_info ) { ?>
                                                                     <option value="{{ $type_info->mt_id }}">{{ $type_info->mt_type }}</option>
                                                             <?php  } ?>
@@ -121,6 +122,30 @@ th{
                                 <option value="{{ $res_info->cr_id }}">{{ $res_info->cr_result_title }}</option>
                                 <?php  } ?>
                             </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Area <span class="required"> * </span> </label>
+                                <select name="cl_area" required="required" id="CL_AREA"  tabindex="4"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                    <option value="0">-- Select Area --</option>
+                                    <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                    <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                    <?php  } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Region</label>
+                                <div class="col-md-12" id="REGION_DROPDOWN">
+                                    <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="5" data-control="select2" data-placeholder="Select Region">
+                                        <option value="0">-- Select Region --</option>
+                                        @foreach( $lst_regions as $key => $region_info )
+                                            <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 					</div>
 				</div>
@@ -292,6 +317,26 @@ th{
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+          <div class="row">
+              <div class="col-md-3">
+                  <div class="form-group">
+                      <label>Client Code </label>
+                      <span class="text-success ClientCode"></span>
+                  </div>
+              </div>
+              <div class="col-md-3">
+                  <div class="form-group">
+                      <label>Client Name </label>
+                      <span class="text-success ClientName"></span>
+                  </div>
+              </div>
+              <div class="col-md-3">
+                  <div class="form-group">
+                      <label>Mobile</label>
+                      <span class="text-success ClientMobile"></span>
+                  </div>
+              </div>
+          </div>
           <form name="frm_save_voucher" id="FRM_SAVE_VOUCHER">
               <span id="hidden_fields">
                         {!! csrf_field() !!}
@@ -311,6 +356,15 @@ th{
                            <input type="text" name="ic_doc_number"  required="required" id="IC_DOC_NUMBER" maxlength="25" class="form-control" value="" />
                         </div>
                    </div>
+                  <div class="col-md-6">
+                      <label class="control-label">Technician</label>
+                      <select name="ic_tech_id" id="IC_TECH_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Technician">
+                          <option value="0">-- Select Technician --</option>
+                          @foreach ( $lst_technicians as $key => $user_info )
+                              <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                          @endforeach
+                      </select>
+                  </div>
                    <div class="col-md-6">
                         <div class="form-group">
                            <label class="control-label"> Maintenance Number </label><br/>
@@ -329,7 +383,7 @@ th{
                            <input type="text" name="ic_visit_price"  required="required" id="IC_VISIT_PRICE" maxlength="25" class="form-control" value="0" />
                         </div>
                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                        <div class="form-group">
                            <label> Currency <span class="required"> * </span></label><br/>
                            <select name="ic_currency_id" required="required" id="IC_CURRENCY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Currency" style="width:100%">
@@ -364,7 +418,16 @@ th{
                                   </select>
                               </div>
                           </div>
-                          <div class="col-md-3"><label></label><br/><label class="text-info ProductName"></label></div>
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                  <select   name="cp_product_name" id="CP_PRODUCT_NAME"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
+                                      <option value="0"> -- Select used items -- </option>
+                                      @foreach($lst_products as $key => $product_info)
+                                          <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                                      @endforeach
+                                  </select>
+                              </div>
+                          </div>
                           <div class="col-md-3"><input type="text" name="cp_quantity" class="form-control" value="1" /> </div>
                           <div class="col-md-3"><button type="button" name="btn_add_stock" class="btn btn-info" >Add Stock</button> </div>
                       </div>

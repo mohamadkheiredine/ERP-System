@@ -18,6 +18,7 @@ Page Description :
 namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
+use App\models\Billing\Receipts;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -654,7 +655,7 @@ class OrdersController extends Controller
         $op_product_cost = 0;
         if(count($currency_exchange) == 0)
         {
-            $op_product_cost    = convertCurrency($selling_price,$currency_array[ $product_currency ]['cc_currency_code'], $currency_array[ $order_currency ]['cc_currency_code']);
+            $op_product_cost    = $selling_price;
         }
         else
         {
@@ -704,6 +705,8 @@ class OrdersController extends Controller
         $invoice_info->bi_invoice_date  = date("Y-m-d");
         $invoice_info->bi_due_date      = date("Y-m-d");
         $invoice_info->bi_payment_terms = 1;
+        $invoice_info->bi_invoice_items_type = 1;
+        $invoice_info->bi_invoice_type = 1;
         $invoice_info->bi_payment_type  = 2;
         $invoice_info->bi_invoice_note  = $order_info->so_order_note;
         $invoice_info->bi_total_cost    = $order_info->so_total_cost;
@@ -712,10 +715,31 @@ class OrdersController extends Controller
         $invoice_info->bi_total_price    = $order_info->so_total_cost;
         $invoice_info->bi_invoice_currency= $order_info->so_order_currency;
         $invoice_info->bi_invoice_paid= 1;
+        $invoice_info->bi_invoice_status= 1;
         $invoice_info->bi_number_payments = 1;
         $invoice_info->save();
 
         $bi_id = $invoice_info->bi_id;
+
+
+        // create receipt for this order
+
+        $receipt_code = $AccountingManager->generateReceiptCode();
+
+        $receipt_info = new Receipts();
+        $receipt_info->fk_invoice_id = $bi_id;
+        $receipt_info->br_customer_id = $customer_info->ic_id;
+        $receipt_info->br_account_from = $customer_info->ic_account_number;
+        $receipt_info->br_receipt_number = $receipt_code;
+        $receipt_info->br_receipt_date = date("Y-m-d");
+        $receipt_info->br_creation_date = date("Y-m-d");
+        $receipt_info->br_receipt_label = "Receipt from customer " . $customer_info->ic_customer_name . " of order #" .  $order_info->so_order_code;
+        $receipt_info->br_payment_value = $order_info->so_total_cost;
+        $receipt_info->br_receipt_currency = $order_info->so_order_currency;
+        $receipt_info->br_receipt_paid = 1;
+        $receipt_info->br_company_id = session('company_id');
+        $receipt_info->br_receipt_note = $order_info->so_order_note;
+        $receipt_info->save();
 
         // add invoice items from the item saved in the
         // order
@@ -730,9 +754,11 @@ class OrdersController extends Controller
            $invoice_items->fk_invoice_id = $bi_id;
            $invoice_items->ii_item_id           = $fk_product_id;
            $invoice_items->ii_stock_id          = $stock_id;
-           $invoice_items->ii_item_type         = $order_info->so_product_type;
+           $invoice_items->ii_item_type         = 1;
            $invoice_items->ii_item_label        = $product_info->p_product_name;
+           $invoice_items->ii_cost_price        = $oi_info->so_product_cost;
            $invoice_items->ii_item_price        = $oi_info->so_product_price;
+           $invoice_items->ii_total_price        = $oi_info->so_product_price;
            $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
            $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
            $invoice_items->save();
@@ -755,7 +781,7 @@ class OrdersController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-        $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
         $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
         $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
         $TransactionMovement->tm_credit             = 0;
@@ -767,7 +793,7 @@ class OrdersController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
         $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
         $TransactionMovement->tm_debit              = 0;
         $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
@@ -809,9 +835,9 @@ class OrdersController extends Controller
                 $stock_info->save();
             }
 
-
-
         }
+
+
 
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = 'Operation completed successfully';

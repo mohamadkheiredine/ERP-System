@@ -1823,7 +1823,7 @@ Page Description :
 										<span class="menu-icon me-0">
 											<i class="fa-solid fa-universal-access fa-xl"></i>
 										</span>
-                                            Sales Module
+                                            Stores Module
 									</span>
                                         <!--end:Menu link-->
                                         <!--begin:Menu sub-->

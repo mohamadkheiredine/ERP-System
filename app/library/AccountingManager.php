@@ -583,6 +583,7 @@ class AccountingManager
                         $items_array[$index]['label']       = $item_info->ii_item_label;
                         $items_array[$index]['quantity']    = $item_info->ii_item_qyt;
                         $items_array[$index]['price']       = $item_price;
+                        $items_array[$index]['serialnumber']            = $item_info->ii_product_serial_number;
                         $items_array[$index]['cost']        = $item_cost;
                         $items_array[$index]['currency']    = $currencies_array[$invoice_currency]['cc_currency_code'];
                     }

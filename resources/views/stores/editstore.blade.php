@@ -9,6 +9,8 @@
  * All Rights Reserved ,   itm Solutions COPYRIGHT 2025
  *
  * Page Description :
+ *        "warehouse_ids" => $warehouse_ids,
+"employees_ids" => $employees_ids,
  ***********************************************************/
 
 
@@ -81,6 +83,26 @@
                                     <option {{ $store_info->ps_company_id == $manager_info->id ? "selected" : "" }} value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Store Employees <span class="required"> * </span></label>
+                                <select class="form-select form-control" data-control="select2" multiple="multiple" id="PS_EMPLOYEES_ID" name="ps_employees_id[]">
+                                    @foreach($lst_managers as $index => $manager_info)
+                                        <option {{ array_search($manager_info->id,$employees_ids) !== false ? "selected" : "" }} value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Store Warehouses <span class="required"> * </span></label>
+                                <select class="form-select form-control" data-control="select2" multiple="multiple" id="PS_WAREHOUSES_ID" name="ps_warehouses_id[]">
+                                    @foreach($lst_warehouses as $index => $warehouse_info)
+                                        <option {{ array_search($warehouse_info->w_id,$warehouse_ids) !== false ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">

@@ -134,6 +134,30 @@ th{
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label class="control-label">Area <span class="required"> * </span> </label>
+                                <select name="bill_area" required="required" id="BILL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                    <option value="0">-- Select Area --</option>
+                                    <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                    <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                    <?php  } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Region</label>
+                                <div class="col-md-12" id="REGION_DROPDOWN">
+                                    <select name="bill_region" required="required"  id="BILL_REGION" class="form-control form-select" tabindex="3" data-control="select2" data-placeholder="Select Region">
+                                        <option value="0">-- Select Region --</option>
+                                        @foreach( $lst_regions as $key => $region_info )
+                                            <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label class="form-label"> Bill Status </label><br/>
                                 <select name="ip_payment_status" id="IP_PAYMENT_STATUS" class="form-control form-select" data-control="select2" data-placeholder="Select Payment Status" >
                                     <option  value="-"> -- Select Status -- </option>

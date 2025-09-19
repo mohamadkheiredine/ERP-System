@@ -71,13 +71,16 @@ class LeadsController extends Controller
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
         $lst_lead_types      = CRMLeadTypes::whereLtIsDeleted(0)->get();
-        $lst_areas = Areas::all();
+
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
 
         $data = array(
             "lead_categories" => $lead_categories,
             "lst_appt_results" => $lst_appt_results,
             "lst_lead_types" => $lst_lead_types,
             "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
             "lst_users" => $lst_users,
             "lst_sales" => $lst_sales,
             "lead_statuses" => $lead_statuses

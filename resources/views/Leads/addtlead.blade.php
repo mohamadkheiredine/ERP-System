@@ -82,7 +82,7 @@ Page Description :
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Area <span class="required"> * </span> </label>
-                                <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                <select name="cl_area" required="required" id="CL_AREA"  tabindex="4"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
                                     <option value="">-- Select Area --</option>
                                     <?php foreach ( $lst_areas as $key => $area_info ) { ?>
                                     <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
@@ -94,7 +94,7 @@ Page Description :
                             <div class="form-group">
                                 <label class="control-label">Region</label>
                                 <div class="col-md-12" id="REGION_DROPDOWN">
-                                    <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="3" data-control="select2" data-placeholder="Select Region">
+                                    <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="5" data-control="select2" data-placeholder="Select Region">
                                         <option value="">-- Select Region --</option>
                                         @foreach( $lst_regions as $key => $region_info )
                                             <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
@@ -106,7 +106,7 @@ Page Description :
                         <div class="col-md-4">
                               <div class="form-group">
                                 <label>Salesman <span class="required"> * </span> </label>
-                                <select name="cl_sales_id" required="required" id="CL_SALES_ID"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Salesman">
+                                <select name="cl_sales_id" required="required" id="CL_SALES_ID"  tabindex="6"  class="form-control form-select" data-control="select2" data-placeholder="Salesman">
                                         <option value="">-- Select User --</option>
                                         <?php foreach ( $lst_sales as $key => $user_info ) { ?>
                                                 <option value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
@@ -117,7 +117,7 @@ Page Description :
                         <div class="col-md-4">
                               <div class="form-group">
                                <label>Telemarketing <span class="required"> * </span>  </label>
-                                    <select name="cl_telemarketing_id" id="CL_TELEMARKETING_ID" tabindex="6"  class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
+                                    <select name="cl_telemarketing_id" id="CL_TELEMARKETING_ID" tabindex="7"  class="form-control form-select" data-control="select2" data-placeholder="Select Telemarketing">
                                         <option value="">-- Select Telemarketing --</option>
                                         <?php foreach ( $lst_telemarketing as $key => $user_info ) { ?>
                                                 <option {{ Session('user_id') == $user_info->id ? "selected" : "" }} value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
@@ -128,7 +128,7 @@ Page Description :
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Lead Type <span class="required"> * </span> </label>
-                                <select name="cl_lead_type_id" id="CL_LEAD_TYPE_ID"  tabindex="7"  required="required" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Type">
+                                <select name="cl_lead_type_id" id="CL_LEAD_TYPE_ID"  tabindex="8"  required="required" class="form-control form-select" data-control="select2" data-placeholder="Select Lead Type">
                                         <option value="">-- Select Lead Type --</option>
                                         @foreach ($lst_lead_types as $ind_index => $type_info )
                                                 <option value="{{ $type_info->lt_id }}">{{ $type_info->lt_deal_type }}</option>
@@ -139,7 +139,7 @@ Page Description :
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Referred by<span class="required"> * </span></label>
-                                <input type="text" name="cl_referred_by" tabindex="8"  required="required" class="form-control" value="" />
+                                <input type="text" name="cl_referred_by" tabindex="9"  required="required" class="form-control" value="" />
                             </div>
                         </div>
                    </div>

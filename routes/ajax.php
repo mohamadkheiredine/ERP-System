@@ -403,6 +403,7 @@ Route::post('/request/billing/savebillinfo','Billing\InvoicesController@SaveInvo
 Route::get('/request/bills/downloadbillsreport','Billing\InvoicePaymentsController@CSVDownloadBillsReport');
 Route::get('/request/bills/getlistbillresults','Billing\InvoicePaymentsController@GetListBillResult');
 Route::post('/request/bills/savecallbillresult','Billing\InvoicePaymentsController@SaveBillResultInfo');
+Route::post('/request/bills/getregionarea','Billing\InvoicePaymentsController@GetRegionArea');
 
 Route::post('/request/billing/linkinvoiceitems','Billing\InvoicesController@LinkInvoiceItems');
 
@@ -684,6 +685,7 @@ Route::get('/request/call/getlistcallresults','CallCenter\InboundController@GetL
 Route::post('/request/inboundcall/savecallresult','CallCenter\InboundController@SaveCallResultInfo');
 Route::get('/request/mvoucher/getnewmaintenancenumber','CallCenter\InboundController@GetNewMaintenanceNumber');
 Route::post('/request/inboundcall/addproductstock','CallCenter\InboundController@AddProductStock');
+Route::get('/request/inboundcall/getclientinfo','CallCenter\InboundController@GetClientInfo');
 
 Route::get('/request/inboundcall/getresultworkflowinfo','CallCenter\InboundController@GetResultWorkflowinfo');
 

@@ -20,6 +20,8 @@ use App\models\CallCenter\CallResults;
 use App\models\CallCenter\CallResultsWorkflow;
 use App\models\CallCenter\InboundCall;
 use App\models\PayRolls\PayrollsComissions;
+use App\models\System\Areas;
+use App\models\System\Regions;
 use League\Csv\Writer;
 use Validator;
 use Input;
@@ -72,10 +74,14 @@ class InvoicePaymentsController extends Controller
         $lst_results = CallResults::whereCrIsDeleted(0)->get();
         $lst_collecters = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
         $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
 
         $data = array(
             "lst_results" => $lst_results,
             "lst_collecters" => $lst_collecters,
+            "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
             "lst_admins" => $lst_admins
         );
         return Response()->view('billing.bills',$data);
@@ -125,6 +131,34 @@ class InvoicePaymentsController extends Controller
     }
 
 
+    public function GetRegionArea(Request $request)
+    {
+        $bill_area = $request->input('bill_area');
+
+
+
+        $lst_regions = Regions::whereLrArea($bill_area)->get();
+        $regions_array = array();
+
+        foreach ($lst_regions as $key => $value)
+        {
+            $regions_array[$value->lr_region] = $value->lr_region;
+        }
+
+
+        $data = array(
+            "html_array" => $regions_array,
+            "name" => 'bill_region',
+            "id" => 'BILL_REGION'
+        );
+
+        $result_array['dropdown'] = view('html.dropdown',$data)->render();
+
+
+        return Response()->json($result_array);
+    }
+
+
 
     /**
      * Function to generate Table of list of journal vouchers and
@@ -143,8 +177,9 @@ class InvoicePaymentsController extends Controller
         $pi_upto_date               = $request->input('pi_upto_date');
         $ip_payment_status          = $request->input('ip_payment_status');
         $page_number                = $request->input("page_number");
+        $bill_area                = $request->input("bill_area");
+        $bill_region                = $request->input("bill_region");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
-
 
 
         if($page_number > 1)
@@ -168,6 +203,20 @@ class InvoicePaymentsController extends Controller
         if(strlen($ip_payment_status) > 0)
             $bills_cond = $bills_cond->where('ip_payment_status','=',$ip_payment_status);
 
+
+        if($bill_area > 0)
+        {
+            $bills_cond = $bills_cond->whereHas('Client', function($query)  use ($bill_area) {
+                $query->where('cl_area', $bill_area);
+            });
+        }
+
+        if($bill_region > 0)
+        {
+            $bills_cond = $bills_cond->whereHas('Client', function($query)  use ($bill_region) {
+                $query->where('cl_region', $bill_region);
+            });
+        }
 
 
         $bills_count =     $bills_cond->count();
@@ -553,12 +602,11 @@ class InvoicePaymentsController extends Controller
                 $rip_id = $bremaining_info->ip_id;
                 $ip_payment_amount = $bremaining_info->ip_payment_amount;
                 $pbill_info = InvoicePayments::find($rip_id);
-              //  $pbill_info->ip_payment_amount = $ip_extra_amount;
                 $pbill_info->ip_paid_amount = $ip_extra_amount;
                 $total = $ip_payment_amount - $ip_extra_amount;
                 $pbill_info->ip_remaining_amount = ($total < 0) ? 0 : $total;
-                $pbill_info->ip_payment_status = ($total < 0) ? 1 : 0;
-                $pbill_info->ip_billing_status = ($total < 0) ? 2 : 1;
+                $pbill_info->ip_payment_status = ($total > 0) ? 1 : 2;
+                $pbill_info->ip_billing_status = ($total < 0) ? 1 : 0;
                 $pbill_info->save();
 
 
@@ -575,35 +623,6 @@ class InvoicePaymentsController extends Controller
                 $rvs_payment->br_remaining_amount = ($total < 0) ? 0 : $total;
                 $rvs_payment->br_currency_id = $pbill_info->ip_currency_id;
                 $rvs_payment->br_notes = "";
-                $rvs_payment->save();
-
-                $transaction = new Transactions();
-                $todays_date = date('Y-m-d');
-
-
-                $transaction->at_transaction_date   = $todays_date;
-                $transaction->at_creation_date      = $todays_date;
-                $transaction->at_accounting_doc     = "Transaction For Pay Bill";
-                $transaction->fk_acc_journal_id     = 1;
-                $transaction->at_currency_id        = $pbill_info->ip_currency_id;
-                $transaction->save();
-                $at_id = $transaction->at_id;
-
-                $trans_mov= new TransactionMovements();
-                $trans_mov->fk_tran_id              = $at_id;
-                $trans_mov->tm_ledger_account       = $account_id;
-                $trans_mov->tm_sub_ledger_account   = $account_id ;
-                $trans_mov->tm_debit                = $ip_extra_amount;
-                $trans_mov->tm_credit               = 0;
-                $trans_mov->tm_creation_date        = date('Y-m-d');
-                $trans_mov->tm_transaction_date        = date('Y-m-d');
-                $trans_mov->tm_currency_id          = $ip_currency_id;
-                $trans_mov->tm_ledger_label         = "Debit For Client " . $client_info->ca_account_name;
-                $trans_mov->save();
-                $mv_id = $trans_mov->tm_id;
-
-                $rvs_payment->br_trans_id   = $at_id;
-                $rvs_payment->br_mov_id   = $mv_id;
                 $rvs_payment->save();
 
                 // rvs for the next bill

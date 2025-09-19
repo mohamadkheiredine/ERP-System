@@ -13,6 +13,17 @@ $(function(){
 	 $("select[name=cl_area]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=lead_status]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=cl_lead_types]").on("change",leads_module.DisplayListLeads);
+    $("#CL_AREA").on("change",function(){
+        leads_module.getlistofregions();
+        leads_module.DisplayListLeads();
+    });
+    $("#CL_REGION").on("change",function(){
+        leads_module.DisplayListLeads();
+    });
+
+    $("#REGION_DROPDOWN").on("change","#CL_REGION",function(){
+        leads_module.DisplayListLeads();
+    });
 	 $(".dropdown-item").on("click",leads_module.QuickActionLead);
 	 $("#btnAddResult").on("click",leads_module.AddCallResult);
 	 $("button[name=btn_change_status]").on("click",leads_module.SaveChangeLeadsStatus);

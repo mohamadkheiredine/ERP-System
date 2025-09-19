@@ -48,6 +48,8 @@ use App\models\Inventory\WareHouses;
 use App\models\Inventory\Stocks;
 use App\models\Accounting\ChartAccounts;
 use App\models\CallCenter\InboundCallProducts;
+use App\models\System\Areas;
+use App\models\System\Regions;
 
 
 class InboundController extends Controller
@@ -72,7 +74,8 @@ class InboundController extends Controller
         $lst_products = Products::wherePProductIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
         $lst_admins = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_ADMIN)->get();
-
+        $lst_areas = Areas::all();
+        $lst_regions = Regions::all();
         $data = array(
             "lst_telemarketings" => $lst_telemarketings,
             "lst_technicians" => $lst_technicians,
@@ -81,6 +84,8 @@ class InboundController extends Controller
             "lst_currencies" => $lst_currencies,
             "lst_admins" => $lst_admins,
             "lst_results" => $lst_results,
+            "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
             "lst_maint_types" => $lst_maint_types
         );
         return Response()->view('callcenter.inboundcalls',$data);
@@ -104,6 +109,8 @@ class InboundController extends Controller
         $ic_maintenance_type           = $request->input('ic_maintenance_type');
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
+        $cl_area                = $request->input('cl_area');
+        $cl_region              = $request->input('cl_region');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
 
         if($page_number > 1)
@@ -124,12 +131,26 @@ class InboundController extends Controller
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_contract_code','LIKE','%' . $general_search . '%');
         }
 
-        if(strlen($ic_technician_id) > 0 )
+        if($ic_technician_id > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_technician_id','=',$ic_technician_id);
         }
 
-        if(strlen($ic_maintenance_type) > 0 )
+        if($cl_area > 0)
+        {
+            $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_area) {
+                $query->where('cl_area', $cl_area);
+            });
+        }
+
+        if($cl_region > 0)
+        {
+            $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_region) {
+                $query->where('cl_region', $cl_region);
+            });
+        }
+
+        if($ic_maintenance_type > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_maintenance_type','=',$ic_maintenance_type);
         }
@@ -166,6 +187,30 @@ class InboundController extends Controller
 
         $result_array['total_pages'] = $total_pages;
         $result_array['display'] = view("callcenter.listinbound",$data)->render();
+
+        return Response()->json($result_array);
+    }
+
+
+    /**
+     * get client information of current call
+     *
+     * @author Moe Mantach
+     * @param Request $request
+     * @return void
+     */
+    public function GetClientInfo(Request $request)
+    {
+        $ic_id = $request->input('ic_id');
+        $inboundcall_info = InboundCall::find($ic_id);
+        $result_array = array();
+
+        $result_array['client_name'] = $inboundcall_info->Client->ca_account_name;
+        $result_array['client_mobile'] = $inboundcall_info->Client->ca_account_mobile;
+        $result_array['client_code'] = $inboundcall_info->Client->ca_account_code;
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Successful";
+
 
         return Response()->json($result_array);
     }
@@ -256,6 +301,9 @@ class InboundController extends Controller
         $ic_call_date           = $request->input('ic_call_date');
         $ic_archived_call           = $request->input('ic_archived_call');
         $ic_result_id           = $request->input('ic_result_id');
+        $cl_area           = $request->input('cl_area');
+        $cl_region           = $request->input('cl_region');
+
 
         $inboundcall_cond = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcIssueResolved(0);
 
@@ -270,12 +318,12 @@ class InboundController extends Controller
             $inboundcall_cond = $inboundcall_cond->orWhere('ic_contract_code','LIKE','%' . $general_search . '%');
         }
 
-        if(strlen($ic_technician_id) > 0 )
+        if($ic_technician_id > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_technician_id','=',$ic_technician_id);
         }
 
-        if(strlen($ic_maintenance_type) > 0 )
+        if($ic_maintenance_type > 0 )
         {
              $inboundcall_cond = $inboundcall_cond->where('ic_maintenance_type','=',$ic_maintenance_type);
         }
@@ -294,14 +342,57 @@ class InboundController extends Controller
              $inboundcall_cond = $inboundcall_cond->where('ic_result_id','=',$ic_result_id);
         }
 
-        $inboundcall_count = $inboundcall_cond->count();
 
+        if($cl_area > 0)
+        {
+            $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_area) {
+                $query->where('cl_area', $cl_area);
+            });
+        }
+
+        if($cl_region > 0)
+        {
+            $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_region) {
+                $query->where('cl_region', $cl_region);
+            });
+        }
 
 
         $lst_inboundcall_info = $inboundcall_cond->orderBy('ic_id', 'asc')->get();
 
+
+
+        $calls_array = array();
+        $i = 0;
+        foreach ($lst_inboundcall_info as $index => $call_info) {
+            if($call_info->Technician != null && $call_info->Client != null)
+            {
+                $calls_array[$call_info->Technician->id]['user_info']['id'] = $call_info->Technician->id;
+                $calls_array[$call_info->Technician->id]['user_info']['name'] = $call_info->Technician->u_fullname;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ca_account_name'] = $call_info->Client->ca_account_name;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ca_account_code'] = $call_info->Client->ca_account_code;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ca_account_mobile'] = $call_info->Client->ca_account_mobile;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ca_billing_address'] = $call_info->Client->ca_billing_address;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_id'] = $call_info->ic_id;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_call_index'] = $call_info->ic_call_index;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_call_subject'] = $call_info->ic_call_subject;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_call_date'] = $call_info->ic_call_date;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_call_start_time'] = $call_info->ic_call_start_time;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_call_outcome'] = $call_info->ic_call_outcome;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_notes'] = $call_info->ic_notes;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_resolution_notes'] = $call_info->ic_resolution_notes;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_product_machine_id'] = $call_info->ic_product_machine_id;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['cr_result_title'] = $call_info->CallResult->cr_result_title;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_maintenance_type'] = $call_info->ic_maintenance_type;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_resolution_date'] = $call_info->ic_resolution_date;
+                $i++;
+            }
+
+        }
+
         $data = array(
-            "lst_inboundcall_info" => $lst_inboundcall_info
+            "lst_inboundcall_info" => $lst_inboundcall_info,
+            "calls_array" => $calls_array,
         );
 
         $contract_document = view('templates.lstcalls',$data)->render();
@@ -420,6 +511,7 @@ class InboundController extends Controller
         $ic_visit_price = $request->input('ic_visit_price');
         $ic_currency_id = $request->input('ic_currency_id');
         $products_stock = $request->input('products_stock');
+        $ic_tech_id = $request->input('ic_tech_id');
         $products_stock_array = json_decode($products_stock);
 
 
@@ -462,29 +554,35 @@ class InboundController extends Controller
 
 
 
-        $warehouse_info = WareHouses::whereWIsDeleted(0)->whereWLinkedTo($ic_technician_id)->get();
-        $warehouse_info = $warehouse_info[0];
+        $warehouse_info = WareHouses::whereWIsDeleted(0)->whereWLinkedTo($ic_tech_id)->get();
+
+
         if(count($warehouse_info) == 0)
         {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "Warehouse not found";
             return Response()->json($result_array);
         }
+        $warehouse_info = $warehouse_info[0];
         $warehouse_id = $warehouse_info->w_id;
         $parts_total_cost = 0;
         foreach ($products_stock_array as $index => $stock)
         {
-            $stock_info = Stocks::whereFkWarehouseId($warehouse_id)->whereFkProductId($stock['p_id'])->where('is_quantity','>=',$stock['cp_quantity'])->first();
+            $stock_info = Stocks::whereFkWarehouseId($warehouse_id)->whereFkProductId($stock->p_id)->where('is_quanity','>=',$stock->cp_quantity)->first();
 
-            if(count($stock_info) == 0)
-                continue;
+            if($stock_info == null)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Stock not found";
+                return Response()->json($result_array);
+            }
 
             $stock_info = $stock_info[0];
-            $stock_info->is_quanity = $stock_info->is_quanity - $stock['cp_quantity'];
+            $stock_info->is_quanity = $stock_info->is_quanity - $stock->cp_quantity;
             $stock_info->save();
 
 
-            $cp_total_cost = $stock_info->is_price_item * $stock['cp_quantity'];
+            $cp_total_cost = $stock_info->is_price_item * $stock->cp_quantity;
             $price_item = $stock_info->is_price_item;
 
 

@@ -22,7 +22,7 @@ Page Description :
    <td>{{ $si_info->products->p_product_name }}</td>
    <td>{{ $si_info->warehouses->w_warehouse_name }}</td>
    <td>{{ number_format($si_info->is_price_stock,2) }}&nbsp;&nbsp;<b>{{  $currency_array[ $si_info->is_stock_currency ]['cc_currency_code'] }}</b></td>
-   <td>{{ number_format($si_info->is_price_ite,2) }}&nbsp;&nbsp;<b>{{  $currency_array[ $si_info->is_stock_currency ]['cc_currency_code'] }}</b></td>
+   <td>{{ number_format($si_info->is_price_item,2) }}&nbsp;&nbsp;<b>{{  $currency_array[ $si_info->is_stock_currency ]['cc_currency_code'] }}</b></td>
    <td>{{ $si_info->is_quanity }}</td>
   <td style="width:2px;">  <a href="#"  data-is_id="{{ $si_info->is_id }}" id="EDIT_STOCK_{{ $si_info->is_id }}" ><i class="fa-regular fa-pen-to-square"></i></i></a> </td>
   <td style="width:2px;"> <a href="#"  data-is_id="{{ $si_info->is_id }}"  id="DELETE_STOCK_{{ $si_info->is_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a> </td>

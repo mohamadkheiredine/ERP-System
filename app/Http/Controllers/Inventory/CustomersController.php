@@ -358,13 +358,13 @@ class CustomersController extends Controller
         {
             $CustomerInfo->ic_date_creation = date("Y-m-d");
 
-            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+            $account_info   = ChartAccounts::where("aa_account_ref","=","4111")->get();
             $account_info = $account_info[0];
 
-            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+            $count   = ChartAccounts::where("aa_account_ref","LIKE","4111%")->count();
 
             $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+            $aa_account_ref = $account_info->aa_account . (String)sprintf('%05d', $new_count);
 
             $AccAccounting = new ChartAccounts();
             $AccAccounting->aa_parent_account   = $account_info->aa_id;

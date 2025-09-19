@@ -11,6 +11,8 @@ $(function(){
     $("#LstBills").on("click","tr",bills_module.SelectBillRecord);
     $("#BW_RESULT_ID").on('change',bills_module.DisplayCallBackDate);
     $("#BTN_SAVE_RESULT").on('click',bills_module.SaveCallResultInfo);
+    $("#BILL_AREA").on("change",bills_module.GetRegionArea);
+    $("#REGION_DROPDOWN").on("change",'#BILL_REGION',bills_module.DisplayListBills);
 
 
        new tempusDominus.TempusDominus(document.getElementById('PI_START_DATE'),{

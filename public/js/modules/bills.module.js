@@ -8,12 +8,14 @@ bills_module = {
 	    var pi_end_date = $('input[name=pi_end_date]').val();
 	    var pi_upto_date = $('input[name=pi_upto_date]').val();
 	    var ip_payment_status = $('select[name=ip_payment_status]').val();
+	    var bill_region = $('select[name=bill_region]').val();
+	    var bill_area = $('select[name=bill_area]').val();
         if( ( pi_start_date != '' &&  pi_end_date != '' ) || pi_upto_date != '' )
         {
             $.ajax
             ({
                 url : base_url + "/request/billing/displaylistbills",
-                data : { _token : _token , page_number : page_number , general_search : general_search , ip_payment_status : ip_payment_status , pi_start_date : pi_start_date , pi_end_date : pi_end_date , pi_upto_date : pi_upto_date  },
+                data : { _token : _token , page_number : page_number , bill_area : bill_area , bill_region : bill_region , general_search : general_search , ip_payment_status : ip_payment_status , pi_start_date : pi_start_date , pi_end_date : pi_end_date , pi_upto_date : pi_upto_date  },
                 method : 'get',
                 dataType : "json",
                 beforeSend : function(){
@@ -49,9 +51,25 @@ bills_module = {
                 }
             });
         }
-
-
 	},
+    GetRegionArea : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var bill_area	 	= $(this).val();
+        var params = { _token : _token , bill_area : bill_area };
+        $.ajax
+        ({
+            url : base_url + "/request/bills/getregionarea",
+            data : params,
+            dataType : "json",
+            type : "POST",
+            success : function(response){
+                $('#REGION_DROPDOWN').html(response.dropdown);
+                $('select[name=bill_region]').select2();
+                bills_module.DisplayListBills();
+            }
+        });
+    },
     DisplayListofBillResult : function(ip_id){
         var base_url 	= $('input[name=base_url]').val();
         var _token 		= $('input[name=_token]').val();

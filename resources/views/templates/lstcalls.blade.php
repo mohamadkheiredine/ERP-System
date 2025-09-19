@@ -1,49 +1,318 @@
-<?php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Calls / Maintenance Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/***********************************************************
-lstcalls
-Product : titanerp
-Version : 1.0
-Release : 1
-Date Created : Nov 17, 2024
-Developed By  : Mohamad Mantach   PHP Department itm Solutions
-All Rights Reserved ,   itm Solutions COPYRIGHT 2024
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #c3cfe2 ;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-Page Description :
-{Enter page description Here}
-***********************************************************/
+        .report-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
 
-?>
+        .report-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: #764ba2;
+        }
 
+        .report-header {
+            text-align: center;
+            padding: 40px 30px 30px;
+            background: #764ba2;
+            color: white;
+            position: relative;
+        }
 
-<table id="tablPendingCalls" border="1" style="width:100%;" class="table table-striped gy-7 gs-7">
-        <thead>
-                <tr
-                        class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                        <th style="width: 2px;">ID</th>
+        .report-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .report-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .report-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-weight: 400;
+        }
+
+        .report-body {
+            padding: 40px;
+        }
+
+        .tech-section {
+            margin-bottom: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            background: white;
+            border: 1px solid #e8ecf4;
+        }
+
+        .tech-header {
+            background: #00f2fe;
+            color: white;
+            padding: 20px 25px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .tech-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #tablPendingCalls {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            background: white;
+        }
+
+        #tablPendingCalls thead {
+            background: #e9ecef;
+        }
+
+        #tablPendingCalls th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            position: relative;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #tablPendingCalls th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            bottom: 25%;
+            width: 1px;
+            background: #dee2e6;
+        }
+
+        #tablPendingCalls td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+            transition: background-color 0.2s ease;
+        }
+
+        #tablPendingCalls tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #tablPendingCalls tbody tr:hover {
+            background: #f0f4ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        #tablPendingCalls tbody tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #tablPendingCalls tbody tr:nth-child(even):hover {
+            background: #f0f4ff;
+        }
+
+        .call-id {
+            font-weight: 700;
+            color: #667eea;
+            background: #f0f3ff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .client-info {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .account-code {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .date-cell {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .address-cell {
+            color: #718096;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .phone-cell {
+            font-weight: 600;
+            color: #2b6cb0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .machine-id {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .report-title {
+                font-size: 2rem;
+            }
+
+            .report-body {
+                padding: 20px;
+            }
+
+            #tablPendingCalls {
+                font-size: 0.85rem;
+            }
+
+            #tablPendingCalls th,
+            #tablPendingCalls td {
+                padding: 12px 8px;
+            }
+
+            .address-cell {
+                max-width: 120px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .report-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .tech-section {
+                break-inside: avoid;
+                box-shadow: none;
+            }
+        }
+
+        /* Loading animation for dynamic content */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tech-section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+<div class="report-container">
+    <div class="report-header">
+        <h1 class="report-title">PENDING CALLS</h1>
+        <p class="report-subtitle">MAINTENANCE REPORT</p>
+    </div>
+
+    <div class="report-body">
+            @foreach($calls_array as $index => $tech_info)
+            <div class="tech-section">
+                <div class="tech-header">
+{{ $tech_info['user_info']['name'] }}
+            </div>
+            <table id="tablPendingCalls">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">#</th>
                         <th>Date</th>
-                        <th>Time</th>
                         <th>Client</th>
+                        <th>Item</th>
                         <th>Address</th>
                         <th>Phone</th>
-                        <th>Contract Code</th>
-                        <th>Result</th>
-                        <th>Description</th>
-                </tr>
-        </thead>
-        <tbody class="LstInboundCalls" id="LstInboundCalls">
-            @foreach($lst_inboundcall_info as $index => $inboundcall_info)
-            <tr  class="odd gradeX" data-ic_id="{{ $inboundcall_info->ic_id }}">
-               <td>{{ $inboundcall_info->ic_id }}</td>
-               <td>{{ $inboundcall_info->ic_call_date }}</td>
-               <td>{{ $inboundcall_info->ic_call_start_time }}</td>
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_code : "-" }}&nbsp;{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_name : "-" }}</td>
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_address : "-" }}</td>
-               <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_phone : "-" }}</td>
-                <td>{{ $inboundcall_info->ic_contract_code }}</td>
-                <td>{{ $inboundcall_info->CallResult ? $inboundcall_info->CallResult->cr_result_title : "-" }}</td>
-                <td>{{ strip_tags($inboundcall_info->ic_notes) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-</table>
+                    </tr>
+                </thead>
+                <tbody class="LstInboundCalls">
+@foreach($tech_info['call_info'] as $index => $call_info)
+                <tr>
+                    <td><span class="call-id">{{$call_info['ic_id']}}</span></td>
+                                    <td class="date-cell">{{$call_info['ic_call_date']}}</td>
+                                    <td class="client-info"><span class="account-code">#{{$call_info['ca_account_code']}}</span> {{$call_info['ca_account_name']}}</td>
+                                    <td><span class="machine-id">{{$call_info['ic_product_machine_id']}}</span></td>
+                                    <td class="address-cell">{{ $call_info['ca_billing_address'] }}</td>
+                                    <td class="phone-cell">{{$call_info['ca_account_mobile']}}</td>
+                                </tr>
+                            @endforeach
+            </tbody>
+        </table>
+    </div>
+@endforeach
+    </div>
+</div>
+</body>
+</html>

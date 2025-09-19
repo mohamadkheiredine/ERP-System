@@ -80,7 +80,7 @@ th{
                                  <select name="so_assign_to" id="SO_ASSIGN_TO"  class="form-control form-select" data-control="select2" data-placeholder="Select User Assign">
                                         <option value="">No Parent</option>
                                         @foreach ( $lst_users as $key => $user_info )
-                                                <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                                <option {{  session('user_id') == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                         @endforeach
                                 </select>
                             </div>
@@ -140,7 +140,7 @@ th{
                              <div class="form-group">
                                 <label class="control-label">Order Tax:&nbsp;</label><br/>
                                 <select  name="so_vat_id" id="SO_VAT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Tax">
-                                        <option value=""> -- Tax -- </option>
+                                        <option value="0"> -- Tax -- </option>
                                         @foreach ( $lst_vat_tax as $key => $tax_info )
                                                 <option value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_label }}&nbsp;(&nbsp;{{ $tax_info->av_vat_rate }}&nbsp;%&nbsp;)</option>
                                         @endforeach

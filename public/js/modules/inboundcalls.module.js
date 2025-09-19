@@ -8,9 +8,11 @@ inboundcalls_module = {
 	    var ic_telemarketing_id = $('select[name=ic_telemarketing_id]').val();
 	    var ic_maintenance_type = $('select[name=ic_maintenance_type]').val();
 	    var ic_technician_id = $('select[name=ic_technician_id]').val();
+	    var cl_area = $('select[name=cl_area]').val();
+	    var cl_region = $('select[name=cl_region]').val();
 	    var ic_result_id = $('select[name=ic_result_id]').val();
 	    var ic_call_date = $('input[name=ic_call_date]').val();
-            if(ic_maintenance_type.length == 0 || ic_call_date.length == 0)
+            if(ic_call_date.length == 0)
             {
                 return false;
             }
@@ -18,16 +20,19 @@ inboundcalls_module = {
 	    $.ajax
 	    ({
 	        url : base_url + "/request/inboundcall/displaylist",
-	        data : { _token : _token ,
-                    page_number : page_number ,
-                    general_search : general_search ,
-                    ic_technician_id : ic_technician_id ,
+	        data : {
+                _token : _token ,
+                page_number : page_number ,
+                general_search : general_search ,
+                ic_technician_id : ic_technician_id ,
                 ic_result_id : ic_result_id ,
-                    ic_telemarketing_id : ic_telemarketing_id,
-                    ic_maintenance_type : ic_maintenance_type,
-                    ic_archived_call : ic_archived_call,
-                    ic_call_date : ic_call_date
-                },
+                ic_telemarketing_id : ic_telemarketing_id,
+                ic_maintenance_type : ic_maintenance_type,
+                ic_archived_call : ic_archived_call,
+                cl_area : cl_area,
+                cl_region : cl_region,
+                ic_call_date : ic_call_date
+            },
             method : 'post',
             dataType : "json",
             beforeSend : function(){
@@ -44,18 +49,36 @@ inboundcalls_module = {
                 });
                 if(response.total_pages > 1)
             	{
-                	 $.pagination = $('#InboundCallsPagination').twbsPagination({
-                         totalPages: response.total_pages,
-                         visiblePages: 7,
-                         onPageClick: function (event, page) {
-                              $('input[name=page_number]').val(page);
-                             inboundcalls_module.DisplayListInboundCalls();
-                         }
-                     });
+
+                    const $pagination = $('#InboundCallsPagination');
+                    $pagination.twbsPagination({
+                        totalPages: response.total_pages,
+                        visiblePages: 7,
+                        onPageClick: function (event, page) {
+                            $('input[name=page_number]').val(page);
+                            inboundcalls_module.DisplayListInboundCalls();
+                        }
+                    });
+                    // Check if pagination exists
+                    // if ($pagination.data('twbs-pagination')) {
+                    //     $pagination.twbsPagination('destroy');
+                    //     $pagination.twbsPagination({
+                    //         totalPages: response.total_pages,
+                    //         visiblePages: 7,
+                    //         onPageClick: function (event, page) {
+                    //             $('input[name=page_number]').val(page);
+                    //             inboundcalls_module.DisplayListInboundCalls();
+                    //         }
+                    //     });
+                    // }
+                    // else {
+                    //
+                    // }
+
+
             	}
 
 
-                 $("#tablPendingCalls").tablesorter();
 
 	        }
 	    });
@@ -99,24 +122,11 @@ inboundcalls_module = {
         $('input[name=products_stock]').html("");
         $('#FRM_SAVE_VOUCHER').resetForm();
     },
-    DisplayProductDescriptionInStockTransfer : function(){
-        let  base_url 			= $('input[name=base_url]').val();
-        let _token 				= $('input[name=_token]').val();
-        let p_id 				= $(this).val();
-
-        $.ajax
-        ({
-            url : base_url + "/request/stock/getproductinfo",
-            data : {p_id : p_id ,_token : _token },
-            method : 'post',
-            dataType : "json",
-            beforeSend : function(){
-            },
-            success : function(response){
-                $('.ProductName').html(response.p_product_name);
-
-            }
-        });
+    SwitchOtherDropdownForProduct : function(){
+        $("#CP_PRODUCT_NAME").val($(this).val()).trigger('change.select2');
+    },
+    SwitchPOtherDropdownForProduct : function(){
+        $("#CP_PRODUCT_ID").val($(this).val()).trigger('change.select2');
     },
     SelectCallRecord : function(){
         $('#LstInboundCalls tr').each((index,item) => {
@@ -162,6 +172,7 @@ inboundcalls_module = {
                 $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
                 $("input[name=cp_quantity]").val('1');
                 $("#CP_PRODUCT_ID").val(0).trigger('change.select2');
+                $("#CP_PRODUCT_NAME").val(0).trigger('change.select2');
                 $('.ProductName').html('');
 
             }
@@ -200,19 +211,21 @@ inboundcalls_module = {
       }
     },
     DownloadPDFReport : function(){
-         var base_url 	= $('input[name=base_url]').val();
-	    var _token 		= $('input[name=_token]').val()
-	    var general_search = $('input[name=general_search]').val();
-	    var ic_archived_call = $('select[name=ic_archived_call]').val();
-	    var ic_telemarketing_id = $('select[name=ic_telemarketing_id]').val();
-	    var ic_maintenance_type = $('select[name=ic_maintenance_type]').val();
-	    var ic_technician_id = $('select[name=ic_technician_id]').val();
-	    var ic_result_id = $('select[name=ic_result_id]').val();
-	    var ic_call_date = $('input[name=ic_call_date]').val();
+        var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val();
+        var general_search = $('input[name=general_search]').val();
+        var ic_archived_call = $('select[name=ic_archived_call]').val();
+        var ic_telemarketing_id = $('select[name=ic_telemarketing_id]').val();
+        var ic_maintenance_type = $('select[name=ic_maintenance_type]').val();
+        var ic_technician_id = $('select[name=ic_technician_id]').val();
+        var cl_area = $('select[name=cl_area]').val();
+        var cl_region = $('select[name=cl_region]').val();
+        var ic_result_id = $('select[name=ic_result_id]').val();
+        var ic_call_date = $('input[name=ic_call_date]').val();
              $.ajax
             ({
                 url : base_url + "/request/inboundcall/generateanddownloadlist",
-                data : { _token : _token , general_search : general_search , ic_archived_call : ic_archived_call ,ic_result_id : ic_result_id, ic_telemarketing_id : ic_telemarketing_id , ic_maintenance_type : ic_maintenance_type , ic_technician_id : ic_technician_id , ic_call_date : ic_call_date},
+                data : { _token : _token , general_search : general_search , cl_area : cl_area ,cl_region : cl_region, ic_archived_call : ic_archived_call ,ic_result_id : ic_result_id, ic_telemarketing_id : ic_telemarketing_id , ic_maintenance_type : ic_maintenance_type , ic_technician_id : ic_technician_id , ic_call_date : ic_call_date},
                 method : 'post',
                  xhrFields: {
                     responseType: 'blob' // Set the response type to blob
@@ -531,21 +544,24 @@ inboundcalls_module = {
                    method : 'post',
                    dataType : "json",
                    success : function(response){
+
+
                      if(response.is_error == 0)
                      {
-                            $('input[name=ic_resolution_date]').val('');
-                            $('input[name=ic_doc_number]').val('');
-                            $('input[name=ic_call_index]').val('');
-                            $('input[name=ic_comission]').val('');
-                            $('input[name=ic_visit_price]').val('')
-                            $('select[name=ic_currency_id]').val('').trigger('change.select2');
-                            $('select[name=ic_payment_type]').val('').trigger('change.select2');
-                            $('select[name=ic_payment_type]').val('').trigger('change.select2');
-                            $('select[name=cp_product_id]').val('').trigger('change.select2');
-                            $('#FRM_SAVE_VOUCHER').resetForm();
-                            $('.LstMaintenanceProducts').html('');
-                           $('#AddMainVoucher').modal('toggle');
+                         $('input[name=ic_resolution_date]').val('');
+                         $('input[name=ic_doc_number]').val('');
+                         $('input[name=ic_call_index]').val('');
+                         $('input[name=ic_comission]').val('');
+                         $('input[name=ic_visit_price]').val('')
+                         $('select[name=ic_currency_id]').val('').trigger('change.select2');
+                         $('select[name=ic_payment_type]').val('').trigger('change.select2');
+                         $('select[name=ic_payment_type]').val('').trigger('change.select2');
+                         $('select[name=cp_product_id]').val('').trigger('change.select2');
+                         $('.LstMaintenanceProducts').html('');
+                         $('#AddMainVoucher').modal('toggle');
                      }
+
+                       bootbox.alert(response.error_msg);
                    }
                });
             }

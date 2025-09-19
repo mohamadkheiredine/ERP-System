@@ -406,7 +406,6 @@ class InvoicesController extends Controller
             $display = str_replace("%INVOICE_DATE%",$invoice_info->bi_invoice_date, $display);
             $display = str_replace("%LST_CONTRACT_INVOICES%",$item_table, $display);
             $display = str_replace("%registration_number%",$company_info->cd_register_number, $display);
-            $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
 
             if(isset($crm_account) == true)
             {

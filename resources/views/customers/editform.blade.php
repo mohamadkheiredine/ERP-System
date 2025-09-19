@@ -20,7 +20,7 @@ Page Description :
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
+
 }
 
 ?>
@@ -82,7 +82,7 @@ th{
                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                         <img id="CUSTOMER_LOGO_PIC" width="100" src="{{ $img_src }}" alt="" /> </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
-        
+
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -115,8 +115,9 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer Country </label>
-                                 <select class="bs-select form-control" name="ic_customer_country" id="IC_CUSTOMER_COUNTRY" data-actions-box="true">
-                                        @foreach ( $lst_countries as $key => $count_info )
+                                 <select   name="ic_customer_country" id="IC_CUSTOMER_COUNTRY" class="form-control form-select" data-control="select2" data-placeholder="Select Country">
+                                     <option value="0">Select Country</option>
+                                     @foreach ( $lst_countries as $key => $count_info )
                                                 <option {{ $customer_info->ic_customer_country == $count_info->id ? "selected" : "" }} value="{{ $count_info->id }}">{{ $count_info->name }}</option>
                                         @endforeach
                                 </select>
@@ -127,7 +128,7 @@ th{
                                 <label class="control-label">Customer Website </label>
                                 <input type="url" name="ic_customer_website" id="IC_CUSTOMER_WEBSITE" class="form-control" maxlength="255"  value="{{ $customer_info->ic_customer_website }}" />
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer Email</label>
@@ -155,7 +156,7 @@ th{
                                        Default POS Customer
                                     </span>
                                 </label>
-                             
+
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -199,7 +200,7 @@ th{
 				</button>
 			</div>
 			<div class="modal-body">
-				<form name="frm_acc_account" id="FRM_ACC_ACCOUNT" action="#" > 
+				<form name="frm_acc_account" id="FRM_ACC_ACCOUNT" action="#" >
 				   <span id="hidden_fields">
 				   {!! csrf_field() !!}
 				   </span>

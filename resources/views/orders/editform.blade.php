@@ -154,7 +154,7 @@ th{
                              <div class="form-group">
                                 <label class="control-label">Order Tax :&nbsp;</label><br/>
                                  <select  name="so_vat_id" id="SO_VAT_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Tax">
-                                        <option value=""> -- Tax -- </option>
+                                        <option value="0"> -- Tax -- </option>
                                         @foreach ( $lst_vat_tax as $key => $tax_info )
                                                 <option {{ $order_info->so_vat_id ==  $tax_info->av_id ? "selected='selected'" : "" }}  value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_label }}&nbsp;(&nbsp;{{ $tax_info->av_vat_rate }}&nbsp;%&nbsp;)</option>
                                         @endforeach

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
 use App\models\Inventory\WareHouseZones;
+use App\models\Sales\StoreEmployees;
 use App\models\Sales\Stores;
+use App\models\Sales\StoreWarehouses;
 use App\models\System\Units;
 use App\models\Users\UserTypes;
 use Validator;
@@ -124,9 +126,11 @@ class StoresController extends Controller
 
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
 
         $data = array(
             "lst_managers" => $lst_managers,
+            "lst_warehouses" => $lst_warehouses,
             "lst_companies" => $lst_companies,
         );
         return view('stores.addstore',$data);
@@ -142,12 +146,14 @@ class StoresController extends Controller
      */
     public function SaveStoreInfo(Request $request)
     {
-        $ps_id                  = $request->input('ps_id');
+        $ps_id                          = $request->input('ps_id');
         $ps_company_id                  = $request->input('ps_company_id');
         $ps_store_name                  = $request->input('ps_store_name');
-        $ps_location                  = $request->input('ps_location');
+        $ps_location                    = $request->input('ps_location');
         $ps_manager_id                  = $request->input('ps_manager_id');
-        $ps_is_active                  = $request->has('ps_is_active') ? 1 : 0;
+        $ps_employees_id                  = $request->input('ps_employees_id');
+        $ps_warehouses_id                  = $request->input('ps_warehouses_id');
+        $ps_is_active                   = $request->has('ps_is_active') ? 1 : 0;
 
         $result_array = array();
 
@@ -167,6 +173,32 @@ class StoresController extends Controller
 
         $store_info->save();
 
+        $ps_id = $store_info->ps_id;
+
+        $delete = StoreWarehouses::whereSwIsDeleted(0)->whereSwStoreId($ps_id)->delete();
+
+        foreach ($ps_warehouses_id as $index => $w_id)
+        {
+            $store_warehouses = new StoreWarehouses();
+            $store_warehouses->sw_company_id = $ps_company_id;
+            $store_warehouses->sw_store_id = $ps_id;
+            $store_warehouses->sw_warehouse_id = $w_id;
+            $store_warehouses->save();
+        }
+
+
+        $delete = StoreEmployees::whereSeStoreId($ps_id)->delete();
+
+        foreach ($ps_employees_id as $index => $u_id)
+        {
+            $store_employees = new StoreEmployees();
+            $store_employees->se_store_id = $ps_id;
+            $store_employees->se_company_id = $ps_company_id;
+            $store_employees->se_employee_id = $u_id;
+            $store_employees->save();
+        }
+
+
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Store information Information Has been saved';
 
@@ -185,10 +217,27 @@ class StoresController extends Controller
         $store_info = Stores::find($ps_id);
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+
+        $store_warehouses = StoreWarehouses::whereSwIsDeleted(0)->whereSwStoreId($ps_id)->get();
+        $warehouse_ids = array();
+        foreach ($store_warehouses as $index => $warehouse) {
+            $warehouse_ids[] = $warehouse->sw_warehouse_id;
+        }
+
+        $store_employees = StoreEmployees::whereSeStoreId($ps_id)->get();
+        $employees_ids = array();
+        foreach ($store_employees as $index => $employee) {
+            $employees_ids[] = $employee->se_employee_id;
+        }
 
         $data = array(
             "lst_companies" => $lst_companies,
             "lst_managers" => $lst_managers,
+            "lst_warehouses" => $lst_warehouses,
+            "warehouse_ids" => $warehouse_ids,
+            "employees_ids" => $employees_ids,
+            "store_employees" => $store_employees,
             "store_info" => $store_info,
         );
         return view('stores.editstore',$data);

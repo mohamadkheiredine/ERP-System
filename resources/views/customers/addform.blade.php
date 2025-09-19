@@ -69,7 +69,7 @@ th{
                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                         <img id="CUSTOMER_LOGO_PIC" width="100" src="{{ url('images/NoImageAvailable.jpg') }}" alt="" /> </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
-        
+
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -102,7 +102,8 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer Country </label>
-                                 <select class="bs-select form-control" name="ic_customer_country" id="IC_CUSTOMER_COUNTRY" data-actions-box="true">
+                                     <select   name="ic_customer_country" id="IC_CUSTOMER_COUNTRY" class="form-control form-select" data-control="select2" data-placeholder="Select Country">
+                                     <option value="0">- Select Country -</option>
                                         @foreach ( $lst_countries as $key => $count_info )
                                                 <option value="{{ $count_info->id }}">{{ $count_info->name }}</option>
                                         @endforeach
@@ -143,15 +144,15 @@ th{
                                 </select>
                             </div>
                         </div>
-                          <div class="col-md-4"> 
-                             <div class="form-group"> 
+                          <div class="col-md-4">
+                             <div class="form-group">
                              <br/>
                          		<label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox"  name="ic_default_customer" id="IC_DEFAULT_CUSTOMER"  value="1"  />
                                     <span class="form-check-label fw-semibold text-muted">
                                        Default POS Customer
                                     </span>
-                                </label> 
+                                </label>
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -195,11 +196,11 @@ th{
 				</button>
 			</div>
 			<div class="modal-body">
-				<form name="frm_acc_account" id="FRM_ACC_ACCOUNT" action="#" > 
+				<form name="frm_acc_account" id="FRM_ACC_ACCOUNT" action="#" >
 				   <span id="hidden_fields">
 				   {!! csrf_field() !!}
 				   </span>
-				   
+
 				 	<div class="row">
 				 		<div class="col-md-12">
 				 			<div class="form-group">

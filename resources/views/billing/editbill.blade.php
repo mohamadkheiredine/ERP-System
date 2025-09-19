@@ -194,7 +194,7 @@ th{
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Collector : </label><br/>
-                                <span class="text-success">{{  $rvc_info->Bill->Collector->u_fullname }}</span>
+                                <span class="text-success">{{  $rvc_info->Bill->Collector ? $rvc_info->Bill->Collector->u_fullname : "-" }}</span>
                             </div>
                         </div>
                         <div class="col-md-3">

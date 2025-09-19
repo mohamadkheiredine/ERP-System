@@ -24,6 +24,7 @@
 
 }
 
+
 ?>
 
 @extends('layouts.layout',['page_title' => "Users Management"])
@@ -58,7 +59,7 @@ th{
             <div  class="form-body">
              <span id="hidden_fields">
                              <input type="hidden" name="user_id" value="{{ $user_info->id }}" />
-                             <input type="hidden" name="pm_id" value="{{ isset($payroll_paymentmethod) && count($payroll_paymentmethod) > 0  ? $payroll_paymentmethod->pm_id : 0 }}" />
+                             <input type="hidden" name="pm_id" value="{{ isset($payroll_paymentmethod) && is_object($payroll_paymentmethod) > 0  ? $payroll_paymentmethod->pm_id : 0 }}" />
                         {!! csrf_field() !!}
             </span>
                     <div class="alert alert-success" style="display:none">
@@ -420,7 +421,7 @@ th{
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="control-label">Account Number</label>
-                                        <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{ isset($payroll_paymentmethod) && count($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_account_number : ""  }}" />
+                                        <input type="text" name='pm_account_number' maxlength="255" class="form-control" id="PM_ACCOUNT_NUMBER" value="{{ isset($payroll_paymentmethod) && is_object($payroll_paymentmethod) > 0 ? $payroll_paymentmethod->pm_account_number : ""  }}" />
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -429,7 +430,7 @@ th{
                                         <select name="pm_payment_method" id="PM_PAYMENT_TYPE" class="form-select" data-control="select2" data-placeholder="Select Payment Type">
                                             <option value="">--Select One--</option>
                                             @foreach($lst_payment_types as $index => $pt_info)
-                                                <option {{ isset($payroll_paymentmethod) && count($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == $pt_info->pt_id  ? "selected" : "" }} value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
+                                                <option {{ isset($payroll_paymentmethod) && is_object($payroll_paymentmethod) > 0 && $payroll_paymentmethod->pm_payment_method == $pt_info->pt_id  ? "selected" : "" }} value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
                                             @endforeach
                                         </select>
                                     </div>
