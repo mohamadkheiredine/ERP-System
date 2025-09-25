@@ -18,4 +18,31 @@ class PurchaseRequisitions extends Model
     public $timestamps = false;
     protected $primaryKey = "pr_id";
 
+    public function Company()
+    {
+        return $this->hasOne('App\models\System\Companies', 'cc_id','pr_company_id');
+    }
+
+    public function Requester()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','pr_requester_id');
+    }
+
+
+    public function Department()
+    {
+        return $this->hasOne('App\models\System\Departments', 'sd_id','pr_department_id');
+    }
+
+
+    public function CostCenter()
+    {
+        return $this->hasOne('App\models\CostCenter\CostCenters', 'ac_id','pr_cost_center_id');
+    }
+
+    public function Project()
+    {
+        return $this->hasOne('App\models\PMP\Project', 'pp_id','pr_project_id');
+    }
+
 }

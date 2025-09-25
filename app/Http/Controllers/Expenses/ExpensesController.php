@@ -19,8 +19,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Inventory\unknown;
 use App\Http\Controllers\Inventory\View;
 use App\models\Accounting\ChartAccounts;
+use App\models\Accounting\TransactionMovements;
+use App\models\Accounting\Transactions;
 use App\models\Billing\PaymentTypes;
 use App\models\CostCenter\CostCenters;
+use App\models\Expenses\ExpensePayments;
 use App\models\Expenses\Expenses;
 use App\models\System\Currency;
 use App\models\System\SystemStatus;
@@ -156,16 +159,17 @@ class ExpensesController extends Controller
      */
     public function SaveExpenseInfo(Request $request)
     {
-        $ac_id                                  = $request->input('ac_id');
-        $ac_employee_id                                  = $request->input('ac_employee_id');
+        $ac_id                                          = $request->input('ac_id');
+        $ac_employee_id                                 = $request->input('ac_employee_id');
         $ac_category_id                                 = $request->input('ac_category_id');
-        $ac_amount                                 = $request->input('ac_amount');
-        $ac_expense_date                                 = $request->input('ac_expense_date');
+        $ac_amount                                      = $request->input('ac_amount');
+        $ac_expense_date                                = $request->input('ac_expense_date');
         $ac_currency_id                                 = $request->input('ac_currency_id');
-        $ac_description                                = $request->input('ac_description');
-        $ac_status_id                                = $request->input('ac_status_id');
-        $ac_cost_center_id                                = $request->input('ac_cost_center_id');
+        $ac_description                                 = $request->input('ac_description');
+        $ac_status_id                                   = $request->input('ac_status_id');
+        $ac_cost_center_id                              = $request->input('ac_cost_center_id');
         $ac_payment_type                                = $request->input('ac_payment_type');
+        $ac_is_paid                                     = $request->has('ac_is_paid') ? 1 : 0;
 
         $result_array = array();
 
@@ -177,6 +181,7 @@ class ExpensesController extends Controller
         }
 
 
+
         $expenses_info->ac_employee_id                  = $ac_employee_id;
         $expenses_info->ac_category_id                  = $ac_category_id;
         $expenses_info->ac_amount                  = $ac_amount;
@@ -186,7 +191,69 @@ class ExpensesController extends Controller
         $expenses_info->ac_status_id                  = $ac_status_id;
         $expenses_info->ac_cost_center_id                  = $ac_cost_center_id;
         $expenses_info->ac_payment_type                  = $ac_payment_type;
+        $expenses_info->ac_is_paid                       = $ac_is_paid;
         $expenses_info->save();
+
+
+        if($ac_id == null && $ac_is_paid == 1) // when add expenses and is paid we create accounting records
+        {
+
+            $todays_date = date("Y-m-d");
+
+            $payment_type = PaymentTypes::find($ac_payment_type);
+            $account_id = $expenses_info->Category->ec_gl_account_id;
+
+
+
+            // save transaction and movement
+            $transaction = new Transactions();
+            $transaction->at_transaction_date   = $todays_date;
+            $transaction->at_creation_date      = $todays_date;
+            $transaction->at_accounting_doc     = "Transaction For Expense of " . $expenses_info->Category->ec_name;
+            $transaction->fk_acc_journal_id     = 1;
+            $transaction->at_currency_id        = $ac_currency_id;
+            $transaction->save();
+            $at_id = $transaction->at_id;
+
+            $trans_mov= new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = $account_id;
+            $trans_mov->tm_sub_ledger_account   = $account_id ;
+            $trans_mov->tm_debit                = $ac_amount;
+            $trans_mov->tm_credit               = 0;
+            $trans_mov->tm_creation_date        = $todays_date;
+            $trans_mov->tm_transaction_date        = $todays_date;
+            $trans_mov->tm_currency_id          = $ac_currency_id;
+            $trans_mov->tm_ledger_label         = "Debit Expense For " . $expenses_info->Category->ec_name;
+            $trans_mov->save();
+
+            $trans_mov= new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = $payment_type->pt_payment_account;
+            $trans_mov->tm_sub_ledger_account   = $payment_type->pt_payment_account;
+            $trans_mov->tm_debit                = 0;
+            $trans_mov->tm_credit               = $ac_amount;
+            $trans_mov->tm_creation_date        = $todays_date;
+            $trans_mov->tm_transaction_date        = $todays_date;
+            $trans_mov->tm_currency_id          = $ac_currency_id;
+            $trans_mov->tm_ledger_label         = "Credit Expense For " . $expenses_info->Category->ec_name;
+            $trans_mov->save();
+
+
+            $payment_info = new ExpensePayments();
+            $payment_info->aa_expense_id = $expenses_info->ac_id;
+            $payment_info->aa_transaction_id = $at_id;
+            $payment_info->aa_movement_id = 0;
+            $payment_info->aa_paid_by = $ac_employee_id;
+            $payment_info->aa_paid_date = $todays_date;
+            $payment_info->aa_amount = $ac_amount;
+            $payment_info->aa_remarks = "Expense Payment For " . $expenses_info->Category->ec_name;
+            $payment_info->save();
+
+            $expenses_info->ac_payment_id = $payment_info->aa_id;
+            $expenses_info->save();
+        }
+
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Expenses Information Has been saved';
@@ -222,7 +289,7 @@ class ExpensesController extends Controller
             'lst_payment_types' => $lst_payment_types,
             'lst_cost_centers' => $lst_cost_centers
         );
-        return view('expenses.addexpense',$data);
+        return view('expenses.editexpense',$data);
     }
 
 

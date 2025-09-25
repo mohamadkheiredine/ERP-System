@@ -84,6 +84,14 @@ class DashboardController extends Controller
     }
 
 
+    public function Cashflow()
+    {
+
+        $data = array( );
+        return Response()->view("dashboard.cashflow",$data);
+    }
+
+
     /**
      * Crm Dashboard
      */

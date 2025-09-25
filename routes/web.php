@@ -21,6 +21,7 @@ Route::get('/order/posreceipt/{os_id}','Sales\OrdersController@POSReceipt');
 Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/dashboard','Dashboard\DashboardController@Dashboard');
+    Route::get('/cashflow/dashboard','Dashboard\DashboardController@Cashflow');
     Route::get('/callcenters/dashboard','Dashboard\DashboardController@CallcenterDashboard');
     Route::get('/accounting/dashboard','Dashboard\DashboardController@Accounting');
     Route::get('/services/dashboard','Dashboard\DashboardController@Services');
@@ -36,6 +37,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/administrator/config','Utilities\ConfigurationController@index');
 
 
+    Route::get('/administrator/users','Users\UsersController@UserManagement');
     Route::get('/administrator/users','Users\UsersController@UserManagement');
     Route::get('/administrator/users/addform','Users\UsersController@AddForm');
     Route::get('/administrator/edituser/{user_id}','Users\UsersController@EditForm');
@@ -566,5 +568,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/stores','Sales\StoresController@index');
     Route::get('/stores/addform','Sales\StoresController@AddForm');
     Route::get('/stores/editform/{ps_id}','Sales\StoresController@EditForm');
+
+    Route::get('/stores/terminals','Sales\TerminalsController@index');
+    Route::get('/terminals/addform','Sales\TerminalsController@AddForm');
+    Route::get('/terminals/editform/{pt_id}','Sales\TerminalsController@EditForm');
 
 });

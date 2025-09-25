@@ -63,7 +63,136 @@ var users_module = {
 						}
 					});
 			},
-			SaveUserInfo : function(){
+            SaveAccountSettings : function(){
+				return users_module.SaveAccountSettingsSubmitHandler();
+			},
+            SaveAccountSettingsSubmitHandler : function(){
+                var AccSetForm = $('#FORM_ACCOUNT_SETTINGS');
+                var error3 = $('.alert-danger', AccSetForm);
+                var success3 = $('.alert-success', AccSetForm);
+                error3.html('<strong>Error!</strong> You have some form errors. Please check below.');
+
+                AccSetForm.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "", // validate all fields including form hidden input
+                    rules: {
+                        allowed_companies: {
+                            required: true
+                        }
+                    },
+
+                    messages: { // custom messages for radio buttons and checkboxes
+
+                    },
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        console.log(element.parent(".form-group").length);
+                        if (element.parent(".form-group").length > 0) {
+                            error.insertAfter(element.parent(".form-group"));
+                        } else if (element.attr("data-error-container")) {
+                            error.appendTo(element.attr("data-error-container"));
+                        } else if (element.parents('.radio-list').length > 0) {
+
+                            error.appendTo("#GenderError");
+                        } else if (element.parents('.radio-inline').length > 0) {
+                            error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+                        } else if (element.parents('.checkbox-list').length > 0) {
+                            error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+                        } else if (element.parents('.checkbox-inline').length > 0) {
+                            error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+                        } else {
+                            error.insertAfter(element); // for other inputs, just perform default behavior
+                        }
+                    },
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success3.hide();
+                        error3.show();
+                    },
+                    success: function (label) {
+                        label
+                            .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                    },
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+                        $(element)
+                            .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+                    submitHandler: function (form) {
+                        success3.show();
+                        error3.hide();
+                        var base_url = $('#BASE_URL').val();
+                        var _token = $('input[name=_token]').val();
+
+                        // Create a formdata object and add the files
+                        var FormDataFields = $("#FORM_ACCOUNT_SETTINGS");
+                        var data = new FormData();
+                        var index = 0;
+
+                        $.each($("input[type=file]"), function (i, obj) {
+                            var name = $(this).attr('name');
+                            $.each(obj.files, function (j, file) {
+                                data.append(name, file);
+                            });
+                        });
+
+                        FormDataFields.find('input,select,textarea').each(function () {
+                            if($(this).attr('name') == "u_is_active")
+                            {
+                                var u_is_active = 0;
+                                if($("input[name=u_is_active]:checked").length == 1)
+                                {
+                                    u_is_active = 1;
+                                }
+                                data.append("u_is_active", u_is_active );
+                            }
+                            else if($(this).attr('name') == "u_has_insurance"){
+                                var u_has_insurance = 0;
+                                if($("input[name=u_has_insurance]:checked").length == 1)
+                                {
+                                    u_has_insurance = 1;
+                                }
+                                data.append("u_has_insurance", u_has_insurance );
+                            }
+                            else if($(this).attr('name') == "u_cnss_number"){
+                                var u_cnss_number = 0;
+                                if($("input[name=u_cnss_number]:checked").length == 1)
+                                {
+                                    u_cnss_number = 1;
+                                }
+                                data.append("u_cnss_number", u_cnss_number );
+                            }
+                            else
+                            {
+                                data.append($(this).attr('name'), $(this).val() );
+                            }
+                        });
+
+                        $.ajax
+                        ({
+                            url: base_url + '/request/users/saveaccsettings',
+                            data: data,
+                            async: false,
+                            cache: false,
+                            method: 'post',
+                            contentType: false,
+                            processData: false,
+                            dataType: "json",
+                            beforeSend: function () {
+                            },
+                            success: function (response) {
+                                bootbox.alert(response.error_msg);
+                            }
+                        });
+                    }
+
+                });
+            },
+            SaveUserInfo : function(){
 				return users_module.SaveUserInfoSubmitHandler();
 			},
 			SaveUserInfoSubmitHandler : function(){
@@ -117,10 +246,10 @@ var users_module = {
 		                	 required: true
 		                 },
 		                 u_sales_commission : {
-		                	 number :true 
+		                	 number :true
 		                 },
 		                 u_user_sallary : {
-		                	number :true 
+		                	number :true
 		                 },
 		                 u_email: {
 		                 	email : true,

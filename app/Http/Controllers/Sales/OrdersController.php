@@ -702,8 +702,8 @@ class OrdersController extends Controller
         $invoice_info->bi_invoice_code  = $invoice_code;
         $invoice_info->fk_account_id    = $customer_info->ic_account_number;
         $invoice_info->fk_customer_id   = $customer_id;
-        $invoice_info->bi_invoice_date  = date("Y-m-d");
-        $invoice_info->bi_due_date      = date("Y-m-d");
+        $invoice_info->bi_invoice_date  = $order_info->so_order_date;
+        $invoice_info->bi_due_date      = $order_info->so_order_date;
         $invoice_info->bi_payment_terms = 1;
         $invoice_info->bi_invoice_items_type = 1;
         $invoice_info->bi_invoice_type = 1;
@@ -800,6 +800,18 @@ class OrdersController extends Controller
         $TransactionMovement->tm_creation_date      = date("Y-m-d");
         $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
+
+        $trans_mov= new TransactionMovements();
+        $trans_mov->fk_tran_id              = $at_id;
+        $trans_mov->tm_ledger_account       = 601;
+        $trans_mov->tm_sub_ledger_account   = 601;
+        $trans_mov->tm_debit                = 0;
+        $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+        $trans_mov->tm_creation_date        = date('Y-m-d');
+        $trans_mov->tm_transaction_date        = date('Y-m-d');
+        $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+        $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
+        $trans_mov->save();
 
         // decrease the quantity of stock after the user pay to this order
         foreach ($lst_order_items as $key => $oi_info ) {

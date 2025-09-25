@@ -56,7 +56,7 @@ th{
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6 col-xs-12">
+            <div class="{{ Config::get("appconfig.crm_telemarketing") == 1  ? "col-md-6" : "col-md-12" }} col-xs-12">
                 <form name="frm_save_invoice" id="FORM_SAVE_INVOICE">
                      <span id="hidden_fields">
                       <div class="form-group">
@@ -282,7 +282,7 @@ th{
                                                             <select   name="bi_product_code_id" id="BI_PRODUCT_CODE_ID"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product Code">
                                                                 <option value=""> -- Product -- </option>
                                                                 @foreach($lst_products as $key => $product_info)
-                                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}</option>
+                                                                    <option value="{{ $product_info->p_id }}">{{ $product_info->p_barcode }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>

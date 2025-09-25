@@ -128,7 +128,7 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Order Currency:&nbsp;</label><br/>
-                                <select  name="so_order_currency" id="SO_ORDER_CURRENCY" class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                <select  name="so_order_currency" id="SO_ORDER_CURRENCY" required class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
                                         <option value=""> -- Currency -- </option>
                                         @foreach ( $lst_currency as $key => $curr_info )
                                                 <option value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code . "-" . $curr_info->cc_currency_name }}</option>

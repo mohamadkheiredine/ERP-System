@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * PurchaseRequisitions.php
+ * ApprovalPoliciesSteps.php
  * Product :titanerp
  * Version : 1.0
  * Release : 1
@@ -11,15 +11,13 @@
  * Page Description :
  ***********************************************************/
 
-
-
 namespace App\models\Purchasing;
 use Model;
 
-class PurchaseRequisitionItems extends Model
+class ApprovalPoliciesSteps extends Model
 {
-    protected $table = 'purchase_requisition_items';
+    protected $table = 'purchase_pr_approval_policy_steps';
     public $timestamps = false;
-    protected $primaryKey = "pi_id";
+    protected $primaryKey = "ps_id";
 
 }

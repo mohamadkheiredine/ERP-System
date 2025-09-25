@@ -173,6 +173,7 @@ th{
 						<th>Region</th>
 						<th>Area</th>
 						<th>Address</th>
+                        <th>Technician</th>
 						<th>Phone</th>
 						<th>Result</th>
 						<th>Call Result</th>

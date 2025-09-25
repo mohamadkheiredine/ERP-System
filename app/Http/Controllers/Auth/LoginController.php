@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\models\Roles\RolePrivileges;
+use App\models\Users\UserAllowedCompanies;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -126,9 +127,16 @@ class LoginController extends Controller
         }
 
 
+        $lst_usr_companies = UserAllowedCompanies::whereAcUserId($user_id)->get();
+        $allowed_companies = array();
+        foreach ($lst_usr_companies as $index => $comp_info) {
+            $allowed_companies[] = $comp_info->ac_company_id;
+        }
+
 
 
         session()->put('user_id' , $user_id );
+        session()->put('allowed_companies' , $allowed_companies );
         session()->put('user_profile_url' , $profile_url);
         session()->put('user_fullname' , $user_info->u_fullname);
         session()->put('user_email' , $user_info->u_email);
@@ -137,6 +145,7 @@ class LoginController extends Controller
         session()->put('u_department_id' , $user_info->u_department_id);
         session()->put('warehouse_id' , $user_info->fk_warehouse_id);
         session()->put('company_id' , $company_id);
+        session()->put('default_company_id' , $company_id);
 
         if($company_id > 0)
         {
@@ -165,6 +174,7 @@ class LoginController extends Controller
             session()->put('company_homepage' ,$company_info->cd_company_homepage);
             session()->put('company_starting_year' ,date("Y",strtotime($company_info->cd_starting_date)));
             session()->put('cd_exchange_rate' ,$company_info->cd_exchange_rate);
+            session()->put('cd_company_country' ,$company_info->cd_company_country);
         }
 
         $role_info = RolePrivileges::getPrivileges($role_id);

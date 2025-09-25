@@ -1850,11 +1850,11 @@ Page Description :
                                             @if(CheckPrivilage('erp_store_locations') == "allow")
                                                 <div class="menu-item">
                                                     <!--begin:Menu link-->
-                                                    <a class="menu-link" href="{{ url('store/locations') }}">
+                                                    <a class="menu-link" href="{{ url('stores/terminals') }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-                                                        <span class="menu-title">Store Locations Management</span>
+                                                        <span class="menu-title">Store Terminals</span>
                                                     </a>
                                                     <!--end:Menu link-->
                                                 </div>

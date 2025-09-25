@@ -19,6 +19,7 @@ use App\Http\Controllers\Controller;
 use App\models\Billing\PaymentTypes;
 use App\models\PayRolls\PayrollsPaymentMethods;
 use App\models\Accounting\ChartAccounts;
+use App\models\Users\UserAllowedCompanies;
 use Faker\Provider\Payment;
 use Validator;
 use Input;
@@ -136,7 +137,7 @@ class UsersController extends Controller {
         $lst_departments = Departments::whereSdIsDeleted(0)->get();
         $lst_roles = Roles::whereRoleIsDeleted(0)->get();
         $lst_employment_type = EmploymentType::whereEtIsDeleted(0)->get();
-        $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_langs = Languages::all();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
@@ -159,6 +160,38 @@ class UsersController extends Controller {
         return Response()->view('users.adduser', $data);
     }
 
+
+    public function AccountSettings(Request $request) {
+        $user_id = session('user_id');
+        $lst_usr_companies = UserAllowedCompanies::whereAcUserId($user_id)->get();
+        $allowed_companies = array();
+        foreach ($lst_usr_companies as $index => $comp_info) {
+            $allowed_companies[] = $comp_info->ac_company_id;
+        }
+        $lst_companies = Companies::whereCdIsDeleted(0)->whereIn('cd_id',$allowed_companies)->get();
+
+
+        $data = array(
+            "lst_companies" => $lst_companies,
+            "allowed_companies" => $allowed_companies,
+        );
+        return Response()->view('users.accountsettings', $data);
+    }
+
+
+    public function SaveAccSettings(Request $request) {
+        $user_id = session('user_id');
+        $default_company = $request->input("default_company");
+        $result_array = array();
+
+
+        session()->put('default_company_id' , $default_company);
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+        return Response()->json($result_array);
+    }
+
     /**
      * Edit User Form
      * @param unknown $user_id
@@ -170,12 +203,20 @@ class UsersController extends Controller {
         $lst_departments = Departments::whereSdIsDeleted(0)->get();
         $lst_roles = Roles::whereRoleIsDeleted(0)->get();
         $lst_employment_type = EmploymentType::whereEtIsDeleted(0)->get();
-        $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_langs = Languages::all();
         $rand = rand(9, 99999);
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
+
+
+        $lst_usr_companies = UserAllowedCompanies::whereAcUserId($user_id)->get();
+        $allowed_companies = array();
+        foreach ($lst_usr_companies as $index => $comp_info) {
+            $allowed_companies[] = $comp_info->ac_company_id;
+        }
+
 
         $payroll_paymentmethod = PayrollsPaymentMethods::where('pm_company_id', $user_info->fk_company_id)->where('pm_employee_id', $user_info->fk_company_id)->get();
 
@@ -196,6 +237,7 @@ class UsersController extends Controller {
             "lst_employment_type" => $lst_employment_type,
             "lst_user_types" => $lst_user_types,
             "payroll_paymentmethod" => $payroll_paymentmethod,
+            "allowed_companies" => $allowed_companies,
             "lst_companies" => $lst_companies
         );
         return Response()->view('users.edituser', $data);
@@ -246,6 +288,7 @@ class UsersController extends Controller {
         $u_hourly_rate = $request->input('u_hourly_rate');
         $u_is_active = $request->input('u_is_active');
         $pm_id              = $request->input('pm_id');
+        $allowed_companies              = $request->input('allowed_companies');
         $pm_account_number  = $request->input('pm_account_number');
         $pm_payment_method  = $request->input('pm_payment_method');
 
@@ -374,6 +417,22 @@ class UsersController extends Controller {
         $Users->u_hourly_rate = $u_hourly_rate;
         $Users->u_is_active = $u_is_active;
         $Users->save();
+        $user_id = $Users->id;
+
+
+        if(count($allowed_companies) > 0)
+        {
+            $del = UserAllowedCompanies::whereAcUserId($user_id)->delete();
+            $allowed_companies_arr = explode(",", $allowed_companies[0]);
+            foreach ($allowed_companies_arr as $index => $company_id)
+            {
+                $allowed_cmp = new UserAllowedCompanies();
+                $allowed_cmp->ac_company_id = $company_id;
+                $allowed_cmp->ac_user_id = $user_id;
+                $allowed_cmp->save();
+            }
+        }
+
 
         // if we add new warehouse
          if ($user_id == null && ( $u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES )  ) {

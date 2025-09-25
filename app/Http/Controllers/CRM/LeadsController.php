@@ -64,11 +64,13 @@ class LeadsController extends Controller
     public function index()
     {
 
+        $default_company_id = session('default_company_id');
+
         // get dropdowns filter data
         $lead_categories = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lead_statuses  = CRMLeadStatus::whereLsIsDeleted(0)->get();
-        $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_users  = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->whereFkCompanyId($default_company_id)->get();
         $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
         $lst_lead_types      = CRMLeadTypes::whereLtIsDeleted(0)->get();
 
@@ -120,12 +122,13 @@ class LeadsController extends Controller
         $lead_name              = $request->input('lead_name');
         $sheet_number             = $request->input('sheet_number');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+        $default_company_id     = Session('default_company_id');
 
 
 
         DB::enableQueryLog();
 
-        $leads_cond = CRMLeads::whereClIsDeleted(0);
+        $leads_cond = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id);
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -342,17 +345,18 @@ class LeadsController extends Controller
      */
     public function AddForm()
     {
+        $default_company_id = session('default_company_id');
         $lead_categories    = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lead_statuses      = CRMLeadStatus::whereLsIsDeleted(0)->whereFkParentStatus(null)->get();
-        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_users          = Users::whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUIsActive(1)->get();
         $lst_industries     = Industry::whereSiIsDeleted(0)->get();
         $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get();
         $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries      = Countries::all();
         $lst_areas              = Areas::all();
         $lst_regions             = Regions::all();
-        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
 
 
         $crm_telemarketing  = Config::get('appconfig.crm_telemarketing');
@@ -383,15 +387,15 @@ class LeadsController extends Controller
     public function EditForm($cl_id)
     {
         $lead_info = CRMLeads::find($cl_id);
-
         $lead_categories                = CRMClientCategories::whereCcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
 
         $lead_status                    =  $lead_info->fk_lead_status_id;
 
         $lead_statuses                  = CRMLeadStatus::whereLsIsDeleted(0)->whereFkParentStatus($lead_status)->orWhere('ls_id',$lead_status)->get();
-        $lst_users                      = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_users                      = Users::whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUIsActive(1)->get();
+        $lst_telemarketing = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_industries                 = Industry::whereSiIsDeleted(0)->get();
         $lst_lead_source                = CRMLeadSources::whereLsIsDeleted(0)->get();
         $lst_countries                  = Countries::all();
@@ -426,8 +430,6 @@ class LeadsController extends Controller
     public function GetRegionArea(Request $request)
     {
         $lr_area = $request->input('lr_area');
-
-
 
         $lst_regions = Regions::whereLrArea($lr_area)->get();
         $regions_array = array();
@@ -493,6 +495,7 @@ class LeadsController extends Controller
         $need_shipment       = $request->input('need_shipment');
         $ini_status_id       = $request->input('ini_status_id');
         $ini_assign_to       = $request->input('ini_assign_to');
+        $default_company_id     = Session('default_company_id');
 
         $cl_referred_by       = $request->input('cl_referred_by');
         $cl_lead_type_id       = $request->input('cl_lead_type_id');
@@ -600,6 +603,7 @@ class LeadsController extends Controller
         $LeadInfo->cl_lead_type_id              = $cl_lead_type_id;
         $LeadInfo->cl_sheet_number              = $cl_sheet_number;
         $LeadInfo->cl_telemarketing_id              = $cl_telemarketing_id;
+        $LeadInfo->cl_company_id              = $default_company_id;
 
         if($is_new == true)
         {

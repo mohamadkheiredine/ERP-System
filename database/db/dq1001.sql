@@ -170,6 +170,101 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
 ALTER TABLE `acc_expenses` ADD COLUMN `ac_is_paid` TINYINT NULL DEFAULT 0 AFTER `ac_payment_type`;
+ALTER TABLE `acc_expenses` ADD COLUMN `ac_payment_id` INT NULL DEFAULT 0 AFTER `ac_category_id`;
+
+
+CREATE TABLE `usr_allowed_companies` (
+`ac_company_id` INT NULL DEFAULT 0,
+`ac_user_id` INT NULL DEFAULT 0);
+
+
+CREATE TABLE sys_governorates (
+      sg_id INT PRIMARY KEY AUTO_INCREMENT,
+      sg_country_id smallint NOT NULL,
+      sg_governorate_name_en VARCHAR(100) NOT NULL,
+      sg_governorate_name_ar VARCHAR(100) NOT NULL,
+      sg_governorate_code VARCHAR(10),
+      sg_capital_city VARCHAR(100),
+      sg_area_km2 DECIMAL(10,2),
+      sg_population INT,
+      sg_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      sg_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      sg_is_deleted tinyint default 0,
+      sg_deleted_by int default 0,
+
+      INDEX idx_country_gov (sg_country_id, sg_governorate_name_en),
+      INDEX idx_gov_en (sg_governorate_name_en),
+      INDEX idx_gov_ar (sg_governorate_name_ar),
+      INDEX idx_gov_code (sg_governorate_code)
+);
+
+
+CREATE TABLE sys_districts (
+   sd_id INT PRIMARY KEY AUTO_INCREMENT,
+   sd_country_id smallINT NOT NULL,
+   sd_governorate_id INT NOT NULL,
+   sd_district_name_en VARCHAR(100) NOT NULL,
+   sd_district_name_ar VARCHAR(100) NOT NULL,
+   sd_district_code VARCHAR(10),
+   sd_district_type ENUM('District', 'Wilayat', 'Qada', 'Other') DEFAULT 'District',
+   sd_capital_city VARCHAR(100),
+   sd_area_km2 DECIMAL(10,2),
+   sd_population INT,
+   sd_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   sd_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   sd_is_deleted tinyint default 0,
+   sd_deleted_by int default 0,
+
+   UNIQUE KEY unique_gov_district (sd_governorate_id, sd_district_name_en),
+
+-- Indexes
+   INDEX idx_country_district (sd_country_id, sd_district_name_en),
+   INDEX idx_district_en (sd_district_name_en),
+   INDEX idx_district_ar (sd_district_name_ar),
+   INDEX idx_gov_district (sd_governorate_id, sd_district_name_en),
+   INDEX idx_district_type (sd_district_type),
+   INDEX idx_district_code (sd_district_code)
+);
+
+
+CREATE TABLE sys_cities (
+sc_id INT PRIMARY KEY AUTO_INCREMENT,
+sc_country_id smallINT default 0,
+sc_governorate_id INT default 0,
+sc_district_id INT default 0,
+sc_city_name_en VARCHAR(255) Default NULL,
+sc_city_name_ar VARCHAR(255) Default NULL,
+sc_city_type ENUM('City', 'Town', 'Village', 'Municipality', 'Other') DEFAULT 'City',
+sc_population INT default 0,
+sc_is_capital BOOLEAN DEFAULT FALSE,
+sc_is_governorate_capital BOOLEAN DEFAULT FALSE,
+sc_is_district_capital BOOLEAN DEFAULT FALSE,
+sc_is_major_city BOOLEAN DEFAULT FALSE,
+sc_elevation_m INT default 0,
+sc_latitude DECIMAL(10, 8) default 0,
+sc_longitude DECIMAL(11, 8) default 0,
+sc_postal_code VARCHAR(20) default 0,
+sc_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+sc_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+sc_is_deleted tinyint default 0,
+sc_deleted_by int default 0,
+-- Foreign key constraints
+
+-- Unique constraint
+UNIQUE KEY unique_district_city (sc_district_id, sc_city_name_en),
+
+-- Indexes
+INDEX idx_country_city (sc_country_id, sc_city_name_en),
+INDEX idx_city_en (sc_city_name_en),
+INDEX idx_city_ar (sc_city_name_ar),
+INDEX idx_gov_city (sc_governorate_id, sc_city_name_en),
+INDEX idx_district_city (sc_district_id, sc_city_name_en),
+INDEX idx_city_type (sc_city_type),
+INDEX idx_population (sc_population),
+INDEX idx_location (sc_latitude, sc_longitude),
+INDEX idx_capitals (sc_is_capital, sc_is_governorate_capital, sc_is_district_capital),
+INDEX idx_major_cities (sc_is_major_city)
+);
 
 
 

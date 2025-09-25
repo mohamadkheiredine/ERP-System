@@ -84,6 +84,23 @@ inboundcalls_module = {
 	    });
 
 	},
+    getlistofregions : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var lr_area	 	= $('#CL_AREA').val();
+        var params = { _token : _token , lr_area : lr_area };
+        $.ajax
+        ({
+            url : base_url + "/request/leads/getregionarea",
+            data : params,
+            dataType : "json",
+            type : "POST",
+            success : function(response){
+                $('#REGION_DROPDOWN').html(response.dropdown);
+                $('select[name=cl_region]').select2();
+            }
+        });
+    },
     ShowOrHidePaymentType : function(){
         let voucher_price = $("#IC_VISIT_PRICE").val();
         if(voucher_price > 0)

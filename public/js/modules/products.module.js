@@ -70,9 +70,6 @@ products_module = {
                  mp_movement_quantity : {
                      required : true,
                      number : true
-                 },
-                 mp_item_notes : {
-                     required : true
                  }
          },
          messages: { // custom messages for radio buttons and checkboxes

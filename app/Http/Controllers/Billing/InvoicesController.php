@@ -1122,6 +1122,9 @@ class InvoicesController extends Controller
 
         $client_info = CRMAccounts::find($invoice_account);
 
+        $item_type = is_numeric($bi_invoice_items_type ) ? $bi_invoice_items_type :  $ini_invoice_type;
+
+
 
         $invoice_info->bi_invoice_ref       = $bi_invoice_ref;
         $invoice_info->bi_invoice_code      = $bi_invoice_code;
@@ -1133,7 +1136,7 @@ class InvoicesController extends Controller
         $invoice_info->bi_payment_type      = $bi_payment_type;
         $invoice_info->bi_payment_terms     = $bi_payment_terms;
         $invoice_info->bi_invoice_note      = $bi_invoice_note;
-        $invoice_info->bi_invoice_type      = $bi_invoice_items_type;
+        $invoice_info->bi_invoice_type      = $item_type;
         $invoice_info->bi_invoice_currency  = $bi_invoice_currency;
         $invoice_info->bi_vat_id            = $bi_vat_id;
         $invoice_info->bi_discount          = $bi_discount;
@@ -1236,91 +1239,133 @@ class InvoicesController extends Controller
                     $pt_payment_account     = $payment_type_info->pt_payment_account;
 
 
-                    // Save Service Income for all servbice items inside the invoice
-                    $lst_invoice_items =  InvoiceProducts::whereFkInvoiceId($bi_id)->get();
-                    $total_price = 0;
-                    foreach ( $lst_invoice_items as $key => $ii_info )
+                    if( $item_type == 2 )
                     {
-                        $item_id = $ii_info->ii_item_id;
-
-                        $ii_supplier_id = $ii_info->ii_supplier_id;
-                        $service_info = CRMServices::find($item_id);
-                        $supplier_info = Suppliers::find($ii_supplier_id);
-
-                        // get the payment method if it's selected
-
-                        $ii_payment_type_id = $ii_info->ii_payment_type_id;
-                        if($ii_payment_type_id > 0)
+                        // Save Service Income for all servbice items inside the invoice
+                        $lst_invoice_items =  InvoiceProducts::whereFkInvoiceId($bi_id)->get();
+                        $total_price = 0;
+                        foreach ( $lst_invoice_items as $key => $ii_info )
                         {
-                            $pt_info      = PaymentTypes::find($ii_payment_type_id);
-                            $pt_payment_account     = $pt_info->pt_payment_account;
+                            $item_id = $ii_info->ii_item_id;
 
-                        }
+                            $ii_supplier_id = $ii_info->ii_supplier_id;
+                            $service_info = CRMServices::find($item_id);
+                            $supplier_info = Suppliers::find($ii_supplier_id);
 
-                        if($service_info != null)
-                        {
-                            $sales_account_id    = $service_info->cs_sale_accounting_code;
-                        $purchase_account_id = $service_info->cs_purchase_accounting_code;
+                            // get the payment method if it's selected
 
-                        // check if the user has a record by payment type to get account else we get the default
-                        $sptype_data = CRMServicesPaymentTypes::whereStServiceId($item_id)->whereStPaymentTypeId($invoice_payment_type)->get();
-                        if(count($sptype_data) > 0)
-                        {
-                            foreach ($sptype_data as $key => $type_info)
+                            $ii_payment_type_id = $ii_info->ii_payment_type_id;
+                            if($ii_payment_type_id > 0)
                             {
-                                // save sales and purchase account id
-                                $sales_account_id       = $type_info->st_account_income_id;
-                                $purchase_account_id    = $type_info->st_account_purchase_Id;
+                                $pt_info      = PaymentTypes::find($ii_payment_type_id);
+                                $pt_payment_account     = $pt_info->pt_payment_account;
+
+                            }
+
+                            if($service_info != null)
+                            {
+                                $sales_account_id    = $service_info->cs_sale_accounting_code;
+                                $purchase_account_id = $service_info->cs_purchase_accounting_code;
+
+                                // check if the user has a record by payment type to get account else we get the default
+                                $sptype_data = CRMServicesPaymentTypes::whereStServiceId($item_id)->whereStPaymentTypeId($invoice_payment_type)->get();
+                                if(count($sptype_data) > 0)
+                                {
+                                    foreach ($sptype_data as $key => $type_info)
+                                    {
+                                        // save sales and purchase account id
+                                        $sales_account_id       = $type_info->st_account_income_id;
+                                        $purchase_account_id    = $type_info->st_account_purchase_Id;
+                                    }
+                                }
+
+
+                                $TransactionMovement = new TransactionMovements();
+                                $TransactionMovement->fk_tran_id            = $at_id;
+                                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                                $TransactionMovement->tm_sub_ledger_account =  $pt_payment_account;
+                                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                                $TransactionMovement->tm_debit              = 0;
+                                $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
+                                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                                $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                                $TransactionMovement->save();
+
+                                $TransactionMovement = new TransactionMovements();
+                                $TransactionMovement->fk_tran_id            = $at_id;
+                                $TransactionMovement->tm_ledger_account     = $supplier_info->ss_sale_account_id;
+                                $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
+                                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                                $TransactionMovement->tm_debit              = 0;
+                                $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
+                                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                                $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                                $TransactionMovement->save();
+
+                                $TransactionMovement = new TransactionMovements();
+                                $TransactionMovement->fk_tran_id            = $at_id;
+                                $TransactionMovement->tm_ledger_account     = $purchase_account_id;
+                                $TransactionMovement->tm_sub_ledger_account = $purchase_account_id;
+                                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                                $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
+                                $TransactionMovement->tm_credit             = 0;
+                                $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                                $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                                $TransactionMovement->save();
+                                $total_price += $ii_info->ii_item_price;
                             }
                         }
+                    }
+                    else
+                    {
+                        //$fk_customer_id$invoice_account
+
+                        $account_id = 0;
+                        if($fk_customer_id == null)
+                        {
+                            $account_id = $client_info->ca_accounting_id;
+                        }
+                        else
+                        {
+                            $account_id = $customer_info->ic_account_number;
+                        }
 
 
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
-                        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-                        $TransactionMovement->tm_sub_ledger_account =  $sales_account_id;
+                        $TransactionMovement->tm_ledger_account     = $account_id;
+                        $TransactionMovement->tm_sub_ledger_account = $account_id;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                        $TransactionMovement->tm_debit              = 0;
-                        $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
-                        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-                        $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-                        $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
-                        $TransactionMovement->save();
-
-                        $TransactionMovement = new TransactionMovements();
-                        $TransactionMovement->fk_tran_id            = $at_id;
-                        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-                        $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
-                        $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                        $TransactionMovement->tm_debit              = 0;
-                        $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
-                        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-                        $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-                        $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
-                        $TransactionMovement->save();
-
-                        $TransactionMovement = new TransactionMovements();
-                        $TransactionMovement->fk_tran_id            = $at_id;
-                        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-                        $TransactionMovement->tm_sub_ledger_account = $purchase_account_id;
-                        $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                        $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
+                        $TransactionMovement->tm_debit              = $total_price;
                         $TransactionMovement->tm_credit             = 0;
                         $TransactionMovement->tm_creation_date      = date("Y-m-d");
                         $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-                        $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                        $TransactionMovement->tm_currency_id        = $bi_invoice_currency;
                         $TransactionMovement->save();
-                        $total_price += $ii_info->ii_item_price;
-                        }
 
 
-
+                        $TransactionMovement = new TransactionMovements();
+                        $TransactionMovement->fk_tran_id            = $at_id;
+                        $TransactionMovement->tm_ledger_account     = 601;
+                        $TransactionMovement->tm_sub_ledger_account = 601;
+                        $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                        $TransactionMovement->tm_debit              = 0;
+                        $TransactionMovement->tm_credit             = $total_price;
+                        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                        $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                        $TransactionMovement->tm_currency_id        = $bi_invoice_currency;
+                        $TransactionMovement->save();
                     }
+
+
 
 
                     $TransactionMovement = new TransactionMovements();
                     $TransactionMovement->fk_tran_id            = $at_id;
-                    $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+                    $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
                     $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
                     $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
                     $TransactionMovement->tm_debit              = $total_price;

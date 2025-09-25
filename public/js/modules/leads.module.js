@@ -254,7 +254,7 @@ leads_module = {
         getlistofregions : function(){
             var base_url 			= $('input[name=base_url]').val();
             var _token	 			= $('input[name=_token]').val();
-            var lr_area	 	= $(this).val();
+            var lr_area	 	= $('#CL_AREA').val();
             var params = { _token : _token , lr_area : lr_area };
             $.ajax
             ({

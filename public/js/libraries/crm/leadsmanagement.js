@@ -10,12 +10,12 @@ $(function(){
 	 $("input[name=lead_mobile]").on("keyup",leads_module.DisplayListLeads);
 	 $("select[name=cl_sales_id]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=cl_lead_result]").on("change",leads_module.DisplayListLeads);
-	 $("select[name=cl_area]").on("change",leads_module.DisplayListLeads);
+	 //$("select[name=cl_area]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=lead_status]").on("change",leads_module.DisplayListLeads);
 	 $("select[name=cl_lead_types]").on("change",leads_module.DisplayListLeads);
     $("#CL_AREA").on("change",function(){
-        leads_module.getlistofregions();
         leads_module.DisplayListLeads();
+        leads_module.getlistofregions();
     });
     $("#CL_REGION").on("change",function(){
         leads_module.DisplayListLeads();

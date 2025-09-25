@@ -172,6 +172,17 @@ th{
                                               </label>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Allowed Companies</label>
+                                            <select  name="allowed_companies[]" id="ALLOWED_COMPANIES" multiple class="form-select" data-control="select2" data-placeholder="Select Allowed Companies">
+                                                @foreach( $lst_companies as $key => $cmp_info)
+                                                    <option value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     </div>
                                 </div>
                             </div>

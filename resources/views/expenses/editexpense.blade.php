@@ -130,6 +130,17 @@ Page Description :
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br/>
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" {{ $expenses_info->ac_is_paid == 1 ? "checked" : ""  }} name="ac_is_paid" id="PC_USE_SERIAL_NUMBER"  value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                        pay Expense
+                                        </span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <label class="control-label">Description</label><br/>
                             <textarea style="width:100%;height:250px;" name="ac_description" id="AC_DESCRIPTION" class="form-control">{{ $expenses_info->ac_description }}</textarea>

@@ -26,21 +26,27 @@ class Orders extends Model
 {
     protected   $table          = 'sales_orders';
     public      $timestamps     = false;
-    protected   $primaryKey     = "so_id"; 
-    
+    protected   $primaryKey     = "so_id";
+
     public function Users()
     {
         return $this->hasOne('App\models\Users\Users', 'id','so_assign_to');
     }
-    
+
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','so_order_currency');
     }
-    
+
     public function Status()
     {
         return $this->hasOne('App\models\Sales\OrderStatus', 'os_id','so_order_status');
     }
-    
+
+
+    public function Customer()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','so_order_customer');
+    }
+
 }

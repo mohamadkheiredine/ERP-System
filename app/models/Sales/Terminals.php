@@ -32,4 +32,14 @@ class Terminals extends Model
     {
         return $this->hasOne('App\models\Sales\Stores', 'ps_id','pt_store_id');
     }
+
+    public function Manager()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','pt_manager_id');
+    }
+
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','pt_warehouse_id');
+    }
 }

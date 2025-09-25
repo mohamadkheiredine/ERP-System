@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: white;
             padding: 20px;
         }
         .container {
@@ -92,7 +92,7 @@
 
     <div class="receipt-container">
         <div class="receipt-title">
-            <h3>Receipt Voucher</h3>
+            <h1><u>Receipt Voucher</u></h1>
         </div>
 
         <div class="details">

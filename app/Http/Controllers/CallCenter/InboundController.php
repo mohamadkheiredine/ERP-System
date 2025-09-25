@@ -139,14 +139,14 @@ class InboundController extends Controller
         if($cl_area > 0)
         {
             $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_area) {
-                $query->where('cl_area', $cl_area);
+                $query->where('ca_billing_area', $cl_area);
             });
         }
 
         if($cl_region > 0)
         {
             $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_region) {
-                $query->where('cl_region', $cl_region);
+                $query->where('ca_billing_region', $cl_region);
             });
         }
 
@@ -346,14 +346,14 @@ class InboundController extends Controller
         if($cl_area > 0)
         {
             $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_area) {
-                $query->where('cl_area', $cl_area);
+                $query->where('ca_billing_area', $cl_area);
             });
         }
 
         if($cl_region > 0)
         {
             $inboundcall_cond = $inboundcall_cond->whereHas('Client', function($query)  use ($cl_region) {
-                $query->where('cl_region', $cl_region);
+                $query->where('ca_billing_region', $cl_region);
             });
         }
 
@@ -382,7 +382,7 @@ class InboundController extends Controller
                 $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_notes'] = $call_info->ic_notes;
                 $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_resolution_notes'] = $call_info->ic_resolution_notes;
                 $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_product_machine_id'] = $call_info->ic_product_machine_id;
-                $calls_array[$call_info->Technician->id]['call_info'][$i]['cr_result_title'] = $call_info->CallResult->cr_result_title;
+                $calls_array[$call_info->Technician->id]['call_info'][$i]['cr_result_title'] = $call_info->CallResult ? $call_info->CallResult->cr_result_title : "-";
                 $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_maintenance_type'] = $call_info->ic_maintenance_type;
                 $calls_array[$call_info->Technician->id]['call_info'][$i]['ic_resolution_date'] = $call_info->ic_resolution_date;
                 $i++;

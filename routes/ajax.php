@@ -21,6 +21,8 @@ Route::post('/request/dashboard/getsellingproducts','Dashboard\DashboardControll
 
 Route::post('/request/dashboard/getstockbycategories','Dashboard\DashboardController@GetStockByCategories');
 
+Route::post('/request/users/saveaccsettings','Users\UsersController@SaveAccSettings');
+
 Route::post('/request/displayusersManagement','Users\UsersController@DisplayList');
 Route::post('/request/users/saveuserinfo','Users\UsersController@SaveUsersInfo');
 Route::post('/request/users/deleteuserinfo','Users\UsersController@DeleteUserInfo');
@@ -721,3 +723,7 @@ Route::get('/request/stores/displaylist','Sales\StoresController@DisplayList');
 Route::post('/request/stores/saveinfo','Sales\StoresController@SaveStoreInfo');
 Route::delete('/request/stores/deletestoreinfo','Sales\StoresController@DeleteStoreInfo');
 Route::get('/request/stores/getlistwarehouses','Sales\StoresController@GetListWarehouses');
+
+Route::get('/request/terminals/displaylist','Sales\TerminalsController@DisplayList');
+Route::post('/request/terminals/saveinfo','Sales\TerminalsController@SaveTerminalInfo');
+Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController@DeleteTerminalInfo');

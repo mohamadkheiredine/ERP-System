@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: white;
             padding: 20px;
         }
         .container {
@@ -93,7 +93,7 @@
         <div class="voucher-header">
             <div></div>
             <div class="voucher-title">
-                <h3>Payment Voucher</h3>
+                <h1><u>Payment Voucher</u></h1>
             </div>
         </div>
 

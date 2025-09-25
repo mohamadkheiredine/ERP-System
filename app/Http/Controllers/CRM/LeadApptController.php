@@ -142,8 +142,9 @@ class LeadApptController extends Controller
      */
     public function AddNewAppointmentForm( $cl_id )
     {
-        $lst_leads = CRMLeads::whereClIsDeleted(0)->get();
-        $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $default_company_id     = Session('default_company_id');
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id)->get();
+        $lst_users  = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->get();
 
         $data = array(
             "cl_id" => $cl_id,
@@ -161,9 +162,11 @@ class LeadApptController extends Controller
      */
     public function EditLeadAppointmentForm( $ca_id )
     {
+        $default_company_id     = Session('default_company_id');
+
         $appt_info = CRMLeadAppointments::find($ca_id);
-        $lst_leads = CRMLeads::whereClIsDeleted(0)->get();
-        $lst_users  = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id)->get();
+        $lst_users  = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->get();
 
         $data = array(
             "appt_info" => $appt_info,
@@ -180,6 +183,8 @@ class LeadApptController extends Controller
         $ca_id          = $request->input("ca_id");
         $fk_lead_id     = $request->input("fk_lead_id");
         $fk_assigned_to = $request->input("fk_assigned_to");
+        $default_company_id     = Session('default_company_id');
+
         $ca_appointment_subject     = $request->input("ca_appointment_subject");
         $ca_appointment_date        = $request->input("ca_appointment_date");
         $ca_appointment_date        =  date("Y-m-d",strtotime($ca_appointment_date));

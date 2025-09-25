@@ -204,7 +204,7 @@ th{
                                         <label class="control-label">Region</label>
                                         <div class="col-md-12" id="REGION_DROPDOWN">
                                             <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="5" data-control="select2" data-placeholder="Select Region">
-                                                <option value="">-- Select Region --</option>
+                                                <option value="0">-- Select Region --</option>
                                                 @foreach( $lst_regions as $key => $region_info )
                                                     <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
                                                 @endforeach

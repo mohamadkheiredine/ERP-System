@@ -14,10 +14,10 @@ Page Description :
 
 ?>
 
-@foreach( $items_array as $index => $item_info ) 
+@foreach( $items_array as $index => $item_info )
 <tr>
         <td>{{ $item_info['p_product_ref'] }}</td>
-        <td>{{ $item_info['label'] }}</td>
+        <td>{{ $item_info['label'] }} {{ isset($item_info['serialnumber']) ? $item_info['serialnumber'] : "" }}</td>
         <td>{{ $item_info['quantity'] }}</td>
         <td>{{ $item_info['cost'] }}&nbsp;&nbsp;{{ $item_info['currency'] }}</td>
         <td>0</td>

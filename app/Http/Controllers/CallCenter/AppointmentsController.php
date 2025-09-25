@@ -56,12 +56,13 @@ class AppointmentsController extends Controller
     public function index()
     {
 
+        $default_company_id     = Session('default_company_id');
         $lst_lead_types         = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries          = Countries::all();
         $lst_appt_results       = ApptResults::whereArIsDeleted(0)->get();
-        $lst_telemarketing      = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        $lst_leads              = CRMLeads::whereClIsDeleted(0)->get();
+        $lst_telemarketing      = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_leads              = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id)->get();
 
         $data = array(
             "lst_sales" => $lst_sales,
@@ -137,8 +138,9 @@ class AppointmentsController extends Controller
      */
     public function ClosureAppointmentReport(Request $request)
     {
+        $default_company_id     = Session('default_company_id');
 
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
 
         $data = array(
             "lst_sales" => $lst_sales
@@ -153,8 +155,9 @@ class AppointmentsController extends Controller
         $cl_sales_id = $request->input('cl_sales_id');
         $ca_apt_from_date = $request->input('ca_apt_from_date');
         $ca_apt_last_date = $request->input('ca_apt_last_date');
+        $default_company_id     = Session('default_company_id');
 
-        $lst_sales              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_apt_results              = ApptResults::all();
         $total_results_app = array();
         $sales_array = array();
@@ -228,8 +231,9 @@ class AppointmentsController extends Controller
  $cl_sales_id = $request->input('cl_sales_id');
         $ca_apt_from_date = $request->input('ca_apt_from_date');
         $ca_apt_last_date = $request->input('ca_apt_last_date');
+        $default_company_id     = Session('default_company_id');
 
-        $lst_sales              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_apt_results              = ApptResults::all();
         $total_results_app = array();
         $sales_array = array();
@@ -313,13 +317,14 @@ class AppointmentsController extends Controller
     {
         $current_date = $request->input('current_date');
         $display_type = $request->input('display_type');
+        $default_company_id     = Session('default_company_id');
          $result_array = array();
         if($current_date == null)
         {
             $current_date = date('Y-m-d');
         }
 
-        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaAptDate($current_date)->whereCaLeadConfirm(1)->get();
+        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->whereCaAptDate($current_date)->whereCaLeadConfirm(1)->get();
 
        $result_array['is_error'] = 0;
        $data = array(
@@ -341,13 +346,14 @@ class AppointmentsController extends Controller
     {
         $current_date = $request->input('ca_appointment_date');
         $display_type = $request->input('display_type');
+        $default_company_id     = Session('default_company_id');
          $result_array = array();
         if($current_date == null)
         {
             $current_date = date('Y-m-d');
         }
 
-        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaAptDate($current_date)->get();
+        $lst_apppointments = Appointments::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->whereCaAptDate($current_date)->get();
 
        $result_array['is_error'] = 0;
        $data = array(
@@ -364,7 +370,9 @@ class AppointmentsController extends Controller
 
     public function CallBackReports(Request $request)
     {
-        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
+        $default_company_id     = Session('default_company_id');
+
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
 
         $data = array(
             "lst_leads" => $lst_leads
@@ -376,7 +384,9 @@ class AppointmentsController extends Controller
 
     public function DownloadListCallbackLeads(Request $request)
     {
-        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
+        $default_company_id     = Session('default_company_id');
+
+        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
 
         $data = array(
             'lst_leads' => $lst_leads
@@ -406,8 +416,9 @@ class AppointmentsController extends Controller
         $ca_salesman_id = $request->input('ca_salesman_id');
         $ap_apt_result = $request->input('ap_apt_result');
         $phone_number = $request->input('phone_number');
+        $default_company_id     = Session('default_company_id');
 
-        $apt_cond = Appointments::whereCaIsDeleted(0)->leftJoin('crm_leads', 'callcenter_lead_appointments.ca_lead_id', '=', 'crm_leads.cl_id');
+        $apt_cond = Appointments::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->leftJoin('crm_leads', 'callcenter_lead_appointments.ca_lead_id', '=', 'crm_leads.cl_id');
 
         if($lead_id > 0 || $lead_id != '')
         {
@@ -499,12 +510,13 @@ class AppointmentsController extends Controller
     {
         //$lst_appt = Appointments::whereCaIsDeleted(0)->whereCaLeadId($lead_id)->get();
         $result_array =array();
+        $default_company_id     = Session('default_company_id');
         $leads_info = CRMLeads::find($lead_id);
         $lst_lead_types = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries      = Countries::all();
         $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
-        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
-        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
 
         $data = array(
            "lead_id" => $lead_id,
@@ -550,6 +562,7 @@ class AppointmentsController extends Controller
         $cl_referred_by                               = $request->input('cl_referred_by');
         $cl_phone                               = $request->input('cl_phone');
         $cl_full_name                               = $request->input('cl_full_name');
+        $default_company_id     = Session('default_company_id');
         $lead_info = CRMLeads::find($ca_lead_id);
         $lead_info->cl_lead_results = $ca_apt_result;
         $lead_info->save();
@@ -576,8 +589,9 @@ class AppointmentsController extends Controller
         $app_info->ca_apt_details                   = $ca_apt_details;
         $app_info->ca_nbr_leads                     = $ca_nbr_leads;
         $app_info->ca_lead_fullname                  = $cl_full_name;
-        $app_info->ca_lead_phone                     = $cl_phone;
-        $app_info->ca_lead_referred_by               = $cl_referred_by;
+        $app_info->ca_lead_phone                    = $cl_phone;
+        $app_info->ca_lead_referred_by              = $cl_referred_by;
+        $app_info->ca_company_id                    = $default_company_id;
         $app_info->save();
 
         // change result of lead based of appointment change

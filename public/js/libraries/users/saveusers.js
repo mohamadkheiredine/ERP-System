@@ -11,8 +11,8 @@ $(function(){
 	$('#FK_COMPANY_ID').select2({  placeholder: "Select a Company" });
 	$('#FK_WAREHOUSE_ID').select2({  placeholder: "Select a Warehouse" });
 	$('select').select2();
-	
-        
+
+
         new tempusDominus.TempusDominus(document.getElementById('U_DATE_BIRTH'),{
 		 display: {
 			  components: {
@@ -20,7 +20,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: true,
 			      hours: true,
 			      minutes: true,
@@ -30,10 +30,10 @@ $(function(){
 		 },
 		 localization: {
 			 format : "MM/dd/yyyy"
-			 
+
 		 }
 	});
-        
+
            new tempusDominus.TempusDominus(document.getElementById('U_EMPLOYMENT_DATE'),{
 		 display: {
 			  components: {
@@ -41,7 +41,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: true,
 			      hours: true,
 			      minutes: true,
@@ -51,10 +51,10 @@ $(function(){
 		 },
 		 localization: {
 			 format : "MM/dd/yyyy"
-			 
+
 		 }
 	});
-        
+
 
 	 $('#U_PROFILE_PIC').on('change', function () {
 	        var countFiles   = $(this)[0].files.length;

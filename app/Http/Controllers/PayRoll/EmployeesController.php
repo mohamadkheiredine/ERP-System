@@ -120,7 +120,7 @@ class EmployeesController extends Controller {
         $lst_job_roles = JobRoles::whereJrIsDeleted(0)->get();
         $lst_departments = Departments::whereSdIsDeleted(0)->get();
         $lst_employment_type = EmploymentType::whereEtIsDeleted(0)->get();
-        $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
         $lst_user_roles = Roles::whereRoleIsDeleted(0)->get();
@@ -153,7 +153,7 @@ class EmployeesController extends Controller {
         $lst_job_roles = JobRoles::whereJrIsDeleted(0)->get();
         $lst_departments = Departments::whereSdIsDeleted(0)->get();
         $lst_employment_type = EmploymentType::whereEtIsDeleted(0)->get();
-        $lst_companies = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_warhouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_user_types = UserTypes::all();
         $lst_user_roles = Roles::whereRoleIsDeleted(0)->get();

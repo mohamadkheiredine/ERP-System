@@ -22,6 +22,9 @@ Display List of orders
    <td>{{ $order_info->so_id }}</td>
    <td>{{ $order_info->so_order_code }}</td>
    <td>{{ $order_info->so_order_label }}</td>
+   <td>{{ $order_info->Customer->ic_customer_name }}</td>
+   <td>{{ $order_info->Customer->ic_customer_phone }}</td>
+   <td>{{ $order_info->Customer->ic_customer_mobile }}</td>
    <td>{{  number_format($order_info->so_total_cost , 2) }}&nbsp;&nbsp;<b>{{ $order_info->Currency ? $order_info->Currency->cc_currency_code : "" }}</b></td>
     <td><a href="#" data-so_id="{{ $order_info->so_id }}" id="EDIT_ORDER_{{ $order_info->so_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
     <td><a style="{{ $order_info->so_order_paied == 1 ? 'display:none' : '' }}" href="#" data-so_id="{{ $order_info->so_id }}"  id="DELETE_ORDER_{{ $order_info->so_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>

@@ -20,14 +20,14 @@ $(function(){
     $("button[name=btn_close]").on("click",inboundcalls_module.ResetValues);
     $('#IC_PAYMENT_TYPE').val(2).trigger('change.select2');
     $("#CL_AREA").on("change",function(){
-        leads_module.getlistofregions();
-        leads_module.DisplayListInboundCalls();
+        inboundcalls_module.DisplayListInboundCalls();
+        inboundcalls_module.getlistofregions();
     });
     $("#CL_REGION").on("change",function(){
-        leads_module.DisplayListInboundCalls();
+        inboundcalls_module.DisplayListInboundCalls();
     });
     $("#REGION_DROPDOWN").on("change","#CL_REGION",function(){
-        leads_module.DisplayListInboundCalls();
+        inboundcalls_module.DisplayListInboundCalls();
     });
 
     $('#AddMainVoucher').on('hidden.bs.modal', function (e) {

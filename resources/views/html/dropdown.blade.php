@@ -15,6 +15,7 @@ Page Description :
 
 ?>
  <select class="bs-select form-control" name="{{ $name }}" id="{{ $id }}" data-actions-box="true">
+        <option value="0" selected>-- Select Option --</option>
         @foreach($html_array as $id => $title)
             <option value="{{ $id }}">{{ $title }}</option>
         @endforeach

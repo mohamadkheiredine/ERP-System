@@ -235,6 +235,7 @@
                                         <table class="table">
                                             <thead>
                                             <tr class="fw-bold fs-6 text-gray-800">
+                                                <th>#</th>
                                                 <th>Phase Code</th>
                                                 <th>Department</th>
                                                 <th>Phase Name</th>
@@ -259,6 +260,7 @@
                                         <table class="table">
                                             <thead>
                                             <tr class="fw-bold fs-6 text-gray-800">
+                                                <th>#</th>
                                                 <th>Job Code</th>
                                                 <th>Phase</th>
                                                 <th>Job Code</th>
@@ -284,6 +286,7 @@
                                         <table class="table">
                                             <thead>
                                             <tr class="fw-bold fs-6 text-gray-800">
+                                                <th>#</th>
                                                 <th>Task Code</th>
                                                 <th>Phase</th>
                                                 <th>Job</th>
