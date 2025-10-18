@@ -573,48 +573,79 @@ class OrdersController extends Controller
         }
         else
         {
-            $product_stock = Stocks::whereFkProductId($order_product_id)->whereFkWarehouseId($warehouse_id)->where('is_quanity','>',0)->get();
+            // Variable for the quantity we still need to fulfill.
+            $quantity_to_fulfill = $so_product_quantity;
 
-            if(count($product_stock) == 0)
-            {
+// Wrap the entire operation in a database transaction.
+// This ensures that if any part fails, all database changes are rolled back.
+            try {
+                DB::transaction(function () use (
+                    $order_product_id,
+                    $warehouse_id,
+                    &$quantity_to_fulfill, // Pass by reference to modify it
+                    $so_product_quantity,
+                    $order_id,
+                    $op_product_cost,
+                    $so_order_currency_id,
+                    $exchange_rate
+                ) {
+
+                    // 1. Get all available stock for the product, oldest first.
+                    $available_stock = Stocks::where('fk_product_id', $order_product_id)
+                        ->where('fk_warehouse_id', $warehouse_id)
+                        ->where('is_quanity', '>', 0) // Find any record with stock
+                        ->orderBy('is_id', 'asc')
+                        ->lockForUpdate() // Lock rows to prevent race conditions
+                        ->get();
+
+                    // 2. Check if the TOTAL available stock is sufficient.
+                    $total_stock = $available_stock->sum('is_quanity');
+                    if ($total_stock < $so_product_quantity) {
+                        // Use an exception to automatically trigger the transaction rollback.
+                        throw new \Exception("We don't have enough total stock for this product. Required: $so_product_quantity, Available: $total_stock");
+                    }
+
+                    // 3. Loop through each stock record to fulfill the order.
+                    foreach ($available_stock as $stock_batch) {
+                        if ($quantity_to_fulfill <= 0) {
+                            break; // Stop if the order is already fulfilled.
+                        }
+
+                        // Determine how much to take from this specific batch.
+                        $quantity_to_take = min($stock_batch->is_quanity, $quantity_to_fulfill);
+
+                        // Create a new order product line for this specific stock withdrawal.
+                        $order_products = new OrderProducts(); // Assuming 'OrderProducts' is your model name
+                        $order_products->fk_order_id = $order_id;
+                        $order_products->fk_product_id = $order_product_id;
+                        $order_products->so_product_quantity = $quantity_to_take; // Use the quantity from this batch
+                        $order_products->so_product_cost = $op_product_cost;
+                        $order_products->so_product_price = $op_product_cost * $quantity_to_take; // Price for this portion
+                        $order_products->so_product_currency = $so_order_currency_id;
+                        $order_products->so_exchange_rate = $exchange_rate;
+                        $order_products->so_stock_id = $stock_batch->is_id; // Link to this specific stock batch
+                        $order_products->save();
+
+                        // Decrease the stock quantity for this batch.
+                        $stock_batch->decrement('is_quanity', $quantity_to_take);
+
+                        // Update the remaining quantity we need to fulfill.
+                        $quantity_to_fulfill -= $quantity_to_take;
+                    }
+                });
+            } catch (\Exception $e) {
+                // If the transaction failed, return the error message.
                 $result_array['is_error'] = 1;
-                $result_array['error_msg'] = "We dont have any stock for this Product in this warehouse";
-                return Response()->json($result_array);
+                $result_array['error_msg'] = $e->getMessage();
+                return response()->json($result_array);
             }
-
-            // check if we have the queanty ordered
-            if($product_stock[0]['is_quanity'] < $so_product_quantity)
-            {
-                $result_array['is_error'] = 1;
-                $result_array['error_msg'] = "We don't have quantity in the stock for this product ";
-                return Response()->json($result_array);
-            }
-
-
-
-
-            $order_products->fk_order_id            = $order_id;
-            $order_products->fk_product_id          = $order_product_id;
-            $order_products->so_product_quantity    = $so_product_quantity;
-            $order_products->so_product_cost        = $op_product_cost;
-            $order_products->so_product_price       = $op_product_cost * $so_product_quantity;
-            $order_products->so_product_currency    = $so_order_currency_id;
-            $order_products->so_exchange_rate       = $exchange_rate;
-            $order_products->so_stock_id            = $product_stock[0]['is_id'];
-            $order_products->save();
 
         }
-
-
-
-
-
 
         $order_info = Orders::find($order_id);
 
 
-        $total_order                = $order_info->so_total_cost + ( $op_product_cost * $order_products->so_product_quantity );
-
+        $total_order                = $order_info->so_total_cost + ( $op_product_cost * $so_product_quantity );
         $order_info->so_total_cost  = $total_order;
         $order_info->save();
 

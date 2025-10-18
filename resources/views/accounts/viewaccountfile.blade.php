@@ -108,6 +108,9 @@ Page Description :
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="tab" href="#tab_closed_calls">Closed Calls</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab_client_stock">Client Stock</a>
+                </li>
             </ul>
 
             <div class="tab-content" id="myTabContent">
@@ -241,7 +244,39 @@ Page Description :
                         </table>
                     </div>
                 </div>
+                <div class="tab-pane fade" id="tab_client_stock" role="tabpanel">
+                    <div class="table-responsive">
+                        <table id="tablPendingCalls" class="table table-striped gy-7 gs-7">
+                            <thead>
+                            <tr
+                                class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                <th>Invoice Code</th>
+                                <th>Call Index</th>
+                                <th>Voucher</th>
+                                <th>Closing Call Date</th>
+                                <th>Product Name</th>
+                                <th>Product Serial Number</th>
+                                <th>Quantity</th>
+                            </tr>
+                            </thead>
+                            <tbody class="LstClosedCalls" id="LstClosedCalls">
+                                @foreach($lst_call_products as $index => $product_call_info)
+                                    <tr>
+                                        <td>{{ $product_call_info->Invoice ? $product_call_info->Invoice->bi_invoice_ref : "-" }}</td>
+                                        <td>{{ $product_call_info->Call ? $product_call_info->Call->ic_call_index : "-" }}</td>
+                                        <td>{{ $product_call_info->Call ? $product_call_info->Call->ic_doc_number : "-" }}</td>
+                                        <td>{{ $product_call_info->Call ? $product_call_info->Call->ic_resolution_date : "-" }}</td>
+                                        <td>{{ $product_call_info->Product->p_product_name }}</td>
+                                        <td>{{ $product_call_info->cp_serial_number }}</td>
+                                        <td>{{ $product_call_info->cp_quantity }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                </div>
             </div>
         </div>
-    </div>
 @endsection

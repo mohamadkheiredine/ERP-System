@@ -483,6 +483,7 @@ class OrdersController extends Controller
 
         $result_array['receipt_link']           = url('/order/posreceipt/' . $so_id . "?company_id=" . $company_id . "&user_id=" . $user_id . "&cost_total=" . $total);
         $result_array['is_error']           = 0;
+        $result_array['order_id']           = $so_id;
         $result_array['error_msg']          = "Order Saved";
         $result_array['pos_receipt']        = $pos_receipt;
 
@@ -1516,8 +1517,7 @@ class OrdersController extends Controller
         }
 
 
-        $order_info = Orders::whereSoOrderBarcode($order_barcode)->get();
-
+        $order_info = Orders::whereSoOrderCode($order_barcode)->get();
         if(count($order_info) == 0)
         {
             $result_array['is_error']       = 1;
@@ -1525,6 +1525,7 @@ class OrdersController extends Controller
 
             return Response()->json($result_array);
         }
+
 
         $so_id = $order_info[0]['so_id'];
 
@@ -1537,7 +1538,7 @@ class OrdersController extends Controller
             $items_order[$index]['p_id'] = $item_info->fk_product_id;
             $items_order[$index]['is_id'] = $item_info->so_stock_id;
             $items_order[$index]['product_name'] = $item_info->Products->p_product_name;
-            $items_order[$index]['uid'] = $item_info->stock->is_stock_uid;
+            $items_order[$index]['uid'] = $item_info->stock ? $item_info->stock->is_stock_uid : "-";
             $items_order[$index]['product_cost'] = $item_info->so_product_cost;
             $items_order[$index]['product_quantity'] = $item_info->so_product_quantity;
             $items_order[$index]['product_currency'] = $item_info->so_product_currency;

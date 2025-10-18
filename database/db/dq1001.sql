@@ -268,6 +268,96 @@ INDEX idx_major_cities (sc_is_major_city)
 
 
 
+ALTER TABLE `inventory_customers`
+    ADD COLUMN `ic_birth_date` DATE NULL DEFAULT NULL AFTER `ic_customer_mobile`,
+ADD COLUMN `ic_hobbies` TEXT NULL DEFAULT NULL AFTER `ic_birth_date`;
 
 
 
+CREATE TABLE `inventory_warehouse_movement` (
+    `wm_id` int NOT NULL AUTO_INCREMENT,
+    `wm_warehouse_id` smallint DEFAULT '0',
+    `wm_product_id` int DEFAULT '0',
+    `wm_quantity` decimal(10,0) DEFAULT '0',
+    `wm_action_date` datetime DEFAULT NULL,
+    `wm_action_type` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+    `wm_action_description` text COLLATE utf8mb3_unicode_ci,
+    `wm_is_deleted` tinyint DEFAULT '0',
+    `wm_deleted_by` int DEFAULT '0',
+    PRIMARY KEY (`wm_id`),
+    KEY `fk_wm_warehouse_id_idx` (`wm_warehouse_id`) USING BTREE,
+    KEY `fk_wm_product_id_idx` (`wm_product_id`) USING BTREE,
+    KEY `idx_wm_quantity` (`wm_quantity`) USING BTREE,
+    CONSTRAINT `fk_wm_product_id` FOREIGN KEY (`wm_product_id`) REFERENCES `inventory_products` (`p_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_wm_warehouse_id` FOREIGN KEY (`wm_warehouse_id`) REFERENCES `inventory_warehouses` (`w_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+
+ALTER TABLE `billing_invoices`
+    ADD COLUMN `bi_internal_invoice` TINYINT NULL DEFAULT 0 AFTER `bi_due_date`,
+ADD COLUMN `bi_company_to` INT NULL DEFAULT 0 AFTER `bi_internal_invoice`;
+
+
+ALTER TABLE `company_details`
+    ADD COLUMN `cd_default_warehouse` SMALLINT NULL DEFAULT 0 AFTER `cd_register_number`;
+
+ALTER TABLE `inventory_warehouses`
+    ADD COLUMN `w_company_id` INT NULL DEFAULT 0 AFTER `fk_w_id`;
+
+ALTER TABLE `inventory_stocks`
+    ADD COLUMN `is_stock_unit` SMALLINT NULL DEFAULT 0 AFTER `is_stock_uid`;
+
+
+ALTER TABLE `crm_lead_app_results`
+    ADD COLUMN `ar_app_show_apt` TINYINT NULL DEFAULT 0 AFTER `ar_app_description`;
+
+
+ALTER TABLE `srm_supplier_products`
+    ADD COLUMN `sp_stock_unit` SMALLINT NULL DEFAULT 0 AFTER `sp_product_quantity`;
+
+
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('212', 'erp_purchasing_module', 'Allow users to Access Purchasing Management Module', 'Allow users to Access Purchasing Management Module', 'Purchasing Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('213', 'erp_purchasing_request_status', 'Allow users to Management request Status', 'Allow users to Management request Status', 'Purchasing Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('214', 'erp_purchasing_quotation_status', 'Allow users to Management Quotation Status', 'Allow users to Management Quotation Status', 'Purchasing Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('215', 'erp_purchasing_manage_requisition', 'Allow users to manage Purchase Requisitions', 'Allow users to manage Purchase Requisitions', 'Purchasing Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('216', 'erp_purchasing_manage_orders', 'Allow users to manage Purchase Orders', 'Allow users to manage Purchase Requisitions', 'Purchasing Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('217', 'erp_accounting_expenses_module', 'Allow users to Manage Expenses Module', 'Allow users to Manahe Expenses Module', 'Expenses Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('218', 'erp_accounting_expense_categories', 'Allow users to  Manage Expense Categories', 'Allow users to  Manage Expense Categories', 'Expenses Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('219', 'erp_acc_expense_status', 'Allow users to Manage Expense Statuses', 'Allow users to Manage Expense Statuses', 'Expenses Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('220', 'erp_acc_expense', 'Allow users to Manage Expense', 'Allow users to Manage Expense', 'Expenses Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('221', 'erp_acc_expense_payment', 'Allow users to Manage Expenses Payment', 'Allow users to Manage Expenses Payment', 'Expenses Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('222', 'erp_closuresales_reports', 'Allow users to access to closure sales report', 'Allow users to access to closure sales report', 'Callcenter Management');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('223', 'erp_callback_reports', 'Allow users to access to callback report', 'Allow users to access to callback report', 'Callcenter Management');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('224', 'erp_cumulative_month_reports', 'Allow users to access to cumulative monthly leads', 'Allow users to access to cumulative monthly leads', 'Callcenter Management');
+
+
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_stock_expiry_date` DATE NULL DEFAULT NULL AFTER `is_stock_unit`;
+
+ALTER TABLE `inventory_warehouse_movement`  CHANGE COLUMN `wm_action_type` `wm_action_type` VARCHAR(50) NULL DEFAULT NULL ;
+
+ALTER TABLE `callcenter_calls_products` ADD COLUMN `cp_invoice_id` INT NULL DEFAULT 0 AFTER `cp_technician_id`,
+    ADD COLUMN `cp_serial_number` VARCHAR(255) NULL DEFAULT NULL AFTER `cp_invoice_id`;
+
+
+ALTER TABLE `callcenter_calls_products`
+    ADD COLUMN `cp_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `cp_invoice_id`;
+
+
+
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('225', 'erp_forcasting_leads_report', 'Allow users to access to forcasting leads report', 'Allow users to access to forcasting leads report', 'Callcenter Management');
+
+
+ALTER TABLE `inventory_stocks`
+    ADD COLUMN `is_production_date` DATE NULL DEFAULT NULL AFTER `is_discount`,
+ADD COLUMN `is_expiry_date` DATE NULL DEFAULT NULL AFTER `is_production_date`;
+
+ALTER TABLE `srm_supplier_products`
+    ADD COLUMN `sp_production_date` DATE NULL DEFAULT NULL AFTER `sp_product_description`,
+ADD COLUMN `sp_expiry_date` DATE NULL DEFAULT NULL AFTER `sp_production_date`;
+
+
+ALTER TABLE `billing_invoices`
+    ADD COLUMN `bi_official_invoice` TINYINT NULL DEFAULT 0 AFTER `bi_last_updated_by`;
+
+
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('226', 'erp_telemarketing_report', 'Allow users to access to telemarketing Report', 'Allow users to access to telemarketing Report', 'Callcenter Management');

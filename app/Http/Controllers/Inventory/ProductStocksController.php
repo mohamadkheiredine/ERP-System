@@ -15,6 +15,8 @@ Page Description :
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\models\Inventory\WareHouseMovement;
+use App\models\System\Units;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -82,6 +84,7 @@ class ProductStocksController extends Controller
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_units      = Units::all();
         $rand_barcode                 = rand(10000000,99999999999);
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
@@ -96,6 +99,7 @@ class ProductStocksController extends Controller
             "secondary_currency" => $secondary_currency,
             "lst_suppliers" => $lst_suppliers,
             "bar_code_png" => $bar_code_png,
+            "lst_units" => $lst_units,
             "rand_barcode" => $rand_barcode
         );
         return Response()->view("stocks.addstock",$data);
@@ -239,6 +243,7 @@ class ProductStocksController extends Controller
 
         $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
+        $lst_units      = Units::all();
 
         $currency_array     = CreateDatabaseArrayByIndex($lst_currencies,'cc_id');
         $company_currency   = session('company_currency');
@@ -257,6 +262,7 @@ class ProductStocksController extends Controller
             'lst_suppliers'  => $lst_suppliers,
             'rand_barcode'  => $rand_barcode,
             'bar_code_png'  => $bar_code_png,
+            'lst_units'  => $lst_units,
             'currency_array'    => $currency_array,
             'lst_warehouse'     => $lst_warehouse
         );
@@ -283,6 +289,7 @@ class ProductStocksController extends Controller
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_units      = Units::all();
         $lst_serial_numbers = StockIds::whereFkStockId($is_id)->get();
         $serial_numbers     = array();
         foreach ( $lst_serial_numbers as $key => $sn_info )
@@ -297,6 +304,7 @@ class ProductStocksController extends Controller
             'lst_warehouse' => $lst_warehouse,
             'lst_currencies' => $lst_currencies,
             'InventoryStock' => $InventoryStock,
+            'lst_units' => $lst_units,
             'product_info' => $product_info,
             'currency_array' => $currency_array,
             'lst_suppliers' => $lst_suppliers,
@@ -333,6 +341,9 @@ class ProductStocksController extends Controller
         $is_stock_uid       = $request->input("is_stock_uid");
         $is_supplier_id     = $request->input("is_supplier_id");
         $serial_ids         = $request->input("serial_ids");
+        $is_stock_unit         = $request->input("is_stock_unit");
+        $is_production_date         = $request->input("is_production_date");
+        $is_expiry_date             = $request->input("is_expiry_date");
         $creation_date      = date("Y-m-d H:i:s");
 
         $ProductInfo            = Products::find($p_id);
@@ -365,6 +376,11 @@ class ProductStocksController extends Controller
         $stock->is_price_stock                  =  $price_stock;
         $stock->is_stock_currency               =  $is_stock_currency;
         $stock->is_stock_uid                    =  $is_stock_uid;
+        $stock->is_stock_unit                    =  $is_stock_unit;
+        if(strlen($is_production_date) > 0)
+            $stock->is_production_date                =  $is_production_date;
+        if(strlen($is_expiry_date) > 0)
+            $stock->is_expiry_date                    =  $is_expiry_date;
         $stock->is_price_currency               =  session('company_currency');
         $stock->is_stock_lot_person_in_charge   =  session('user_id');
 
@@ -489,6 +505,11 @@ class ProductStocksController extends Controller
         $serial_ids             = $request->input("serial_ids");
         $is_supplier_id         = $request->input("is_supplier_id");
         $is_stock_currency      = $request->input("is_stock_currency");
+        $is_stock_unit      = $request->input("is_stock_unit");
+
+        $is_production_date         = $request->input("is_production_date");
+        $is_expiry_date             = $request->input("is_expiry_date");
+
         $creation_date          = date("Y-m-d");
         $result_array           = array();
 
@@ -566,7 +587,13 @@ class ProductStocksController extends Controller
         $stock->is_wholesale_price              =  $is_wholesale_price;
         $stock->is_vendor_price                 =  $is_vendor_price;
         $stock->is_stock_uid                    =  $is_stock_uid;
+        $stock->is_stock_unit                    =  $is_stock_unit;
         $stock->is_supplier_id                  =  $is_supplier_id;
+
+        if(strlen($is_production_date) > 0)
+            $stock->is_production_date                =  $is_production_date;
+        if(strlen($is_expiry_date) > 0)
+            $stock->is_expiry_date                    =  $is_expiry_date;
 
         $stock->save();
 
@@ -740,10 +767,14 @@ class ProductStocksController extends Controller
         $result_array           = array();
         $transfer_items = json_decode($list_transfer_items);
 
-        $product_obj = new ProductManager();
 
+        $SourceWarehouse = WareHouses::find($warehouse_source);
+        $DestinationWarehouse = WareHouses::find($warehouse_destination);
+
+        $product_obj = new ProductManager();
+        $transfer_code = $product_obj->GenerateStockTransferCode();
         $transfer_stock = new StockMovements();
-        $transfer_stock->sm_transfer_code = $product_obj->GenerateStockTransferCode();
+        $transfer_stock->sm_transfer_code =$transfer_code;
         $transfer_stock->fk_warehouse_from = $warehouse_source;
         $transfer_stock->fk_warehouse_to   = $warehouse_destination;
         $transfer_stock->sm_date_movement  = date("Y-m-d H:i:s");
@@ -778,6 +809,25 @@ class ProductStocksController extends Controller
             $transfer_stock_items->mp_currency_id = $product_info->p_product_currency;
             $transfer_stock_items->save();
 
+            $warehouse_movement = new WareHouseMovement();
+            $warehouse_movement->wm_warehouse_id = $warehouse_source;
+            $warehouse_movement->wm_product_id = $item_info->mp_product_id;
+            $warehouse_movement->wm_quantity = -1 * $item_info->mp_movement_quantity;
+            $warehouse_movement->wm_action_date = date('Y-m-d');
+            $warehouse_movement->wm_action_type = "TRANSFER";
+            $warehouse_movement->wm_action_description = "Transfer " .$item_info->mp_movement_quantity . " of " . $item_info->mp_product_name . " From " . $SourceWarehouse->w_warehouse_name . " using transfer #" . $transfer_code;
+            $warehouse_movement->save();
+
+
+            $warehouse_movement = new WareHouseMovement();
+            $warehouse_movement->wm_warehouse_id = $warehouse_destination;
+            $warehouse_movement->wm_product_id = $item_info->mp_product_id;
+            $warehouse_movement->wm_quantity = $item_info->mp_movement_quantity;
+            $warehouse_movement->wm_action_date = date('Y-m-d');
+            $warehouse_movement->wm_action_type = "TRANSFER";
+            $warehouse_movement->wm_action_description = "Transfer " .$item_info->mp_movement_quantity . " of " . $item_info->mp_product_name . " To " . $DestinationWarehouse->w_warehouse_name . " using transfer #" . $transfer_code;
+            $warehouse_movement->save();
+
             $total_quantity = $total_quantity + $item_info->mp_movement_quantity;
             $total_price = $total_price + $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
 
@@ -795,6 +845,9 @@ class ProductStocksController extends Controller
             $source_stock->is_price_item = $product_info->p_product_cost_price;
             $source_stock->is_price_stock = $product_info->p_product_cost_price * $item_info->mp_movement_quantity;
             $source_stock->save();
+
+
+
 
             // add stock in destination warehouse
             $destination_stock = new Stocks();

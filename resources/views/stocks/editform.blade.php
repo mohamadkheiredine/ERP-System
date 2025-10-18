@@ -128,10 +128,20 @@ th{
                                                             <input type="text" maxlength="50" name="is_quanity" id="STOCK_QUANTITY" class="form-control" required="required"   value="{{ $InventoryStock->is_quanity }}" />
                                                         </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Unit</label>
+                                                        <select name="is_stock_unit" id="IS_STOCK_UNIT" class="form-control form-select" data-control="select2" data-placeholder="Select Stock unit">
+                                                            <?php foreach ( $lst_units as $key => $unit_info ) { ?>
+                                                            <option {{ $InventoryStock->is_stock_unit == $unit_info->su_id ? "selected" : "" }} value="<?php echo $unit_info->su_id;  ?>">{{ $unit_info->su_unit_code }}&nbsp;-&nbsp;{{ $unit_info->su_unit_label }}</option>
+                                                            <?php  } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                   <div class="col-md-4">
                                                       <div class="form-group">
                                                             <label class="control-label"> Pruchase Item</label>
-                                                            <input type="text" maxlength="255" name="is_price_stock" id="IS_PRICE_STOCK" class="form-control" required="required"   value="{{ $InventoryStock->is_price_stock }}" />
+                                                            <input type="text" maxlength="255" name="is_price_stock" id="IS_PRICE_STOCK" class="form-control" required="required"   value="{{ $InventoryStock->is_price_item }}" />
                                                         </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -186,6 +196,19 @@ th{
                                                        	<input type="text" maxlength="255" name="is_stock_exchange_rate" id="IS_STOCK_EXCHANGE_RATE" class="form-control" required="required"   value="{{ $InventoryStock->is_stock_exchange_rate }}" />
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Production Date </label>
+                                                        <input type="text" maxlength="255" name="is_production_date" id="IS_PRODUCTION_DATE" class="form-control"   value="{{ $InventoryStock->is_production_date }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Expiry Date </label>
+                                                        <input type="text" maxlength="255" name="is_expiry_date" id="IS_EXPIRY_DATE" class="form-control"   value="{{ $InventoryStock->is_expiry_date }}" />
+                                                    </div>
+                                                </div>
+
                                             </div>
                                            <div class="row" style="height:5px;"></div>
                                             <div class="row">

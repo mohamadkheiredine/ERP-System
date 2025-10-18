@@ -37,6 +37,11 @@ class InboundCall extends Model
         return $this->hasOne('App\models\Users\Users', 'id','ic_sales_id');
     }
 
+    public function MaintenanceType()
+    {
+        return $this->hasOne('App\models\CallCenter\MaintenanceTypes', 'mt_id','ic_maintenance_type');
+    }
+
     public function Telemarketing()
     {
         return $this->hasOne('App\models\Users\Users', 'id','ic_telemarketing_id');

@@ -391,6 +391,25 @@ class AccountingManager
     }
 
 
+    public function GenerateOfficialInvoiceCode( $params_array = array() )
+    {
+        $company_id     = isset( $params_array['company_id'] ) ? $params_array['company_id'] : session('company_id');
+        $fyear     = isset( $params_array['fyear'] ) ? $params_array['fyear'] : date("Y");
+        $company_info   = Companies::find($company_id);
+        $cd_company_name = $company_info->cd_company_name;
+        $year           = $fyear;
+        $count_invoices = Invoices::whereBiIsDeleted(0)->whereBiOfficialInvoice(1)->count();
+
+        $index = $count_invoices + 1;
+
+
+        $invoice_code = "INVO" . sprintf('%05d', $index);
+
+        return $invoice_code;
+
+    }
+
+
 
     /**
      * Generate Credit Note Code Saved to save in the database
@@ -599,7 +618,7 @@ class AccountingManager
         $result_array['total_discount'] = $invoice_info->bi_discount;
         $result_array['total_tax']      = $av_vat_rate;
         $result_array['currency']       = $currencies_array[$invoice_currency]['cc_currency_code'];
-        $result_array['total_price']    = $total_invoice_value  + ( $av_vat_rate* $total_invoice_value ) - ( ($result_array['total_discount']/100) * $total_invoice_value );
+        $result_array['total_price']    = $total_invoice_value  + ( $av_vat_rate / 100 * $total_invoice_value ) - ( ($result_array['total_discount']/100) * $total_invoice_value );
         return $result_array;
     }
 

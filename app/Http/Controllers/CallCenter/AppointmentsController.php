@@ -18,7 +18,11 @@ namespace App\Http\Controllers\CallCenter;
 
 use App;
 use App\Http\Controllers\Controller;
+use App\models\CRM\CRMClientCategories;
 use App\models\CRM\CRMLeadResults;
+use App\models\CRM\CRMLeadStatus;
+use App\models\System\Areas;
+use App\models\System\Regions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -59,7 +63,7 @@ class AppointmentsController extends Controller
         $default_company_id     = Session('default_company_id');
         $lst_lead_types         = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries          = Countries::all();
-        $lst_appt_results       = ApptResults::whereArIsDeleted(0)->get();
+        $lst_appt_results       = ApptResults::whereArIsDeleted(0)->whereArAppShowApt(1)->get();
         $lst_telemarketing      = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
         $lst_leads              = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id)->get();
@@ -152,74 +156,62 @@ class AppointmentsController extends Controller
 
     public function DisplayClosureSalesmanApp(Request $request)
     {
-        $cl_sales_id = $request->input('cl_sales_id');
-        $ca_apt_from_date = $request->input('ca_apt_from_date');
-        $ca_apt_last_date = $request->input('ca_apt_last_date');
         $default_company_id     = Session('default_company_id');
 
         $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        $lst_apt_results              = ApptResults::all();
+        $lst_apt_results              = ApptResults::whereArAppShowApt(1)->get();
         $total_results_app = array();
         $sales_array = array();
         $aptres_array = array();
         $percentage_colsure_array = array();
 
-        $query="SELECT ca_salesman_id, res.ar_app_result as appointment_result,res.ar_id as res_id, users.u_fullname as salesman_name,users.id as salesman_id, COUNT(ca_id) as total_app, ROUND(COUNT(ca_id) * 100.0 / (SELECT COUNT(ca_id) FROM callcenter_lead_appointments), 2) as ca_percentage FROM callcenter_lead_appointments as lapp left join users on lapp.ca_salesman_id = users.id left join crm_lead_app_results as res on lapp.ca_apt_result = res.ar_id WHERE 1 ";
+        $cl_sales_id = $request->input('cl_sales_id', 0);
+        $ca_apt_from_date = $request->input('ca_apt_from_date', '');
+        $ca_apt_last_date = $request->input('ca_apt_last_date', '');
 
-        if($cl_sales_id > 0)
-            $query .= " AND ca_salesman_id = " . $cl_sales_id;
+        // 🧱 Build dynamic WHERE clause
+        $where = "WHERE 1=1";
 
-        if(strlen($ca_apt_from_date) > 0 && strlen($ca_apt_last_date) > 0)
-             $query .= " AND ca_apt_date BETWEEN '".$ca_apt_from_date."' AND '".$ca_apt_last_date."' ";
-
-        $query .= " GROUP BY ca_salesman_id,ca_apt_result ORDER BY ca_percentage DESC;";
-
-        $lst_closure_sales_app = DB::select($query);
-
-
-        $closure_app_array = array();
-
-        foreach ($lst_closure_sales_app as $key => $info ) {
-            if(isset($closure_app_array[ $info->salesman_id ][ $info->res_id ]))
-            {
-                $closure_app_array[ $info->salesman_id ][ $info->res_id ] = $closure_app_array[ $info->salesman_id ][ $info->res_id ] + $info->ca_percentage;
-                $total_results_app[ $info->salesman_id ][ $info->res_id ] = $total_results_app[ $info->salesman_id ][ $info->res_id ] + $info->total_app;
-            }
-            else
-            {
-                $closure_app_array[ $info->salesman_id ][ $info->res_id ] = $info->ca_percentage;
-                $total_results_app[ $info->salesman_id ][ $info->res_id ] = $info->total_app;
-            }
+        if ($cl_sales_id > 0) {
+            $where .= " AND lapp.ca_salesman_id = " . intval($cl_sales_id);
         }
 
-
-
-        foreach ($lst_sales as $key => $salesman_info) {
-            $sales_array[$salesman_info->id] = $salesman_info->u_fullname;
+        if (strlen($ca_apt_from_date) > 0 && strlen($ca_apt_last_date) > 0) {
+            $where .= " AND lapp.ca_apt_date BETWEEN '" . $ca_apt_from_date . "' AND '" . $ca_apt_last_date . "'";
         }
 
-        foreach ($lst_apt_results as $key => $res_info) {
-            $aptres_array[$res_info->ar_id] = $res_info->ar_app_result;
-        }
+        // 🧮 Dynamic columns from crm_lead_app_results
+        $cols = DB::table('crm_lead_app_results')
+            ->where('ar_app_show_apt', 1)
+            ->selectRaw("GROUP_CONCAT(DISTINCT
+            CONCAT('SUM(CASE WHEN lapp.ca_apt_result = ', ar_id,
+                   ' THEN 1 ELSE 0 END) AS `', ar_app_result, '`') SEPARATOR ', ') AS cols")
+            ->value('cols');
 
+        // 🧾 Final dynamic SQL with number of leads
+        $sql = "
+        SELECT
+            u.id AS salesman_id,
+            u.u_fullname AS salesman_name,
+            COUNT(lapp.ca_id) AS app,
+            $cols,
+            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2) * 100 AS closing_average,
+            SUM(lapp.ca_nbr_leads) AS number_of_leads
+        FROM callcenter_lead_appointments AS lapp
+        LEFT JOIN users AS u ON lapp.ca_salesman_id = u.id
+        LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+        $where
+        GROUP BY u.id, u.u_fullname
+        ORDER BY closing_average DESC
+    ";
 
-        foreach ($sales_array as $sales_id => $salesname) {
-            $app = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][1]) ? $total_results_app[ $sales_id ][ 1 ] : 1;
-            $approved = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][7]) ? $total_results_app[ $sales_id ][ 7 ] : 0;
-            $demo = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][8]) ? $total_results_app[ $sales_id ][ 8 ] : 0;
-            $percentage_colsure_array[$sales_id] = ($approved * 100) / $app;
-         }
+        // Execute and return
+        $lst_closing_res = DB::select($sql);
 
+        $data = array(
+            'lst_closing_res' => $lst_closing_res
+        );
 
-
-        $result_array['is_error'] = 0;
-       $data = array(
-           'closure_app_array' => $closure_app_array,
-           'total_results_app' => $total_results_app,
-           'sales_array' => $sales_array,
-           'aptres_array' => $aptres_array,
-           'lst_closure_sales_app' => $lst_closure_sales_app
-       );
        $result_array['display'] = view('callcenter.displayclosuresalesapp',$data)->render();
         return Response()->json($result_array);
 
@@ -229,73 +221,62 @@ class AppointmentsController extends Controller
     public function DownloadClosureSalesApp(Request $request)
     {
  $cl_sales_id = $request->input('cl_sales_id');
-        $ca_apt_from_date = $request->input('ca_apt_from_date');
-        $ca_apt_last_date = $request->input('ca_apt_last_date');
+
         $default_company_id     = Session('default_company_id');
 
         $lst_sales              = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
-        $lst_apt_results              = ApptResults::all();
+        $lst_apt_results              = ApptResults::whereArAppShowApt(1)->get();
         $total_results_app = array();
         $sales_array = array();
         $aptres_array = array();
         $percentage_colsure_array = array();
 
-        $query="SELECT ca_salesman_id, res.ar_app_result as appointment_result,res.ar_id as res_id, users.u_fullname as salesman_name,users.id as salesman_id, COUNT(ca_id) as total_app, ROUND(COUNT(ca_id) * 100.0 / (SELECT COUNT(ca_id) FROM callcenter_lead_appointments), 2) as ca_percentage FROM callcenter_lead_appointments as lapp left join users on lapp.ca_salesman_id = users.id left join crm_lead_app_results as res on lapp.ca_apt_result = res.ar_id WHERE 1 ";
+        $cl_sales_id = $request->input('cl_sales_id', 0);
+        $ca_apt_from_date = $request->input('ca_apt_from_date', '');
+        $ca_apt_last_date = $request->input('ca_apt_last_date', '');
 
-        if($cl_sales_id > 0)
-            $query .= " AND ca_salesman_id = " . $cl_sales_id;
+        // 🧱 Build dynamic WHERE clause
+        $where = "WHERE ca_lead_confirm = 1";
 
-        if(strlen($ca_apt_from_date) > 0 && strlen($ca_apt_last_date) > 0)
-             $query .= " AND ca_apt_date BETWEEN '".$ca_apt_from_date."' AND '".$ca_apt_last_date."' ";
-
-        $query .= " GROUP BY ca_salesman_id,ca_apt_result ORDER BY ca_percentage DESC;";
-
-        $lst_closure_sales_app = DB::select($query);
-
-
-        $closure_app_array = array();
-
-        foreach ($lst_closure_sales_app as $key => $info ) {
-            if(isset($closure_app_array[ $info->salesman_id ][ $info->res_id ]))
-            {
-                $closure_app_array[ $info->salesman_id ][ $info->res_id ] = $closure_app_array[ $info->salesman_id ][ $info->res_id ] + $info->ca_percentage;
-                $total_results_app[ $info->salesman_id ][ $info->res_id ] = $total_results_app[ $info->salesman_id ][ $info->res_id ] + $info->total_app;
-            }
-            else
-            {
-                $closure_app_array[ $info->salesman_id ][ $info->res_id ] = $info->ca_percentage;
-                $total_results_app[ $info->salesman_id ][ $info->res_id ] = $info->total_app;
-            }
+        if ($cl_sales_id > 0) {
+            $where .= " AND lapp.ca_salesman_id = " . intval($cl_sales_id);
         }
 
-
-
-        foreach ($lst_sales as $key => $salesman_info) {
-            $sales_array[$salesman_info->id] = $salesman_info->u_fullname;
+        if (strlen($ca_apt_from_date) > 0 && strlen($ca_apt_last_date) > 0) {
+            $where .= " AND lapp.ca_apt_date BETWEEN '" . $ca_apt_from_date . "' AND '" . $ca_apt_last_date . "'";
         }
 
-        foreach ($lst_apt_results as $key => $res_info) {
-            $aptres_array[$res_info->ar_id] = $res_info->ar_app_result;
-        }
+        // 🧮 Dynamic columns from crm_lead_app_results
+        $cols = DB::table('crm_lead_app_results')
+            ->where('ar_app_show_apt', 1)
+            ->selectRaw("GROUP_CONCAT(DISTINCT
+            CONCAT('SUM(CASE WHEN lapp.ca_apt_result = ', ar_id,
+                   ' THEN 1 ELSE 0 END) AS `', ar_app_result, '`') SEPARATOR ', ') AS cols")
+            ->value('cols');
 
+        // 🧾 Final dynamic SQL with number of leads
+        $sql = "
+        SELECT
+            u.id AS salesman_id,
+            u.u_fullname AS salesman_name,
+            COUNT(lapp.ca_id) AS app,
+            $cols,
+            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2)  * 100 AS closing_average,
+            SUM(lapp.ca_nbr_leads) AS number_of_leads
+        FROM callcenter_lead_appointments AS lapp
+        LEFT JOIN users AS u ON lapp.ca_salesman_id = u.id
+        LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+        $where
+        GROUP BY u.id, u.u_fullname
+        ORDER BY closing_average DESC
+    ";
 
-        foreach ($sales_array as $sales_id => $salesname) {
-            $app = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][1]) ? $total_results_app[ $sales_id ][ 1 ] : 1;
-            $approved = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][7]) ? $total_results_app[ $sales_id ][ 7 ] : 0;
-            $demo = isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][8]) ? $total_results_app[ $sales_id ][ 8 ] : 0;
-            $percentage_colsure_array[$sales_id] = ($approved * 100) / $app;
-         }
+        // ⚙️ Execute and return
+        $lst_closing_res = DB::select($sql);
 
-
-
-        $result_array['is_error'] = 0;
-       $data = array(
-           'closure_app_array' => $closure_app_array,
-           'total_results_app' => $total_results_app,
-           'sales_array' => $sales_array,
-           'aptres_array' => $aptres_array,
-           'lst_closure_sales_app' => $lst_closure_sales_app
-       );
+        $data = array(
+            'lst_closing_res' => $lst_closing_res
+        );
        $display = view('callcenter.downloadclosuresalesapp',$data)->render();
 
 
@@ -303,6 +284,122 @@ class AppointmentsController extends Controller
         $pdf->setPaper('a4')->setOption('encoding', 'UTF-8')->loadHTML($display);
         return $pdf->inline();
 
+    }
+
+
+    /**
+     * Telemarketing Report
+     * @param Request $request
+     * @return void
+     */
+    public function telemarketerAppointmentsReport(Request $request)
+    {
+        // Date range (default current month)
+        $from = $request->input('from', date('Y-m-01'));
+        $to = $request->input('to', date('Y-m-t'));
+
+        $sql = "
+            SELECT
+                u.u_fullname AS telemarketer,
+                ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) AS average,
+                COUNT(lapp.ca_id) AS app,
+                SUM(CASE WHEN lapp.ca_lead_confirm = 1 THEN 1 ELSE 0 END) AS confirmed_app,
+                SUM(CASE WHEN lapp.ca_lead_confirm = 0 THEN 1 ELSE 0 END) AS pending_app,
+                SUM(CASE WHEN res.ar_app_result = 'DEMO' THEN 1 ELSE 0 END) AS demo,
+                SUM(CASE WHEN res.ar_app_result = 'CANCEL' THEN 1 ELSE 0 END) AS cancel,
+                SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) AS sold,
+                SUM(CASE WHEN res.ar_app_result = 'RESET' THEN 1 ELSE 0 END) AS reset,
+                SUM(CASE WHEN res.ar_app_result = 'RESET DA' THEN 1 ELSE 0 END) AS reset_da
+            FROM callcenter_lead_appointments AS lapp
+            LEFT JOIN users AS u ON lapp.ca_telemarketing_id = u.id
+            LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+            WHERE lapp.ca_apt_date BETWEEN ? AND ?
+            GROUP BY u.id, u.u_fullname
+
+            UNION ALL
+
+            SELECT
+                'Total Marketing' AS telemarketer,
+                ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) AS average,
+                COUNT(lapp.ca_id) AS app,
+                SUM(CASE WHEN lapp.ca_lead_confirm = 1 THEN 1 ELSE 0 END) AS confirmed_app,
+                SUM(CASE WHEN lapp.ca_lead_confirm = 0 THEN 1 ELSE 0 END) AS pending_app,
+                SUM(CASE WHEN res.ar_app_result = 'DEMO' THEN 1 ELSE 0 END) AS demo,
+                SUM(CASE WHEN res.ar_app_result = 'CANCEL' THEN 1 ELSE 0 END) AS cancel,
+                SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) AS sold,
+                SUM(CASE WHEN res.ar_app_result = 'RESET' THEN 1 ELSE 0 END) AS reset,
+                SUM(CASE WHEN res.ar_app_result = 'RESET DA' THEN 1 ELSE 0 END) AS reset_da
+            FROM callcenter_lead_appointments AS lapp
+            LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+            WHERE lapp.ca_apt_date BETWEEN ? AND ?
+        ";
+
+        $results = DB::select($sql, [$from, $to, $from, $to]);
+
+        return view('reports.telemarketer-appointments', compact('results', 'from', 'to'));
+    }
+
+
+    /**
+     * Report Forcasting Lead Numbers for current month
+     * @param Request $request
+     * @return void
+     */
+    public function ForcastingLeadsNumber(Request $request)
+    {
+        $sql = <<<SQL
+WITH
+-- 1️⃣ Average daily leads over the last 3 months
+historical_avg AS (
+    SELECT
+        ROUND(SUM(1) / COUNT(DISTINCT DATE(cl_date_creation)), 2) AS avg_daily_leads
+    FROM crm_leads
+    WHERE cl_date_creation BETWEEN DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 3 MONTH)
+                              AND LAST_DAY(DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH))
+),
+
+-- 2️⃣ Generate a calendar of all days for current month
+calendar AS (
+    SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') + INTERVAL n.n DAY AS report_date
+    FROM (
+        SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5
+        UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
+        UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17
+        UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23
+        UNION SELECT 24 UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30
+    ) AS n
+    WHERE DATE_FORMAT(CURDATE(), '%Y-%m-01') + INTERVAL n.n DAY <= LAST_DAY(DATE_FORMAT(CURDATE(), '%Y-%m-01'))
+),
+
+-- 3️⃣ Actual daily leads for current month
+daily_actuals AS (
+    SELECT
+        DATE(cl_date_creation) AS report_date,
+        COUNT(*) AS total_leads
+    FROM crm_leads
+    WHERE cl_date_creation BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())
+    GROUP BY DATE(cl_date_creation)
+)
+
+-- 4️⃣ Final Forecast Output
+SELECT
+    c.report_date,
+    COALESCE(a.total_leads, 0) AS actual_leads,
+    ROUND(h.avg_daily_leads, 2) AS expected_daily_leads,
+    ROUND(h.avg_daily_leads * DAY(c.report_date), 0) AS cumulative_expected_leads
+FROM calendar AS c
+LEFT JOIN daily_actuals AS a ON c.report_date = a.report_date
+CROSS JOIN historical_avg AS h
+ORDER BY c.report_date;
+SQL;
+
+        $results = DB::select($sql);
+
+        // If you want to return JSON for API
+        // return response()->json($results);
+
+        // Or render a Blade view
+        return view('reports.forecast-daily-leads', compact('results'));
     }
 
 
@@ -371,22 +468,171 @@ class AppointmentsController extends Controller
     public function CallBackReports(Request $request)
     {
         $default_company_id     = Session('default_company_id');
-
+        $lead_categories = CRMClientCategories::whereCcIsDeleted(0)->get();
+        $lead_statuses  = CRMLeadStatus::whereLsIsDeleted(0)->get();
+        $lst_users  = Users::whereUIsActive(1)->whereFkCompanyId($default_company_id)->whereUIsDeleted(0)->get();
+        $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_SALES)->whereFkCompanyId($default_company_id)->get();
+        $lst_appt_results      = ApptResults::whereArIsDeleted(0)->get();
+        $lst_lead_types      = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
 
-        $data = array(
-            "lst_leads" => $lst_leads
-        );
 
+        $lst_areas              = Areas::all();
+        $lst_regions             = Regions::all();
+
+        $data = array(
+            "lead_categories" => $lead_categories,
+            "lst_appt_results" => $lst_appt_results,
+            "lst_lead_types" => $lst_lead_types,
+            "lst_areas" => $lst_areas,
+            "lst_regions" => $lst_regions,
+            "lst_users" => $lst_users,
+            "lst_sales" => $lst_sales,
+            "lst_leads" => $lst_leads,
+            "lead_statuses" => $lead_statuses
+        );
         return Response()->view("callcenter.reportcallbackleads",$data);
+    }
+
+    /**
+     * @param Request $request
+     * @return void
+     */
+    public function DisplayListCallbackReport(Request $request)
+    {
+        $default_company_id     = Session('default_company_id');
+        $lead_name = $request->get('lead_name');
+        $referred_by = $request->get('referred_by');
+        $lead_mobile = $request->get('lead_mobile');
+        $sheet_number = $request->get('sheet_number');
+        $cl_area = $request->get('cl_area');
+        $cl_region = $request->get('cl_region');
+        $cl_sales_id = $request->get('cl_sales_id');
+        $cl_lead_types = $request->get('cl_lead_types');
+        $cl_date = $request->get('cl_date');
+        $leads_cond = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id);
+
+
+        if(strlen($cl_date) > 0)
+        {
+            $leads_cond =   $leads_cond->where('cl_next_call_date','<=',$cl_date);
+        }
+
+        if( $cl_lead_types > 0 )
+        {
+            $leads_cond = $leads_cond->whereClLeadTypeId($cl_lead_types);
+        }
+
+
+        if( $cl_sales_id > 0 )
+        {
+            $leads_cond = $leads_cond->whereClSalesId($cl_sales_id);
+        }
+
+
+        if( strlen($sheet_number)  > 0) {
+            $leads_cond = $leads_cond->where('cl_sheet_number', '=', $sheet_number);
+        }
+
+
+
+        if( strlen($lead_name)  > 0) {
+            $leads_cond = $leads_cond->where('cl_first_name','LIKE','%' . $lead_name . '%');
+            $leads_cond = $leads_cond->orWhere('cl_last_name','LIKE','%' . $lead_name . '%');
+        }
+
+        if( strlen($lead_mobile)  > 0) {
+            $leads_cond = $leads_cond->where('cl_mobile','LIKE','%' . $lead_mobile . '%');
+        }
+
+        if( $cl_area  > 0) {
+            $leads_cond = $leads_cond->where('cl_area','LIKE','%' . $cl_area . '%');
+        }
+
+        if( ($cl_region)  > 0) {
+            $leads_cond = $leads_cond->where('cl_region','LIKE','%' . $cl_region . '%');
+        }
+
+        if( strlen($referred_by)  > 0) {
+            $leads_cond = $leads_cond->where('cl_referred_by','LIKE','%' . $referred_by . '%');
+        }
+
+
+
+
+         $lst_leads =   $leads_cond->get();
+
+        $result_array = array();
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'Operation Completed Successfully';
+        $data = array(
+            'lst_leads' => $lst_leads
+        );
+        $display = view('callcenter.lstreportcbleads',$data)->render();
+        $result_array['display'] = $display;
+
+        return Response()->json($result_array);
     }
 
 
     public function DownloadListCallbackLeads(Request $request)
     {
         $default_company_id     = Session('default_company_id');
+        $lead_name = $request->get('lead_name');
+        $referred_by = $request->get('referred_by');
+        $lead_mobile = $request->get('lead_mobile');
+        $sheet_number = $request->get('sheet_number');
+        $cl_area = $request->get('cl_area');
+        $cl_region = $request->get('cl_region');
+        $cl_sales_id = $request->get('cl_sales_id');
+        $cl_lead_types = $request->get('cl_lead_types');
+        $cl_date = $request->get('cl_date');
+        $leads_cond = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id)->where('cl_next_call_date','<=',$cl_date);
 
-        $lst_leads = CRMLeads::whereClIsDeleted(0)->whereClLeadResults(2)->whereClCompanyId($default_company_id)->where('cl_next_call_date','<=',date('Y-m-d'))->get();
+
+        if( $cl_lead_types > 0 )
+        {
+            $leads_cond = $leads_cond->whereClLeadTypeId($cl_lead_types);
+        }
+
+
+        if( $cl_sales_id > 0 )
+        {
+            $leads_cond = $leads_cond->whereClSalesId($cl_sales_id);
+        }
+
+
+        if( strlen($sheet_number)  > 0) {
+            $leads_cond = $leads_cond->where('cl_sheet_number', '=', $sheet_number);
+        }
+
+
+
+        if( strlen($lead_name)  > 0) {
+            $leads_cond = $leads_cond->where('cl_first_name','LIKE','%' . $lead_name . '%');
+            $leads_cond = $leads_cond->orWhere('cl_last_name','LIKE','%' . $lead_name . '%');
+        }
+
+        if( strlen($lead_mobile)  > 0) {
+            $leads_cond = $leads_cond->where('cl_mobile','LIKE','%' . $lead_mobile . '%');
+        }
+
+        if( $cl_area  > 0) {
+            $leads_cond = $leads_cond->where('cl_area','LIKE','%' . $cl_area . '%');
+        }
+
+        if( strlen($cl_region)  > 0) {
+            $leads_cond = $leads_cond->where('cl_region','LIKE','%' . $cl_region . '%');
+        }
+
+        if( strlen($referred_by)  > 0) {
+            $leads_cond = $leads_cond->where('cl_referred_by','LIKE','%' . $referred_by . '%');
+        }
+
+
+
+        $lst_leads =   $leads_cond->get();
 
         $data = array(
             'lst_leads' => $lst_leads

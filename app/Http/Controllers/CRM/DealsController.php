@@ -163,6 +163,7 @@ class DealsController extends Controller
         $deal_info = $deal_info[0];
 
         $ip_deal_id = $deal_info->ip_deal_id;
+        dd($ip_deal_id);
 
         $total_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->count();
         $paid_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->where('ip_payment_status','=',2)->count();
@@ -247,7 +248,7 @@ class DealsController extends Controller
         $contract_document = str_replace("%NUMBER_PAYMENTS%", $deal_info->ad_nbr_of_payments, $contract_document);
         $contract_document = str_replace("%FIRSTINVOICE%", $deal_info->ad_first_bill_date, $contract_document);
         $contract_document = str_replace("%TOTAL_PRICE%", $deal_info->ad_remaining_payment, $contract_document);
-        $contract_document = str_replace("%CURRENCY%", $deal_info->Currency->cc_currency_ar, $contract_document);
+        $contract_document = str_replace("%CURRENCY%", ($deal_info->Currency ? $deal_info->Currency->cc_currency_ar : "-"), $contract_document);
         $contract_document = str_replace("%PAPERTYPE%", $deal_info->Account->PaperType->pt_description, $contract_document);
         $contract_document = str_replace("%NATIONALITY%", ( $deal_info->Account->Nationality ? $deal_info->Account->Nationality->sn_nationality_fem_ar : ""), $contract_document);
 
@@ -257,7 +258,9 @@ class DealsController extends Controller
          $deal_info = CRMDeals::find($ad_id);
          $invoice_id =   $deal_info->ad_invoice_id;
 
-         $lst_invoice_payments = InvoicePayments::whereFkInvoiceId($invoice_id)->get();
+        $deal_info = CRMDeals::find($ad_id);
+        $lst_invoice_payments = InvoicePayments::whereIpDealId($ad_id)->get();
+
          $data = array(
              "lst_invoice_payments" => $lst_invoice_payments,
              "currency_name" => $deal_info->Currency->cc_currency_ar

@@ -75,7 +75,7 @@ th{
 <br/>
 						</div>
                                             @if($crm_telemarketing == 0)
-						<div class="col-md-4"> 
+						<div class="col-md-4">
                                 <select  name="invoice_customer" id="INVOICE_CUSTOMER" class="form-select" data-control="select2" data-placeholder="Select Customer">
                             			<option value="0">-- Select Customer --</option>
                                         @foreach($list_customers as $index => $customer_info)
@@ -85,7 +85,7 @@ th{
                                     <br/>
 						</div>
                                             @else
-                                            <div class="col-md-4"> 
+                                            <div class="col-md-4">
                                                     <select  name="invoice_client" id="INVOICE_CLIENT" class="form-select" data-control="select2" data-placeholder="Select Client">
                                                                 <option value="0">-- Select Client --</option>
                                                         @foreach($list_accounts as $index => $account_info)
@@ -94,7 +94,7 @@ th{
                                                     </select>
                                                     <br/>
 						</div>
-                                            @endif 
+                                            @endif
 						<div class="col-md-4">
 							 <div class="form-group">
                                 <input type="text" placeholder=" From Date" name="start_date" id="START_DATE" value="" class="form-control" />
@@ -157,7 +157,15 @@ th{
 							</span>
 						</span>
 					</a>
-					<div class="m-separator m-separator--dashed d-xl-none"></div>
+                    &nbsp;
+                    <a href="{{ url('billing/invoices/addofform') }}" class="btn btn-info">
+						<span>
+							<i class="flaticon-tabs"></i>
+							<span>
+								New Official Invoice
+							</span>
+						</span>
+					</a>
 				</div>
 		</div>
     </div>

@@ -174,23 +174,37 @@ inboundcalls_module = {
         let p_id 				= $("#CP_PRODUCT_ID").val();
         let cp_quantity 				= $("input[name=cp_quantity]").val();
         let products_stock 				= $("input[name=products_stock]").val();
+        let ic_tech_id 				= $("select[name=ic_tech_id]").val();
 
         $.ajax
         ({
             url : base_url + "/request/inboundcall/addproductstock",
-            data : {p_id : p_id , cp_quantity : cp_quantity , products_stock : products_stock ,_token : _token },
+            data : {
+                p_id : p_id ,
+                cp_quantity : cp_quantity ,
+                products_stock : products_stock,
+                _token : _token,
+                ic_tech_id : ic_tech_id
+            },
             method : 'post',
             dataType : "json",
             beforeSend : function(){
             },
             success : function(response){
-                let products = $('.LstMaintenanceProducts').html();
-                $('.LstMaintenanceProducts').html(products + response.display);
-                $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
-                $("input[name=cp_quantity]").val('1');
-                $("#CP_PRODUCT_ID").val(0).trigger('change.select2');
-                $("#CP_PRODUCT_NAME").val(0).trigger('change.select2');
-                $('.ProductName').html('');
+                if(response.is_error == 0)
+                {
+                    let products = $('.LstMaintenanceProducts').html();
+                    $('.LstMaintenanceProducts').html(products + response.display);
+                    $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
+                    $("input[name=cp_quantity]").val('1');
+                    $("#CP_PRODUCT_ID").val(0).trigger('change.select2');
+                    $("#CP_PRODUCT_NAME").val(0).trigger('change.select2');
+                    $('.ProductName').html('');
+                }
+                else
+                {
+                    bootbox.alert(response.error_msg);
+                }
 
             }
         });

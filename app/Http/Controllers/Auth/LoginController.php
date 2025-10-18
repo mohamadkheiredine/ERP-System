@@ -167,6 +167,7 @@ class LoginController extends Controller
             session()->put('currency_symbol' , $currency_info->cc_currency_code);
             session()->put('secondary_currency' , $company_info->cd_secondary_currency);
             session()->put('company_name_translation' , $company_info->cd_company_name_translation);
+            session()->put('company_name' , $company_info->cd_company_name);
             session()->put('sec_currency_symbol' , $secondary_currency_info->cc_currency_code);
             session()->put('default_item' , $company_info->cd_default_item);
             session()->put('company_transportation_fees' , $company_info->cd_transportation_fees);

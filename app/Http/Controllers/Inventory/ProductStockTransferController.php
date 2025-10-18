@@ -16,6 +16,7 @@ Page Description :
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\models\Inventory\WareHouseMovement;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -224,6 +225,9 @@ class ProductStockTransferController extends Controller
         $TransferStock->sm_stock_quantity = $stock_quanity;
         $TransferStock->sm_stock_total_price = $stock_quanity * $ProductInfo->p_product_selling_price;
         $TransferStock->save();
+
+
+
 
 
         // save the stock warehouse

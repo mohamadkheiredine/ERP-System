@@ -121,6 +121,7 @@ class LeadAppResultsController extends Controller
         $ar_app_description          = $request->input('ar_app_description');
         $ar_result_color         = $request->input('ar_result_color');
         $ar_result_parent        = $request->input('ar_result_parent');
+        $ar_app_show_apt        = $request->has('ar_app_show_apt') ? 1 : 0;
 
         $result_array = array();
 
@@ -135,6 +136,7 @@ class LeadAppResultsController extends Controller
         $appresult_info->ar_app_description        = $ar_app_description;
         $appresult_info->ar_result_color        = $ar_result_color;
         $appresult_info->ar_result_parent        = $ar_result_parent;
+        $appresult_info->ar_app_show_apt        = $ar_app_show_apt;
 
 
 

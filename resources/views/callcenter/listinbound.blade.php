@@ -24,6 +24,7 @@ Page Description :
     <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_area : "-" }}</td>
     <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_region : "-" }}</td>
    <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_billing_address : "-" }}</td>
+    <td>{{ $inboundcall_info->Salesman ? $inboundcall_info->Salesman->u_fullname : "-" }}</td>
     <td>{{ $inboundcall_info->Technician ? $inboundcall_info->Technician->u_fullname : "-" }}</td>
     <td>{{ $inboundcall_info->Client ? $inboundcall_info->Client->ca_account_mobile : "-" }}</td>
    <td>{{ $inboundcall_info->CallResult ? $inboundcall_info->CallResult->cr_result_title : "-" }}</td>

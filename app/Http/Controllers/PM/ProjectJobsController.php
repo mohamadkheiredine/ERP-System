@@ -18,9 +18,11 @@ namespace App\Http\Controllers\PM;
 use App\Http\Controllers\Controller;
 use App\library\ProjectsManager;
 use App\models\PMP\Project;
+use App\models\PMP\ProjectJobs;
 use App\models\PMP\ProjectPhases;
 use App\models\System\Departments;
 use App\models\System\SystemStatus;
+use App\models\Users\Users;
 use App\models\Users\UserTeam;
 use Validator;
 use Input;
@@ -54,8 +56,9 @@ class ProjectJobsController extends Controller
 
         $data = array(
             'lst_projects' => $lst_projects,
+            'lst_project_phases' => $lst_project_phases,
         );
-        return Response()->view('pm.projectphases',$data);
+        return Response()->view('projectmanagement.projectjobs',$data);
     }
 
 
@@ -73,6 +76,7 @@ class ProjectJobsController extends Controller
         $page_number            = $request->input('page_number');
         $search_query           = $request->input('search_query');
         $fk_project_id           = $request->input('fk_project_id');
+        $fk_phase_id           = $request->input('fk_phase_id');
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -81,47 +85,53 @@ class ProjectJobsController extends Controller
 
 
 
-        $phases_cond = ProjectPhases::wherePpIsDeleted(0);
+        $jobs_cond = ProjectJobs::wherePjIsDeleted(0);
 
         if(strlen($search_query) > 0)
         {
-            $phases_cond = $phases_cond->where('pp_phase_name' , 'LIKE' , '%' . $search_query . '%');
-            $phases_cond = $phases_cond->orWhere('pp_phase_description' , 'LIKE' , '%' . $search_query . '%');
-            $phases_cond = $phases_cond->orWhere('pp_phase_code' , 'LIKE' , '%' . $search_query . '%');
+            $jobs_cond = $jobs_cond->where('pj_job_code' , 'LIKE' , '%' . $search_query . '%');
+            $jobs_cond = $jobs_cond->orWhere('pj_job_name' , 'LIKE' , '%' . $search_query . '%');
+            $jobs_cond = $jobs_cond->orWhere('pj_description' , 'LIKE' , '%' . $search_query . '%');
         }
 
         if($fk_project_id > 0)
         {
-            $phases_cond = $phases_cond->where('fk_project_id' , '=' ,  $fk_project_id);
+            $jobs_cond = $jobs_cond->where('fk_project_id' , '=' ,  $fk_project_id);
+
+        }
+
+        if($fk_phase_id > 0)
+        {
+            $jobs_cond = $jobs_cond->where('fk_phase_id' , '=' ,  $fk_phase_id);
 
         }
 
 
-        $phases_count = $phases_cond->count();
+        $jobs_count = $jobs_cond->count();
 
 
-        $total_pages = ceil( $phases_count /$nbr_rows_per_pages );
+        $total_pages = ceil( $jobs_count /$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
 
 
-        $lst_project_phases = $phases_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('pp_phase_code', 'ASC')->get();
+        $lst_project_jobs = $jobs_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('pj_job_code', 'ASC')->get();
 
 
 
         $data = array(
-            "lst_project_phases" => $lst_project_phases,
+            "lst_project_jobs" => $lst_project_jobs,
         );
 
         $result_array = array();
 
-        $result_array['display'] = view("pm.lstphases",$data)->render();
+        $result_array['display'] = view("projectmanagement.lstjobs",$data)->render();
 
         return Response()->json($result_array);
     }
 
 
     /**
-     * Function of Adding a new Project Phase
+     * Function of Adding a new Project job
      *
      * @author Moe Mantach
      * @access public
@@ -130,69 +140,67 @@ class ProjectJobsController extends Controller
     public function AddForm()
     {
         $lst_projects = Project::wherePpIsDeleted(0)->where('pp_end_date','>',date('Y-m-d'))->get();
-        $lst_departments = Departments::where('sd_is_deleted',0)->get();
-        $lst_teams = UserTeam::where('ut_is_deleted',0)->get();
-        $lst_phase_statuses  = SystemStatus::where('ss_status_type','=','phase_status')->where('ss_is_deleted','=','0')->get();
+        $lst_phases = ProjectPhases::wherePpIsDeleted(0)->get();
+        $lst_users = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_job_status = SystemStatus::whereSsIsDeleted(0)->where('ss_status_type','job_status')->get();
         $data = array(
             "lst_projects" => $lst_projects,
-            "lst_teams" => $lst_teams,
-            "lst_phase_statuses" => $lst_phase_statuses,
-            "lst_departments" => $lst_departments,
+            "lst_phases" => $lst_phases,
+            "lst_users" => $lst_users,
+            "lst_job_status" => $lst_job_status
         );
-        return view('pm.addphase',$data);
+        return view('projectmanagement.addjob',$data);
     }
 
 
     /**
-     * Save Project Phase information
+     * Save Project Job information
      * @param Request $request
      * @return json Array $result_array
      */
     public function SaveInfo(Request $request)
     {
-        $pp_phase_id                      = $request->input('pp_phase_id');
+        $pj_id                      = $request->input('pj_id');
         $fk_project_id                      = $request->input('fk_project_id');
-        $pp_department_id                     = $request->input('pp_department_id');
-        $pp_phase_code                     = $request->input('pp_phase_code');
-        $pp_phase_name                     = $request->input('pp_phase_name');
-        $pp_phase_description                     = $request->input('pp_phase_description');
-        $pp_planned_start                     = $request->input('pp_planned_start');
-        $pp_planned_end                     = $request->input('pp_planned_end');
-        $pp_actual_start                     = $request->input('pp_actual_start');
-        $pp_actual_end                    = $request->input('pp_actual_end');
-        $pp_sort_order                    = $request->input('pp_sort_order');
-        $pp_phase_status                    = $request->input('pp_phase_status');
-        $pp_team_id                    = $request->input('pp_team_id');
+        $fk_phase_id                      = $request->input('fk_phase_id');
+        $pj_job_code                      = $request->input('pj_job_code');
+        $pj_job_name                      = $request->input('pj_job_name');
+        $pj_description                      = $request->input('pj_description');
+        $pj_owner_id                     = $request->input('pj_owner_id');
+        $pj_planned_start                     = $request->input('pj_planned_start');
+        $pj_planned_end                     = $request->input('pj_planned_end');
+        $pj_actual_start                     = $request->input('pj_actual_start');
+        $pj_actual_end                     = $request->input('pj_actual_end');
+        $pj_status_id                     = $request->input('pj_status_id');
+        $pj_sort_order                     = $request->input('pj_sort_order');
 
         $result_array = array();
 
 
-        $project_phases = new ProjectPhases();
-        if( $pp_phase_id != null )
+        $project_jobs = new ProjectJobs();
+        if( $pj_id != null )
         {
-            $project_phases = ProjectPhases::find($pp_phase_id);
+            $project_jobs = ProjectJobs::find($pj_id);
         }
 
-        $project_phases->fk_project_id            = $fk_project_id;
-        $project_phases->pp_department_id            = $pp_department_id;
-        $project_phases->pp_team_id                 = $pp_team_id;
-        $project_phases->pp_phase_code            = $pp_phase_code;
-        $project_phases->pp_phase_name            = $pp_phase_name;
-        $project_phases->pp_phase_description            = $pp_phase_description;
-        $project_phases->pp_planned_start            = $pp_planned_start;
-        $project_phases->pp_planned_end            = $pp_planned_end;
-        $project_phases->pp_actual_start            = $pp_actual_start;
-        $project_phases->pp_actual_end            = $pp_actual_end;
-        $project_phases->pp_sort_order            = $pp_sort_order;
-        $project_phases->pp_phase_status            = $pp_phase_status;
-        $project_phases->pp_team_id                 = $pp_team_id;
+        $project_jobs->fk_project_id            = $fk_project_id;
+        $project_jobs->fk_phase_id            = $fk_phase_id;
+        $project_jobs->pj_job_code            = $pj_job_code;
+        $project_jobs->pj_job_name            = $pj_job_name;
+        $project_jobs->pj_description            = $pj_description;
+        $project_jobs->pj_owner_id            = $pj_owner_id;
+        $project_jobs->pj_planned_start            = $pj_planned_start;
+        $project_jobs->pj_planned_end            = $pj_planned_end;
+        $project_jobs->pj_actual_start            = $pj_actual_start;
+        $project_jobs->pj_actual_end            = $pj_actual_end;
+        $project_jobs->pj_status_id            = $pj_status_id;
 
 
 
-        $project_phases->save();
+        $project_jobs->save();
 
         $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Project Phase Information Has been saved';
+        $result_array['error_msg'] = 'Project Jobs Information Has been saved';
 
         return Response()->json($result_array);
     }
@@ -204,43 +212,40 @@ class ProjectJobsController extends Controller
      * @param unknown $pp_id
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
-    public function EditForm( $pp_id )
+    public function EditForm( $pj_id )
     {
-        $project_phase = ProjectPhases::find($pp_id);
-        $lst_teams = UserTeam::where('ut_is_deleted',0)->get();
-
+        $project_jobs = ProjectJobs::find($pj_id);
         $lst_projects = Project::wherePpIsDeleted(0)->where('pp_end_date','>',date('Y-m-d'))->get();
-        $lst_departments = Departments::where('sd_is_deleted',0)->get();
-        $lst_phase_statuses  = SystemStatus::where('ss_status_type','=','phase_status')->where('ss_is_deleted','=','0')->get();
-
+        $lst_phases = ProjectPhases::wherePpIsDeleted(0)->get();
+        $lst_users = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_job_status = SystemStatus::whereSsIsDeleted(0)->where('ss_status_type','job_status')->get();
         $data = array(
-            "project_phase" => $project_phase,
             "lst_projects" => $lst_projects,
-            "lst_teams" => $lst_teams,
-            "lst_phase_statuses" => $lst_phase_statuses,
-            "lst_departments" => $lst_departments,
+            "lst_phases" => $lst_phases,
+            "lst_users" => $lst_users,
+            "lst_job_status" => $lst_job_status
         );
-        return view('pm.editphase',$data);
+        return view('projectmanagement.addjob',$data);
     }
 
 
-    public function GeneratePhaseCode(Request $request)
+    public function GenerateJobsCode(Request $request)
     {
         $fk_project_id = $request->input('fk_project_id');
         $project = new ProjectsManager();
-        $phase_code = $project->GenerateProjectPhaseCode(array('project_id' => $fk_project_id));
+        $job_code = $project->GenerateProjectPhaseCode(array('project_id' => $fk_project_id));
         $result_array = array();
 
         $result_array['is_error'] = 0;
-        $result_array['error_msg'] = 'New Phase Code has been created';
-        $result_array['phase_code'] = $phase_code;
+        $result_array['error_msg'] = 'New Job Code has been created';
+        $result_array['job_code'] = $job_code;
 
         return Response()->json($result_array);
     }
 
 
     /**
-     * Delete Product Phase from the database by change flag of the row
+     * Delete Product Job from the database by change flag of the row
      *
      * @author Moe Mantach
      * @access public
@@ -250,12 +255,12 @@ class ProjectJobsController extends Controller
     public function DeleteData(Request $request)
     {
 
-        $pp_phase_id = $request->input('pp_phase_id');
+        $pj_id = $request->input('pj_id');
 
-        $project_phases = ProjectPhases::find( $pp_phase_id );
-        $project_phases->pp_is_deleted   = 1;
-        $project_phases->pp_deleted_by   = Session('user_id');
-        $project_phases->save();
+        $project_jobs = ProjectJobs::find( $pj_id );
+        $project_jobs->pj_is_deleted   = 1;
+        $project_jobs->pj_deleted_by   = Session('user_id');
+        $project_jobs->save();
 
 
         $result_array['is_error']   = 0;

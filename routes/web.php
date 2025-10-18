@@ -99,6 +99,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/inventory/WareHouseSettings/{w_id}','WareHouses\WareHouseController@WareHouseSettings');
     Route::get('/inventory/warehouse/addzone/{w_id}','WareHouses\WareHouseController@AddWarezone');
 
+    Route::get('/inventory/reports/stockavailability','WareHouses\WareHouseController@WarehouseStockAvailability');
+    Route::get('/inventory/reports/stockmovements','WareHouses\WareHouseController@WarehouseStockMovements');
+    Route::get('/inventory/reports/expirydatereport','WareHouses\WareHouseController@ExpiryDateReport');
+
 
     Route::get('/inventory/zones','WareHouses\WarehouseZonesController@index');
     Route::get('/inventory/zones/addform','WareHouses\WarehouseZonesController@AddForm');
@@ -340,6 +344,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/billing/invoices','Billing\InvoicesController@index');
     Route::get('/billing/invoices/addform','Billing\InvoicesController@AddForm');
+    Route::get('/billing/invoices/addofform','Billing\InvoicesController@AddOficialForm');
     Route::get('/billing/invoices/editform/{bi_id}','Billing\InvoicesController@EditForm');
     Route::get('/billing/ireceipts/editform/{bi_id}','Billing\InvoicesController@EditIReceiptForm');
     Route::get('/billing/invoices/downloadinvoice/{bi_id}','Billing\InvoicesController@DownloadInvoice');
@@ -457,6 +462,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/projects/phases/editform/{pp_id}','PM\ProjectPhasesController@EditForm');
 
 
+    Route::get('/projects/jobs','PM\ProjectJobsController@index');
+    Route::get('/projects/jobs/addform','PM\ProjectJobsController@AddForm');
+    Route::get('/projects/jobs/editform/{pj_id}','PM\ProjectJobsController@EditForm');
+
+
     Route::get('/hr/payrollsperiods','PayRoll\PayRollsPeriodController@index');
     Route::get('/hr/payrollsperiods/addform','PayRoll\PayRollsPeriodController@AddForm');
     Route::get('/hr/payrollsperiods/editform/{pp_id}','PayRoll\PayRollsPeriodController@EditForm');
@@ -545,7 +555,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/appointments/todaysappointment','CallCenter\AppointmentsController@TodaysAppointments');
     Route::get('/callcenter/appointments/downloadapt/{apt_id}','CallCenter\AppointmentsController@DownloadAppointment');
     Route::get('/callcenter/reports/callbackreports','CallCenter\AppointmentsController@CallBackReports');
+    Route::get('/callcenter/reports/cumulativemonthlyleads','CRM\LeadsController@CumulativeMonthlyLeadsReport');
     Route::get('/callcenter/leads/downloadcallbackleads','CallCenter\AppointmentsController@DownloadListCallbackLeads');
+    Route::get('/callcenter/reports/forcastingleadsnumber','CallCenter\AppointmentsController@ForcastingLeadsNumber');
+    Route::get('/callcenter/reports/telemarketing','CallCenter\AppointmentsController@telemarketerAppointmentsReport');
 
 
 

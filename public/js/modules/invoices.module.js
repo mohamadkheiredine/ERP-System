@@ -60,7 +60,7 @@ invoices_module = {
                 },
                 success : function(response){
                     if(response.is_error == 0)
-                    {//p_use_serialnumber
+                    {
                         $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
                         if(response.product_data.p_use_serialnumber == 1)
                         {
@@ -75,6 +75,13 @@ invoices_module = {
                 }
             });
 
+        },
+        DisplayInternalCompaniesLst : function(){
+            if($(this).is(':checked')) {
+                $('.InternalCompanies').css({display : "block"});
+            } else {
+                $('.InternalCompanies').css({display : "none"});
+            }
         },
         SwitchPOtherDropdownForProduct : function(){
             $("#BI_PRODUCT_ID").val($(this).val()).trigger('change.select2');
@@ -92,6 +99,10 @@ invoices_module = {
                     if(response.is_error == 0)
                     {
                         $('input[name=bi_item_price]').val(response.product_data.p_product_selling_price);
+                        if(response.product_data.p_use_serialnumber == 0)
+                        {
+
+                        }
                     }
                 }
             });
@@ -462,6 +473,7 @@ invoices_module = {
 		        });
 		},
 		OpenInsertItemsPopup : function(){
+
 			$("#InserItems").modal('toggle');
 		},
 		OpenInsertServicesPopup : function(){

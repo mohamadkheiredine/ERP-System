@@ -295,6 +295,7 @@
                         <th>Item</th>
                         <th>Address</th>
                         <th>Phone</th>
+                        <th>Maintenance Type</th>
                     </tr>
                 </thead>
                 <tbody class="LstInboundCalls">
@@ -306,6 +307,8 @@
                                     <td><span class="machine-id">{{$call_info['ic_product_machine_id']}}</span></td>
                                     <td class="address-cell">{{ $call_info['ca_billing_address'] }}</td>
                                     <td class="phone-cell">{{$call_info['ca_account_mobile']}}</td>
+                    <td>{{ $call_info['ic_maintenance_type'] }}</td>
+
                                 </tr>
                             @endforeach
             </tbody>

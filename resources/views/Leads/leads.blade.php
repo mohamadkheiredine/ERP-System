@@ -213,7 +213,6 @@ th{
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-
                                      <div class="form-group">
                                       <label>Salesman <span class="required"> * </span> </label>
                                       <select name="cl_sales_id" required="required" id="CL_SALES_ID"  class="form-control form-select" data-control="select2" data-placeholder="Salesman">

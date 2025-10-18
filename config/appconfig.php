@@ -14,5 +14,6 @@
 "billing_rv_one_page"=>"0",
 "enable_shipping_module"=>"1",
 "show_product_image"=>"0",
-"ability_edit_stock_price"=>"1"]; 
+"ability_edit_stock_price"=>"1",
+"quick_manage_client"=>"1"]; 
 ?>

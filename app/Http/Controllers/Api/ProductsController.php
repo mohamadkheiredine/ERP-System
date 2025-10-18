@@ -744,28 +744,28 @@ class ProductsController extends Controller
         $category_info = ProductCategories::find($fk_pc_id);
 
         $pc_use_serial_number = $category_info->pc_use_serial_number;
-//         if($pc_use_serial_number == 0)
-//         {
-//             $stock = new Stocks();
-//             $stock->fk_warehouse_id                 = $warehouse_id;
-//             $stock->fk_product_id                   = $p_id;
-//             $stock->is_stock_label                  = "Stock Entry For " . $p_product_name . " On " . $creation_date;
-//             $stock->is_stock_lot_person_in_charge   = $user_id;
-//             $stock->is_created_by                   = $user_id;
-//             $stock->is_quanity                      = $p_product_quantity;
-//             $stock->is_creation_date                = $creation_date;
-//             $stock->is_price_stock                  = $p_product_price * $p_product_quantity;
-//             $stock->is_selling_price                = $p_product_price;
-//             $stock->is_wholesale_price              = $p_product_price;
-//             $stock->is_vendor_price                 = $p_product_price;
-//             $stock->is_price_item                   = $p_product_price;
-//             $stock->is_price_currency               = $company_currency;
-//             $stock->is_stock_currency               = $company_currency;
-//             $stock->is_stock_exchange_rate          = 1;
-//             $stock->is_stock_uid    = $p_bar_code;
-//             $is_id = $stock->save();
+         if($pc_use_serial_number == 0)
+         {
+             $stock = new Stocks();
+             $stock->fk_warehouse_id                 = $warehouse_id;
+             $stock->fk_product_id                   = $p_id;
+             $stock->is_stock_label                  = "Stock Entry For " . $p_product_name . " On " . $creation_date;
+             $stock->is_stock_lot_person_in_charge   = $user_id;
+             $stock->is_created_by                   = $user_id;
+             $stock->is_quanity                      = $p_product_quantity;
+             $stock->is_creation_date                = $creation_date;
+             $stock->is_price_stock                  = $p_product_price * $p_product_quantity;
+             $stock->is_selling_price                = $p_product_price;
+             $stock->is_wholesale_price              = $p_product_price;
+             $stock->is_vendor_price                 = $p_product_price;
+             $stock->is_price_item                   = $p_product_price;
+             $stock->is_price_currency               = $company_currency;
+             $stock->is_stock_currency               = $company_currency;
+             $stock->is_stock_exchange_rate          = 1;
+             $stock->is_stock_uid    = $p_bar_code;
+             $is_id = $stock->save();
 
-//             // save accounting records
+             // save accounting records
 //             $transaction = new Transactions();
 //             $transaction->at_transaction_date   = $creation_date;
 //             $transaction->at_creation_date      = $creation_date;
@@ -787,14 +787,14 @@ class ProductsController extends Controller
 //             $movement->tm_currency_id   = $company_currency;
 //             $movement->save();
 //             $mov_id = $movement->tm_id;
-
+//
 //             // save data into the stock info
 //             $stock->is_trans_id = $at_id;
 //             $stock->is_mov_id   = $mov_id;
-//             $stock->save();
+             $stock->save();
 
 
-//         }
+         }
 
 
         $result_array['is_error']       = 0;

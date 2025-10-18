@@ -18,6 +18,7 @@ namespace App\library;
 
 
 use App\models\PMP\Project;
+use App\models\PMP\ProjectJobs;
 use App\models\PMP\ProjectPhases;
 use Validator;
 use Input;
@@ -94,6 +95,26 @@ class ProjectsManager
 
 
         $phase_code = "PPHASE-" . sprintf('%04d', $index);
+
+
+        return $phase_code;
+
+    }
+
+
+    public function GenerateProjectJobCode($params = array())
+    {
+        $company_id     = isset( $params['company_id']) ? $params['company_id'] : session('company_id');
+        $project_id     = isset( $params['project_id']) ? $params['project_id'] : 0;
+        $company_info   = Companies::find($company_id);
+        $cd_company_name = $company_info->cd_company_name;
+        $year           = date("Y");
+        $count_project_jobs= ProjectJobs::wherePjIsDeleted(0)->where('fk_project_id','=',$project_id)->count();
+
+        $index = $count_project_jobs + 1;
+
+
+        $phase_code = "PJOB" . $project_id . "-" . sprintf('%04d', $index);
 
 
         return $phase_code;

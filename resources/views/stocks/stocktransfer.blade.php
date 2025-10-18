@@ -130,7 +130,8 @@ th{
                         <div class="form-group">
                             <label> Warehouse Source</label>
                             <select   name="warehouse_source" id="WAREHOUSE_SOURCE" class="form-control form-select" data-control="select2" data-placeholder="Select Source Warehouse">
-                                    <?php foreach ( $lst_warehouse as $key => $warehouse_info ) { ?>
+                                <option value="0" >-- Select Warehouse -- </option>
+                                   <?php foreach ( $lst_warehouse as $key => $warehouse_info ) { ?>
                                             <option value="<?php echo $warehouse_info->w_id;  ?>"><?php echo $warehouse_info->w_warehouse_name;  ?></option>
                                     <?php  } ?>
                             </select>
@@ -140,7 +141,8 @@ th{
                         <div class="form-group">
                             <label> Warehouse Destination</label>
                             <select  name="warehouse_destination" id="WAREHOUSE_DESTINATION"  class="form-control form-select" data-control="select2" data-placeholder="Select Destination Warehouse">
-                                    <?php foreach ( $lst_warehouse as $key => $warehouse_info ) { ?>
+                                <option value="0" >-- Select Warehouse -- </option>
+                                <?php foreach ( $lst_warehouse as $key => $warehouse_info ) { ?>
                                             <option value="<?php echo $warehouse_info->w_id;  ?>"><?php echo $warehouse_info->w_warehouse_name;  ?></option>
                                     <?php  } ?>
                             </select>

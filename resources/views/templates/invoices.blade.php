@@ -7,9 +7,9 @@
  Date Created : Sep 4, 2019
  Developed By  : Mohamad Mantach   PHP Department itm Solutions
  All Rights Reserved ,   itm Solutions COPYRIGHT 2019
- 
+
  Page Description :
- 
+
  ***********************************************************/
 
 ?>
@@ -51,7 +51,7 @@
 }
 
 .invoice .company-details div{
-    font-family:tahoma; 
+    font-family:tahoma;
 }
 
 .invoice .contacts {
@@ -102,7 +102,7 @@
 .invoice main .notices .notice {
     font-size: 1.2em
 }
- 
+
 
 .invoice footer {
     width: 100%;
@@ -117,7 +117,7 @@
 .tablesection th{
 	border:solid 1px black;
 	height: 50px;
-	
+
 }
 .tablesection td{
 	border:solid 1px black;
@@ -164,12 +164,13 @@
                                             <div>%company_address%</div>
                                             <div>%company_phone%</div>
                                             <div>%company_email%</div>
+                                            <div><strong>CR:</strong>%registration_number%</div>
                                        </div>
                     			</td>
                     		</tr>
                     	</table>
-                        
-                    </div> 
+
+                    </div>
                 </div>
             </header>
             <main>
@@ -195,8 +196,8 @@
                     			</td>
                     		</tr>
                     	</table>
-                    </div> 
-            	</div> 
+                    </div>
+            	</div>
                 <div class="row InvoiceDescription" style="margin-bottom: 80px;margin-top:40px">
                 <div class="col-md-12" style="height: 10px;">&nbsp;</div>
                     <div class="col-md-12">
@@ -211,9 +212,9 @@
                 		 %item_table%
                 	</div>
                 </div>
-                <div style="width:100%;height:20px;">&nbsp;</div> 
+                <div style="width:100%;height:20px;">&nbsp;</div>
             </main>
-             
+
         </div>
         <div></div>
     </div>

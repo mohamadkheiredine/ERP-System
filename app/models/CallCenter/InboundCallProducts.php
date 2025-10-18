@@ -37,6 +37,17 @@ class InboundCallProducts extends Model
         return $this->hasOne('App\models\CallCenter\InboundCall', 'ic_id','fk_call_id');
     }
 
+    public function Invoice()
+    {
+        return $this->hasOne('App\models\Billing\Invoices', 'bi_id','cp_invoice_id');
+    }
+
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','cp_warehouse_id');
+    }
+
+
 
     public function Product()
     {

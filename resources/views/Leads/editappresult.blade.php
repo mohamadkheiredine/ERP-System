@@ -86,6 +86,17 @@
                                 <input type="color" name="ar_result_color" required="required" id="AR_RESULT_COLOR" class="form-control" value="{{ $result_info->ar_result_color }}" />
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br/>
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" {{ $result_info->ar_app_show_apt == 1 ? "checked" : "" }} name="ar_app_show_apt" id="AR_APP_SHOW_APT"   value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                          Show in appointment results
+                                        </span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label"> Description</label><br/>

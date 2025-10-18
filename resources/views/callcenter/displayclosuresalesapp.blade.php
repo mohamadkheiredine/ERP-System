@@ -13,28 +13,33 @@ Page Description :
 ***********************************************************/
 
 ?>
-
-<table class="table table-striped gy-7 gs-7">
-        <thead>
-                <tr
-                        class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                        <th style="width: 2px;">#</th>
-                        <th style="width: 2px;">closing average</th>
-                        <?php  foreach ($aptres_array as $key => $res) { ?>
-                          <th>{{ $res }}</th>   
-                       <?php } ?>
-                        
-                </tr>
-        </thead>
-        <tbody>
-             <?php  foreach ($sales_array as $sales_id => $salesman) { ?>
-              <tr>
-               <td>{{$salesman}}</td>
-               <td>{{isset($percentage_colsure_array[$sales_id]) ? $percentage_colsure_array[$sales_id] : "-" }}&nbsp;%</td>
-                <?php  foreach ($aptres_array as $res_id => $res) { ?>
-                    <td>{{ (isset($total_results_app[ $sales_id ]) && isset($total_results_app[ $sales_id ][ $res_id ])) ? $total_results_app[ $sales_id ][ $res_id ] : "-" }}</td>   
-                 <?php } ?>
+@if(count($lst_closing_res) > 0)
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+            <tr>
+                @foreach(array_keys((array)$lst_closing_res[0]) as $column)
+                    <th>{{ ucwords(str_replace('_', ' ', $column)) }}</th>
+                @endforeach
             </tr>
-            <?php } ?>
-        </tbody>
-</table>
+            </thead>
+            <tbody>
+            @foreach($lst_closing_res as $row)
+                <tr>
+                    @foreach((array)$row as $value)
+                        <td>
+                            @if(is_numeric($value))
+                                {{ $value }}
+                            @else
+                                {{ $value }}
+                            @endif
+                        </td>
+                    @endforeach
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+@else
+    <div class="alert alert-info mb-0">No data found for the selected filters.</div>
+@endif

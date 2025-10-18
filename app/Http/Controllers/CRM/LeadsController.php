@@ -17,6 +17,7 @@ Page Description :
 namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
+use App\models\Locations\SysGovernorates;
 use App\models\System\Areas;
 use App\models\System\Regions;
 use Validator;
@@ -124,9 +125,6 @@ class LeadsController extends Controller
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
         $default_company_id     = Session('default_company_id');
 
-
-
-        DB::enableQueryLog();
 
         $leads_cond = CRMLeads::whereClIsDeleted(0)->whereClCompanyId($default_company_id);
 
@@ -346,17 +344,19 @@ class LeadsController extends Controller
     public function AddForm()
     {
         $default_company_id = session('default_company_id');
+        $company_country = session('company_country');
         $lead_categories    = CRMClientCategories::whereCcIsDeleted(0)->get();
         $lead_statuses      = CRMLeadStatus::whereLsIsDeleted(0)->whereFkParentStatus(null)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUIsActive(1)->get();
         $lst_industries     = Industry::whereSiIsDeleted(0)->get();
         $lst_lead_source    = CRMLeadSources::whereLsIsDeleted(0)->get();
-        $lst_lead_types    = CRMLeadTypes::whereLtIsDeleted(0)->get();
+        $lst_lead_types     = CRMLeadTypes::whereLtIsDeleted(0)->get();
         $lst_countries      = Countries::all();
-        $lst_areas              = Areas::all();
-        $lst_regions             = Regions::all();
+        $lst_areas          = Areas::all();
+        $lst_regions        = Regions::all();
         $lst_telemarketing = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_TELEMARKETING)->get();
         $lst_sales = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_SALES)->get();
+        $lst_gov = SysGovernorates::where('sg_country_id',$company_country)->get();
 
 
         $crm_telemarketing  = Config::get('appconfig.crm_telemarketing');
@@ -369,6 +369,7 @@ class LeadsController extends Controller
             'lst_lead_types' => $lst_lead_types,
             'lst_areas' => $lst_areas,
             'lst_regions' => $lst_regions,
+            'lst_gov' => $lst_gov,
             'lst_sales' => $lst_sales,
             'lst_countries' => $lst_countries,
             'lst_lead_source' => $lst_lead_source
@@ -848,5 +849,27 @@ class LeadsController extends Controller
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
+    }
+
+
+    /**
+     * Report Cumulative number of leads report
+     *
+     * @author Moe Mantach
+     * @param Request $request
+     * @return void
+     */
+    public function CumulativeMonthlyLeadsReport(Request $request)
+    {
+        $query = "SELECT DATE(cl_date_creation) AS lead_date, COUNT(*) AS daily_leads, SUM(COUNT(*)) OVER (ORDER BY DATE(cl_date_creation)) AS cumulative_total FROM crm_leads WHERE  YEAR(cl_date_creation) = YEAR(CURDATE()) AND MONTH(cl_date_creation) = MONTH(CURDATE()) AND cl_is_deleted = 0 GROUP BY DATE(cl_date_creation) ORDER BY lead_date;";
+
+        $cumulative_results = DB::select($query);
+
+        $data = array(
+            'cumulative_results' => $cumulative_results
+        );
+
+        return Response()->view('leads.cumulativeleadsreport',$data);
+
     }
 }

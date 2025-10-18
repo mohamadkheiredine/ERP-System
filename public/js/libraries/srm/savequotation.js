@@ -14,7 +14,33 @@ $(function(){
 	 $("#BTN_SAVE_QUOTATION").on('click',quotations_module.SaveSupplierQuotationInfo);
 	$("#BTN_APPROVE_QUOTATION").on('click',quotations_module.ApproveSupplierQuotation);
 
-	 new tempusDominus.TempusDominus(document.getElementById('SQ_DUE_DATE'),{
+    $('.ExpiryDate').each(function(n){
+        new tempusDominus.TempusDominus($(this),{
+            display: {
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    useTwentyfourHour: undefined
+                }
+            },
+            localization: {
+                format : "yyyy-MM-dd"
+
+            }
+        });
+    })
+
+
+
+
+     new tempusDominus.TempusDominus(document.getElementById('SQ_DUE_DATE'),{
 		 display: {
 			  components: {
 			      calendar: true,
@@ -52,6 +78,7 @@ $(function(){
 		    $(".ProductNameField")
 		      .bsSuggest("init", {
 		        clearable: true,
+                  ignorecase: true,
 		        url:response.cache_url,
 		        idField: "id",
 			      keyField: "product_name",
@@ -63,12 +90,17 @@ $(function(){
 		      .on("onSetSelectValue", function(e, keyword, data) {
 		    	 let use_serial_number = data.product_use_serial;
 		        let product_id = data.id;
-		        $(this).parents('tr').find('.ProductCode').val(data.barcode);
-		        $(this).parents('tr').find('.PurchasePrice').val(data.selling_price);
-		        $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
-		        $(this).parents('tr').find('.WholeSalePrice').val(data.selling_price);
-		        $(this).parents('tr').find('.VendorPrice').val(data.selling_price);
-		        $(this).parents('tr').find('.ProductId').val(product_id);
+                if($(this).parents('tr').find('.ProductCode').val() == '')
+		            $(this).parents('tr').find('.ProductCode').val(data.barcode);
+                if($(this).parents('tr').find('.PurchasePrice').val() == '')
+                    $(this).parents('tr').find('.PurchasePrice').val(data.selling_price);
+                if($(this).parents('tr').find('.SellingPrice').val() == '')
+		            $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
+                if($(this).parents('tr').find('.WholeSalePrice').val() == '')
+                   $(this).parents('tr').find('.WholeSalePrice').val(data.selling_price);
+                $(this).parents('tr').find('.ProductId').val(product_id);
+
+
 		        $(this).parents('tr').find('.CurrencyId').val(data.currency);
 		        if(data.product_use_serial == 1)
 	        	{
@@ -154,8 +186,10 @@ $(function(){
 	        console.log("onHideDropdown", e.target.value, data);
 	      });
 
+
+        $('select').destroy().select2();
 	});
-	$('#ListProducts').on('keyup','.ProductDiscount',quotations_module.CalculateDiscountedPrice);
+
 
 	$('#ListProducts').on('focus','.ProductCode',quotations_module.GetProductInfoByBarCode);
 	$('#ListProducts').on('focus','.SerialNumbers',quotations_module.OpenAddNewProduct);

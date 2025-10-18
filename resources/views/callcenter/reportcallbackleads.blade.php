@@ -55,11 +55,115 @@
                 <input type="hidden" name="display_type" value="list" />
             </span>
             <div class="row">
-                <div style="text-align:right" class='col-md-4'>
-                    <input type="text" name="cl_date" class="form-control" id="CL_DATE" value="{{ date('Y-m-d') }}" />
+                <div class="col-md-12 order-2 order-xl-1">
+                    <div class="form-group row align-items-center">
+                        <div class="col-md-4">
+                            <label>&nbsp;</label>
+                            <div class="d-flex align-items-center">
+                                <!--begin::Input group-->
+                                <div class="position-relative w-md-400px me-md-2">
+                                    <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <input type="text" class="form-control form-control-solid ps-10" name="lead_name" id="LeadName" value="" placeholder="Lead Name" />
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>&nbsp;</label>
+                            <div class="d-flex align-items-center">
+                                <!--begin::Input group-->
+                                <div class="position-relative w-md-400px me-md-2">
+                                    <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <input type="text" class="form-control form-control-solid ps-10" name="referred_by" id="LeadRegion" value="" placeholder="Referred By" />
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>&nbsp;</label>
+                            <div class="d-flex align-items-center">
+                                <!--begin::Input group-->
+                                <div class="position-relative w-md-400px me-md-2">
+                                    <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <input type="text" class="form-control form-control-solid ps-10" name="lead_mobile" id="LeadMobile" value="" placeholder="Lead Mobile" />
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="cl_date" id="CL_DATE" value="" placeholder="Date" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>&nbsp;</label>
+                            <div class="d-flex align-items-center">
+                                <!--begin::Input group-->
+                                <div class="position-relative w-md-400px me-md-2">
+                                    <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <input type="text" class="form-control form-control-solid ps-10" name="sheet_number" id="SheetNumber" value="" placeholder="Sheet Number" />
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Area <span class="required"> * </span> </label>
+                                <select name="cl_area" required="required" id="CL_AREA"  tabindex="5"  class="form-control form-select" data-control="select2" data-placeholder="Select Area">
+                                    <option value="0">-- Select Area --</option>
+                                    <?php foreach ( $lst_areas as $key => $area_info ) { ?>
+                                    <option value="<?php echo $area_info->la_area;  ?>"><?php echo $area_info->la_area;  ?></option>
+                                    <?php  } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Region</label>
+                                <div class="col-md-12" id="REGION_DROPDOWN">
+                                    <select name="cl_region" required="required"  id="CL_REGION" class="form-control form-select" tabindex="5" data-control="select2" data-placeholder="Select Region">
+                                        <option value="0">-- Select Region --</option>
+                                        @foreach( $lst_regions as $key => $region_info )
+                                            <option value="{{ $region_info->lr_region }}">{{ $region_info->lr_region }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Salesman <span class="required"> * </span> </label>
+                                <select name="cl_sales_id" required="required" id="CL_SALES_ID"  class="form-control form-select" data-control="select2" data-placeholder="Salesman">
+                                    <option value="">-- Select User --</option>
+                                    <?php foreach ( $lst_sales as $key => $user_info ) { ?>
+                                    <option value="<?php echo $user_info->id;  ?>"><?php echo $user_info->u_fullname;  ?></option>
+                                    <?php  } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Lead Types </label>
+                                <select name="cl_lead_types"  id="CL_LEAD_TYPES"  class="form-control form-select" data-control="select2" data-placeholder="Lead Types">
+                                    <option value="0">-- Select Types --</option>
+                                    <?php foreach ( $lst_lead_types as $key => $type_info ) { ?>
+                                    <option value="<?php echo $type_info->lt_id;  ?>"><?php echo $type_info->lt_deal_type;  ?></option>
+                                    <?php  } ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div style="text-align:right" class='col-md-4'></div>
-                <div style="text-align:right" class='col-md-4'></div>
             </div>
             <div class="row">
                 <div class="col-md-12" style="height:10px">&nbsp;</div>
@@ -90,30 +194,14 @@
                                         <th title="Mobile"> Mobile </th>
                                         <th title="Referred By"> Referred by </th>
                                         <th title="Last Call Date"> Last Call Date </th>
+                                        <th title="Result" style="cursor: pointer" id="btnAddResult" data-sort="result">Result</th>
                                         <th title="Last Result">Last Result</th>
                                         <th title="Next Call">Next Call</th>
                                         <th title="Notes">Notes</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                @foreach($lst_leads as $index => $lead_info)
-                                    <tr  class="odd gradeX" data-cl_id="{{ $lead_info->cl_id }}">
-                                        <td>{{ ( $index + 1 ) }}</td>
-                                        <td>{{ $lead_info->cl_sheet_number }}</td>
-                                        <td>{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</td>
-                                        <td>{{ $lead_info->cl_area }}</td>
-                                        <td>{{ $lead_info->cl_region }}</td>
-                                        <td>{{ $lead_info->LeadType ? $lead_info->LeadType->lt_deal_type : "" }}</td>
-                                        <td>{{ $lead_info->Salesman ? $lead_info->Salesman->u_fullname : "" }}</td>
-                                        <td>{{ $lead_info->Telemarketing ? $lead_info->Telemarketing->u_fullname : "" }}</td>
-                                        <td>{{ $lead_info->cl_mobile }}</td>
-                                        <td>{{ $lead_info->cl_referred_by }}</td>
-                                        <td>{{ $lead_info->cl_last_call_date }}</td>
-                                        <td>{{ $lead_info->AppResult ? $lead_info->AppResult->ar_app_result : "" }}</td>
-                                        <td>{{ $lead_info->cl_next_call_date }}</td>
-                                        <td>{{ $lead_info->cl_lead_notes }}</td>
-                                    </tr>
-                                @endforeach
+                                <tbody class="LstCBLeadsContainers">
+
                                 </tbody>
                             </table>
                         </div>

@@ -49,4 +49,10 @@ class Orders extends Model
         return $this->hasOne('App\models\Inventory\Customers', 'ic_id','so_order_customer');
     }
 
+
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
+    }
+
 }

@@ -276,6 +276,8 @@ class CustomersController extends Controller
         $customer_array['ic_customer_website']      = $customer_info->ic_customer_website;
         $customer_array['ic_customer_phone']        = $customer_info->ic_customer_phone;
         $customer_array['ic_customer_mobile']       = $customer_info->ic_customer_mobile;
+        $customer_array['ic_birth_date']       = $customer_info->ic_birth_date;
+        $customer_array['ic_hobbies']       = $customer_info->ic_hobbies;
 
         $image_src_url  = url('/')."/".Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
         $image_src_path = public_path(). "/" .Config::get('constants.CUSTOMERS_PATH').$customer_info->ic_image_base_src.$customer_info->ic_image_file_name.".".$customer_info->ic_image_extension;
@@ -366,6 +368,8 @@ class CustomersController extends Controller
         $ic_customer_website    = $request->input('ic_customer_website');
         $ic_customer_phone      = $request->input('ic_customer_phone');
         $ic_customer_mobile     = $request->input('ic_customer_mobile');
+        $ic_hobbies             = $request->input('ic_hobbies');
+        $ic_birth_date             = $request->input('ic_birth_date');
         $g_hash                 = $request->input('g_hash');
         $user_info              = Users::find($user_id);
 
@@ -407,6 +411,8 @@ class CustomersController extends Controller
         $customer_info->ic_customer_website = $ic_customer_website;
         $customer_info->ic_customer_phone = $ic_customer_phone;
         $customer_info->ic_customer_mobile = $ic_customer_mobile;
+        $customer_info->ic_hobbies = $ic_hobbies;
+        $customer_info->ic_birth_date = $ic_birth_date;
 
 
         if(isset($_FILES['ic_avatar_pic']))

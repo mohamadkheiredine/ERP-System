@@ -20,6 +20,7 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\models\Billing\InvoicePayments;
 use App\models\CallCenter\InboundCall;
+use App\models\CallCenter\InboundCallProducts;
 use App\models\System\Areas;
 use App\models\System\Nationalities;
 use App\models\System\PaperTypes;
@@ -180,7 +181,7 @@ class AccountsController extends Controller
         $lst_account_types      = CRMAccountTypes::whereAtIsDeleted(0)->get();
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
         $crm_client_select_lead    = Config::get('appconfig.crm_client_select_lead');
-        $crm_telemarketing      = Config::get('appconfig.crm_telemarketing');
+        $crm_telemarketing      = Config::get('appconfig.quick_manage_client');
         $lst_nationalities = Nationalities::all();
         $lst_paper_types      = PaperTypes::wherePtIsDeleted(0)->get();
 
@@ -227,11 +228,13 @@ class AccountsController extends Controller
         $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpBillingStatus(1)->get();
         $lst_pendingcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcClientCode($client_info->ca_account_code)->get();
         $lst_closedcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(1)->whereIcClientCode($client_info->ca_account_code)->get();
+        $lst_call_products = InboundCallProducts::whereCpClientId($client_info->ca_id)->get();
 
         $data = array(
            "client_info" => $client_info,
            "lst_bills_unpaid" => $lst_bills_unpaid,
            "lst_pendingcalls" => $lst_pendingcalls,
+           "lst_call_products" => $lst_call_products,
            "lst_closedcalls" => $lst_closedcalls,
            "lst_bills_paid" => $lst_bills_paid
         );
@@ -257,7 +260,7 @@ class AccountsController extends Controller
         $lst_contract_types      = CRMContractTypes::whereCtIsDeleted(0)->get();
         $lst_paper_types      = PaperTypes::wherePtIsDeleted(0)->get();
         $crm_client_select_lead     = Config::get('appconfig.crm_client_select_lead');
-        $crm_telemarketing          = Config::get('appconfig.crm_telemarketing');
+        $crm_telemarketing          = Config::get('appconfig.quick_manage_client');
         $lst_nationalities = Nationalities::all();
 
         $data = array(
@@ -285,8 +288,6 @@ class AccountsController extends Controller
     public function GetRegionArea(Request $request)
     {
         $lr_area = $request->input('lr_area');
-
-
 
         $lst_regions = Regions::whereLrArea($lr_area)->get();
         $regions_array = array();

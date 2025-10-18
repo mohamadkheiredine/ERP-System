@@ -207,9 +207,6 @@ customers_module = {
 	                 },
 	                 ic_customer_name : {
 	                	 required: true
-	                 },
-	                 ic_account_number : {
-	                	 required : true
 	                 }
 	             },
 

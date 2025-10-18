@@ -130,6 +130,17 @@ th{
                                                             <input type="text" maxlength="50" name="is_quanity" id="STOCK_QUANTITY" class="form-control" required="required"   value="" />
                                                         </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Unit</label>
+                                                        <select name="is_stock_unit" id="IS_STOCK_UNIT" class="form-control form-select" data-control="select2" data-placeholder="Select Stock unit">
+                                                            <?php foreach ( $lst_units as $key => $unit_info ) { ?>
+                                                            <option value="<?php echo $unit_info->su_id;  ?>">{{ $unit_info->su_unit_code }}&nbsp;-&nbsp;{{ $unit_info->su_unit_label }}</option>
+                                                            <?php  } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                  <div class="col-md-4">
                                                       <div class="form-group">
                                                             <label class="control-label"> Pruchase Stock</label>
@@ -186,6 +197,18 @@ th{
                                                     <div class="form-group">
                                                         <label> Exchange Rate </label>
                                                        	<input type="text" maxlength="255" name="is_stock_exchange_rate" id="IS_STOCK_EXCHANGE_RATE" class="form-control" required="required"   value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Production Date </label>
+                                                        <input type="text" maxlength="255" name="is_production_date" id="IS_PRODUCTION_DATE" class="form-control"   value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label"> Expiry Date </label>
+                                                        <input type="text" maxlength="255" name="is_expiry_date" id="IS_EXPIRY_DATE" class="form-control"   value="" />
                                                     </div>
                                                 </div>
                                             </div>

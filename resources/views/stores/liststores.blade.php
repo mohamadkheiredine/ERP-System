@@ -19,7 +19,7 @@
         <td><input type="checkbox" name="ck_store_{{ $store_info->ps_id }}" id="CK_STORE_{{ $store_info->ps_id }}" class="checkboxes" value="{{ $store_info->ps_id }}" /></td>
         <td>{{ $store_info->ps_id }}</td>
         <td>{{ $store_info->ps_store_name }}</td>
-        <td>{{ $store_info->Manager->u_fullname }}</td>
+        <td>{{ $store_info->Manager ? $store_info->Manager->u_fullname : "-" }}</td>
         <td><a href="#" data-ps_id="{{ $store_info->ps_id }}" id="EDIT_STORE_{{ $store_info->ps_id }}" ><i class="fas fa-edit" height="16"></i></a></td>
         <td><a href="#" data-ps_id="{{ $store_info->ps_id }}"  id="DELETE_STORE_{{ $store_info->ps_id }}" ><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
     </tr>

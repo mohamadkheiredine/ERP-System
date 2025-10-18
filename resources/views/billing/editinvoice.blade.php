@@ -62,6 +62,7 @@ th{
                       <div class="form-group">
                         {!! csrf_field() !!}
                         <input type="hidden" name="bi_id" id="BI_ID" value="{{ $invoice_info->bi_id }}" />
+                        <input type="hidden" name="bi_official_invoice"  value="{{ $invoice_info->bi_official_invoice }}" />
                         <input type="hidden" name="bi_invoice_code" id="BI_INVOICE_CODE" value="{{ $invoice_info->bi_invoice_code }}" />
                          </div>
                     </span>
@@ -199,6 +200,28 @@ th{
                                     <option value="">-- Select Currency --</option>
                                     @foreach ( $lst_currencies as $key => $currency_info )
                                         <option {{  $invoice_info->bi_second_currency == $currency_info->cc_id ? "selected" : "" }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code . " - " . $currency_info->cc_currency_name  }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br/>
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="bi_internal_invoice" id="BI_INTERNAL_INVOICE" {{ $invoice_info->bi_internal_invoice == 1 ? "checked" : "" }}  value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                          Internal Invoice
+                                        </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 InternalCompanies" style="display: none">
+                            <div class="form-group">
+                                <label> Purchase Company</label><br/>
+                                <select required="required"  name="bi_company_to" id="BI_COMPANY_TO" class="form-control form-select" data-control="select2" data-placeholder="Select Company To">
+                                    <option value="0">-- Select Company --</option>
+                                    @foreach ( $lst_companies as $key => $company_info )
+                                        <option {{ $invoice_info->bi_company_to == $company_info->cd_id ? "selected" : "" }}  value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -427,13 +450,25 @@ th{
 				<form name="frm_invoice_items" id="FRM_INVOICE_ITEMS" method="post"  enctype="multipart/form-data">
 				    {!! csrf_field() !!}
 				     <input type="hidden" name="invoice_id" value="{{ $invoice_info->bi_id }}" />
+				     <input type="hidden" name="currency_id" value="{{ $invoice_info->bi_invoice_currency }}" />
 				     <input type="hidden" name="invoice_type_item" id="INVOICE_TYPE_ITEM" value="{{ $invoice_info->bi_invoice_type }}" />
 				     <input type="hidden" name="item_id" value="" />
 				 	<div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label"> Warehouse </label><br/>
+                                <select   name="ii_warehouse_id" id="II_WAREHOUSE_ID"  style="width:100%" class="form-control form-select" data-control="select2" data-placeholder="Select Warehouse">
+                                    <option value=""> -- Warehouse -- </option>
+                                    @foreach($lst_warehouses as $key => $warehouse_info)
+                                        <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 				 		<div class="col-md-12">
 				 			  <div class="form-group">
                                     <label class="control-label"> {{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }} </label><br/>
-                                    <select   name="bi_product" id="BI_PRODUCT"  style="width:100%" class="form-select" data-control="select2" data-placeholder="Select Product">
+                                    <select   name="bi_product" id="BI_PRODUCT"  style="width:100%" class="form-control form-select" data-control="select2" data-placeholder="Select Product">
                                             <option value=""> -- Product -- </option>
                                             @foreach($lst_products as $key => $product_info)
                                                     <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_ref }}&nbsp;-&nbsp;{{ $product_info->p_product_name }}</option>
@@ -444,7 +479,7 @@ th{
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label"> Serial Number </label><br/>
-                                <input type="text"  autocomplete="off" name="ii_product_serial_number" required class="form-control" value="" />
+                                <input type="text"  autocomplete="off" name="ii_product_serial_number" class="form-control" value="" />
                             </div>
                         </div>
 				 		<div class="col-md-12">

@@ -39,29 +39,29 @@ use App\models\Logistics\Vehicules;
 use App\models\CRM\CRMServices;
 use App\models\Inventory\WareHouseZones;
 use App\models\System\Units;
-use App\models\Inventory\Products; 
+use App\models\Inventory\Products;
 use Illuminate\Support\Facades\Storage;
 
 
 
 class CacheController extends Controller
 {
-    
+
     public function GenerateCache( $key , Request $request)
    {
        $result_array = array();
-       
-       
+
+
        switch($key)
        {
            case "products":
                {
-                  
+
                    $lst_products = Products::wherePProductIsDeleted(0)->get();
-                    
+
                    $products = array();
                    $index = 0;
-                   foreach ( $lst_products as $key => $product_info ) 
+                   foreach ( $lst_products as $key => $product_info )
                    {
                        $products[$index]['id']                  = $product_info->p_id;
                        $products[$index]['product_name']        = $product_info->p_product_name;
@@ -69,43 +69,43 @@ class CacheController extends Controller
                        $products[$index]['selling_price']       = $product_info->p_product_selling_price;
                        $products[$index]['currency']            = $product_info->p_product_currency;
                        $products[$index]['barcode']             = $product_info->p_barcode;
-                       $products[$index]['product_use_serial']  = $product_info->Category->pc_use_serial_number;
+                       $products[$index]['product_use_serial']  = $product_info->Category ? $product_info->Category->pc_use_serial_number : 0;
                        $index++;
                    }
-                   
+
                    $json_data = array();
-                   
+
                    $json_data['message'] = "";
                    $json_data['value'] = $products;
-                   
+
                    // save cache info
                    $path  = public_path() . "/cache/products/";
-                   
+
                    if(!is_dir($path)){
                        //Directory does not exist, so lets create it.
                        @mkdir($path, 0755, true);
                    }
-                    
-                   
+
+
                    $cache_path = $path . "products.json";
                    $cache_url = url('cache/products/products.json');
-                   
-                   
-                   
+
+
+
                    $fp = fopen($cache_path, "w+");
                    fwrite($fp, json_encode($json_data));
                    fclose($fp);
-                   
-                   
+
+
                    $result_array['products'] = $products;
                    $result_array['cache_url'] = $cache_url;
-                   
+
                }
            break;
        }
-       
-       
+
+
        return Response()->json($result_array);
-       
+
    }
 }

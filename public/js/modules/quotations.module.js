@@ -238,11 +238,8 @@ quotations_module = {
 		$this.parents('tr').find('.SellingPrice').val(new_price);
 
 		let whole_sales = $this.parents('tr').find('.WholeSalePrice').val();
-		let vendor_price = $this.parents('tr').find('.VendorPrice').val();
 
 		if(whole_sales > new_price)
 			$this.parents('tr').find('.WholeSalePrice').val(new_price);
-		if(vendor_price > new_price)
-			$this.parents('tr').find('.VendorPrice').val(new_price);
 	}
 };

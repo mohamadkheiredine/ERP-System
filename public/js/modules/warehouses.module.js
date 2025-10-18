@@ -19,6 +19,41 @@ var warehouses_module = {
 		            }
 		        });
 			},
+            DisplayWarehouseStockAvailability : function(){
+                var base_url 			= $('input[name=base_url]').val();
+                var _token	 			= $('input[name=_token]').val();
+                var sw_stock_warehouse	 	= $('select[name=sw_stock_warehouse]').val();
+                var params = { _token : _token , sw_stock_warehouse : sw_stock_warehouse };
+                $.ajax
+                ({
+                    url : base_url + "/request/reports/displayliststockavailability",
+                    data : params,
+                    dataType : "json",
+                    type : "get",
+                    success : function(response){
+                        $('#LstStockAvailability').html(response.display);
+
+                    }
+                });
+            },
+            DisplayWarehouseStockMovement : function(){
+                var base_url 			= $('input[name=base_url]').val();
+                var _token	 			= $('input[name=_token]').val();
+                var sm_stock_warehouse	 	= $('select[name=sm_stock_warehouse]').val();
+                var sm_upto_date	 	= $('input[name=sm_upto_date]').val();
+                var params = { _token : _token , sm_stock_warehouse : sm_stock_warehouse , sm_upto_date : sm_upto_date };
+                $.ajax
+                ({
+                    url : base_url + "/request/reports/displayliststockmovement",
+                    data : params,
+                    dataType : "json",
+                    type : "get",
+                    success : function(response){
+                        $('#LstStockMovement').html(response.display);
+
+                    }
+                });
+            },
 			DisplayWarehouseDimensionsTab : function(){
 				var base_url 			= $('input[name=base_url]').val();
 				var _token	 			= $('input[name=_token]').val();
@@ -32,10 +67,119 @@ var warehouses_module = {
 					type : "POST",
 					success : function(response){
 						$('#WAREHOUSEDIMENSIONS').html(response.display);
-						
+
 					}
 				});
 			},
+            QuickSAActionMenu : function(){
+                let action_type = $(this).data('action_type');
+                switch(action_type)
+                {
+                    case "EXPORT_AS_CSV":
+                    {
+                        warehouses_module.DownloadReportAsCSV();
+                    }
+                    break;
+                    case "EXPORT_AS_PDF":
+                    {
+                        warehouses_module.DownloadReportAsPDF();
+                    }
+                    break;
+                }
+            },
+            QuickMAActionMenu : function(){
+                let action_type = $(this).data('action_type');
+                switch(action_type)
+                {
+                    case "EXPORT_AS_CSV":
+                    {
+                        warehouses_module.DownloadSMReportAsCSV();
+                    }
+                    break;
+                    case "EXPORT_AS_PDF":
+                    {
+                        warehouses_module.DownloadSMReportAsPDF();
+                    }
+                    break;
+                }
+            },
+            DownloadReportAsCSV : function(){
+                let sw_stock_warehouse = $('select[name=sw_stock_warehouse]').val();
+                let base_url = $('#BASE_URL').val();
+                let _token = $('input[name=_token]').val();
+                $.ajax({
+                    url: base_url + "/request/reports/downloadstockavailability?type=csv&_token=" + _token + "&sw_stock_warehouse=" + sw_stock_warehouse,
+                    method: "GET",
+                    success: function(data) {
+
+                        const blob = new Blob([data]);
+                        // Create a Blob URL for the binary data
+                        var blobUrl = window.URL.createObjectURL(blob);
+                        // Create a temporary anchor element
+                        var a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = 'stock-availability.csv'; // Set the desired file name
+
+                        // Programmatically trigger a click on the anchor to start the download
+                        document.body.appendChild(a);
+                        a.click();
+
+                        // Clean up resources
+                        window.URL.revokeObjectURL(blobUrl);
+                        document.body.removeChild(a);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error downloading file:", error);
+                    }
+                });
+            },
+            DownloadSMReportAsCSV : function(){
+                var sm_stock_warehouse	 	= $('select[name=sm_stock_warehouse]').val();
+                var sm_upto_date	 	= $('input[name=sm_upto_date]').val();
+                let base_url = $('#BASE_URL').val();
+                let _token = $('input[name=_token]').val();
+                $.ajax({
+                    url: base_url + "/request/reports/downloadstockmovements?type=csv&_token=" + _token + "&sm_stock_warehouse=" + sm_stock_warehouse + "&sm_upto_date=" + sm_upto_date,
+                    method: "GET",
+                    success: function(data) {
+
+                        const blob = new Blob([data]);
+                        // Create a Blob URL for the binary data
+                        var blobUrl = window.URL.createObjectURL(blob);
+                        // Create a temporary anchor element
+                        var a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = 'warehouse-stock-movememnt.csv'; // Set the desired file name
+
+                        // Programmatically trigger a click on the anchor to start the download
+                        document.body.appendChild(a);
+                        a.click();
+
+                        // Clean up resources
+                        window.URL.revokeObjectURL(blobUrl);
+                        document.body.removeChild(a);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error downloading file:", error);
+                    }
+                });
+            },
+    DownloadSMReportAsPDF : function(){
+        var sm_stock_warehouse	 	= $('select[name=sm_stock_warehouse]').val();
+        var sm_upto_date	 	= $('input[name=sm_upto_date]').val();
+                let base_url = $('#BASE_URL').val();
+                let _token = $('input[name=_token]').val();
+                 let url = base_url + "/request/reports/downloadstockmovements?type=pdf&_token=" + _token + "&sm_stock_warehouse=" + sm_stock_warehouse + "&sm_upto_date=" + sm_upto_date;
+
+            window.open(url, '_blank');
+            },
+            DownloadReportAsPDF : function(){
+                let sw_stock_warehouse = $('select[name=sw_stock_warehouse]').val();
+                let base_url = $('#BASE_URL').val();
+                let _token = $('input[name=_token]').val();
+                let url = base_url + "/request/reports/downloadstockavailability?type=pdf&_token=" + _token + "&sw_stock_warehouse=" + sw_stock_warehouse;
+                window.open(url, '_blank');
+            },
 			AddNewWarehouseZone : function(){
 				var warehouse_id	 	= $('input[name=warehouse_id]').val();
 				var base_url 			= $('input[name=base_url]').val();
@@ -57,18 +201,18 @@ var warehouses_module = {
 		            	switch(tab)
 		            	{
 			            	case "warehouse_dimension":
-			            	{ 
+			            	{
 			            		$('#WAREHOUSEDIMENSIONS').html(response.display);
 			            		warehouses_module.DrawWarehouseImage();
 			            	}
 			            	break;
 			            	case "warehouse_zones":
-			            	{ 
+			            	{
 			            		$('#m_wizard_warehouse_zones').html(response.display);
 			            	}
 			            	break;
 			            	case "warehouse_employees":
-			            	{ 
+			            	{
 			            		$('#m_wizard_warehouse_employees').html(response.display);
 			            	}
 			            	break;
@@ -108,8 +252,8 @@ var warehouses_module = {
 
 		            				// Create axes
 		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-		            				var xRenderer = am5xy.AxisRendererX.new(root, { 
-		            				  minGridDistance: 30, 
+		            				var xRenderer = am5xy.AxisRendererX.new(root, {
+		            				  minGridDistance: 30,
 		            				  minorGridEnabled: true
 		            				});
 
@@ -177,7 +321,7 @@ var warehouses_module = {
 		            				chart.appear(1000, 100);
 
 		            				}); // end am5.ready()
-		            			
+
 		            			am5.ready(function() {
 
 		            				// Create root element
@@ -210,8 +354,8 @@ var warehouses_module = {
 
 		            				// Create axes
 		            				// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-		            				var xRenderer = am5xy.AxisRendererX.new(root, { 
-		            				  minGridDistance: 30, 
+		            				var xRenderer = am5xy.AxisRendererX.new(root, {
+		            				  minGridDistance: 30,
 		            				  minorGridEnabled: true
 		            				});
 
@@ -279,9 +423,9 @@ var warehouses_module = {
 		            				chart.appear(1000, 100);
 
 		            				}); // end am5.ready()
-		            			
-		            			
-		            			
+
+
+
 //		            			 var chart = AmCharts.makeChart("m_warehouseloadzonechart", {
 //		            		            "type": "serial",
 //		            		            "theme": "light",
@@ -319,9 +463,9 @@ var warehouses_module = {
 //		            		        });
 		            		}
 		            		break;
-		            			
-		            	} 
-		            
+
+		            	}
+
 		            }
 		        });
 			},
@@ -340,12 +484,12 @@ var warehouses_module = {
 		            	{
 			            	case "warehouse_dimension":
 			            	{
-			            		$('input[name=tab]').val("warehouse_zones"); 
+			            		$('input[name=tab]').val("warehouse_zones");
 			            	}
 			            	break;
 			            	case "warehouse_zones":
 			            	{
-			            		$('input[name=tab]').val("warehouse_employees"); 
+			            		$('input[name=tab]').val("warehouse_employees");
 			            	}
 			            	break;
 			            	case "warehouse_employees":
@@ -355,11 +499,11 @@ var warehouses_module = {
 			            	break;
 		            		case "warehouse_load":
 		            		{
-		  
+
 		            		}
 		            		break;
 		            	}
-		            	
+
 		            	warehouses_module.DisplayWarehouseSettingsTab();
 		            }
 		        });
@@ -382,7 +526,7 @@ var warehouses_module = {
 		            		 minlength: 4,
 		            		 required: true
 		            	 },
-		            	 wz_zone_color: { 
+		            	 wz_zone_color: {
 		            		 required: true
 		            	 }
 		             },
@@ -466,7 +610,7 @@ var warehouses_module = {
 				else
 				{
 					var volume = $("#W_WAREHOUSE_VOLUME").val();
- 
+
 					var c = document.getElementById("WAREHOUSEDRAWING");
 					var ctx = c.getContext("2d");
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -477,13 +621,13 @@ var warehouses_module = {
 					ctx.stroke();
 					ctx.fill();
 				}
-				
-				
 
 
- 
-				
-				  
+
+
+
+
+
 			},
 			SaveWareHouse : function(){
 				return warehouses_module.SaveWareHouseSubmitHandler();
@@ -558,7 +702,7 @@ var warehouses_module = {
 		                });
 		                var str_params = $("#FORM_SAVE_WAREHOUSE").serialize();
 		                //$.editor
-		                
+
 		    	         $.ajax
 		    	        ({
 		    	            url : base_url + "/request/SaveWareHouse",
@@ -671,7 +815,7 @@ var warehouses_module = {
 				 var base_url = $('#BASE_URL').val();
 				 var _token = $('input[name=_token]').val();
 					var str_params ={warehouse_id : warehouse_id , fk_user_id : fk_user_id , _token : _token};
-		 
+
 					$.ajax
 					({
 						url : base_url + "/request/WareHouse/addemployee",
@@ -680,13 +824,13 @@ var warehouses_module = {
 						type : "POST",
 						success : function(response){
 							if(response.is_error == 0)
-							{ 
+							{
 								$('#EmployeeModel').modal('toggle');
 								 warehouses_module.DisplayWarehouseSettingsTab();
 							}
 							else
 							{
-								
+
 								bootbox.alert(response.error_msg);
 							}
 						}

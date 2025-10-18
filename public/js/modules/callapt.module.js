@@ -15,6 +15,44 @@ callapt_module = {
 	            }
 	        });
     },
+    DisplayListCallbackLeads : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var lead_name	 			= $('input[name=lead_name]').val();
+        var referred_by	 			= $('input[name=referred_by]').val();
+        var lead_mobile	 			= $('input[name=lead_mobile]').val();
+        var sheet_number	 			= $('input[name=sheet_number]').val();
+        var cl_area	 			= $('select[name=cl_area]').val();
+        var cl_region	 			= $('select[name=cl_region]').val();
+        var cl_sales_id	 			= $('select[name=cl_sales_id]').val();
+        var cl_lead_types	 			= $('select[name=cl_lead_types]').val();
+        var cl_date	 			= $('input[name=cl_date]').val();
+        var params = {
+            _token : _token,
+            lead_name : lead_name,
+            referred_by : referred_by,
+            lead_mobile : lead_mobile,
+            sheet_number : sheet_number,
+            cl_area : cl_area,
+            cl_region : cl_region,
+            cl_sales_id : cl_sales_id,
+            cl_lead_types : cl_lead_types,
+            cl_date : cl_date
+        };
+
+        if(cl_sales_id == 0)
+            return;
+        $.ajax
+        ({
+            url : base_url + "/request/appointments/displaylistreportcallback",
+            data : params,
+            dataType : "json",
+            type : "get",
+            success : function(response){
+                $('.LstCBLeadsContainers').html(response.display);
+            }
+        });
+    },
     DisplayListTodaysAppt : function(){
         	var base_url 			= $('input[name=base_url]').val();
                 var _token	 			= $('input[name=_token]').val();
@@ -68,8 +106,33 @@ callapt_module = {
         }
     },
     DownloadListCallbackLeadsReports : function(){
-        var base_url 	= $('input[name=base_url]').val();
-        let url = base_url + "/callcenter/leads/downloadcallbackleads";
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var lead_name	 			= $('input[name=lead_name]').val();
+        var referred_by	 			= $('input[name=referred_by]').val();
+        var lead_mobile	 			= $('input[name=lead_mobile]').val();
+        var sheet_number	 			= $('input[name=sheet_number]').val();
+        var cl_area	 			= $('select[name=cl_area]').val();
+        var cl_region	 			= $('select[name=cl_region]').val();
+        var cl_sales_id	 			= $('select[name=cl_sales_id]').val();
+        var cl_lead_types	 			= $('select[name=cl_lead_types]').val();
+        var cl_date	 			= $('input[name=cl_date]').val();
+        var params = {
+            _token : _token,
+            lead_name : lead_name,
+            referred_by : referred_by,
+            lead_mobile : lead_mobile,
+            sheet_number : sheet_number,
+            cl_area : cl_area,
+            cl_region : cl_region,
+            cl_sales_id : cl_sales_id,
+            cl_lead_types : cl_lead_types,
+            cl_date : cl_date
+        };
+
+        const urlParams = new URLSearchParams(params).toString();
+
+        let url = base_url + "/callcenter/leads/downloadcallbackleads?" + urlParams;
         window.open(url,'_blank');
         window.open(url);
     },

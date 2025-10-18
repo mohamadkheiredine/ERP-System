@@ -109,15 +109,15 @@ Page Description :
                 <td style="text-align: left;border:solid 0px #c0c0c0">
                     <div>
                         <p>Issued By:</p>
-                        <p>____________________</p>
-                        <p>Warehouse Manager</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
                     </div>
                 </td>
                 <td style="text-align: left;border:solid 0px #c0c0c0">
                     <div>
                         <p>Received By:</p>
-                        <p>____________________</p>
-                        <p>Receiving Warehouse Manager</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
                     </div>
                 </td>
             </tr>

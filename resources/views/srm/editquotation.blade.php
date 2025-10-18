@@ -154,7 +154,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label"> Tax  <span class="required"> * </span></label>
-                                <select  name="sq_tva_id" id="SQ_TVA_ID" class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Tax">
+                                <select  name="sq_tva_id" id="SQ_TVA_ID" class="form-control form-select"  data-control="select2" data-placeholder="Select Tax">
                                     <option value=""> Select TVA </option>
                                     @foreach ( $lst_vat as $key => $vat_info )
                                         <option {{ $supplier_quotation->sq_tva_id == $vat_info->av_id ? "selected" : "" }} value="{{ $vat_info->av_id }}" >{{ $vat_info->av_vat_label }}</option>
@@ -241,20 +241,20 @@ th{
                         </div>
                          <div class="col-md-12">
                          		<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-bs-toggle="tab" href="#m_tab_products">Products</a>
+                                    </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#m_tab_notes">Notes</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#m_tab_products">Products</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#m_tab_notes">Notes</a>
                                 </li>
                             </ul>
 
                             <div class="tab-content" id="myTabContent">
-                            	 <div class="tab-pane fade show active" id="m_tab_notes" role="tabpanel">
+                            	 <div class="tab-pane fade" id="m_tab_notes" role="tabpanel">
                             	  <label class="control-label"> Quotation Notes <span class="required"> * </span></label><br/>
                                     <textarea style="width:100%;height:250px;resize:none" id="SQ_QUOTATION_NOTES"  class="form-control" name="sq_quotation_notes"  cols="">{{ $supplier_quotation->sq_quotation_notes }}</textarea>
                             	 </div>
-                            	 <div class="tab-pane fade" id="m_tab_products" role="tabpanel">
+                            	 <div class="tab-pane fade show active" id="m_tab_products" role="tabpanel">
                             	 <table class="table m-table m-table--head-separator-primary">
 										<thead>
 											<tr>
@@ -266,8 +266,8 @@ th{
 												<th>Discount</th>
 												<th>Selling Price</th>
 												<th>Wholesale Price</th>
-												<th>Vendor Price</th>
 												<th class="TitleQuantity">Quantity</th>
+                                                <th>Units</th>
 												<th class="TitleSerials">Serials</th>
 												<th>Delete</th>
 											</tr>
@@ -295,8 +295,14 @@ th{
 												<td><input type="text" name="pr_discount[]" class="form-control ProductDiscount" value="{{ $qp_info->sp_product_discount }}" /></td>
 												<td><input type="text" name="pr_selling_price[]" class="form-control SellingPrice" value="{{ $qp_info->sp_product_selling_price }}" /></td>
 												<td><input type="text" name="pr_wholesale_price[]" class="form-control WholeSalePrice" value="{{ $qp_info->sp_product_wholesale_price }}" /></td>
-												<td><input type="text" name="pr_vendor_price[]" class="form-control VendorPrice" value="{{ $qp_info->sp_product_vendor_price }}" /></td>
 												<td><input type="text" name="pr_quantity[]" class="form-control StockQuantity" value="{{ $qp_info->sp_product_quantity }}" /></td>
+                                                <td>
+                                                    <select name="sp_stock_unit[]"  class="form-control form-select" data-control="select2" data-placeholder="Select Stock unit">
+                                                            <?php foreach ( $lst_units as $key => $unit_info ) { ?>
+                                                        <option {{ $qp_info->sp_stock_unit == $unit_info->su_id ? "selected" : "" }} value="<?php echo $unit_info->su_id;  ?>">{{ $unit_info->su_unit_code }}&nbsp;-&nbsp;{{ $unit_info->su_unit_label }}</option>
+                                                        <?php  } ?>
+                                                    </select>
+                                                </td>
 												<td><button class="btn ListSerialNumbers" style="{{ $qp_info->products->Category->pc_use_serial_number == 0 ? 'display:none' :'' }}" type="button" data-ids="{{ $qp_info->sp_product_serial }}" name="btn_list_serials[]" >...</button></td>
 												<td><a href="#" class="DeleteCode"><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 											</tr>
@@ -305,8 +311,8 @@ th{
 												<th>
 												#
 												<input type="hidden" name="serial_numbers[]" class="SerialNumbers" value="" />
-												<input type="hidden" name="product_id[]" class="ProductId" value="" />
-												<input type="hidden" name="currency_id[]" class="CurrencyId" value="" />
+												<input type="hidden" name="product_id[]" class="ProductId" value="0" />
+												<input type="hidden" name="currency_id[]" class="CurrencyId" value="0" />
 											</th>
 												<td><input type="text" name="pr_product_code[]" class="form-control ProductCode" value="" /></td>
 												<td>
@@ -321,10 +327,16 @@ th{
 												<td><input type="text" name="pr_discount[]" class="form-control ProductDiscount" value="0" /></td>
 												<td><input type="text" name="pr_selling_price[]" class="form-control SellingPrice" value="0" /></td>
 												<td><input type="text" name="pr_wholesale_price[]" class="form-control WholeSalePrice" value="0" /></td>
-												<td><input type="text" name="pr_vendor_price[]" class="form-control VendorPrice" value="0" /></td>
 												<td>
 													<input type="text" name="pr_quantity[]" class="form-control StockQuantity" value="0" />
 												</td>
+                                                <td>
+                                                    <select name="sp_stock_unit[]"  class="form-control form-select" data-placeholder="Select Stock unit">
+                                                        <?php foreach ( $lst_units as $key => $unit_info ) { ?>
+                                                        <option value="<?php echo $unit_info->su_id;  ?>">{{ $unit_info->su_unit_code }}&nbsp;-&nbsp;{{ $unit_info->su_unit_label }}</option>
+                                                        <?php  } ?>
+                                                    </select>
+                                                </td>
 												<td>
 													<button class="btn ListSerialNumbers" type="button" data-ids="" name="btn_list_serials[]" >...</button>
 												</td>

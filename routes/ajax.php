@@ -289,6 +289,8 @@ Route::post('/request/accounting/displaylistaccountstatment','Accounting\Account
 Route::post('/request/accounting/displaylistaccountstotals','Accounting\AccountingController@Displaylistaccounttotals');
 Route::post('/request/accounting/showtransactionaccountdetails','Accounting\AccountingController@ShowTransactionAccountDetails');
 
+Route::get('/request/appointments/displaylistreportcallback','CallCenter\AppointmentsController@DisplayListCallbackReport');
+
 
 Route::post('/request/clients/displaylistcategory','CRM\ClientsCategoriesController@DisplayList');
 Route::post('/request/clients/savecategoryinfo','CRM\ClientsCategoriesController@SaveClientCategoryInfo');
@@ -618,6 +620,12 @@ Route::delete('/request/projects/deletephasesinfo','PM\ProjectPhasesController@D
 Route::get('/request/projects/generatephasecode','PM\ProjectPhasesController@GeneratePhaseCode');
 
 
+Route::get('/request/projects/displaylistjobs','PM\ProjectJobsController@DisplayList');
+Route::post('/request/projects/savejobsinfo','PM\ProjectJobsController@Saveinfo');
+Route::delete('/request/projects/deletejobinfo','PM\ProjectJobsController@DeleteData');
+Route::get('/request/projects/generatejobcode','PM\ProjectJobsController@GenerateJobsCode');
+
+
 Route::post('/request/lines/displaylist','Phones\PhoneLinesController@DisplayList');
 Route::post('/phones/lines/savelineinfo','Phones\PhoneLinesController@SaveLineInfo');
 Route::post('/phones/lines/deleteline','Phones\PhoneLinesController@DeleteLineInfo');
@@ -707,6 +715,13 @@ Route::delete('/request/maintenancecase/deleteinfo','CallCenter\MaintenanceCaseC
 Route::get('/request/system/displayliststatus','System\SystemStatusController@DisplayList');
 Route::post('/request/system/savestatusinfo','System\SystemStatusController@SaveStatusInfo');
 Route::delete('/request/system/deletestatusinfo','System\SystemStatusController@DeleteStatusInfo');
+
+
+
+Route::get('/request/reports/displayliststockavailability','WareHouses\WarehouseController@DisplayListStockAvailability');
+Route::get('/request/reports/displayliststockmovement','WareHouses\WarehouseController@displaylistWarehouseMovement');
+Route::get('/request/reports/downloadstockavailability','WareHouses\WarehouseController@DownloadStockAvailability');
+Route::get('/request/reports/downloadstockmovements','WareHouses\WarehouseController@DownloadStockMovements');
 
 
 

@@ -151,9 +151,7 @@ class PayrollsDedBenController extends Controller
         $db_currency_id               = $request->input('db_currency_id');
         $db_type              = $request->input('db_type');
         $db_effective_date              = $request->input('db_effective_date');
-        $db_amount_percentage              = $request->input('db_amount_percentage');
         $db_end_date              = $request->input('db_end_date');
-        $db_user_id              = $request->input('db_user_id');
 
         $result_array = array();
 
@@ -172,8 +170,6 @@ class PayrollsDedBenController extends Controller
         $dedben_info->db_type                       = $db_type;
         $dedben_info->db_effective_date             = $db_effective_date;
         $dedben_info->db_end_date                   = $db_end_date;
-        $dedben_info->db_amount_percentage          = $db_amount_percentage;
-        $dedben_info->db_user_id          = $db_user_id;
 
 
 

@@ -2,46 +2,69 @@
  *
  */
 products_module = {
-		DisplayListStock : function(){
-			var base_url 		= $('input[name=base_url]').val();
-			var _token 			= $('input[name=_token]').val();
-			var page_number		= $('input[name=page_number]').val();
-			var general_search = $('select[name=general_search]').val();
-			var stock_warehouse = $('select[name=stock_warehouse]').val();
-			var stock_product	= $('select[name=stock_product]').val();
-			var stock_currency 	= $('select[name=stock_currency]').val();
-			var list_type 	= $('input[name=list_type]').val();
-			$.ajax
-			({
-				url : base_url + "/request/displayliststock",
-				data : { _token : _token , page_number : page_number ,  list_type : list_type , stock_warehouse : stock_warehouse , stock_product : stock_product , stock_currency : stock_currency , general_search : general_search },
-				method : 'post',
-				dataType : "json",
-				beforeSend : function(){
-				},
-				success : function(response){
-					$('#LstProductStocks').html(response.display);
-					$('.TotalCost').html(response.total_amount_block);
-					$('#StocksPagination').twbsPagination({
-	                    totalPages: response.total_pages,
-	                    visiblePages: 7,
-	                    onPageClick: function (event, page) {
-	                         $('input[name=page_number]').val(page);
-	                         products_module.DisplayListStock();
-	                    }
-	                });
-                    $('#TopStocksPagination').twbsPagination({
-	                    totalPages: response.total_pages,
-	                    visiblePages: 7,
-	                    onPageClick: function (event, page) {
-	                         $('input[name=page_number]').val(page);
-	                         products_module.DisplayListStock();
-	                    }
-	                });
-				}
-			});
-		},
-        CalculateTotalPurchaseStock : function(){
+    DisplayListStock: function(page = null) {
+        var base_url        = $('input[name=base_url]').val();
+        var _token          = $('input[name=_token]').val();
+        var page_number     = page || $('input[name=page_number]').val();
+        var general_search  = $('select[name=general_search]').val();
+        var stock_warehouse = $('select[name=stock_warehouse]').val();
+        var stock_product   = $('select[name=stock_product]').val();
+        var stock_currency  = $('select[name=stock_currency]').val();
+        var list_type       = $('input[name=list_type]').val();
+
+        $.ajax({
+            url: base_url + "/request/displayliststock",
+            data: {
+                _token,
+                page_number,
+                list_type,
+                stock_warehouse,
+                stock_product,
+                stock_currency,
+                general_search
+            },
+            method: 'post',
+            dataType: "json",
+            beforeSend: function() {
+                // optionally show a loader
+            },
+            success: function(response) {
+                $('#LstProductStocks').html(response.display);
+                $('.TotalCost').html(response.total_amount_block);
+
+                // destroy any existing paginations first
+                $('#StocksPagination').twbsPagination('destroy');
+                $('#TopStocksPagination').twbsPagination('destroy');
+
+                // initialize bottom pagination
+                $('#StocksPagination').twbsPagination({
+                    totalPages: response.total_pages,
+                    startPage: parseInt(page_number),
+                    visiblePages: 7,
+                    onPageClick: function (event, pageClicked) {
+                        if (pageClicked != $('input[name=page_number]').val()) {
+                            $('input[name=page_number]').val(pageClicked);
+                            products_module.DisplayListStock(pageClicked);
+                        }
+                    }
+                });
+
+                // initialize top pagination (mirrored)
+                $('#TopStocksPagination').twbsPagination({
+                    totalPages: response.total_pages,
+                    startPage: parseInt(page_number),
+                    visiblePages: 7,
+                    onPageClick: function (event, pageClicked) {
+                        if (pageClicked != $('input[name=page_number]').val()) {
+                            $('input[name=page_number]').val(pageClicked);
+                            products_module.DisplayListStock(pageClicked);
+                        }
+                    }
+                });
+            }
+        });
+    },
+    CalculateTotalPurchaseStock : function(){
             let quantity = $("#STOCK_QUANTITY").val();
             let is_price_stock = $("input[name=is_price_stock]").val();
             let is_selling_price = $("input[name=is_selling_price]").val();
@@ -337,30 +360,30 @@ products_module = {
 				case "DOWNLOAD_TEMPLATE":
 				{
 					$.ajax({
-                                            url: base_url + "/request/products/downloadtemplate?_token=" + _token,
-                                            method: "GET",
-                                            success: function(data) {
+                        url: base_url + "/request/products/downloadtemplate?_token=" + _token,
+                        method: "GET",
+                        success: function(data) {
 
-                                                const blob = new Blob([data]);
-                                                // Create a Blob URL for the binary data
-                                                var blobUrl = window.URL.createObjectURL(blob);
-                                                // Create a temporary anchor element
-                                                var a = document.createElement('a');
-                                                a.href = blobUrl;
-                                                a.download = 'products-template.csv'; // Set the desired file name
+                            const blob = new Blob([data]);
+                            // Create a Blob URL for the binary data
+                            var blobUrl = window.URL.createObjectURL(blob);
+                            // Create a temporary anchor element
+                            var a = document.createElement('a');
+                            a.href = blobUrl;
+                            a.download = 'products-template.csv'; // Set the desired file name
 
-                                                // Programmatically trigger a click on the anchor to start the download
-                                                document.body.appendChild(a);
-                                                a.click();
+                            // Programmatically trigger a click on the anchor to start the download
+                            document.body.appendChild(a);
+                            a.click();
 
-                                                // Clean up resources
-                                                window.URL.revokeObjectURL(blobUrl);
-                                                document.body.removeChild(a);
-                                            },
-                                            error: function(xhr, status, error) {
-                                                console.error("Error downloading file:", error);
-                                            }
-                                        });
+                            // Clean up resources
+                            window.URL.revokeObjectURL(blobUrl);
+                            document.body.removeChild(a);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error downloading file:", error);
+                        }
+                    });
 				}
 				break;
 			}
@@ -549,6 +572,8 @@ products_module = {
 		        		$('.StockSerialNumber').css({'display' : ''});
 		        		$('.AddItemHolder').css({'display' : 'none'});
 		        		$('input[name=p_id]').removeAttr('required');
+
+                        $("input[name=is_stock_uid]").val(response.barcode);
 
 		        		if(old_quantity <= 1)
 		        			$('input[name=is_quanity]').val(1);

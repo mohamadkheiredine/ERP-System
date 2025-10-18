@@ -23,4 +23,49 @@ $(function(){
 	$('#AddUnit').on('click',products_module.ManageStockUnitIds);
 	$('input[name=is_discount]').on('keyup',products_module.CalculateDiscountedPrice);
 	$('input[name=is_discount]').on('blur',products_module.CalculateDiscountedPrice);
+
+
+    new tempusDominus.TempusDominus(document.getElementById('IS_PRODUCTION_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+
+    new tempusDominus.TempusDominus(document.getElementById('IS_EXPIRY_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
 })

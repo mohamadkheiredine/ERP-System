@@ -52,6 +52,7 @@ th{
                      <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="bi_invoice_code" id="BI_INVOICE_CODE" value="{{ $invoice_code }}" />
+                        <input type="hidden" name="bi_official_invoice" value="0" />
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Invoice information is saved successfully!
@@ -60,7 +61,7 @@ th{
             				<strong>Error!</strong>You have some form errors. Please check below.
             			</div>
                     <div class="row">
-                        
+
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Invoice Date </label><br/>
@@ -72,8 +73,8 @@ th{
                                 <label class="control-label"> Invoice Ref </label>
                                 <input type="text" name="bi_invoice_ref" id="BI_INVOICE_REF" class="form-control"  maxlength="15"  value="{{ $invoice_code }}" />
                             </div>
-                        </div> 
-                        
+                        </div>
+
                         <div class="col-md-4">
                                 <div class="form-group">
                                   <label class="control-label"> Client Code </label><br/>
@@ -169,7 +170,7 @@ th{
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4"> 
+                        <div class="col-md-4">
                         	@if(Session("default_item") == 0)
                             <div class="form-group">
                                 <label> Item Type <span class="required"> * </span> </label><br/>
@@ -209,6 +210,28 @@ th{
                                     <label class="control-label"> Exchange Rate </label><br/>
                                     <input type="number" autocomplete="off" min="0" max="9999999" step="0.01" name="bi_exchange_rate" id="BI_EXCHANGE_RATE" class="form-control"  maxlength="15"  value="{{ session('cd_exchange_rate') }}" />
                                 </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br/>
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="bi_internal_invoice" id="BI_INTERNAL_INVOICE"   value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                          Internal Invoice
+                                        </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 InternalCompanies" style="display: none">
+                            <div class="form-group">
+                                <label> Purchase Company</label><br/>
+                                <select required="required"  name="bi_company_to" id="BI_COMPANY_TO" class="form-control form-select" data-control="select2" data-placeholder="Select Company To">
+                                    <option value="0">-- Select Company --</option>
+                                    @foreach ( $lst_companies as $key => $company_info )
+                                        <option  value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-12">
                              <div class="form-group">

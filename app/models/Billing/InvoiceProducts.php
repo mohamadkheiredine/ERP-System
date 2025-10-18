@@ -26,4 +26,16 @@ class InvoiceProducts extends Model
     protected   $table          = 'billing_invoice_items';
     public      $timestamps     = false;
     protected   $primaryKey     = "ii_id";
+
+
+    public function Warehouse()
+    {
+        return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','ii_warehouse_id');
+    }
+
+
+    public function Product()
+    {
+        return $this->hasOne('App\models\Inventory\Products', 'p_id','ii_item_id');
+    }
 }

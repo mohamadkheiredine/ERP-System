@@ -11,7 +11,6 @@ $(function(){
      .catch( error => {
          console.error( error );
      } );
-	 $('select').select2();
 
 	 new tempusDominus.TempusDominus(document.getElementById('BI_INVOICE_DATE'),{
 		 display: {
@@ -99,9 +98,9 @@ $(function(){
     $("#BI_PRODUCT_ID").on("change",invoices_module.SwitchOtherDropdownForProduct);
     $("#BI_PRODUCT_CODE_ID").on("change",invoices_module.SwitchPOtherDropdownForProduct);
     $("#BTN_LINK_ITEM").on("click",invoices_module.SaveLinkItem);
+    $("#BI_INTERNAL_INVOICE").on("change",invoices_module.DisplayInternalCompaniesLst);
 
-
-       $("#INVOICE_ACCOUNT_ID").select2('destroy').attr("disabled", true);
+    //   $("#INVOICE_ACCOUNT_ID").select2('destroy').attr("disabled", true);
 
 
 })

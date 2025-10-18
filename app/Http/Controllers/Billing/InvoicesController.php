@@ -15,6 +15,8 @@
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
+use App\models\CallCenter\InboundCallProducts;
+use App\models\Sales\OrderProducts;
 use Validator;
 use App;
 use Input;
@@ -59,6 +61,7 @@ use Dompdf\Dompdf;
 use App\models\CRM\CRMServicesPaymentTypes;
 use App\models\Inventory\WareHouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use App\models\Inventory\WareHouseMovement;
 
 
 class InvoicesController extends Controller
@@ -407,6 +410,16 @@ class InvoicesController extends Controller
             $display = str_replace("%LST_CONTRACT_INVOICES%",$item_table, $display);
             $display = str_replace("%registration_number%",$company_info->cd_register_number, $display);
 
+            $profile_path     = public_path().'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+            $profile_url = url('/').'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+            if(!is_file($profile_path))
+            {
+                $profile_url= url('images/NoImageAvailable.jpg');
+            }
+
+            $display = str_replace("%company_url%", $company_info->cd_company_website, $display);
+            $display = str_replace("%logo_image_url%",$profile_url, $display);
+
             if(isset($crm_account) == true)
             {
                 $display = str_replace("%CLIENT_NAME%",$crm_account->ca_account_name, $display);
@@ -617,6 +630,9 @@ class InvoicesController extends Controller
         $list_customers     = Customers::whereIcIsDeleted(0)->get();
         $list_services      = CRMServices::whereCsIsDeleted(0)->get();
 
+        $company_id = session('company_id');
+        $lst_companies = Companies::whereCdIsDeleted(0)->whereNotIn('cd_id',[$company_id])->get();
+
         $data = array(
             "invoice_code" => $invoice_code,
             "list_accounts" => $list_accounts,
@@ -626,9 +642,44 @@ class InvoicesController extends Controller
             "lst_payment_terms" => $lst_payment_terms,
             "lst_currencies" => $lst_currencies,
             "list_services" => $list_services,
+            "lst_companies" => $lst_companies,
             "lst_vat_accounts" => $lst_vat_accounts
         );
         return Response()->view("billing.addinvoice",$data);
+
+    }
+
+    public function AddOficialForm()
+    {
+        $AccountingManager = new AccountingManager();
+
+        $invoice_code = $AccountingManager->GenerateOfficialInvoiceCode();
+
+        $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
+        $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
+        $lst_payment_types  = PaymentTypes::wherePtIsDeleted(0)->get();
+        $lst_payment_terms  = PaymentTerms::wherePtIsDeleted(0)->get();
+        $lst_vat_accounts   = VatAccounts::whereAvIsDeleted(0)->get();
+        $lst_currencies     = Currency::all();
+        $list_customers     = Customers::whereIcIsDeleted(0)->get();
+        $list_services      = CRMServices::whereCsIsDeleted(0)->get();
+
+        $company_id = session('company_id');
+        $lst_companies = Companies::whereCdIsDeleted(0)->whereNotIn('cd_id',[$company_id])->get();
+
+        $data = array(
+            "invoice_code" => $invoice_code,
+            "list_accounts" => $list_accounts,
+            "list_customers" => $list_customers,
+            "lst_banks_info" => $lst_banks_info,
+            "lst_payment_types" => $lst_payment_types,
+            "lst_payment_terms" => $lst_payment_terms,
+            "lst_currencies" => $lst_currencies,
+            "list_services" => $list_services,
+            "lst_companies" => $lst_companies,
+            "lst_vat_accounts" => $lst_vat_accounts
+        );
+        return Response()->view("billing.addofinvoice",$data);
 
     }
 
@@ -679,7 +730,8 @@ class InvoicesController extends Controller
         $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
         $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
         $lst_collectors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
-
+        $company_id = session('company_id');
+        $lst_companies = Companies::whereCdIsDeleted(0)->whereNotIn('cd_id',[$company_id])->get();
 
         $data = array(
             "invoice_info" => $invoice_info,
@@ -693,6 +745,7 @@ class InvoicesController extends Controller
             "currencies_array" => $currencies_array,
             "list_customers" => $list_customers,
             "list_services" => $list_services,
+            "lst_companies" => $lst_companies,
             "lst_suppliers" => $lst_suppliers,
             "lst_technicians" => $lst_technicians,
             "lst_collectors" => $lst_collectors,
@@ -788,60 +841,131 @@ class InvoicesController extends Controller
         $ii_product_serial_number  = $request->input("ii_product_serial_number");
         $ii_payment_type    = $request->input("ii_payment_type");
         $bi_item_price    = $request->input("bi_item_price");
+        $ii_warehouse_id    = $request->input("ii_warehouse_id");
+        $currency_id    = $request->input("currency_id");
         $product_info       = Products::find($bi_product);
         $invoice_info       = Invoices::find($invoice_id);
         $result_array       = array();
-
-        // validate existing of serial number
-
-        $stock = StockIds::whereSiStockUid($ii_product_serial_number)->whereSiStockSold(0)->get();
-
-        if(count($stock) == 0)
-        {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = "this Serial Number Not Found";
-            return Response()->json($result_array);
-        }
-
-
 
         if($item_id == "")
             $invoice_product = new InvoiceProducts();
         else
             $invoice_product = InvoiceProducts::find($item_id);
 
+
+
+        if($product_info->Category->pc_use_serial_number == 1)
+        {
+            $stock_serial_info = StockIds::whereSiStockUid($ii_product_serial_number)->whereSiStockSold(0)->get();
+
+            if(count($stock_serial_info) == 0)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Serial Number Not Found In";
+                return Response()->json($result_array);
+            }
+
             $invoice_product->fk_invoice_id     = $invoice_id;
             $invoice_product->ii_item_id        = $bi_product;
             $invoice_product->ii_item_type      = $invoice_type_item;
             $invoice_product->ii_product_serial_number      = $ii_product_serial_number;
             $invoice_product->ii_item_label     = $product_info->p_product_name;
-            $invoice_product->ii_price_currency = $product_info->p_product_currency;
             $invoice_product->ii_item_qyt       = $bi_quanity;
             $invoice_product->ii_payment_type   = $ii_payment_type;
             $invoice_product->ii_item_price     = $bi_item_price;
+            $invoice_product->ii_price_currency     = $currency_id;
             $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
             $invoice_product->save();
+        }
+        else
+        {
+// Variable for the quantity we still need to fulfill.
+            $quantity_to_fulfill = $bi_quanity;
 
+// Wrap the entire operation in a database transaction.
+// This ensures that if any part fails, all database changes are rolled back.
+            try {
+                DB::transaction(function () use (
+                    $bi_product,
+                    $ii_warehouse_id,
+                    &$quantity_to_fulfill, // Pass by reference to modify it
+                    $bi_quanity,
+                    $invoice_id,
+                    $bi_item_price,
+                    $currency_id,
+                    $ii_payment_type,
+                    $product_info
+                ) {
 
+                    // 1. Get all available stock for the product, oldest first.
+                    $available_stock = Stocks::where('fk_product_id', $bi_product)
+                        ->where('fk_warehouse_id', $ii_warehouse_id)
+                        ->where('is_quanity', '>', 0) // Find any record with stock
+                        ->orderBy('is_id', 'asc')
+                        ->lockForUpdate() // Lock rows to prevent race conditions
+                        ->get();
 
+                    // 2. Check if the TOTAL available stock is sufficient.
+                    $total_stock = $available_stock->sum('is_quanity');
+                    if ($total_stock < $quantity_to_fulfill) {
+                        // Use an exception to automatically trigger the transaction rollback.
+                        throw new \Exception("We don't have enough total stock for this product. Required: $quantity_to_fulfill, Available: $total_stock");
+                    }
 
-            // save total invoice value in the database
-            $AccountingManager = new AccountingManager();
-            $params_array = array(
-                "invoice_info" => $invoice_info
-            );
-            $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+                    // 3. Loop through each stock record to fulfill the order.
+                    foreach ($available_stock as $stock_batch) {
+                        if ($quantity_to_fulfill <= 0) {
+                            break; // Stop if the order is already fulfilled.
+                        }
 
-            // save the updated total cost and price to the database
-            $invoice_info->bi_total_cost = $total_array['total_cost'];
-            $invoice_info->bi_total_price   = $total_array['total_price'];
-            $invoice_info->save();
+                        // Determine how much to take from this specific batch.
+                        $quantity_to_take = min($stock_batch->is_quanity, $quantity_to_fulfill);
+                        $invoice_product = new InvoiceProducts();
+                        $invoice_product->fk_invoice_id     = $invoice_id;
+                        $invoice_product->ii_item_id        = $bi_product;
+                        $invoice_product->ii_item_type      = 1;
+                        $invoice_product->ii_product_serial_number      = "";
+                        $invoice_product->ii_item_label     = $product_info->p_product_name;
+                        $invoice_product->ii_price_currency = $product_info->p_product_currency;
+                        $invoice_product->ii_item_qyt       = $quantity_to_fulfill;
+                        $invoice_product->ii_payment_type   = $ii_payment_type;
+                        $invoice_product->ii_item_price     = $bi_item_price;
+                        $invoice_product->ii_price_currency     = $currency_id;
+                        $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
+                        $invoice_product->save();
 
-            unset($AccountingManager);
+                        // Decrease the stock quantity for this batch.
+                        $stock_batch->decrement('is_quanity', $quantity_to_take);
 
-            $result_array['is_error'] = 0;
-            $result_array['error_msg'] = "Operation Completed Successfully";
-            return Response()->json($result_array);
+                        // Update the remaining quantity we need to fulfill.
+                        $quantity_to_fulfill -= $quantity_to_take;
+                    }
+                });
+            } catch (\Exception $e) {
+                // If the transaction failed, return the error message.
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = $e->getMessage();
+                return response()->json($result_array);
+            }
+        }
+
+        // save total invoice value in the database
+        $AccountingManager = new AccountingManager();
+        $params_array = array(
+            "invoice_info" => $invoice_info
+        );
+        $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+
+        // save the updated total cost and price to the database
+        $invoice_info->bi_total_cost = $total_array['total_cost'];
+        $invoice_info->bi_total_price   = $total_array['total_price'];
+        $invoice_info->save();
+
+        unset($AccountingManager);
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+        return Response()->json($result_array);
     }
 
 
@@ -1068,6 +1192,7 @@ class InvoicesController extends Controller
         $bi_invoice_code        = $request->input("bi_invoice_code");
         $invoice_account        = $request->input("invoice_account");
         $bi_invoice_date        = $request->input("bi_invoice_date");
+        $bi_official_invoice        = $request->input("bi_official_invoice");
         $bi_invoice_date        = date("Y-m-d",strtotime($bi_invoice_date));
         $cyear                  = date('Y', strtotime($bi_invoice_date));
 
@@ -1091,6 +1216,8 @@ class InvoicesController extends Controller
         $bi_exchange_rate       = $request->input("bi_exchange_rate");
         $bi_contract_number       = $request->input("bi_contract_number");
         $bi_account_number       = $request->input("bi_account_number");
+        $bi_company_to       = $request->input("bi_company_to");
+        $bi_internal_invoice       = $request->has("bi_internal_invoice") ? 1 : 0;
         $invoice_info           =  new Invoices();
         $result_array           = array();
         $action = "add";
@@ -1142,8 +1269,11 @@ class InvoicesController extends Controller
         $invoice_info->bi_discount          = $bi_discount;
         $invoice_info->bi_second_currency   = $bi_second_currency;
         $invoice_info->bi_exchange_rate     = $bi_exchange_rate;
-        $invoice_info->bi_contract_number     = $bi_contract_number;
-        $invoice_info->bi_account_number     = $bi_account_number;
+        $invoice_info->bi_contract_number       = $bi_contract_number;
+        $invoice_info->bi_account_number        = $bi_account_number;
+        $invoice_info->bi_internal_invoice      = $bi_internal_invoice;
+        $invoice_info->bi_official_invoice      = $bi_official_invoice;
+        $invoice_info->bi_company_to            = $bi_company_to;
         $invoice_info->save();
 
 
@@ -1321,7 +1451,6 @@ class InvoicesController extends Controller
                     }
                     else
                     {
-                        //$fk_customer_id$invoice_account
 
                         $account_id = 0;
                         if($fk_customer_id == null)
@@ -1686,41 +1815,110 @@ class InvoicesController extends Controller
         $invoice_info->bi_transaction_id    = $at_id;
         $invoice_info->save();
 
-        // reduce stock if its without serial number and mark serial number as sold  $bi_id
-        $lst_invoice_items = InvoiceProducts::whereFkInvoiceId($bi_id)->get();
-        foreach ($lst_invoice_items as $index => $item_info) {
-            $ii_product_serial_number = $item_info->ii_product_serial_number;
-            $stockids_info = StockIds::whereSiStockUid($ii_product_serial_number)->get();
-            if(count($stockids_info) > 0)
-            {
-                $stockids_info = $stockids_info[0];
-                $stockids_info->si_stock_sold = 1;
-                $stockids_info->save();
+        try {
+            // 1. Wrap the entire operation in a database transaction for safety.
+            DB::transaction(function () use ($bi_id) {
+                $invoice_items = InvoiceProducts::whereFkInvoiceId($bi_id)->get();
+                $invoice_info = Invoices::find($bi_id);
+                foreach ($invoice_items as $item) {
+                    // --- SCENARIO A: Item is tracked by a unique serial number ---
+                    if (!empty($item->ii_product_serial_number)) {
 
-                // update total quantity in stock record
-                $stock_info = Stocks::find($stockids_info->fk_stock_id);
-                $stock_info->is_quanity = $stock_info->is_quanity - 1;
-                $stock_info->save();
-            }
-            else{
-                $product_id = $item_info->ii_item_id;
-                $product_info = Products::find($product_id);
-                $stock_info = Stocks::whereFkProductId($product_id)->where('fk_warehouse_id','=',$item_info->ii_warehouse_id)->where('is_quanity','>=',$item_info->ii_item_qyt)->orderBy('is_id', 'asc')->get();
-                if(count($stock_info) > 0)
-                {
-                    $stock_info = $stock_info[0];
-                    $stock_info->is_quanity = $stock_info->is_quanity - $item_info->ii_item_qyt;
-                    $stock_info->save();
-                }
-                else
-                {
-                    $result_array['is_error']   = 1;
-                    $result_array['error_msg']  = "Stock For Product Not Exist in the related warehouse";
-                    return Response()->json($result_array);
-                }
+                        $stock_serial = StockIds::where('si_stock_uid', $item->ii_product_serial_number)
+                            ->lockForUpdate() // Lock this row to prevent race conditions
+                            ->first();
 
-            }
+                        // Ensure the serial exists and has not already been marked as sold
+                        if (!$stock_serial || $stock_serial->si_stock_sold) {
+                            throw new \Exception("Serial number '{$item->ii_product_serial_number}' not found or already sold.");
+                        }
+
+                        // Mark the specific serial number as sold
+                        $stock_serial->si_stock_sold = 1;
+                        $stock_serial->save();
+
+                        // Atomically decrement the quantity in the parent stock record
+                        Stocks::where('is_id', $stock_serial->fk_stock_id)->decrement('is_quanity', 1);
+
+
+                        $call_product = new InboundCallProducts();
+                        $call_product->cp_client_id = $invoice_info->bi_client_id;
+                        $call_product->fk_call_id = 0;
+                        $call_product->cp_product_id = $item->ii_item_id;
+                        $call_product->cp_technician_id = 0;
+                        $call_product->cp_warehouse_id = $item->ii_warehouse_id;
+                        $call_product->cp_serial_number = $item->ii_product_serial_number;
+                        $call_product->cp_quantity = 1;
+                        $call_product->cp_total_cost = $item->ii_cost_price;
+                        $call_product->cp_total_price = $item->ii_item_price;
+                        $call_product->cp_total_price_item = $item->ii_item_price;
+                        $call_product->save();
+
+                    }
+                    // --- SCENARIO B: Item is tracked by quantity ---
+                    else {
+                        $quantity_to_deduct = $item->ii_item_qyt;
+
+                        // Find all available stock batches for the product in the specified warehouse
+                        $stock_batches = Stocks::where('fk_product_id', $item->ii_item_id)
+                            ->where('fk_warehouse_id', $item->ii_warehouse_id)
+                            ->where('is_quanity', '>', 0)
+                            ->orderBy('is_id', 'asc')
+                            ->lockForUpdate() // Lock all found rows
+                            ->get();
+
+                        // Check if the total combined stock is sufficient
+                        if ($stock_batches->sum('is_quanity') < $quantity_to_deduct) {
+                            throw new \Exception("Not enough stock for product ID {$item->ii_item_id} in warehouse {$item->ii_warehouse_id}.");
+                        }
+
+                        // Loop through the batches and deduct the required quantity
+                        foreach ($stock_batches as $batch) {
+                            if ($quantity_to_deduct <= 0) {
+                                break; // Stop when the required quantity has been fulfilled
+                            }
+
+                            $take_from_this_batch = min($batch->is_quanity, $quantity_to_deduct);
+                            $batch->decrement('is_quanity', $take_from_this_batch);
+                            $quantity_to_deduct -= $take_from_this_batch;
+                        }
+                    }
+
+                    $call_product = new InboundCallProducts();
+                    $call_product->cp_client_id = $invoice_info->bi_client_id;
+                    $call_product->fk_call_id = 0;
+                    $call_product->cp_product_id = $item->ii_item_id;
+                    $call_product->cp_technician_id = 0;
+                    $call_product->cp_warehouse_id = $item->ii_warehouse_id;
+                    $call_product->cp_serial_number = "-";
+                    $call_product->cp_quantity = $item->ii_item_qyt;
+                    $call_product->cp_total_cost = $item->ii_cost_price * $item->ii_item_qyt;
+                    $call_product->cp_total_price = $item->ii_item_price * $item->ii_item_qyt;
+                    $call_product->cp_total_price_item = $item->ii_item_price;
+                    $call_product->save();
+
+                    // save in warehouse movoment log or in database
+                    $warehouse_movement = new WareHouseMovement();
+                    $warehouse_movement->wm_warehouse_id = $item->ii_warehouse_id;
+                    $warehouse_movement->wm_product_id = $item->ii_item_id;
+                    $warehouse_movement->wm_quantity = $item->ii_item_qyt;
+                    $warehouse_movement->wm_action_date = date('Y-m-d');
+                    $warehouse_movement->wm_action_type = "INV";
+                    $warehouse_movement->wm_action_description = "Get " . $item->ii_item_qyt . " of " . $item->Product->p_product_name . " From " . $item->warehouse->w_warehouse_name . " Invoice Number #" . $bi_invoice_code;
+                    $warehouse_movement->save();
+
+                }
+            });
+
+
+
+        } catch (\Exception $e) {
+            // If any part of the transaction fails, catch the exception and return an error
+            $result_array['is_error']   = 1;
+            $result_array['error_msg']  = $e->getMessage();
+            return response()->json($result_array);
         }
+
 
 
         $result_array['is_error']   = 0;
