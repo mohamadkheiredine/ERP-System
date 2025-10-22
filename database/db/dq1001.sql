@@ -347,17 +347,20 @@ ALTER TABLE `callcenter_calls_products`
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('225', 'erp_forcasting_leads_report', 'Allow users to access to forcasting leads report', 'Allow users to access to forcasting leads report', 'Callcenter Management');
 
 
-ALTER TABLE `inventory_stocks`
-    ADD COLUMN `is_production_date` DATE NULL DEFAULT NULL AFTER `is_discount`,
-ADD COLUMN `is_expiry_date` DATE NULL DEFAULT NULL AFTER `is_production_date`;
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_production_date` DATE NULL DEFAULT NULL AFTER `is_discount`, ADD COLUMN `is_expiry_date` DATE NULL DEFAULT NULL AFTER `is_production_date`;
 
-ALTER TABLE `srm_supplier_products`
-    ADD COLUMN `sp_production_date` DATE NULL DEFAULT NULL AFTER `sp_product_description`,
-ADD COLUMN `sp_expiry_date` DATE NULL DEFAULT NULL AFTER `sp_production_date`;
+ALTER TABLE `srm_supplier_products` ADD COLUMN `sp_production_date` DATE NULL DEFAULT NULL AFTER `sp_product_description`, ADD COLUMN `sp_expiry_date` DATE NULL DEFAULT NULL AFTER `sp_production_date`;
 
 
-ALTER TABLE `billing_invoices`
-    ADD COLUMN `bi_official_invoice` TINYINT NULL DEFAULT 0 AFTER `bi_last_updated_by`;
-
+ALTER TABLE `billing_invoices` ADD COLUMN `bi_official_invoice` TINYINT NULL DEFAULT 0 AFTER `bi_last_updated_by`;
 
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('226', 'erp_telemarketing_report', 'Allow users to access to telemarketing Report', 'Allow users to access to telemarketing Report', 'Callcenter Management');
+
+ALTER TABLE `srm_suppliers` ADD COLUMN `ss_company_id` INT NULL DEFAULT 0 AFTER `fk_owner_id`;
+
+ALTER TABLE `inventory_customers` ADD COLUMN `ic_company_id` INT NULL DEFAULT 0 AFTER `ic_vendor_id`;
+
+ALTER TABLE `billing_invoices` ADD COLUMN `bi_target_supplier` INT NULL DEFAULT 0 AFTER `fk_customer_id`;
+
+ALTER TABLE `billing_invoices` ADD COLUMN `bi_target_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `bi_company_id`;
+

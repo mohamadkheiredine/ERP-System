@@ -52,7 +52,7 @@ th{
                      <span id="hidden_fields">
                         {!! csrf_field() !!}
                         <input type="hidden" name="bi_invoice_code" id="BI_INVOICE_CODE" value="{{ $invoice_code }}" />
-                        <input type="hidden" name="bi_official_invoice" value="0" />
+                        <input type="hidden" name="bi_official_invoice" value="1" />
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Invoice information is saved successfully!
@@ -231,18 +231,6 @@ th{
                                         <option  value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4 SupplierDropdownHolder" style="display:none">
-                            <div class="form-group">
-                                <label class="control-label"> Supplier </label><br/>
-                                <div class="SupplierDropdown"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 WarehouseDropdownHolder" style="display:none">
-                            <div class="form-group">
-                                <label class="control-label"> Target warehouse </label><br/>
-                                <div class="WarehouseDropdown"></div>
                             </div>
                         </div>
                         <div class="col-md-12">

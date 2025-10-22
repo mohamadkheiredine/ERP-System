@@ -62,6 +62,7 @@ use App\models\CRM\CRMServicesPaymentTypes;
 use App\models\Inventory\WareHouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use App\models\Inventory\WareHouseMovement;
+use App\models\SRM\SupplierQuotations;
 
 
 class InvoicesController extends Controller
@@ -530,6 +531,50 @@ class InvoicesController extends Controller
 
     return $string;
 }
+
+
+    public function GetCompanySupplier(Request $request)
+    {
+        $bi_company_to = $request->input('bi_company_to');
+        $lst_suppliers = Suppliers::whereSsCompanyId($bi_company_to)->whereSsIsDeleted(0)->get();
+        $lst_warehouses = WareHouses::whereWCompanyId($bi_company_to)->whereWIsDeleted(0)->get();
+        $result_array = array();
+        $suppliers_array = array();
+        $warehouses_array = array();
+        foreach ($lst_suppliers as $key => $value)
+        {
+            $suppliers_array[$value->ss_id] = $value->ss_supplier_code . " " . $value->ss_supplier_name;
+        }
+
+
+        $data = array(
+            "html_array" => $suppliers_array,
+            "name" => 'bi_target_supplier',
+            "is_required" => 1,
+            "id" => 'BI_TARGET_SUPPLIER'
+        );
+
+        $result_array['supplier_dropdown'] = view('html.dropdown',$data)->render();
+
+
+        foreach ($lst_warehouses as $key => $value)
+        {
+            $warehouses_array[$value->w_id] = $value->ss_supplier_code . " " . $value->ss_supplier_name;
+        }
+
+
+        $data = array(
+            "html_array" => $warehouses_array,
+            "name" => 'bi_target_warehouse_id',
+            "is_required" => 1,
+            "id" => 'BI_TARGET_WAREHOUSE_ID'
+        );
+
+        $result_array['warehouse_dropdown'] = view('html.dropdown',$data)->render();
+
+
+        return Response()->json($result_array);
+    }
 
     /**
      * Display List of invoices saved in the database
@@ -1217,7 +1262,9 @@ class InvoicesController extends Controller
         $bi_contract_number       = $request->input("bi_contract_number");
         $bi_account_number       = $request->input("bi_account_number");
         $bi_company_to       = $request->input("bi_company_to");
-        $bi_internal_invoice       = $request->has("bi_internal_invoice") ? 1 : 0;
+        $bi_target_warehouse_id     = $request->input("bi_target_warehouse_id");
+        $bi_target_supplier         = $request->input("bi_target_supplier");
+        $bi_internal_invoice        = $request->has("bi_internal_invoice") ? 1 : 0;
         $invoice_info           =  new Invoices();
         $result_array           = array();
         $action = "add";
@@ -1505,6 +1552,14 @@ class InvoicesController extends Controller
                     $TransactionMovement->save();
 
                 }
+
+                // check if is internal invoice we create purchase order
+                if($bi_internal_invoice == 1)
+                {
+                    $quotation_info = new SupplierQuotations();
+                    $quotation_info->save();
+                }
+
 
                 $invoice_info = Invoices::find($bi_id);
                 $invoice_info->bi_invoice_status = 1;

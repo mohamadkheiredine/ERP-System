@@ -314,10 +314,21 @@ class CustomersController extends Controller
         $result_array = array();
         $customer_name = "";
 
+        if(count($customer_info) == 0)
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message'] = 'Customer Not Found';
+            return Response()->json($result_array);
+        }
+
 
 
         $result_array['is_error'] = 0;
-        $result_array['customer_name'] = $customer_info->ic_customer_name;
+        $result_array['customer']['name'] = $customer_info[0]->ic_customer_name;
+        $result_array['customer']['id'] = $customer_info[0]->ic_id;
+        $result_array['customer']['address'] = $customer_info[0]->ic_customer_address;
+        $result_array['customer']['ic_customer_phone'] = $customer_info[0]->ic_customer_phone;
+        $result_array['customer']['ic_customer_email'] = $customer_info[0]->ic_customer_email;
         return Response()->json($result_array);
     }
 

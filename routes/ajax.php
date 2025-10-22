@@ -409,6 +409,8 @@ Route::get('/request/bills/getlistbillresults','Billing\InvoicePaymentsControlle
 Route::post('/request/bills/savecallbillresult','Billing\InvoicePaymentsController@SaveBillResultInfo');
 Route::post('/request/bills/getregionarea','Billing\InvoicePaymentsController@GetRegionArea');
 
+Route::get('/request/billing/getcompanysupplier','Billing\InvoicesController@GetCompanySupplier');
+
 Route::post('/request/billing/linkinvoiceitems','Billing\InvoicesController@LinkInvoiceItems');
 
 Route::post('/request/billing/generatecode','Utilities\ConfigurationController@GenerateVoucherCode');

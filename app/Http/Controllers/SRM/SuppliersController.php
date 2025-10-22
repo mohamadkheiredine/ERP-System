@@ -42,22 +42,22 @@ class SuppliersController extends Controller
 {
 
     /**
-     * 
+     *
      * @return unknown
      */
     public function index()
     {
         $lst_supplier_statuses      = SupplierStatus::whereSsIsDeleted(0)->get();
         $lst_supplier_categories    = SupplierCategories::whereScIsDeleted(0)->get();
-        
+
         $data = array(
             "lst_supplier_statuses" => $lst_supplier_statuses,
             "lst_supplier_categories" => $lst_supplier_categories,
         );
         return Response()->view('srm.suppliers',$data);
     }
-    
-    
+
+
     /**
      * Download CSV template
      * @author Moe Mantach
@@ -77,21 +77,21 @@ class SuppliersController extends Controller
        return $csv->output('data.csv');
 
     }
-    
-    
+
+
     /**
      * import list of all customers from a template already used
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
      */
     public function ImportListSuppliers(Request $request)
     {
-        
+
         $result_array = array();
         $file_path = $_FILES['ss_suppliers_list']['tmp_name'];
-        
+
          // Create a new CsvReader instance
         $csvReader = Reader::createFromPath($file_path, 'r');
 
@@ -108,20 +108,20 @@ class SuppliersController extends Controller
             $city        = trim($record[5]);
             $phone          = trim($record[6]);
             $mobile         = trim($record[7]);
-            
+
             $supplier_manager = new SuppliersManager();
-            
+
             if($code != 'Code')
             {
                 $supplier_info = new Suppliers();
-                $supplier_info->ss_supplier_code =  $code;       
-                $supplier_info->ss_supplier_name =  $supplier_name;       
-                $supplier_info->ss_company_name =  $company_name;       
-                $supplier_info->ss_supplier_email =  $email;       
-                $supplier_info->ss_address =  $address;       
-                $supplier_info->ss_city_name =  $city;       
-                $supplier_info->ss_supplier_phone =  $phone;       
-                $supplier_info->ss_supplier_mobile =  $mobile;       
+                $supplier_info->ss_supplier_code =  $code;
+                $supplier_info->ss_supplier_name =  $supplier_name;
+                $supplier_info->ss_company_name =  $company_name;
+                $supplier_info->ss_supplier_email =  $email;
+                $supplier_info->ss_address =  $address;
+                $supplier_info->ss_city_name =  $city;
+                $supplier_info->ss_supplier_phone =  $phone;
+                $supplier_info->ss_supplier_mobile =  $mobile;
                 $params_array = array(
                     "account_label" => $supplier_name
                 );
@@ -129,37 +129,38 @@ class SuppliersController extends Controller
                 $supplier_info->ss_sale_account_id       = $account_id;
                 $supplier_info->ss_purchase_account_id   = $account_id;
                 $supplier_info->save();
-                
+
             }
-            
+
         }
 
-    
-        
+
+
         $result_array['is_error'] = 0;
-        
-        
+
+
         return Response()->json($result_array);
     }
-    
-    
-    
+
+
+
    /**
     * Display list of Suppliers saved in the database
-    * 
+    *
     * @author Moe Mantach
     * @access public
     * @param Request $request
     * @return unknown
     */
     public function DisplayList(Request $request)
-    {         
+    {
         $supplier_categories_array   = array();
+        $default_company_id = session('default_company_id');
         $lst_supplier_categories     = SupplierCategories::whereScIsDeleted(0)->get();
-        foreach ( $lst_supplier_categories as $key => $sc_info ) 
+        foreach ( $lst_supplier_categories as $key => $sc_info )
         {
             $supplier_categories_array[ $sc_info->sc_id ] =  $sc_info->sc_category_title;
-        } 
+        }
         $supplier_category = $request->input("supplier_category");
         $supplier_status = $request->input("supplier_status");
         $general_search = $request->input("general_search");
@@ -170,42 +171,42 @@ class SuppliersController extends Controller
               $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
           else
               $skip = 0;
-          
-        $suppliers_cond = Suppliers::whereSsIsDeleted(0);
-        
+
+        $suppliers_cond = Suppliers::whereSsIsDeleted(0)->whereIn('ss_company_id',array($default_company_id,0));
+
         if(strlen($general_search) > 0)
         {
              $suppliers_cond = $suppliers_cond->where("ss_supplier_code","LIKE","%" . $general_search . "%");
             $suppliers_cond = $suppliers_cond->orWhere("ss_supplier_name","LIKE","%" . $general_search . "%");
         }
-        
+
         if(strlen($supplier_category) > 0)
             $suppliers_cond = $suppliers_cond->whereFkCategoryId($supplier_category);
-        
+
         if(strlen($supplier_status) > 0)
             $suppliers_cond = $suppliers_cond->whereFkStatusId($supplier_status);
 
         $supplier_count = $suppliers_cond->count();
-        
+
           $total_pages = ceil( $supplier_count/$nbr_rows_per_pages );
           $total_pages = intval($total_pages);
-         
-          
+
+
         $lst_suppliers = $suppliers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
         $data = array(
             "supplier_categories_array" => $supplier_categories_array,
             "lst_suppliers" => $lst_suppliers
         );
-        
+
         $result_array = array();
-        
+
         $result_array['display'] = view("srm.displaylist",$data)->render();
         $result_array['total_pages'] = $total_pages;
-        
+
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
      * Function of Adding a new Category
      *
@@ -215,14 +216,14 @@ class SuppliersController extends Controller
      */
     public function AddForm()
     {
-        
+
         $lst_srm_categories         = SupplierCategories::whereScIsDeleted(0)->get();
         $lst_supplier_statuses      = SupplierStatus::whereSsIsDeleted(0)->get();
         $lst_users                  = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_accounts               = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $lst_countries              = Countries::all();
         $lst_industries             = Industry::all();
-        
+
         $data = array(
             "lst_srm_categories" => $lst_srm_categories,
             "lst_supplier_statuses" => $lst_supplier_statuses,
@@ -233,10 +234,10 @@ class SuppliersController extends Controller
         );
         return view('srm.addform',$data);
     }
-    
-    
+
+
     /**
-     * Save Supplier Categories 
+     * Save Supplier Categories
      * @param Request $request
      * @return json Array $result_array
      */
@@ -244,7 +245,7 @@ class SuppliersController extends Controller
     {
         $result_array = array();
         $ss_id                      = $request->input("ss_id");
-        $fk_category_id             = $request->input("fk_category_id"); 
+        $fk_category_id             = $request->input("fk_category_id");
         $fk_owner_id                = $request->input("fk_owner_id");
         $ss_supplier_name           = $request->input("ss_supplier_name");
         $ss_company_name            = $request->input("ss_company_name");
@@ -263,11 +264,12 @@ class SuppliersController extends Controller
         $ss_street_name             = $request->input("ss_street_name");
         $ss_date_creation           = date("Y-m-d");
         $ss_industry                = $request->input("fk_industry_id");
+        $default_company_id = session('default_company_id');
 
         $ss_logo_base_src       = "";
         $ss_logo_file_name      = "";
         $ss_logo_file_extension = "";
-        
+
         $SupplierInfo = new Suppliers();
         $supplierManager = new SuppliersManager();
         if($ss_id != null)
@@ -284,22 +286,22 @@ class SuppliersController extends Controller
             $SupplierInfo->ss_sale_account_id       = $account_id;
             $SupplierInfo->ss_purchase_account_id   = $account_id;
         }
-        
-        
-        
-        
+
+
+
+
         // upload file to the CRM photo
         if(count($_FILES) > 0 )
         {
             $image_data =  $supplierManager->UploaSupplierLogo($ss_id);
-            
+
             $SupplierInfo->ss_logo_base_src         = $image_data['data']['ss_logo_base_src'];
             $SupplierInfo->ss_logo_file_name        = $image_data['data']['ss_logo_file_name'];
             $SupplierInfo->ss_logo_file_extension   = $image_data['data']['ss_logo_file_extension'];
-            
+
         }
-        
-        $SupplierInfo->fk_category_id           = $fk_category_id; 
+
+        $SupplierInfo->fk_category_id           = $fk_category_id;
         $SupplierInfo->fk_owner_id              = $fk_owner_id;
         $SupplierInfo->ss_supplier_name         = $ss_supplier_name;
         $SupplierInfo->ss_company_name          = $ss_company_name;
@@ -318,17 +320,18 @@ class SuppliersController extends Controller
         $SupplierInfo->ss_street_name           = $ss_street_name;
         $SupplierInfo->ss_date_creation         = $ss_date_creation;
         $SupplierInfo->ss_industry              = $ss_industry;
+        $SupplierInfo->ss_company_id              = $default_company_id;
         $SupplierInfo->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Save Account Accounting and link it to the current customer
      *
@@ -337,23 +340,23 @@ class SuppliersController extends Controller
      * @param Request $request
      */
     public function SaveAccAccounting(Request $request )
-    { 
+    {
         $parent_account     = $request->input("parent_account");
         $account_label      = $request->input("account_label");
         $country_id         = session("company_country");
         $result_array       = array();
-        
+
         $acc_info = ChartAccounts::find($parent_account);
-        
-        
+
+
         $count_ref_account = ChartAccounts::whereAaAccountRef($parent_account)->count();
-        
-        
+
+
         // check if this account exist
         $account_info = ChartAccounts::whereAaParentAccount($parent_account)->get();
 
         $new_count = count($account_info) + 1;
-        
+
         $aa_account_ref = $acc_info->aa_account_ref. (String)$new_count;
         $AccAccounting = new ChartAccounts();
         $AccAccounting->aa_parent_account   = $parent_account;
@@ -363,10 +366,10 @@ class SuppliersController extends Controller
         $AccAccounting->aa_account_label    = $account_label;
         $AccAccounting->fk_country_id       = $country_id;
         $AccAccounting->save();
-        
+
         $aa_id = $AccAccounting->aa_id;
-        
-        
+
+
         $result_array['is_error']           = 0;
         $result_array['error_msg']          = "Operation Complete Successfully";
         $result_array['accounting_label']   = $account_label;
@@ -374,10 +377,10 @@ class SuppliersController extends Controller
         $result_array['account_ref']        = $aa_account_ref;
         return Response()->json($result_array);
     }
-    
-    
+
+
     /**
-     * Edit Form Page 
+     * Edit Form Page
      * @param unknown $ss_id
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
@@ -390,7 +393,7 @@ class SuppliersController extends Controller
         $lst_accounts               = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $lst_countries              = Countries::all();
         $lst_industries             = Industry::all();
-        
+
         $data = array(
             "lst_srm_categories" => $lst_srm_categories,
             "lst_supplier_statuses" => $lst_supplier_statuses,
@@ -402,11 +405,11 @@ class SuppliersController extends Controller
         );
         return view('srm.editform',$data);
     }
-    
-    
+
+
     /**
      * Delete Supplier from the database by change flag of the row
-     * 
+     *
      * @author Moe Mantach
      * @access public
      * @param Request $request
@@ -414,18 +417,18 @@ class SuppliersController extends Controller
      */
     public function DeleteSupplierInfo(Request $request)
     {
-        
+
         $ss_id= $request->input('ss_id');
-         
+
         $supplier_info = Suppliers::find( $ss_id);
         $supplier_info->ss_is_deleted          = 1;
         $supplier_info->ss_deleted_by          = Session('user_id');
         $supplier_info->save();
-        
-        
+
+
         $result_array['is_error']   = 0;
         $result_array['error_msg']  = "Operation Complete Successfully";
-        
+
         return Response()->json($result_array);
     }
 

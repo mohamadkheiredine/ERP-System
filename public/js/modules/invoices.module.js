@@ -79,10 +79,45 @@ invoices_module = {
         DisplayInternalCompaniesLst : function(){
             if($(this).is(':checked')) {
                 $('.InternalCompanies').css({display : "block"});
+                $('.SupplierDropdownHolder').css({display : "block"});
+                $('.WarehouseDropdownHolder').css({display : "block"});
             } else {
                 $('.InternalCompanies').css({display : "none"});
+                $('.SupplierDropdownHolder').css({display : "none"});
+                $('.WarehouseDropdownHolder').css({display : "none"});
+                $('.SupplierDropdown').html('');
+                $('.WarehouseDropdown').html('');
             }
         },
+
+    DisplayCompanySupplierDropdown : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token 				= $('input[name=_token]').val();
+        var bi_company_to 	= $('select[name=bi_company_to]').val();
+        let params = {
+            _token : _token,
+            bi_company_to : bi_company_to
+        }
+
+        let url = base_url + "/request/billing/getcompanysupplier";
+
+        $.ajax({
+            url : url,
+            data : params,
+            method : 'get',
+            dataType : "json",
+            beforeSend : function(){
+            },
+            success : function(response){
+                 $('.SupplierDropdown').html(response.supplier_dropdown);
+                $('.SupplierDropdown').find('select').select2();
+                 $('.WarehouseDropdown').html(response.warehouse_dropdown);
+                $('.WarehouseDropdown').find('select').select2();
+            }
+        });
+
+
+    },
         SwitchPOtherDropdownForProduct : function(){
             $("#BI_PRODUCT_ID").val($(this).val()).trigger('change.select2');
             let product_id = $(this).val();

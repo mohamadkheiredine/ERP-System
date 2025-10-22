@@ -62,13 +62,13 @@ class WareHouseController extends Controller
     public function DisplayList(Request $request)
     {
         $general_search = $request->input('general_search');
+        $w_company_id   = session('default_company_id');
 
-        $lst_warehouses = WareHouses::whereWIsDeleted(0);
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->whereIn('w_company_id', array(0,$w_company_id));
         if(strlen($general_search) > 0)
         {
             $lst_warehouses = $lst_warehouses->where("w_warehouse_name","LIKE",'%' . $general_search . '%');
             $lst_warehouses = $lst_warehouses->orWhere("w_warehouse_description","LIKE",'%' . $general_search . '%');
-
         }
         $lst_warehouses = $lst_warehouses->get();
 
@@ -163,6 +163,7 @@ class WareHouseController extends Controller
         $w_closing_time         = $request->input('w_closing_time');
         $w_warehouse_location   = $request->input('w_warehouse_location');
         $w_material_warehouse   = $request->input('w_material_warehouse') == null ? 0 : 1;
+        $w_company_id   = session('default_company_id');
         if($w_warehouse_status == null)
             $w_warehouse_status = 0;
         $allowed_vehicules      = $request->input('allowed_vehicules');
@@ -193,6 +194,7 @@ class WareHouseController extends Controller
         $WareHouse->w_opening_time              = $w_opening_time;
         $WareHouse->w_closing_time              = $w_closing_time;
         $WareHouse->w_warehouse_location        = $w_warehouse_location;
+        $WareHouse->w_company_id                = $w_company_id;
         $WareHouse->save();
 
         $w_id = $WareHouse->w_id;

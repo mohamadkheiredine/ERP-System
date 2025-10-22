@@ -75,13 +75,14 @@ class CustomersController extends Controller
 
         $page_number            = $request->input('page_number');
         $search_query           = $request->input('search_query');
+        $default_company_id = session('default_company_id');
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
             else
                 $skip = 0;
 
-        $customers_cond     = Customers::whereIcIsDeleted(0);
+        $customers_cond     = Customers::whereIcIsDeleted(0)->whereIn('ic_company_id',array($default_company_id,0));
         if(strlen($search_query) > 0)
         {
             $customers_cond = $customers_cond->where('ic_customer_name','LIKE','%' . $search_query. '%');
@@ -346,6 +347,7 @@ class CustomersController extends Controller
         $ic_customer_tax_id       = $request->input('ic_customer_tax_id');
         $ic_vendor_id               = $request->input('ic_vendor_id');
         $ic_vendor_id               = ($ic_vendor_id == "null") ? 0 : $ic_vendor_id;
+        $default_company_id = session('default_company_id');
 
         $ic_default_customer        = $request->input('ic_default_customer');
         $CustomerInfo = new Customers();
@@ -402,6 +404,7 @@ class CustomersController extends Controller
         $CustomerInfo->ic_customer_sales_tax    = $ic_customer_sales_tax;
         $CustomerInfo->ic_vendor_id             = $ic_vendor_id;
         $CustomerInfo->ic_default_customer      = $ic_default_customer;
+        $CustomerInfo->ic_company_id      = $default_company_id;
         $CustomerInfo->ic_created_by            = session('user_id');
 
 

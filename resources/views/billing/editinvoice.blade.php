@@ -226,6 +226,18 @@ th{
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4 SupplierDropdownHolder" style="display:none">
+                            <div class="form-group">
+                                <label class="control-label"> Supplier </label><br/>
+                                <div class="SupplierDropdown"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 WarehouseDropdownHolder" style="display:none">
+                            <div class="form-group">
+                                <label class="control-label"> Target warehouse </label><br/>
+                                <div class="WarehouseDropdown"></div>
+                            </div>
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label"> Exchange Rate </label><br/>

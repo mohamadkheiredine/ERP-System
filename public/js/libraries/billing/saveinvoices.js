@@ -68,6 +68,7 @@ $(function(){
 	var bi_id = $("input[name=bi_id]").val();
 	if(bi_id != null)
 	{
+		invoices_module.DisplayCompanySupplierDropdown();
 		invoices_module.DisplayListInvoiceProducts();
 		invoices_module.DisplayListInvoicePayments();
 		receipts_module.DisplayListInvoiceReceipts();
@@ -99,6 +100,7 @@ $(function(){
     $("#BI_PRODUCT_CODE_ID").on("change",invoices_module.SwitchPOtherDropdownForProduct);
     $("#BTN_LINK_ITEM").on("click",invoices_module.SaveLinkItem);
     $("#BI_INTERNAL_INVOICE").on("change",invoices_module.DisplayInternalCompaniesLst);
+    $("#BI_COMPANY_TO").on("change",invoices_module.DisplayCompanySupplierDropdown);
 
     //   $("#INVOICE_ACCOUNT_ID").select2('destroy').attr("disabled", true);
 

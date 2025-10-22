@@ -91,7 +91,7 @@ class UsersController extends Controller {
 
 
 
-        $users_cond = Users::whereUIsDeleted(0)->whereUIsActive(1);
+        $users_cond = Users::whereUIsDeleted(0);
 
         if (strlen($general_search) > 0) {
             $users_cond = $users_cond->where('u_username', 'LIKE', '%' . $general_search . '%');
