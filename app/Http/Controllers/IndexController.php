@@ -32,51 +32,51 @@ class IndexController extends Controller
 
     public function index(Request $request)
     {
-        
+
         $path_filename= public_path() . '/.license';
-       
+
         if(filesize($path_filename) == 0)
             return redirect::to('generatelicense');
-        
+
         $company_info = Companies::whereCdIsDeleted(0)->whereCdPrimaryCompany(1)->get();
-        
+
         $data = array(
             'company_info' => $company_info
         );
-        
+
         if ($request->session()->has('user_id')) {
             return Redirect::to('/dashboard');
         }
-        
+
         return Response()->view("users.login",$data);
     }
-    
-    
+
+
     /**
-     * generate license info in the license file and change 
+     * generate license info in the license file and change
      * module global variables
-     * 
+     *
      * @author Moe Mantach
      * @access public
      */
     public function GenerateLicense()
     {
         $path_filename= public_path() . '/.license';
-        
+
         $fp = fopen($path_filename, "ab+");
         if(filesize($path_filename) > 0)
             $license_content = fgets($fp , filesize($path_filename));
-        
-            
+
+
         $data = array();
         return Response()->view('installation.license',$data);
     }
-    
-    
+
+
     /**
      * Save Data from the page about enabled and siabled module and
      * Encrypt it and put it as a json sequence in the .license file
-     * 
+     *
      * @author Moe Mantach
      * @access public
      */
@@ -97,10 +97,10 @@ class IndexController extends Controller
         $crm_module                 = $request->input('CRM_MODULE');
         $shipment_module            = $request->input('SHIPMENT_MODULE');
         $logistics_module           = $request->input('LOGISTICS_MODULE');
-        
-        
+
+
         $license_array = array();
-        
+
         $license_array['TIMESHEET_MODULE']  = ( $timesheet_module == null ) ? 0 : 1;
         $license_array['INVENTORY_MODULE']  = ( $inventory_module== null ) ? 0 : 1;
         $license_array['BANKING_MODULE']    = ( $banking_module== null ) ? 0 : 1;
@@ -115,24 +115,24 @@ class IndexController extends Controller
         $license_array['CRM_MODULE']            = ( $crm_module== null ) ? 0 : 1;
         $license_array['SHIPMENT_MODULE']       = ( $shipment_module== null ) ? 0 : 1;
         $license_array['LOGISTICS_MODULE']      = ( $logistics_module== null ) ? 0 : 1;
-        
+
         $license_sequence = json_encode($license_array);
-        
+
         $encrypter = new EncryptionManager();
-        
+
         $encrypted_sequence = $encrypter->encryptionsequence($license_sequence);
 
         $path_filename= public_path() . '/.license';
-        
+
         $fp = fopen($path_filename, "ab+");
         fwrite($fp, $encrypted_sequence);
         fclose($fp);
-        
+
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "License has been Generated !!";
-        
+
         return Response()->json($result_array);
-        
+
     }
 
 

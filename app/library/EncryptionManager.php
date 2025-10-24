@@ -17,23 +17,23 @@ namespace App\library;
 
 class EncryptionManager
 {
-    
+
     public function __construct()
     {
-        
+
     }
-    
-    
+
+
     public function encryptionsequence( $sequence )
     {
-        $encryption_sequence = encrypt($sequence); 
+        $encryption_sequence = encrypt($sequence);
         $app_key = env('APP_KEY');
         $encryption_sequence = $app_key . "-" . $encryption_sequence . "-" . $app_key;
         $encryption_sequence = base64_encode($encryption_sequence);
-        
+
         return $encryption_sequence;
     }
-    
+
     public function decryptsequence( $encryption_sequence)
     {
         $sequence = base64_decode($encryption_sequence);
@@ -45,17 +45,16 @@ class EncryptionManager
             $dec_sequence = decrypt($encrypted_sequence);
         }
 
- 
-        
+
+
         return $dec_sequence;
     }
-    
-    
+
+
     public function __destruct()
     {
-        
+
     }
 }
 
 ?>
-

@@ -78,7 +78,7 @@ th{
 						</div>
 					</div>
 					<div class="col-xl-4 order-1 order-xl-2 m--align-right">
-						 
+
 					</div>
 				</div>
 			</div>
@@ -89,8 +89,8 @@ th{
 				<div class="col-md-12">
 					<div class="table-responsive">
 						<table class="table table-row-dashed table-row-gray-300 gy-7">
-                                                    <thead>
-                                                      <tr class="fw-bold fs-6 text-gray-800">
+                            <thead>
+                                <tr class="fw-bold fs-6 text-gray-800">
     								<th style="width:2px;">#</th>
     								<th style="width:2px;">ID</th>
     								<th>Category Title</th>
@@ -100,7 +100,7 @@ th{
     								<th style="width:4px;white-space: nowrap;text-align: center">Delete</th>
     							</tr>
     						</thead>
-    						<tbody  class="LstCategoriesGrid"></tbody>
+    						<tbody class="LstCategoriesGrid"></tbody>
     					</table>
 					</div>
 				</div>

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 transactions_module = {
@@ -30,26 +30,26 @@ transactions_module = {
 	                         transactions_module.DisplayListLedger();
 	                    }
 	                });
-		        	$("a[id*=EDIT_TRANS_]").on('click',transactions_module.EditTransactionInfo); 
+		        	$("a[id*=EDIT_TRANS_]").on('click',transactions_module.EditTransactionInfo);
 					$("a[id*=DELETE_TRANS_]").on('click',transactions_module.DeleteTransactionInfo);
 					$("a[id*=DELETE_MOVEMENT_]").on('click',transactions_module.DeleteMovementInfo);
 		        }
 		    });
 		},
-		PrintAccountStatment : function(){ 
+		PrintAccountStatment : function(){
 			var _token 					= $('input[name=_token]').val();
 			var acc_account 				= $('select[name=acc_account]').val() != undefined ?  $('select[name=acc_account]').val() :  $('input[name=detail_account_id]').val();
 			var base_url 				= $('input[name=base_url]').val();
 			var currency_id 				= $('input[name=currency_id]').val();
-		    var fisical_year 				= $('input[name=fisical_year]').val(); 
+		    var fisical_year 				= $('input[name=fisical_year]').val();
 			var url = base_url + "/accounting/printaccountstatment/?_token=" + _token + "&acc_account=" + acc_account + "&currency_id=" + currency_id + "&fisical_year=" + fisical_year;
 			window.open(url, '_blank');
 		},
-		PrintAllAccountStatmentDetails : function(){ 
+		PrintAllAccountStatmentDetails : function(){
 			var _token 					= $('input[name=_token]').val();
 		    var acc_account 				= $('select[name=acc_account]').val() != undefined ?  $('select[name=acc_account]').val() :  $('input[name=detail_account_id]').val();
-		    var base_url 				= $('input[name=base_url]').val(); 
-		    var fisical_year 				= $('input[name=fisical_year]').val(); 
+		    var base_url 				= $('input[name=base_url]').val();
+		    var fisical_year 				= $('input[name=fisical_year]').val();
 		    var ck_include_before 				= $('input[name=ck_include_before]:checked').length == 1 ? 1 : 0;
 			var url = base_url + "/accounting/printaccountstatment/?_token=" + _token + "&acc_account=" + acc_account + "&fisical_year=" + fisical_year + "&ck_include_before=" + ck_include_before;
 			window.open(url, '_blank');
@@ -58,7 +58,7 @@ transactions_module = {
 			var base_url 				= $('input[name=base_url]').val();
 			var _token 					= $('input[name=_token]').val();
 			var start_date 				= $('input[name=start_date]').val();
-		    var end_date 				= $('input[name=end_date]').val(); 
+		    var end_date 				= $('input[name=end_date]').val();
 		    var acc_account_payable 	= $('select[name=acc_account_payable]').val();
 		    var acc_account_receivable 	= $('select[name=acc_account_receivable]').val();
 		    $.ajax
@@ -82,7 +82,7 @@ transactions_module = {
 			var search_query 				= $('input[name=search_query]').val();
 		    var acc_account 				= $('select[name=acc_account]').val();
 		    var ck_include_before 				= $('input[name=ck_include_before]:checked').length == 1 ? 1 : 0;
-		    var params = { start_date : start_date ,end_date : end_date , search_query : search_query , _token : _token , include_before : ck_include_before };  
+		    var params = { start_date : start_date ,end_date : end_date , search_query : search_query ,acc_account: acc_account, _token : _token , include_before : ck_include_before };
 		    $.ajax
 		    ({
 		        url : base_url + "/request/accounting/displaylistaccountstotals",
@@ -95,7 +95,6 @@ transactions_module = {
 		        	$('#LstAccountStatment').html(response.display);
 		        }
 		    });
-		    
 		},
 		DisplayListStatmentDetails : function(){
 			var base_url 				= $('input[name=base_url]').val();
@@ -118,7 +117,7 @@ transactions_module = {
 	            },
 		        success : function(response){
 		        	$('#LstAccountStatment').html(response.display);
- 
+
 		        }
 		    });
 		},
@@ -127,9 +126,9 @@ transactions_module = {
 			var tran_id 	= $(this).data('tran_id');
 			var base_url 	= $('input[name=base_url]').val();
 			var fisical_year = $('input[name=fisical_year]').val();
-			
+
 			window.open(base_url + "/transaction/transactiondetails/" + tran_id + "/" + tm_id + "?fisical_year=" + fisical_year, "_blank");
-			
+
 		},
 		ShowAccounttransactionDetails : function($this = undefined){
 			var base_url 						= $('input[name=base_url]').val();
@@ -141,19 +140,19 @@ transactions_module = {
 			var ck_include_before 				= $('input[name=ck_include_before]').is(':checked') ? 1 : 0;
 			var fisical_year 					= $('input[name=fisical_year]').val();
 			//account_id
-			
+
 			var def_account_id = 0;
 			if($this == undefined)
 			{
 				def_account_id = $('input[name=detail_account_id]').val();
-		
+
 			}
 			else
 			{
 				def_account_id =  $this.data('account_id');
 				$('input[name=detail_account_id]').val(def_account_id);
 			}
-			
+
 			var currency_id 			= 0;
 			if($this == undefined )
 				currency_id = $('input[name=sel_currency_id]').val();
@@ -170,7 +169,7 @@ transactions_module = {
 		            dataType : "json",
 		            beforeSend : function(){
 		            },
-			        success : function(response){  
+			        success : function(response){
 			        	$('#LstAccountStatment').html(response.display);
 			        	$('button[name=btn_export]').on('click',transactions_module.PrintAccountStatment);
 			        }
@@ -181,7 +180,7 @@ transactions_module = {
 			var _token 					= $('input[name=_token]').val();
 			var start_date 				= $('input[name=start_date]').val();
 		    var end_date 				= $('input[name=end_date]').val();
-		    var journal_id 				= $('select[name=fk_acc_journal_id]').val(); 
+		    var journal_id 				= $('select[name=fk_acc_journal_id]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/accounting/displaylistemptytransactions",
@@ -191,7 +190,7 @@ transactions_module = {
 		        success : function(response){
 		        	$('#LstEmptyTransactions').html(response.display);
 		        	$.transactions_datatable = $('#LstEmptyTransactions').mDatatable({
-						
+
 						// layout definition
 						layout: {
 							theme: 'default', // datatable theme
@@ -200,19 +199,19 @@ transactions_module = {
 							// height: 450, // datatable's body's fixed height
 							footer: false // display/hide footer
 						},
-						
+
 						// column sorting
 						sortable: true,
-						
+
 						pagination: true,
-						
+
 						search: {
 							input: $('#generalSearch')
 						},
 						columns : [
 	        				{
 	        					field: "#",
-	        			        title: "#", 
+	        			        title: "#",
 	        			        sortable: false,
 	        			        width: 40,
 	        			        selector: {class: 'm-checkbox--solid m-checkbox--brand'}
@@ -243,18 +242,18 @@ transactions_module = {
 	        				},
 	        				{
 	        					field: "edit",
-	        			        title: "edit", 
+	        			        title: "edit",
 	        			        sortable: false,
 	        			        width: 40
 	        				},
 	        				{
 	        					field: "delete",
-	        			        title: "delete", 
+	        			        title: "delete",
 	        			        sortable: false,
 	        			        width: 40
 	        				}
 	        			]
-						
+
 						// inline and bactch editing(cooming soon)
 						// editable: false,
 					});
@@ -290,7 +289,7 @@ transactions_module = {
 		DisplayListMovements : function(){
 			var base_url 				= $('input[name=base_url]').val();
 			var _token 					= $('input[name=_token]').val();
-			var at_id 				= $('input[name=at_id]').val();  
+			var at_id 				= $('input[name=at_id]').val();
 		    $.ajax
 		    ({
 		        url : base_url + "/request/accounting/displaylisttransactionmovements",
@@ -314,7 +313,7 @@ transactions_module = {
 			var at_id = $(this).data('at_id');
 		    var base_url = $("#BASE_URL").val();
 		    window.location.href = base_url + "/accounting/transactions/editform/" + at_id;
-			
+
 		},
 		EditMovementInfo : function(){
 			var $this = $(this);
@@ -388,10 +387,10 @@ transactions_module = {
 					            	  transactions_module.DisplayListLedger();
 			            		  }
 				            	  else
-				            	  { 
-				            		  transactions_module.DisplayListMovements();  
+				            	  {
+				            		  transactions_module.DisplayListMovements();
 				            	  }
-				            	 
+
 				              }
 				              else
 			            	  {

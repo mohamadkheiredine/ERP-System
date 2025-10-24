@@ -24,7 +24,7 @@ use Session;
 use Redirect;
 use Auth;
 use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\Products;
 use App\models\Inventory\ProductCategories;
@@ -515,8 +515,6 @@ class AccountingController extends Controller
             $lst_movements= $lst_movements->where("tm_creation_date","<",$end_date);
         if( $acc_account > 0 )
             $lst_movements= $lst_movements->where("tm_sub_ledger_account","=",$acc_account);
-
-
             $lst_movements = $lst_movements->OrderBy('acc_accounting_accounts.aa_account_ref','ASC')->get();
 
             $AccountingManager = new AccountingManager();
@@ -532,7 +530,6 @@ class AccountingController extends Controller
             $result_array['display'] = view("accounting.lstaccountstatment",$data)->render();
 
             return Response()->json($result_array);
-
     }
 
 
@@ -922,6 +919,7 @@ class AccountingController extends Controller
         $include_before = $request->input("include_before");
         $search_query   = $request->input("search_query");
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+        $acc_account = $request->input("acc_account");
 
         $strfirstday = 'first day of January ' . $fisical_year;
         $strlastday = 'last day of December ' . $fisical_year;
@@ -935,27 +933,29 @@ class AccountingController extends Controller
             $lastday = $end_date;
         }
 
-        $query_cond = "";
         $query = "SELECT cc_id,tm_sub_ledger_account,cc_currency_code,accounts.aa_account_ref,accounts.aa_account_label,SUM(tm_debit) as total_debit,SUM(tm_credit) as total_credit, SUM(tm_debit) - SUM(tm_credit) AS total_balance  FROM acc_transaction_movements tm left join acc_accounting_accounts accounts on tm.tm_sub_ledger_account = accounts.aa_id left join currency curr on tm.tm_currency_id = curr.cc_id where  1 ";
 
-
-
-
-        if(strlen($search_query) > 0)
+        if(strlen($search_query) > 0) {
             $query .= " AND ( tm.tm_ledger_label LIKE '%" . $search_query . "%' OR accounts.aa_account_ref LIKE '%" . $search_query . "%' OR accounts.aa_account_label LIKE '%" . $search_query . "%' )";
+        }
 
         if($start_date != "" && $end_date != "")
         {
             $query .= " AND ( tm.tm_transaction_date BETWEEN '$start_date' AND  '$end_date')";
-        }
-
-        if($start_date == "" && $end_date == "")
-        {
+        } elseif($start_date != "") {
+            $query .= " AND tm.tm_transaction_date >= '$start_date' ";
+        } elseif($end_date != "") {
+            $query .= " AND tm.tm_transaction_date <= '$end_date' ";
+        } else {
             $query .= " AND ( tm.tm_transaction_date BETWEEN '$firstday' AND  '$lastday')";
         }
 
-        $query = $query . " group by tm_sub_ledger_account,tm_currency_id  order by accounts.aa_account_ref,tm_currency_id DESC;";
+        if ($acc_account > 0) {
+            $query .= " AND tm.tm_sub_ledger_account = $acc_account";
+        }
 
+        $query .= " GROUP BY tm_sub_ledger_account, tm_currency_id, cc_id, cc_currency_code, accounts.aa_account_ref, accounts.aa_account_label
+            ORDER BY accounts.aa_account_ref, tm_currency_id DESC;";
 
         $lst_accounts = DB::select($query);
 
@@ -966,34 +966,6 @@ class AccountingController extends Controller
         $result_array['display'] = view("accounting.lstaccountstatmentgroup",$data)->render();
 
         return Response()->json($result_array);
-
-
-        $query_select ="SELECT
-    cc_id,
-    accounts.aa_id as tm_sub_ledger_account,
-    cc_currency_code,
-    accounts.aa_account_ref,
-    accounts.aa_account_label,
-    COALESCE(SUM(tm_debit), 0) as total_debit,
-    COALESCE(SUM(tm_credit), 0) as total_credit,
-    COALESCE(SUM(tm_debit), 0) - COALESCE(SUM(tm_credit), 0) AS total_balance
-FROM
-    acc_accounting_accounts accounts
-    CROSS JOIN currency curr
-    LEFT JOIN acc_transaction_movements tm
-        ON tm.tm_sub_ledger_account = accounts.aa_id
-        AND tm.tm_currency_id = curr.cc_id
-        AND tm.tm_transaction_date BETWEEN '".$firstday."' AND '".$lastday."'
-        " . $query_cond . "
-GROUP BY
-    accounts.aa_id,
-    curr.cc_id,
-    accounts.aa_account_ref,
-    accounts.aa_account_label,
-    cc_currency_code
-ORDER BY
-    accounts.aa_account_ref,
-    curr.cc_id DESC;";
     }
 
 
