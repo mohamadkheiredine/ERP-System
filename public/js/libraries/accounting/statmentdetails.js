@@ -9,7 +9,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -19,7 +19,7 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
 	});
 	 new tempusDominus.TempusDominus(document.getElementById('END_DATE'),{
@@ -29,7 +29,7 @@ $(function(){
 			      date: true,
 			      month: true,
 			      year: true,
-			      decades: true, 
+			      decades: true,
 			      clock: false,
 			      hours: false,
 			      minutes: false,
@@ -39,24 +39,24 @@ $(function(){
 		 },
 		 localization: {
 			 format : "L"
-			 
+
 		 }
-	}); 
-	 
-	 
-	 $("#LstAccountStatment").on('dblclick',".grouprow",function(){ 
+	});
+
+
+	 $("#LstAccountStatment").on('dblclick',".grouprow",function(){
 		 $('input[name=search_query]').val("");
 		 transactions_module.ShowAccounttransactionDetails($(this));
 		 });
 	 $("#LstAccountStatment").on('dblclick',".Transaction",transactions_module.OpenTransactionDetailsWindow);
 	 $("#LstAccountStatment").on('click',"#EXPORT_CURRENCY",transactions_module.PrintAccountStatment);
 	 $("#LstAccountStatment").on('click',"#EXPORT_ALL",transactions_module.PrintAllAccountStatmentDetails);
-	 $("#LstAccountStatment").on('click',"button[name=btn_back]",function(){ 
-		 $('input[name=search_query]').val(""); 
-		 transactions_module.DisplayListStatmentDetails(); 
-	 
+	 $("#LstAccountStatment").on('click',"button[name=btn_back]",function(){
+		 $('input[name=search_query]').val("");
+		 transactions_module.DisplayListStatmentDetails();
+
 	 });
-	 
+
 	 $('input[name=ck_include_before]').on("change",function(){
 		 var account_id = $('input[name=detail_account_id]').val();
 
@@ -90,14 +90,12 @@ $(function(){
 		else
 			transactions_module.ShowAccounttransactionDetails();
 	});
-	$('input[name=search_query]').on('keyup',function(){ 
-		var account_id = $('input[name=detail_account_id]').val();
+	$('input[name=search_query]').on('keyup',function(){
+		var account_id = $('input[name=acc_account]').val();
 
 		if(account_id == undefined || account_id == 0)
 			transactions_module.DisplayListStatmentDetails();
 		else
 			transactions_module.ShowAccounttransactionDetails();
 	});
-	
-	
 });

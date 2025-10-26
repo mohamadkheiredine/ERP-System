@@ -47,6 +47,7 @@ th{
     <div class="card-body">
         <span id="hidden_fields">
             <input type="hidden" name="page_number" value="1" />
+            <input type="hidden" name="fisical_year" value="{{ date('Y') }}" />
         </span>
         <!--begin: Search Form -->
         <div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
@@ -60,7 +61,7 @@ th{
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                     </i>
-                                    <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" value="" placeholder="Search" />
+                                    <input type="text" class="form-control form-control-solid ps-10" name="search_query" id="generalSearch" value="" placeholder="Search" />
                                 </div>
                             </div>
                         </div>
