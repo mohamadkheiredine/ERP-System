@@ -45,13 +45,16 @@ use App\models\Inventory\WareHouses;
 use App\models\Users\UserTeam;
 use App\models\Users\UserTypes;
 
-class UsersController extends Controller {
+class UsersController extends Controller
+{
 
-    public function Login() {
+    public function Login() {}
 
-    }
+    public function LogOut()
+    {
 
-    public function LogOut() {
+        $currentUrl = url()->previous(); // get current URL
+        cookie()->queue('last_page', $currentUrl, 60);
 
         if (isset($_COOKIE['ua_remember_user'])) {
             setcookie("ua_remember_user", "", time() - (86400 * 30), "/");
@@ -63,7 +66,8 @@ class UsersController extends Controller {
         return Redirect::to('/');
     }
 
-    public function UserManagement() {
+    public function UserManagement()
+    {
 
         $lst_companies = Companies::where('cd_is_deleted', 0)->get();
 
@@ -77,7 +81,8 @@ class UsersController extends Controller {
      * Display List of Users
      * @param Request $request
      */
-    public function DisplayList(Request $request) {
+    public function DisplayList(Request $request)
+    {
 
         $page_number = $request->input("page_number");
         $company_id = $request->input('company_id');
@@ -85,7 +90,7 @@ class UsersController extends Controller {
         $nbr_rows_per_pages = Config::get('appconfig.max_rows_per_page');
 
         if ($page_number > 1)
-            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages;
+            $skip = ($page_number - 1) * $nbr_rows_per_pages;
         else
             $skip = 0;
 
@@ -130,7 +135,8 @@ class UsersController extends Controller {
      * @access public
      * @param Request $request
      */
-    public function AddForm(Request $request) {
+    public function AddForm(Request $request)
+    {
 
         $lst_job_titles = JobTitles::whereJtIsDeleted(0)->get();
         $lst_job_roles = JobRoles::whereJrIsDeleted(0)->get();
@@ -161,14 +167,15 @@ class UsersController extends Controller {
     }
 
 
-    public function AccountSettings(Request $request) {
+    public function AccountSettings(Request $request)
+    {
         $user_id = session('user_id');
         $lst_usr_companies = UserAllowedCompanies::whereAcUserId($user_id)->get();
         $allowed_companies = array();
         foreach ($lst_usr_companies as $index => $comp_info) {
             $allowed_companies[] = $comp_info->ac_company_id;
         }
-        $lst_companies = Companies::whereCdIsDeleted(0)->whereIn('cd_id',$allowed_companies)->get();
+        $lst_companies = Companies::whereCdIsDeleted(0)->whereIn('cd_id', $allowed_companies)->get();
 
 
         $data = array(
@@ -179,13 +186,14 @@ class UsersController extends Controller {
     }
 
 
-    public function SaveAccSettings(Request $request) {
+    public function SaveAccSettings(Request $request)
+    {
         $user_id = session('user_id');
         $default_company = $request->input("default_company");
         $result_array = array();
 
 
-        session()->put('default_company_id' , $default_company);
+        session()->put('default_company_id', $default_company);
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
@@ -196,7 +204,8 @@ class UsersController extends Controller {
      * Edit User Form
      * @param unknown $user_id
      */
-    public function EditForm($user_id) {
+    public function EditForm($user_id)
+    {
         $user_info = Users::find($user_id);
         $lst_job_titles = JobTitles::whereJtIsDeleted(0)->get();
         $lst_job_roles = JobRoles::whereJrIsDeleted(0)->get();
@@ -220,7 +229,7 @@ class UsersController extends Controller {
 
         $payroll_paymentmethod = PayrollsPaymentMethods::where('pm_company_id', $user_info->fk_company_id)->where('pm_employee_id', $user_info->fk_company_id)->get();
 
-        if($payroll_paymentmethod->count() > 0) {
+        if ($payroll_paymentmethod->count() > 0) {
             $payroll_paymentmethod = $payroll_paymentmethod[0];
         }
 
@@ -251,7 +260,8 @@ class UsersController extends Controller {
      * @param Request $request
      * @return Array $result_array
      */
-    public function SaveUsersInfo(Request $request) {
+    public function SaveUsersInfo(Request $request)
+    {
         $user_id = $request->input('user_id');
         $u_fullname = $request->input('u_fullname');
         $u_username = $request->input('u_username');
@@ -295,11 +305,9 @@ class UsersController extends Controller {
         $result_array = array();
 
         // check if username exist and return warning
-        if($user_id == null)
-        {
-            $count_users = Users::whereUIsDeleted(0)->where('u_username','LIKE','%' . $u_username . '%')->count();
-            if($count_users > 0 )
-            {
+        if ($user_id == null) {
+            $count_users = Users::whereUIsDeleted(0)->where('u_username', 'LIKE', '%' . $u_username . '%')->count();
+            if ($count_users > 0) {
                 $result_array['is_error'] = 1;
                 $result_array['error_msg'] = "User Already Exist !!";
                 return Response()->json($result_array);
@@ -309,51 +317,47 @@ class UsersController extends Controller {
         $Users = new Users();
         if ($user_id !== null) {
             $Users = Users::find($user_id);
-        }
-        else
-        {
-            $account_info   = ChartAccounts::where("aa_account_ref","=","6311")->get();
+        } else {
+            $account_info   = ChartAccounts::where("aa_account_ref", "=", "6311")->get();
             $account_info = $account_info[0];
 
-            $count   = ChartAccounts::where("aa_account_ref","LIKE","6311%")->count();
+            $count   = ChartAccounts::where("aa_account_ref", "LIKE", "6311%")->count();
 
             $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+            $aa_account_ref = $account_info->aa_account . (string)$new_count;
 
 
-             $AccAccounting = new ChartAccounts();
-             $AccAccounting->aa_parent_account   = $account_info->aa_id;
-             $AccAccounting->aa_account_ref      = $aa_account_ref;
-             $AccAccounting->aa_account          = $aa_account_ref;
-             $AccAccounting->aa_sub_account      = $account_info->aa_id;
-             $AccAccounting->aa_account_label    = $u_fullname;
-             $AccAccounting->fk_country_id       = 0;
-             $AccAccounting->save();
-             $aa_id = $AccAccounting->aa_id;
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $account_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_ref;
+            $AccAccounting->aa_account          = $aa_account_ref;
+            $AccAccounting->aa_sub_account      = $account_info->aa_id;
+            $AccAccounting->aa_account_label    = $u_fullname;
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save();
+            $aa_id = $AccAccounting->aa_id;
 
             $Users->u_account_id = $aa_id;
 
 
-            $parent_account   = ChartAccounts::where("aa_account_ref","=","6314")->get();
+            $parent_account   = ChartAccounts::where("aa_account_ref", "=", "6314")->get();
             $parent_account = $parent_account[0];
 
-            $count_coms   = ChartAccounts::where("aa_account_ref","LIKE","6314%")->count();
+            $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "6314%")->count();
 
             $new_count_coms      = $count_coms + 1;
-            $aa_account_ref = $account_info->aa_account . (String)$new_count_coms;
+            $aa_account_ref = $account_info->aa_account . (string)$new_count_coms;
 
 
-             $acc_accounting_info = new ChartAccounts();
-             $acc_accounting_info->aa_parent_account   = $parent_account->aa_id;
-             $acc_accounting_info->aa_account_ref      = $aa_account_ref;
-             $acc_accounting_info->aa_account          = $aa_account_ref;
-             $acc_accounting_info->aa_sub_account      = $parent_account->aa_id;
-             $acc_accounting_info->aa_account_label    = $u_fullname . " Fixed Comission";
-             $acc_accounting_info->fk_country_id       = 0;
-             $acc_accounting_info->save();
-             $Users->u_comission_account_id = $acc_accounting_info->aa_id;
-
-
+            $acc_accounting_info = new ChartAccounts();
+            $acc_accounting_info->aa_parent_account   = $parent_account->aa_id;
+            $acc_accounting_info->aa_account_ref      = $aa_account_ref;
+            $acc_accounting_info->aa_account          = $aa_account_ref;
+            $acc_accounting_info->aa_sub_account      = $parent_account->aa_id;
+            $acc_accounting_info->aa_account_label    = $u_fullname . " Fixed Comission";
+            $acc_accounting_info->fk_country_id       = 0;
+            $acc_accounting_info->save();
+            $Users->u_comission_account_id = $acc_accounting_info->aa_id;
         }
 
 
@@ -420,12 +424,10 @@ class UsersController extends Controller {
         $user_id = $Users->id;
 
 
-        if(count($allowed_companies) > 0)
-        {
+        if (count($allowed_companies) > 0) {
             $del = UserAllowedCompanies::whereAcUserId($user_id)->delete();
             $allowed_companies_arr = explode(",", $allowed_companies[0]);
-            foreach ($allowed_companies_arr as $index => $company_id)
-            {
+            foreach ($allowed_companies_arr as $index => $company_id) {
                 $allowed_cmp = new UserAllowedCompanies();
                 $allowed_cmp->ac_company_id = $company_id;
                 $allowed_cmp->ac_user_id = $user_id;
@@ -435,22 +437,21 @@ class UsersController extends Controller {
 
 
         // if we add new warehouse
-         if ($user_id == null && ( $u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES )  ) {
-          $warehouse_info = new WareHouses();
-          $warehouse_info->w_warehouse_ref = $u_username;
-          $warehouse_info->w_warehouse_name = $u_fullname;
-          $warehouse_info->w_warehouse_adddress = $u_address;
-          $warehouse_info->w_owner_id = session('user_id');
-          $warehouse_info->w_linked_to = $Users->id;
-          $warehouse_info->w_warehouse_status = 1;
-          $warehouse_info->save();
+        if ($user_id == null && ($u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES)) {
+            $warehouse_info = new WareHouses();
+            $warehouse_info->w_warehouse_ref = $u_username;
+            $warehouse_info->w_warehouse_name = $u_fullname;
+            $warehouse_info->w_warehouse_adddress = $u_address;
+            $warehouse_info->w_owner_id = session('user_id');
+            $warehouse_info->w_linked_to = $Users->id;
+            $warehouse_info->w_warehouse_status = 1;
+            $warehouse_info->save();
         }
 
-         $payroll_paymentmethod = new PayrollsPaymentMethods();
-         if($pm_id != null && $pm_id > 0)
-         {
-             $payroll_paymentmethod = PayrollsPaymentMethods::find($pm_id);
-         }
+        $payroll_paymentmethod = new PayrollsPaymentMethods();
+        if ($pm_id != null && $pm_id > 0) {
+            $payroll_paymentmethod = PayrollsPaymentMethods::find($pm_id);
+        }
 
         $payroll_paymentmethod->pm_company_id = $fk_company_id;
         $payroll_paymentmethod->pm_employee_id = $Users->id;
@@ -469,7 +470,8 @@ class UsersController extends Controller {
      * @param Request $request
      * @return unknown
      */
-    public function DeleteUserInfo(Request $request) {
+    public function DeleteUserInfo(Request $request)
+    {
         $user_id = $request->input("user_id");
 
         $Users = Users::find($user_id);
@@ -490,7 +492,8 @@ class UsersController extends Controller {
      * @author Moe mantach
      * @access public
      */
-    public function MyProfile() {
+    public function MyProfile()
+    {
         $data = array();
         return Response()->view("users.myprofile", $data);
     }
@@ -502,7 +505,8 @@ class UsersController extends Controller {
      * @access public
      * @param Request $request
      */
-    public function Displayprofiletabs(Request $request) {
+    public function Displayprofiletabs(Request $request)
+    {
         $result_array = array();
         $user_id = session("user_id");
 
@@ -536,7 +540,8 @@ class UsersController extends Controller {
      * @access public
      * @param Request $request
      */
-    public function SaveMainProfileInfo(Request $request) {
+    public function SaveMainProfileInfo(Request $request)
+    {
         $u_fullname = $request->input("u_fullname");
         $u_gender = $request->input("u_gender");
         $u_residential_area = $request->input("u_residential_area");
@@ -583,7 +588,8 @@ class UsersController extends Controller {
      * @access public
      * @param Request $request
      */
-    public function UploadImageProfile(Request $request) {
+    public function UploadImageProfile(Request $request)
+    {
         $result_array = array();
 
         $user_id = session("user_id");
@@ -625,7 +631,8 @@ class UsersController extends Controller {
      * @access public
      * @param Request $request
      */
-    public function ChangeProfilePassword(Request $request) {
+    public function ChangeProfilePassword(Request $request)
+    {
         $uo_old_password = $request->input("uo_old_password");
         $un_new_password = $request->input("un_new_password");
         $un_confirm_password = $request->input("un_confirm_password");
@@ -642,5 +649,4 @@ class UsersController extends Controller {
         $result_array['error_msg'] = "Operation Complete Successfully";
         return Response()->json($result_array);
     }
-
 }
