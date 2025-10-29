@@ -94,8 +94,8 @@ orders_module = {
 	    });
 	},
 	OpenAddOrderProductsModal : function(){
-            $('select[name=ii_warehouse_id]').destroy().select2();
-            $('select[name=bi_product]').destroy().select2();
+            // $('select[name=ii_warehouse_id]').destroy().select2();
+            // $('select[name=bi_product]').destroy().select2();
 		$('#OrderProductsModel').modal('toggle');
 	},
 	AddOrderProducts : function(){

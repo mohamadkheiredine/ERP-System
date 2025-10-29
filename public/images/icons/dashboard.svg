@@ -1,0 +1,13 @@
+<svg viewBox="0 0 512 512" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#1ACCd1" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)">
+  <!-- widgets -->
+  <rect x="120" y="150" width="140" height="90" rx="10" fill="#FFFFFF"/>
+  <rect x="270" y="150" width="120" height="90" rx="10" fill="#FFFFFF"/>
+  <rect x="120" y="260" width="270" height="120" rx="10" fill="#FFFFFF"/>
+  <!-- gauge needle -->
+  <path d="M180 320a80 80 0 0 1 160 0" stroke="#19C7CC" stroke-width="14" fill="none"/>
+  <path d="M260 320l40-60" stroke="#FF7A00" stroke-width="14" stroke-linecap="round"/>
+</g>
+</svg>

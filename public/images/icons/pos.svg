@@ -1,0 +1,13 @@
+<svg viewBox="0 0 512 512" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#17C7CC" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)">
+  <!-- register -->
+  <rect x="140" y="210" width="232" height="150" rx="16" fill="#FFFFFF"/>
+  <rect x="160" y="230" width="90" height="30" rx="6" fill="#19C7CC"/>
+  <rect x="160" y="270" width="180" height="20" rx="6" fill="#19C7CC"/>
+  <rect x="160" y="300" width="180" height="20" rx="6" fill="#19C7CC"/>
+  <!-- receipt -->
+  <path d="M290 170h60v70l-12-8-12 8-12-8-12 8z" fill="#FF7A00"/>
+</g>
+</svg>

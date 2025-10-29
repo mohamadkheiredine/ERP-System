@@ -1,0 +1,10 @@
+<svg viewBox="0 0 512 512" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#20C2C8" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke-linecap="round" stroke-linejoin="round">
+  <!-- chart -->
+  <path d="M120 360H392" stroke="#FFFFFF" stroke-width="16"/>
+  <path d="M150 330l60-80 60 50 90-120" stroke="#FFFFFF" stroke-width="18" fill="none"/>
+  <circle cx="210" cy="250" r="10" fill="#FF7A00"/><circle cx="270" cy="300" r="10" fill="#FF7A00"/><circle cx="360" cy="180" r="10" fill="#FF7A00"/>
+</g>
+</svg>

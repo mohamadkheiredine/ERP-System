@@ -1,0 +1,14 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#1CCBD0" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)">
+  <!-- building -->
+  <rect x="140" y="170" width="140" height="200" fill="#FFFFFF" rx="8"/>
+  <g fill="#19C7CC"><rect x="160" y="190" width="28" height="28"/><rect x="200" y="190" width="28" height="28"/><rect x="160" y="230" width="28" height="28"/><rect x="200" y="230" width="28" height="28"/></g>
+  <!-- gear -->
+  <g transform="translate(300 240)">
+    <circle cx="70" cy="70" r="26" fill="#FF7A00"/>
+    <path d="M70 26v-16M70 130v-16M26 70H10M130 70h-16M34 34l-10-10M116 116l-10-10M106 34l10-10M24 116l10-10" stroke="#FF7A00" stroke-width="8" stroke-linecap="round" fill="none"/>
+  </g>
+</g>
+</svg>

@@ -65,8 +65,11 @@ class ReceiptsController extends Controller
      */
     public function index(Request $request)
     {
+
+        $default_company_id = session('default_company_id');
+
         $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_clients = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::all();
@@ -97,6 +100,7 @@ class ReceiptsController extends Controller
         $receipt_invoice        = $request->input('receipt_invoice');
         $start_date             = $request->input('start_date');
         $end_date               = $request->input('end_date');
+        $default_company_id = session('default_company_id');
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
 
         $strfirstday = 'first day of January ' . $fisical_year;
@@ -112,7 +116,7 @@ class ReceiptsController extends Controller
         else
             $skip = 0;
 
-        $receipts_cond = Receipts::whereBrIsDeleted(0);
+        $receipts_cond = Receipts::whereBrIsDeleted(0)->whereBrCompanyId($default_company_id);
 
         if(strlen($search_query) > 0)
         {
@@ -248,8 +252,9 @@ class ReceiptsController extends Controller
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
+        $default_company_id = session('default_company_id');
 
-        $receipts_cond = Receipts::whereBrIsDeleted(0);
+        $receipts_cond = Receipts::whereBrIsDeleted(0)->whereBrCompanyId($default_company_id);
 
         if(strlen($search_query) > 0)
         {
@@ -310,8 +315,10 @@ class ReceiptsController extends Controller
      */
     public function AddForm(Request $request)
     {
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
+
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
@@ -335,9 +342,10 @@ class ReceiptsController extends Controller
     public function AddReceiptFromInvoice(Request $request)
     {
         $invoice_id = $request->input('invoice_id');
+        $default_company_id = session('default_company_id');
 
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
@@ -364,8 +372,9 @@ class ReceiptsController extends Controller
     {
 
         $receipt_info = Receipts::find($br_id);
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
@@ -390,8 +399,9 @@ class ReceiptsController extends Controller
     {
 
         $receipt_info = Receipts::find($br_id);
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
@@ -419,7 +429,7 @@ class ReceiptsController extends Controller
 
 
         $br_id                      = $request->input("br_id");
-
+        $default_company_id = session('default_company_id');
         $br_receipt_number          = $request->input("br_receipt_number");
         $br_account_id              = $request->input("br_account_id");
         $br_customer_id             = $request->input("br_customer_id");
@@ -466,7 +476,7 @@ class ReceiptsController extends Controller
         $receipt_info->br_amount_secondary_amount= $br_amount_secondary_amount;
         $receipt_info->br_account_from      = $br_account_from;
         $receipt_info->br_exchange_rate     = $br_exchange_rate;
-        $receipt_info->br_company_id        = Session("company_id");
+        $receipt_info->br_company_id        = $default_company_id;
         $receipt_info->save();
 
         $br_id = $receipt_info->br_id;

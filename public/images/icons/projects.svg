@@ -1,0 +1,13 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#17C0C7" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)">
+  <!-- gantt bars -->
+  <rect x="120" y="170" width="220" height="28" rx="6" fill="#FFFFFF"/>
+  <rect x="170" y="220" width="220" height="28" rx="6" fill="#FF7A00"/>
+  <rect x="140" y="270" width="180" height="28" rx="6" fill="#FFFFFF"/>
+  <rect x="190" y="320" width="180" height="28" rx="6" fill="#FFFFFF"/>
+  <!-- milestones -->
+  <circle cx="360" cy="184" r="8" fill="#FF7A00"/><circle cx="380" cy="234" r="8" fill="#FFFFFF"/>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+<svg viewBox="0 0 512 512" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#22C2C7" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke-linecap="round" stroke-linejoin="round">
+  <!-- wallet -->
+  <rect x="130" y="190" width="252" height="152" rx="20" fill="#FFFFFF"/>
+  <rect x="140" y="175" width="180" height="36" rx="10" fill="#19C7CC"/>
+  <circle cx="350" cy="266" r="12" fill="#FF7A00"/>
+  <!-- pie -->
+  <g transform="translate(320 300)">
+    <circle cx="40" cy="40" r="34" fill="#FFFFFF"/>
+    <path d="M40 6A34 34 0 0 1 74 40H40Z" fill="#FF7A00"/>
+  </g>
+</g>
+</svg>

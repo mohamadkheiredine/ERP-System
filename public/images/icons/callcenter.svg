@@ -1,0 +1,11 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#1BCED3" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke-linecap="round" stroke-linejoin="round">
+  <!-- headset -->
+  <path d="M140 260a116 116 0 0 1 232 0" stroke="#FFFFFF" stroke-width="18" fill="none"/>
+  <rect x="120" y="260" width="60" height="80" rx="16" fill="#FFFFFF"/>
+  <rect x="332" y="260" width="60" height="80" rx="16" fill="#FFFFFF"/>
+  <path d="M180 320h152" stroke="#FF7A00" stroke-width="16"/>
+</g>
+</svg>

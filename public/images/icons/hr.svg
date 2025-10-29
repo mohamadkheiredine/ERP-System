@@ -1,0 +1,14 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#18C4C9" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke-linecap="round" stroke-linejoin="round">
+  <!-- person -->
+  <circle cx="210" cy="210" r="44" fill="#FFFFFF"/>
+  <path d="M130 330c16-40 56-68 100-68s84 28 100 68" fill="none" stroke="#FFFFFF" stroke-width="16"/>
+  <!-- gear -->
+  <g transform="translate(290 250)">
+    <circle cx="70" cy="70" r="26" fill="#FF7A00"/>
+    <path d="M70 26v-16M70 130v-16M26 70H10M130 70h-16M34 34l-10-10M116 116l-10-10M106 34l10-10M24 116l10-10" stroke="#FF7A00" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</g>
+</svg>

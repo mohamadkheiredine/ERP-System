@@ -1,0 +1,13 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#17C9CE" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke-linecap="round" stroke-linejoin="round">
+  <!-- chef hat -->
+  <path d="M160 230c0-36 30-66 66-66 12 0 24 4 34 10 10-6 22-10 34-10 36 0 66 30 66 66h-200z" fill="#FFFFFF"/>
+  <rect x="180" y="230" width="160" height="30" rx="8" fill="#FF7A00"/>
+  <!-- tools -->
+  <rect x="180" y="280" width="16" height="80" rx="8" fill="#FFFFFF"/>
+  <rect x="316" y="280" width="16" height="80" rx="8" fill="#FFFFFF"/>
+  <rect x="300" y="280" width="48" height="16" rx="8" fill="#FFFFFF"/>
+</g>
+</svg>

@@ -1994,6 +1994,47 @@ Page Description :
                                         <!--end:Menu sub-->
                                     </div>
                                 @endif
+                                <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+                                    <!--begin:Menu link-->
+                                    <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fa-solid fa-universal-access fa-xl"></i>
+										</span>
+                                            FnB Module
+									</span>
+                                    <!--end:Menu link-->
+                                    <!--begin:Menu sub-->
+                                    <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+                                        <div class="menu-item">
+                                            <!--begin:Menu content-->
+                                            <div class="menu-content">
+                                                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Fnb Management</span>
+                                            </div>
+                                            <!--end:Menu content-->
+                                        </div>
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title">Floors Management</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="#">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Tables Management</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                    </div>
+                                    <!--end:Menu sub-->
+                                </div>
 							@if($license_array->CRM_MODULE == 1 && CheckPrivilage('erp_manage_orders') == "allow")
 
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">

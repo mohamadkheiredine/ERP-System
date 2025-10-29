@@ -25,5 +25,6 @@ return [
     "CONTACT_PATH" => "resources/CONTACT/",
     "VENDORS_PATH" => "resources/Vendors/",
     "CUSTOMERS_PATH" => "resources/customers/",
-    "CALENDAR_PATH" => "resources/calendars/"
+    "CALENDAR_PATH" => "resources/calendars/",
+    "EXPENSES_PATH" => "resources/expensesvouchers/"
 ];

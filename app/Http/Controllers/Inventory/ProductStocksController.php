@@ -54,7 +54,8 @@ class ProductStocksController extends Controller
 
     public function index()
     {
-        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
+        $w_company_id   = session('default_company_id');
+        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->whereIn('w_company_id', array($w_company_id))->get();
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
 
@@ -77,13 +78,16 @@ class ProductStocksController extends Controller
      */
     public function CreateNewStock( $p_id )
     {
+
+        $default_company_id = session('default_company_id');
+
         $product_info       = Products::find($p_id);
-        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
+        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->whereIn('w_company_id', array($default_company_id))->get();
         $lst_currencies     = Currency::all();
         $currency_array     = CreateDatabaseArrayByIndex($lst_currencies, 'cc_id');
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
-        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->whereIn('ss_company_id', array($default_company_id))->get();
         $lst_units      = Units::all();
         $rand_barcode                 = rand(10000000,99999999999);
         $barcode_obj = new DNS1D();
@@ -149,6 +153,16 @@ class ProductStocksController extends Controller
         $list_type                 = $request->input('list_type');
         $nbr_rows_per_pages             = Config::get('appconfig.max_rows_per_page');
 
+        $default_company_id = session('default_company_id');
+
+        $company_warehouses = WareHouses::whereWIsDeleted(0)->whereIn('w_company_id', array($default_company_id))->get();
+
+        $warehouse_ids = array();
+        foreach ($company_warehouses as $key => $warehouse) {
+            $warehouse_ids[] = $warehouse->w_id;
+        }
+
+
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
          else
@@ -162,6 +176,8 @@ class ProductStocksController extends Controller
             $lst_stocks     =Stocks::whereIsIsDeleted(0);
             if( $stock_warehouse > 0 )
                 $lst_stocks= $lst_stocks->whereFkWarehouseId($stock_warehouse);
+            else
+                $lst_stocks= $lst_stocks->whereIn('fk_warehouse_id', $warehouse_ids);
             if( $stock_product > 0 )
                 $lst_stocks= $lst_stocks->whereFkProductId($stock_product);
             if( $stock_currency > 0 )
@@ -239,16 +255,18 @@ class ProductStocksController extends Controller
      */
     public function AddForm()
     {
+
+        $default_company_id = session('default_company_id');
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
 
-        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
+        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $lst_currencies     = Currency::all();
         $lst_units      = Units::all();
 
         $currency_array     = CreateDatabaseArrayByIndex($lst_currencies,'cc_id');
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
-        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
         $rand_barcode                 = rand(10000000,99999999999);
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
@@ -281,14 +299,18 @@ class ProductStocksController extends Controller
      */
     public function EditForm( $is_id )
     {
+
+        $default_company_id = session('default_company_id');
+
+
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
-        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->get();
+        $lst_warehouse      = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $InventoryStock     = Stocks::find($is_id);
         $lst_currencies     = Currency::all();
         $currency_array     = CreateDatabaseArrayByIndex($lst_currencies,'cc_id');
         $company_currency   = session('company_currency');
         $secondary_currency = session('secondary_currency');
-        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
         $lst_units      = Units::all();
         $lst_serial_numbers = StockIds::whereFkStockId($is_id)->get();
         $serial_numbers     = array();

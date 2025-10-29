@@ -364,3 +364,21 @@ ALTER TABLE `billing_invoices` ADD COLUMN `bi_target_supplier` INT NULL DEFAULT 
 
 ALTER TABLE `billing_invoices` ADD COLUMN `bi_target_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `bi_company_id`;
 
+
+ALTER TABLE `acc_expenses`
+    ADD COLUMN `ac_base_src` VARCHAR(12) NULL DEFAULT NULL AFTER `ac_description`,
+ADD COLUMN `ac_file_name` VARCHAR(255) NULL DEFAULT NULL AFTER `ac_base_src`,
+ADD COLUMN `ac_extension` VARCHAR(15) NULL DEFAULT NULL AFTER `ac_file_name`,
+ADD COLUMN `ac_full_voucher_file` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `ac_extension`;
+
+
+ALTER TABLE `pos_stores` ADD COLUMN `ps_online_store` TINYINT NULL DEFAULT 0 AFTER `ps_is_active`;
+
+
+ALTER TABLE `inventory_customers`
+    ADD COLUMN `ic_favorite_foods` TEXT NULL DEFAULT NULL AFTER `ic_hobbies`,
+ADD COLUMN `ic_work_title` VARCHAR(255) NULL DEFAULT NULL AFTER `ic_favorite_foods`,
+ADD COLUMN `ic_sports` TEXT NULL DEFAULT NULL AFTER `ic_work_title`;
+
+
+

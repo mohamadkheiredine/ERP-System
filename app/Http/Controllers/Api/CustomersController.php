@@ -381,6 +381,9 @@ class CustomersController extends Controller
         $ic_customer_mobile     = $request->input('ic_customer_mobile');
         $ic_hobbies             = $request->input('ic_hobbies');
         $ic_birth_date             = $request->input('ic_birth_date');
+        $ic_favorite_foods             = $request->input('ic_favorite_foods');
+        $ic_work_title             = $request->input('ic_work_title');
+        $ic_sports             = $request->input('ic_sports');
         $g_hash                 = $request->input('g_hash');
         $user_info              = Users::find($user_id);
 
@@ -423,6 +426,9 @@ class CustomersController extends Controller
         $customer_info->ic_customer_phone = $ic_customer_phone;
         $customer_info->ic_customer_mobile = $ic_customer_mobile;
         $customer_info->ic_hobbies = $ic_hobbies;
+        $customer_info->ic_favorite_foods = $ic_favorite_foods;
+        $customer_info->ic_work_title = $ic_work_title;
+        $customer_info->ic_sports = $ic_sports;
         $customer_info->ic_birth_date = $ic_birth_date;
 
 

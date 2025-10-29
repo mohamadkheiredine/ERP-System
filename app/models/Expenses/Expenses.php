@@ -44,4 +44,9 @@ class Expenses extends Model
         return $this->hasOne('App\models\System\Currency', 'cc_id','ac_currency_id');
     }
 
+    public function Payment()
+    {
+        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id','ac_payment_id');
+    }
+
 }

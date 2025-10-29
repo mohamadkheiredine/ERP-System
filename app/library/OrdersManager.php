@@ -18,7 +18,7 @@ Page Description :
 
 
 namespace App\library;
- 
+
 use Validator;
 use Input;
 use Symfony\Component\Console\Helper\Helper;
@@ -28,7 +28,7 @@ use Session;
 use Redirect;
 use Auth;
 use Config;
-use DB; 
+use DB;
 use App\models\Users\Users;
 use Illuminate\Support\Facades\Hash;
 use App\models\Inventory\ProductCategories;
@@ -42,7 +42,7 @@ use App\models\Inventory\Stocks;
 
 class OrdersManager
 {
-    
+
     /**
      * Generate order code to save in the order record
      * @return string
@@ -54,19 +54,19 @@ class OrdersManager
         $cd_company_name = $company_info->cd_company_name;
         $year           = date("Y");
         $count_orders = Orders::whereYear('so_creation_date' , $year)->count();
-        
+
         $index = $count_orders + 1;
-        
-        
+
+
         $invoice_code = "ORD" . sprintf('%04d', $index);
-        
+
         return $invoice_code;
-        
+
     }
-    
+
     /**
-     * Generate POS Order Code 
-     * 
+     * Generate POS Order Code
+     *
      * @author Moe Mantach
      * @param array $params_array
      * @return string pos_code
@@ -78,21 +78,21 @@ class OrdersManager
         $cd_company_name = $company_info->cd_company_name;
         $year           = date("Y");
         $count_orders = Orders::whereYear('so_creation_date' , $year)->count();
-        
+
         $index = $count_orders + 1;
-        
-        
+
+
         $order_code = sprintf('%04d', $index);
-        
+
         return $order_code;
-        
+
     }
-    
-    
+
+
     /**
      * Generate array to display in klist of order products based on info saved
-     * in the order record and products already exist 
-     * 
+     * in the order record and products already exist
+     *
      * @author Moe Mantach
      * @access public
      * @param object $order_info
@@ -100,19 +100,19 @@ class OrdersManager
      */
     public function GenerateOrderProducts( $order_info , $lst_products )
     {
-     
+
         $cc_currency_code = $order_info->Currency->cc_currency_code;
-        
+
         $order_array = array();
-        
-        $order_currency = $order_info->so_order_currency; 
-        
+
+        $order_currency = $order_info->so_order_currency;
+
         $lst_currency = Currency::all();
         $currency_array = CreateDatabaseArrayByIndex($lst_currency , 'cc_id');
-        
+
         $index = 0;
         foreach ( $lst_products as $key => $product_info ) {
-            
+
             $stock_id    = $product_info->so_stock_id;
             $product_id  = $product_info->fk_product_id;
             if($product_id > 0)
@@ -136,8 +136,8 @@ class OrdersManager
             $order_array[$index]['price_stock']              = $product_info->so_product_cost * $product_info->so_product_quantity;
             $order_array[$index]['stock_currency']           = $product_info->so_product_currency;
             $order_array[$index]['stock_currency_code']      =  $product_info->Currency->cc_currency_code;
-            
-            
+
+
             $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->Products->p_product_profile_base_src.$product_info->Products->p_product_profile_file_name.".".$product_info->Products->p_product_profile_extention;
             $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->Products->p_product_profile_base_src.$product_info->Products->p_product_profile_file_name.".".$product_info->Products->p_product_profile_extention;
             if(strlen($product_info->Products->p_product_profile_base_src) > 0 ){
@@ -146,9 +146,9 @@ class OrdersManager
                 $img_src = url('images/NoImageAvailable.jpg');
             }
             $order_array[$index]['image_url']           = $img_src;
-            
+
             $index++;
-        } 
+        }
         return $order_array;
     }
 

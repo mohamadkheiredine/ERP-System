@@ -17,6 +17,7 @@ namespace App\Http\Controllers\Billing;
 use App\Http\Controllers\Controller;
 use App\models\CallCenter\InboundCallProducts;
 use App\models\Sales\OrderProducts;
+use App\models\SRM\SupplierProducts;
 use Validator;
 use App;
 use Input;
@@ -76,9 +77,10 @@ class InvoicesController extends Controller
      */
     public function index()
     {
+        $default_company_id = session('default_company_id');
 
         $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
-        $list_customers     = Customers::whereIcIsDeleted(0)->get();
+        $list_customers     = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
 
         $crm_telemarketing    = Config::get('appconfig.crm_telemarketing');
@@ -610,7 +612,9 @@ class InvoicesController extends Controller
                 $skip = 0;
 
 
-        $lst_invoices   = Invoices::whereBiIsDeleted(0);
+        $default_company_id = session('default_company_id');
+
+        $lst_invoices   = Invoices::whereBiIsDeleted(0)->where('bi_company_id','=',$default_company_id);
 
         if($invoice_customer!= 0)
             $lst_invoices = $lst_invoices->whereFkCustomerId($invoice_customer);
@@ -666,13 +670,15 @@ class InvoicesController extends Controller
 
         $invoice_code = $AccountingManager->GenerateInvoiceCode();
 
+        $default_company_id = session('default_company_id');
+
         $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
         $lst_payment_types  = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_payment_terms  = PaymentTerms::wherePtIsDeleted(0)->get();
         $lst_vat_accounts   = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
-        $list_customers     = Customers::whereIcIsDeleted(0)->get();
+        $list_customers     = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $list_services      = CRMServices::whereCsIsDeleted(0)->get();
 
         $company_id = session('company_id');
@@ -699,6 +705,7 @@ class InvoicesController extends Controller
         $AccountingManager = new AccountingManager();
 
         $invoice_code = $AccountingManager->GenerateOfficialInvoiceCode();
+        $default_company_id = session('default_company_id');
 
         $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
@@ -706,7 +713,7 @@ class InvoicesController extends Controller
         $lst_payment_terms  = PaymentTerms::wherePtIsDeleted(0)->get();
         $lst_vat_accounts   = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_currencies     = Currency::all();
-        $list_customers     = Customers::whereIcIsDeleted(0)->get();
+        $list_customers     = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $list_services      = CRMServices::whereCsIsDeleted(0)->get();
 
         $company_id = session('company_id');
@@ -736,8 +743,10 @@ class InvoicesController extends Controller
     {
 
         $receipt_info = Receipts::find($br_id);
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
-        $lst_customers = Customers::whereIcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
+
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
+        $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
@@ -761,20 +770,22 @@ class InvoicesController extends Controller
     public function EditForm( $bi_id )
     {
         $invoice_info       = Invoices::find($bi_id);
+        $default_company_id = session('default_company_id');
+
         $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
         $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
         $lst_payment_types  = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_payment_terms  = PaymentTerms::wherePtIsDeleted(0)->get();
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
         $lst_vat_accounts   = VatAccounts::whereAvIsDeleted(0)->get();
-        $lst_warehouses   = WareHouses::whereWIsDeleted(0)->get();
+        $lst_warehouses   = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $lst_currencies     = Currency::all();
         $currencies_array = CreateDatabaseArrayByIndex($lst_currencies, "cc_id");
-        $list_customers     = Customers::whereIcIsDeleted(0)->get();
+        $list_customers     = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $list_services      = CRMServices::whereCsIsDeleted(0)->get();
-        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->get();
-        $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
-        $lst_collectors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
+        $lst_suppliers      = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
+        $lst_technicians = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_TECHNICIAN)->get();
+        $lst_collectors = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->whereUUserType(UserTypes::USER_TYPE_COLLECTOR)->get();
         $company_id = session('company_id');
         $lst_companies = Companies::whereCdIsDeleted(0)->whereNotIn('cd_id',[$company_id])->get();
 
@@ -1240,6 +1251,7 @@ class InvoicesController extends Controller
         $bi_official_invoice        = $request->input("bi_official_invoice");
         $bi_invoice_date        = date("Y-m-d",strtotime($bi_invoice_date));
         $cyear                  = date('Y', strtotime($bi_invoice_date));
+        $default_company_id = session('default_company_id');
 
 
       //  $fk_bankaccount_id      = $request->input("fk_bankaccount_id");
@@ -1301,6 +1313,7 @@ class InvoicesController extends Controller
 
 
         $invoice_info->bi_invoice_ref       = $bi_invoice_ref;
+        $invoice_info->bi_company_id       = $default_company_id;
         $invoice_info->bi_invoice_code      = $bi_invoice_code;
         $invoice_info->bi_client_id         = $invoice_account;
         $invoice_info->fk_account_id         = $client_info ? $client_info->ca_accounting_id : 0;
@@ -1557,7 +1570,40 @@ class InvoicesController extends Controller
                 if($bi_internal_invoice == 1)
                 {
                     $quotation_info = new SupplierQuotations();
+                    $quotation_info->fk_supplier_id          = $bi_target_supplier;
+                    $quotation_info->sq_user_id              = session('user_id');
+                    $quotation_info->sq_date_submit          = $bi_invoice_date;
+                    $quotation_info->sq_due_date             = $bi_invoice_date;
+                    $quotation_info->sq_total_price          = $total_price;
+                    $quotation_info->sq_quotation_notes      = $bi_invoice_note;
+                    $quotation_info->sq_currency_id          = $bi_invoice_currency;
+                    $quotation_info->sq_quotation_approve    = 0;
+                    $quotation_info->sq_warehouse_id         = $bi_target_warehouse_id;
+                    $quotation_info->sq_container_number         = "";
+                    $quotation_info->sq_shipping_type         = 1;
                     $quotation_info->save();
+
+
+                    foreach ( $lst_invoice_items as $key => $ii_info )
+                    {
+                        $product_info = Products::find($ii_info->ii_item_id);
+                        $quotation_product = new SupplierProducts();
+                        $quotation_product->sp_product_serial           = "";
+                        $quotation_product->fk_product_id               = $ii_info->ii_item_id;
+                        $quotation_product->fk_quotation_id             = $quotation_info->sq_id;
+                        $quotation_product->sp_product_name             = $product_info->p_product_name;
+                        $quotation_product->sp_product_description      = $product_info->p_product_description;
+                        $quotation_product->sp_product_pruchase_price   = $ii_info->ii_item_price;
+                        $quotation_product->sp_product_selling_price    = $ii_info->ii_item_price;
+                        $quotation_product->sp_product_wholesale_price  = $ii_info->ii_item_price;
+                        $quotation_product->sp_product_discount         = 0;
+                        $quotation_product->sp_main_currency            = $bi_invoice_currency;
+                        $quotation_product->sp_product_currency         = $bi_invoice_currency;
+                        $quotation_product->sp_product_quantity         = $ii_info->ii_item_qyt;
+                        $quotation_product->sp_stock_unit               = 1;
+                        $quotation_product->save();
+                    }
+
                 }
 
 

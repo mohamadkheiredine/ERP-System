@@ -25,19 +25,12 @@ use Illuminate\Http\Request;
 });
 
 
-  Route::post('/request/api/login','Api\UsersController@LoginPOS');
+
+
+    Route::post('/request/api/login','Api\UsersController@LoginPOS');
     Route::post('/request/api/logout','Api\UsersController@Logout');
     Route::post('/request/api/getlistcurrency','Api\GeneralController@getlistcurrency');
     Route::post('/request/api/getlistchartofaccounts','Api\GeneralController@GetListChartofAccounts');
-
-
-    Route::group([
-    "middleware" => "auth:api",
-], function() {
-
-});
-
-
 
     Route::post('/request/api/getprofileinfo','Api\UsersController@GetUserInfo');
     Route::post('/request/api/saveprofileinfo','Api\UsersController@SetmyprofileInfo');
@@ -130,6 +123,12 @@ use Illuminate\Http\Request;
 
     Route::get('/request/api/getlistexpensecategories','Api\ExpensesController@GetListExpenseCategories');
     Route::post('/request/api/submitnewexpense','Api\ExpensesController@SubmitNewexpense');
+    Route::get('/request/api/expense/list','Api\ExpensesController@GetListExpenses');
+
+
+
+    Route::get('/web/api/createcustomer','Api\WebApiController@CreateWebCustomer');
+    Route::get('/web/api/getlistproducts','Api\WebApiController@GetListProducts');
 
 
 //});

@@ -1,0 +1,11 @@
+<svg viewBox="0 0 512 512" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="d"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18"/></filter></defs>
+<rect x="8" y="8" width="496" height="496" rx="8" fill="#1ED0D5" stroke="#FFFFFF" stroke-width="4"/>
+<g filter="url(#d)" stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- truck -->
+  <rect x="140" y="250" width="160" height="70" rx="10"/>
+  <path d="M300 260h60l30 40v20h-90z"/>
+  <circle cx="200" cy="340" r="18" fill="#FFFFFF"/><circle cx="340" cy="340" r="18" fill="#FFFFFF"/>
+</g>
+<rect x="180" y="210" width="60" height="30" rx="4" fill="#FF7A00" filter="url(#d)"/>
+</svg>
