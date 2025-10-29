@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
 OrdersController.php
 Product :
@@ -10,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2019
 
 Page Description :
 
-***********************************************************/
+ ***********************************************************/
 
 
 
@@ -78,7 +79,7 @@ class OrdersController extends Controller
             'lst_customers' => $lst_customers,
             'lst_vendors' => $lst_vendors,
         );
-        return Response()->view('orders.orders',$data);
+        return Response()->view('orders.orders', $data);
     }
 
 
@@ -99,39 +100,38 @@ class OrdersController extends Controller
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
 
-        if($page_number > 1)
-            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        if ($page_number > 1)
+            $skip = ($page_number - 1) * $nbr_rows_per_pages;
         else
             $skip = 0;
 
 
         $list_orders = Orders::whereSoIsDeleted(0);
-        if($so_order_warehouse > 0)
+        if ($so_order_warehouse > 0)
             $list_orders = $list_orders->whereFkWarehouseId($so_order_warehouse);
-        if($so_vendor_id > 0)
+        if ($so_vendor_id > 0)
             $list_orders = $list_orders->whereSoVendorId($so_vendor_id);
-        if($so_order_customer > 0)
+        if ($so_order_customer > 0)
             $list_orders = $list_orders->whereSoOrderCustomer($so_order_customer);
-         if( strlen($general_search)  > 0)
-         {
-             $list_orders = $list_orders->where('so_order_label','LIKE','%' . $general_search . '%');
-             $list_orders = $list_orders->orwhere('so_order_code','LIKE','%' . $general_search . '%');
-         }
+        if (strlen($general_search)  > 0) {
+            $list_orders = $list_orders->where('so_order_label', 'LIKE', '%' . $general_search . '%');
+            $list_orders = $list_orders->orwhere('so_order_code', 'LIKE', '%' . $general_search . '%');
+        }
 
 
-         $order_count = $list_orders->count();
+        $order_count = $list_orders->count();
 
 
-         $total_pages = ceil( $order_count/$nbr_rows_per_pages );
-         $total_pages = intval($total_pages);
+        $total_pages = ceil($order_count / $nbr_rows_per_pages);
+        $total_pages = intval($total_pages);
 
-         $list_orders = $list_orders->skip($skip)->take($nbr_rows_per_pages)->get();
+        $list_orders = $list_orders->skip($skip)->take($nbr_rows_per_pages)->get();
         $data = array(
             "list_orders" => $list_orders,
         );
 
         $result_array = array();
-        $result_array['display'] = view("orders.displaylist",$data)->render();
+        $result_array['display'] = view("orders.displaylist", $data)->render();
         $result_array['total_pages'] = $total_pages;
 
         return Response()->json($result_array);
@@ -146,7 +146,7 @@ class OrdersController extends Controller
      * @access public
      * @param Request $request
      */
-    public function GetStockInformation( Request $request )
+    public function GetStockInformation(Request $request)
     {
         $barecode       = $request->input('barecode');
         $whole_sales    = $request->input('whole_sales');
@@ -161,8 +161,7 @@ class OrdersController extends Controller
         $product_info = Products::find($order_product);
         $is_serial = $product_info->Category->pc_use_serial_number;
 
-        if($is_serial == 0)
-        {
+        if ($is_serial == 0) {
             $result_array['is_error'] = 0;
             $result_array['error_msg'] = "Product Exist";
             return Response()->json($result_array);
@@ -172,24 +171,20 @@ class OrdersController extends Controller
         $stock_ids = StockIds::whereSiStockUid($barecode)->get();
 
         $stock_info = new Stocks();
-        if( count($stock_ids) == 0 ) // check if this barecode not exist in the system's database
+        if (count($stock_ids) == 0) // check if this barecode not exist in the system's database
         {
             // check if the barecode exist in stock table
             $stock_info = Stocks::whereIsStockUid($barecode)->get();
-            if(count($stock_info) == 0)
-            {
+            if (count($stock_info) == 0) {
                 $result_array['is_error']   = 1;
                 $result_array['error_msg']      = "Barecode does not exist in our Database";
 
                 return Response()->json($result_array);
-            }
-            else
-            {
+            } else {
                 // check if we have a number of stock for this product
                 $stock_quantity = $stock_info[0]['is_quanity'];
                 $product_id     = $stock_info[0]['fk_product_id'];
-                if($stock_quantity == 0)
-                {
+                if ($stock_quantity == 0) {
                     $result_array['is_error']       = 1;
                     $result_array['error_msg']      = "We Don't have any stock for this product";
 
@@ -198,15 +193,11 @@ class OrdersController extends Controller
 
                 $stock_info = $stock_info[0];
                 $stock_id = $stock_info->is_id;
-
             }
-        }
-        else
-        {
+        } else {
             // check if this product not sold and  get stock information
             $is_sold = $stock_ids[0]['si_stock_sold'];
-            if( $is_sold == 1 )
-            {
+            if ($is_sold == 1) {
                 $result_array['is_error']       = 1;
                 $result_array['error_msg']      = "This Item Is Sold Please Use another one";
 
@@ -226,13 +217,10 @@ class OrdersController extends Controller
         $result_array['is_error']               = 0;
         $result_array['product_id']             = $product_id;
         $result_array['stock_id']               = $stock_id;
-        if( $whole_sales == 1 )
-        {
-            $stock_price                        = $stock_info->is_wholesale_price - ( $stock_info->is_wholesale_price * ( $stock_info->is_discount / 100 ) );
-        }
-        else
-        {
-            $stock_price                        = $stock_info->is_selling_price- ( $stock_info->is_selling_price * ( $stock_info->is_discount / 100 ) );
+        if ($whole_sales == 1) {
+            $stock_price                        = $stock_info->is_wholesale_price - ($stock_info->is_wholesale_price * ($stock_info->is_discount / 100));
+        } else {
+            $stock_price                        = $stock_info->is_selling_price - ($stock_info->is_selling_price * ($stock_info->is_discount / 100));
         }
 
 
@@ -244,24 +232,19 @@ class OrdersController extends Controller
         // if currency of order is different then currency of the stock we convert from urrency
         // of stock to the currency of the order
         $op_product_cost = 0;
-        if( $stock_info->is_stock_currency != $order_currency )
-        {
+        if ($stock_info->is_stock_currency != $order_currency) {
             $today_date = date("Y-m-d");
-            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($order_currency)->where('er_date_exchange','=',$today_date)->get();
+            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($order_currency)->where('er_date_exchange', '=', $today_date)->get();
 
-            if(count($currency_exchange) == 0)
-            {
+            if (count($currency_exchange) == 0) {
                 $order_currency = Currency::find($order_currency);
                 $product_currency = Currency::find($stock_currency);
-                $op_product_cost= convertCurrency($stock_price, $product_currency->cc_currency_code, $order_currency->cc_currency_code);
-            }
-            else
-            {
+                $op_product_cost = convertCurrency($stock_price, $product_currency->cc_currency_code, $order_currency->cc_currency_code);
+            } else {
                 $exchange_rate = $currency_exchange[0]['er_exchange_rate'];
                 $op_product_cost = $stock_price * $exchange_rate;
             }
-        }
-        else {
+        } else {
             $op_product_cost = $stock_price;
         }
 
@@ -269,7 +252,6 @@ class OrdersController extends Controller
         $result_array['stock_price']            = $op_product_cost;
 
         return Response()->json($result_array);
-
     }
 
     /**
@@ -279,7 +261,7 @@ class OrdersController extends Controller
      * @access public
      * @param Request $request
      */
-    public function ValidateStockPrice( Request $request )
+    public function ValidateStockPrice(Request $request)
     {
         $stock_price        = $request->input('stock_price');
         $product_id         = $request->input('product_id');
@@ -291,26 +273,21 @@ class OrdersController extends Controller
         $min_product_price  = $product_info->p_product_min_selling_price;
 
         // convert to product currency if needed
-        if( $order_currency != $product_currency )
-        {
+        if ($order_currency != $product_currency) {
             $today_date = date("Y-m-d");
-            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($order_currency)->whereErToCurrency($product_currency)->where('er_date_exchange','=',$today_date)->get();
+            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($order_currency)->whereErToCurrency($product_currency)->where('er_date_exchange', '=', $today_date)->get();
 
-            if(count($currency_exchange) == 0)
-            {
+            if (count($currency_exchange) == 0) {
                 $order_currency     = Currency::find($order_currency);
                 $product_currency   = Currency::find($product_currency);
-                $stock_price        = convertCurrency($stock_price, $order_currency->cc_currency_code , $product_currency->cc_currency_code);
-            }
-            else
-            {
+                $stock_price        = convertCurrency($stock_price, $order_currency->cc_currency_code, $product_currency->cc_currency_code);
+            } else {
                 $exchange_rate  = $currency_exchange[0]['er_exchange_rate'];
                 $stock_price    = $stock_price * $exchange_rate;
             }
         }
         // validate the stock price and the minimum product price
-        if(intval($stock_price) < intval($min_product_price) )
-        {
+        if (intval($stock_price) < intval($min_product_price)) {
             $result_array['is_error']  = 1;
             $result_array['error_msg']  = "You Cannot Use Price less than the minimum acceptable";
             return Response()->json($result_array);
@@ -347,10 +324,35 @@ class OrdersController extends Controller
         );
 
         $result_array = array();
-        $result_array['display'] = view("orders.displaylistproducts",$data)->render();
+        $result_array['display'] = view("orders.displaylistproducts", $data)->render();
 
         return Response()->json($result_array);
     }
+
+    public function DeleteOrderProduct(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        $stock_id = $request->input('stock_id');
+        // dd("stock id and order id", $stock_id, $order_id);
+        $orderProduct = OrderProducts::where('fk_order_id', $order_id)->where('so_stock_id', $stock_id)->first();
+
+        // dd("order product is ", $orderProduct);
+        if (!$orderProduct) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found.'
+            ]);
+        }
+        $stock_id = $orderProduct->so_stock_id;
+        $quantity = $orderProduct->so_product_quantity;
+        $isDeleted = OrderProducts::where('fk_order_id', $order_id)->where('so_stock_id', $stock_id)->delete();
+        Stocks::where('is_id', $stock_id)->increment('is_quanity', $quantity);
+        return response()->json([
+            'success' => (bool)$isDeleted,
+            'message' => $isDeleted ? 'Product deleted successfully!' : 'Failed to delete product.'
+        ]);
+    }
+
 
 
 
@@ -365,9 +367,9 @@ class OrdersController extends Controller
     {
         $customer_id = $request->input('customer_id');
 
-        $rand_barcode       = rand(10000000,99999999999);
-         $barcode_obj = new DNS1D();
-       $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode , "C39+",150 , 50 );
+        $rand_barcode       = rand(10000000, 99999999999);
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39+", 150, 50);
 
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
@@ -395,7 +397,7 @@ class OrdersController extends Controller
             "lst_currency" => $lst_currency,
             "lst_vat_tax" => $lst_vat_tax
         );
-        return view('orders.addform',$data);
+        return view('orders.addform', $data);
     }
 
 
@@ -419,9 +421,9 @@ class OrdersController extends Controller
         $so_order_note              = $request->input('so_order_note');
         $so_product_type              = $request->input('so_product_type');
         $so_order_date              = $request->input('so_order_date');
-        $so_order_date              = date("Y-m-d",strtotime($so_order_date));
+        $so_order_date              = date("Y-m-d", strtotime($so_order_date));
         $so_delivery_date           = $request->input('so_delivery_date');
-        $so_delivery_date           = date("Y-m-d",strtotime($so_delivery_date));
+        $so_delivery_date           = date("Y-m-d", strtotime($so_delivery_date));
         $so_vat_id                  = $request->input('so_vat_id');
         $so_total_cost              = $request->input('so_total_cost');
         $so_order_currency          = $request->input('so_order_currency');
@@ -435,12 +437,10 @@ class OrdersController extends Controller
 
         $Orders = new Orders();
         $is_new = 1;
-        if( $so_id != null )
-        {
-            $Orders= Orders::find($so_id);
+        if ($so_id != null) {
+            $Orders = Orders::find($so_id);
             $is_new = 0;
-        }
-        else {
+        } else {
             $so_creation_date           = date("Y-m-d");
             $fk_user_id                 = session('user_id');
             $Orders->fk_user_id          = $fk_user_id;
@@ -482,7 +482,7 @@ class OrdersController extends Controller
      * @access public
      * @param unknown $os_id
      */
-    public function EditForm( $so_id )
+    public function EditForm($so_id)
     {
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
@@ -495,8 +495,7 @@ class OrdersController extends Controller
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
 
         $order_code = "";
-        if($order_info->so_order_code != null)
-        {
+        if ($order_info->so_order_code != null) {
             $OrderManager = new OrdersManager();
             $order_code = $OrderManager->GenerateOrdereCode();
             unset($OrderManager);
@@ -515,7 +514,7 @@ class OrdersController extends Controller
             "lst_vendors" => $lst_vendors,
             "lst_currency" => $lst_currency
         );
-        return view('orders.editform',$data);
+        return view('orders.editform', $data);
     }
 
     /**
@@ -525,7 +524,7 @@ class OrdersController extends Controller
      * @access public
      * @param Request $request
      */
-    public function AddOrderProduct( Request $request )
+    public function AddOrderProduct(Request $request)
     {
         $order_id               = $request->input('order_id');
         $order_product_id       = $request->input('order_product');
@@ -550,12 +549,10 @@ class OrdersController extends Controller
 
         $order_products = new OrderProducts();
 
-        if($product_info->Category->pc_use_serial_number == 1)
-        {
+        if ($product_info->Category->pc_use_serial_number == 1) {
             $stock_serial_info = StockIds::whereSiStockUid($so_product_serial)->whereSiStockSold(0)->get();
 
-            if(count($stock_serial_info) == 0)
-            {
+            if (count($stock_serial_info) == 0) {
                 $result_array['is_error'] = 1;
                 $result_array['error_msg'] = "Serial Number Not Found In";
                 return Response()->json($result_array);
@@ -570,14 +567,12 @@ class OrdersController extends Controller
             $order_products->so_exchange_rate       = $exchange_rate;
             $order_products->so_stock_id            = $stock_serial_info[0]['fk_stock_id'];
             $order_products->save();
-        }
-        else
-        {
+        } else {
             // Variable for the quantity we still need to fulfill.
             $quantity_to_fulfill = $so_product_quantity;
 
-// Wrap the entire operation in a database transaction.
-// This ensures that if any part fails, all database changes are rolled back.
+            // Wrap the entire operation in a database transaction.
+            // This ensures that if any part fails, all database changes are rolled back.
             try {
                 DB::transaction(function () use (
                     $order_product_id,
@@ -639,13 +634,12 @@ class OrdersController extends Controller
                 $result_array['error_msg'] = $e->getMessage();
                 return response()->json($result_array);
             }
-
         }
 
         $order_info = Orders::find($order_id);
 
 
-        $total_order                = $order_info->so_total_cost + ( $op_product_cost * $so_product_quantity );
+        $total_order                = $order_info->so_total_cost + ($op_product_cost * $so_product_quantity);
         $order_info->so_total_cost  = $total_order;
         $order_info->save();
 
@@ -654,7 +648,6 @@ class OrdersController extends Controller
         $result_array['error_msg']      = 'Order Information Has been saved';
 
         return Response()->json($result_array);
-
     }
 
 
@@ -680,16 +673,13 @@ class OrdersController extends Controller
         $order_currency     = $order_info->so_order_currency;
 
         $today_date = date("Y-m-d");
-        $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($product_currency)->whereErToCurrency($order_currency)->where('er_date_exchange','=',$today_date)->get();
+        $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($product_currency)->whereErToCurrency($order_currency)->where('er_date_exchange', '=', $today_date)->get();
 
         $selling_price = $product_info->p_product_selling_price;
         $op_product_cost = 0;
-        if(count($currency_exchange) == 0)
-        {
+        if (count($currency_exchange) == 0) {
             $op_product_cost    = $selling_price;
-        }
-        else
-        {
+        } else {
             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
             $op_product_cost    = $selling_price * $exchange_rate;
         }
@@ -744,9 +734,9 @@ class OrdersController extends Controller
         $invoice_info->bi_vat_id        = $order_info->so_vat_id;
         $invoice_info->bi_discount      = 0;
         $invoice_info->bi_total_price    = $order_info->so_total_cost;
-        $invoice_info->bi_invoice_currency= $order_info->so_order_currency;
-        $invoice_info->bi_invoice_paid= 1;
-        $invoice_info->bi_invoice_status= 1;
+        $invoice_info->bi_invoice_currency = $order_info->so_order_currency;
+        $invoice_info->bi_invoice_paid = 1;
+        $invoice_info->bi_invoice_status = 1;
         $invoice_info->bi_number_payments = 1;
         $invoice_info->save();
 
@@ -776,23 +766,23 @@ class OrdersController extends Controller
         // order
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
-        foreach ($lst_order_items as $key => $oi_info ) {
-           $invoice_items = new InvoiceProducts();
-           $stock_id = $oi_info->so_stock_id;
-           $fk_product_id = $oi_info->fk_product_id;
-           $stock_info = Stocks::find($stock_id);
-           $product_info = Products::find($fk_product_id);
-           $invoice_items->fk_invoice_id = $bi_id;
-           $invoice_items->ii_item_id           = $fk_product_id;
-           $invoice_items->ii_stock_id          = $stock_id;
-           $invoice_items->ii_item_type         = 1;
-           $invoice_items->ii_item_label        = $product_info->p_product_name;
-           $invoice_items->ii_cost_price        = $oi_info->so_product_cost;
-           $invoice_items->ii_item_price        = $oi_info->so_product_price;
-           $invoice_items->ii_total_price        = $oi_info->so_product_price;
-           $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
-           $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
-           $invoice_items->save();
+        foreach ($lst_order_items as $key => $oi_info) {
+            $invoice_items = new InvoiceProducts();
+            $stock_id = $oi_info->so_stock_id;
+            $fk_product_id = $oi_info->fk_product_id;
+            $stock_info = Stocks::find($stock_id);
+            $product_info = Products::find($fk_product_id);
+            $invoice_items->fk_invoice_id = $bi_id;
+            $invoice_items->ii_item_id           = $fk_product_id;
+            $invoice_items->ii_stock_id          = $stock_id;
+            $invoice_items->ii_item_type         = 1;
+            $invoice_items->ii_item_label        = $product_info->p_product_name;
+            $invoice_items->ii_cost_price        = $oi_info->so_product_cost;
+            $invoice_items->ii_item_price        = $oi_info->so_product_price;
+            $invoice_items->ii_total_price        = $oi_info->so_product_price;
+            $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
+            $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
+            $invoice_items->save();
         }
 
 
@@ -832,7 +822,7 @@ class OrdersController extends Controller
         $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
 
-        $trans_mov= new TransactionMovements();
+        $trans_mov = new TransactionMovements();
         $trans_mov->fk_tran_id              = $at_id;
         $trans_mov->tm_ledger_account       = 601;
         $trans_mov->tm_sub_ledger_account   = 601;
@@ -845,14 +835,13 @@ class OrdersController extends Controller
         $trans_mov->save();
 
         // decrease the quantity of stock after the user pay to this order
-        foreach ($lst_order_items as $key => $oi_info ) {
+        foreach ($lst_order_items as $key => $oi_info) {
             $product_id = $oi_info->fk_product_id;
             $stock_id   = $oi_info->so_stock_id;
             $so_stock_serial  = $oi_info->so_stock_serial;
             $so_serial_number  = $oi_info->so_serial_number;
 
-            if($so_stock_serial > 1)
-            {
+            if ($so_stock_serial > 1) {
                 $stock_info = Stocks::find($stock_id);
                 $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
                 $stock_info->is_quanity = $is_quanity;
@@ -868,16 +857,13 @@ class OrdersController extends Controller
                 $stockid_info = StockIds::find($si_id);
                 $stockid_info->si_stock_sold = 1;
                 $stockid_info->save();
-            }
-            else
-            {
+            } else {
                 $stock_info = Stocks::find($stock_id);
                 $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
                 $stock_info->is_quanity = $is_quanity;
                 $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
                 $stock_info->save();
             }
-
         }
 
 
@@ -898,10 +884,11 @@ class OrdersController extends Controller
      */
     public function DeleteOrderInfo(Request $request)
     {
+        // dd("Delete method");
 
-        $so_id= $request->input('so_id');
+        $so_id = $request->input('so_id');
 
-        $order_info  = Orders::find( $so_id );
+        $order_info  = Orders::find($so_id);
         $order_info->so_is_deleted          = 1;
         $order_info->so_deleted_by          = Session('user_id');
         $order_info->save();
@@ -920,7 +907,7 @@ class OrdersController extends Controller
      * @author Moe Mantach
      * @access public
      */
-    public function POSReceipt($so_id , Request $request)
+    public function POSReceipt($so_id, Request $request)
     {
         $order_info         = Orders::find($so_id);
         $lst_order_items    = OrderProducts::whereFkOrderId($so_id)->get();
@@ -940,7 +927,6 @@ class OrdersController extends Controller
             "cost_total"        => $cost_total,
             "tax_total"         => 0
         );
-        return Response()->view('templates.posinvoices',$data);
+        return Response()->view('templates.posinvoices', $data);
     }
-
 }

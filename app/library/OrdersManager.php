@@ -121,6 +121,7 @@ class OrdersManager
                 $order_array[$index]['product_name']             = $product_info->Products->p_product_name;
                 $order_array[$index]['barcode_img']              = $product_info->Products->p_barcode_img;
                 $order_array[$index]['barcode']                  = $product_info->Products->p_barcode;
+                $order_array[$index]['stock_id']                 = $stock_id;
             }
             else
             {

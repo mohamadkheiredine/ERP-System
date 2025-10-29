@@ -34,6 +34,8 @@ th{
     	<script type="text/javascript" src="{{ url('default/assets/plugins/jquery-scanner-detection/jquery.scannerdetection.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/modules/orders.module.js') }}"></script>
 		<script type="text/javascript" src="{{ url('js/libraries/orders/saveorder.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+
     <script>
         $(function(){
             $('#ORDER_PRODUCT').select2({
@@ -48,6 +50,7 @@ th{
 
 @section('content')
 <div class="card shadow-sm">
+    <div id="modalContainer"></div>
     <div class="card-header">
         <h3 class="card-title">Edit Order</h3>
         <div class="card-toolbar">
@@ -248,6 +251,7 @@ th{
                     				<th title="Products Item">Item Price</th>
                     				<th title="Quanity">Quanity</th>
                     				<th title="Products Pice">Products Pice</th>
+                                    <th title="delete">Delete</th>
                     			</tr>
                     		</thead>
                     		<tbody  id="LstProducts" >
@@ -325,9 +329,9 @@ th{
         				</form>
         			</div>
         			<div class="modal-footer">
-        				<button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
+        				<button id="BTN_CLOSE" name="btn_close" class="btn btn-secondary" onclick="$('#OrderProductsModel').modal('close')">
         					Close
-        					</button>
+        				</button>
         			</div>
         		</div>
         	</div>

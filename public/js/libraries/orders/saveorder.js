@@ -72,14 +72,15 @@ $(function(){
 		orders_module.DisplayListOrderProducts();
 		$('#BTN_ADD_PRODUCT').on('click',orders_module.OpenAddOrderProductsModal);
 		$('#BTN_SAVE_PRODUCT').on('click',orders_module.AddOrderProducts);
+        $(document).on('click', 'button[id*=BTN_DELETE_PRODUCT]', orders_module.DeleteOrderProduct);
 	}
 	 //LstProducts
 	$('#ORDER_PRODUCT').on('change',orders_module.getProductPrice);
 	$('#SO_PRODUCT_COST').on('blur',orders_module.CheckStockPriceValue);
 	$('#BTN_SAVE_ORDER').on('click',orders_module.SaveOrdersInfo);
 	$('#BTN_PAY_ORDER').on('click',orders_module.PayPaymentOrder);
-	 $('#SO_PRODUCT_SERIAL').on('blur',orders_module.getStockInformation);
-	 $('#BTN_CLOSE').on('blur',orders_module.CloseOrder);
+	$('#SO_PRODUCT_SERIAL').on('blur',orders_module.getStockInformation);
+	$('#BTN_CLOSE').on('blur',orders_module.CloseOrder);
 
 
 

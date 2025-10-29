@@ -68,9 +68,8 @@ class LoginController extends Controller
 
 
 
-        if (Auth::attempt(array('u_username' => $username, 'password' => $password),$ua_remember))
-        {
-           $user_info          = Auth::user();
+        if (Auth::attempt(array('u_username' => $username, 'password' => $password), $ua_remember)) {
+            $user_info          = Auth::user();
             // check if user type is administrator to be able to Enter the Admin Section
             /**if( $log_in_user_type != 1 || $log_in_user_type != $user_type )
              {
@@ -82,13 +81,14 @@ class LoginController extends Controller
 
 
             // Save information in the session
-            self::SaveSessionInformaiton($user_info , $ua_remember);
+            self::SaveSessionInformaiton($user_info, $ua_remember);
 
             $result_array['is_error'] = 0;
+            $intendedUrl = $request->cookie("last_page");
+            $result_array['redirect_url'] = $intendedUrl;
+
             $result_array['company_homepage'] = Session("company_homepage");
-        }
-        else
-        {
+        } else {
             $result_array['is_error'] = 1;
             $result_array['error_msg'] = "Invalid Username And/Or Password";
         }
@@ -97,7 +97,7 @@ class LoginController extends Controller
     }
 
 
-    public static function SaveSessionInformaiton($user_info , $ua_remember )
+    public static function SaveSessionInformaiton($user_info, $ua_remember)
     {
         $user_id = $user_info->id;
         $role_id = $user_info->fk_role_id;
@@ -106,23 +106,22 @@ class LoginController extends Controller
 
         $company_tax = $company_info->cd_company_tax;
 
-        if( $company_tax > 0 )
+        if ($company_tax > 0)
             $tax_info = VatAccounts::find($company_info->cd_company_tax);
         else
             $tax_info = new VatAccounts();
 
-        $profile_path     = public_path().'/'.Config::get('constants.USERS_PATH') . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
-        $profile_url = url('/').'/'.Config::get('constants.USERS_PATH') . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
-        if(!is_file($profile_path))
-        {
-            $profile_url= url('images/NoImageAvailable.jpg');
+        $profile_path     = public_path() . '/' . Config::get('constants.USERS_PATH') . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
+        $profile_url = url('/') . '/' . Config::get('constants.USERS_PATH') . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
+        if (!is_file($profile_path)) {
+            $profile_url = url('images/NoImageAvailable.jpg');
         }
 
-        $company_logo_src_url  = url('/')."/".Config::get('constants.COMPANY_PATH').$company_info->cd_logo_base_src.$company_info->cd_logo_file_name.".".$company_info->cd_logo_file_extension;
+        $company_logo_src_url  = url('/') . "/" . Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src . $company_info->cd_logo_file_name . "." . $company_info->cd_logo_file_extension;
 
-        if(strlen($company_info->cd_logo_base_src) > 0 ){
+        if (strlen($company_info->cd_logo_base_src) > 0) {
             $company_logo = $company_logo_src_url;
-        }else{
+        } else {
             $company_logo = url('images/NoImageAvailable.jpg');
         }
 
@@ -135,63 +134,59 @@ class LoginController extends Controller
 
 
 
-        session()->put('user_id' , $user_id );
-        session()->put('allowed_companies' , $allowed_companies );
-        session()->put('user_profile_url' , $profile_url);
-        session()->put('user_fullname' , $user_info->u_fullname);
-        session()->put('user_email' , $user_info->u_email);
-        session()->put('user_name' , $user_info->u_username);
-        session()->put('user_type' , $user_info->u_user_type);
-        session()->put('u_department_id' , $user_info->u_department_id);
-        session()->put('warehouse_id' , $user_info->fk_warehouse_id);
-        session()->put('company_id' , $company_id);
-        session()->put('default_company_id' , $company_id);
+        session()->put('user_id', $user_id);
+        session()->put('allowed_companies', $allowed_companies);
+        session()->put('user_profile_url', $profile_url);
+        session()->put('user_fullname', $user_info->u_fullname);
+        session()->put('user_email', $user_info->u_email);
+        session()->put('user_name', $user_info->u_username);
+        session()->put('user_type', $user_info->u_user_type);
+        session()->put('u_department_id', $user_info->u_department_id);
+        session()->put('warehouse_id', $user_info->fk_warehouse_id);
+        session()->put('company_id', $company_id);
+        session()->put('default_company_id', $company_id);
 
-        if($company_id > 0)
-        {
+        if ($company_id > 0) {
             $currency_id    = $company_info->cd_company_currency;
             $currency_info  = Currency::find($currency_id);
 
             $secondary_currency_id      = $company_info->cd_secondary_currency;
             $secondary_currency_info    = Currency::find($secondary_currency_id);
 
-            session()->put('company_country' , $company_info->cd_company_country);
-            session()->put('company_tax_id' , $company_info->cd_company_tax);
+            session()->put('company_country', $company_info->cd_company_country);
+            session()->put('company_tax_id', $company_info->cd_company_tax);
 
-            if(isset($tax_info) && $company_tax > "0.0")
-                session()->put('company_tax_percentage' , $tax_info->av_vat_rate);
+            if (isset($tax_info) && $company_tax > "0.0")
+                session()->put('company_tax_percentage', $tax_info->av_vat_rate);
             else
-                session()->put('company_tax_percentage' , 0);
+                session()->put('company_tax_percentage', 0);
 
-            session()->put('company_currency' , $company_info->cd_company_currency);
-            session()->put('currency_symbol' , $currency_info->cc_currency_code);
-            session()->put('secondary_currency' , $company_info->cd_secondary_currency);
-            session()->put('company_name_translation' , $company_info->cd_company_name_translation);
-            session()->put('company_name' , $company_info->cd_company_name);
-            session()->put('sec_currency_symbol' , $secondary_currency_info->cc_currency_code);
-            session()->put('default_item' , $company_info->cd_default_item);
-            session()->put('company_transportation_fees' , $company_info->cd_transportation_fees);
-            session()->put('company_logo' ,$company_logo);
-            session()->put('company_homepage' ,$company_info->cd_company_homepage);
-            session()->put('company_starting_year' ,date("Y",strtotime($company_info->cd_starting_date)));
-            session()->put('cd_exchange_rate' ,$company_info->cd_exchange_rate);
-            session()->put('cd_company_country' ,$company_info->cd_company_country);
+            session()->put('company_currency', $company_info->cd_company_currency);
+            session()->put('currency_symbol', $currency_info->cc_currency_code);
+            session()->put('secondary_currency', $company_info->cd_secondary_currency);
+            session()->put('company_name_translation', $company_info->cd_company_name_translation);
+            session()->put('company_name', $company_info->cd_company_name);
+            session()->put('sec_currency_symbol', $secondary_currency_info->cc_currency_code);
+            session()->put('default_item', $company_info->cd_default_item);
+            session()->put('company_transportation_fees', $company_info->cd_transportation_fees);
+            session()->put('company_logo', $company_logo);
+            session()->put('company_homepage', $company_info->cd_company_homepage);
+            session()->put('company_starting_year', date("Y", strtotime($company_info->cd_starting_date)));
+            session()->put('cd_exchange_rate', $company_info->cd_exchange_rate);
+            session()->put('cd_company_country', $company_info->cd_company_country);
         }
 
         $role_info = RolePrivileges::getPrivileges($role_id);
 
 
-        session()->put('role_info' ,json_encode($role_info));
+        session()->put('role_info', json_encode($role_info));
         // save cookie to remember user id and information
 
-        if($ua_remember == true)
-        {
+        if ($ua_remember == true) {
             $cookie_value =  $user_info->u_user_type . "-" . $user_id . "-" . $profile_url . "-" . $user_info->u_fullname . "-" . $user_info->u_email;
             $cookie_value = encrypt($cookie_value);
 
             setcookie('ua_remember_user', $cookie_value, time() + (86400 * 30), "/");
-
         }
     }
-
 }
