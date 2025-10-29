@@ -40,7 +40,8 @@ th{
                     Action
                 </button>
                 <ul class="dropdown-menu">
-                </ul>
+                	<li><a data-action="DOWNLOAD_TEMPLATE" class="dropdown-item" href="#">Download Import Template</a></li>
+              </ul>
             </div>
         </div>
     </div>
