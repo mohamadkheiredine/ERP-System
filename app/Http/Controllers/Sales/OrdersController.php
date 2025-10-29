@@ -333,10 +333,8 @@ class OrdersController extends Controller
     {
         $order_id = $request->input('order_id');
         $stock_id = $request->input('stock_id');
-        // dd("stock id and order id", $stock_id, $order_id);
         $orderProduct = OrderProducts::where('fk_order_id', $order_id)->where('so_stock_id', $stock_id)->first();
 
-        // dd("order product is ", $orderProduct);
         if (!$orderProduct) {
             return response()->json([
                 'success' => false,
