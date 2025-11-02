@@ -526,5 +526,32 @@ transactions_module = {
             	  }
  	            }
  	        });
+		},
+        QuickActions : function(){
+			let  base_url 			= $('input[name=base_url]').val();
+			let _token 				= $('input[name=_token]').val();
+            $.ajax({
+                url: base_url + "/request/accounting/downloadtemplate?_token=" + _token,
+                method: "GET",
+                success: function(data) {
+                    const blob = new Blob([data]);
+                    // Create a Blob URL for the binary data
+                    var blobUrl = window.URL.createObjectURL(blob);
+                    // Create a temporary anchor element
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = 'accounts-template.csv'; // Set the desired file name
+                    // Programmatically trigger a click on the anchor to start the download
+                    document.body.appendChild(a);
+                    a.click();
+                    // Clean up resources
+                    window.URL.revokeObjectURL(blobUrl);
+                    document.body.removeChild(a);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error downloading file:", error);
+                }
+            });
 		}
-}
+    }
+

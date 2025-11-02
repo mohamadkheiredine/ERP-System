@@ -288,6 +288,7 @@ Route::post('/request/accounting/deleteaccountrecord','Accounting\ChartAccountsC
 Route::post('/request/accounting/displaylistaccountstatment','Accounting\AccountingController@Displaylistaccountstatment');
 Route::post('/request/accounting/displaylistaccountstotals','Accounting\AccountingController@Displaylistaccounttotals');
 Route::post('/request/accounting/showtransactionaccountdetails','Accounting\AccountingController@ShowTransactionAccountDetails');
+Route::get('/request/accounting/downloadtemplate', 'Accounting\AccountingController@downloadStatementToExcel');
 
 Route::get('/request/appointments/displaylistreportcallback','CallCenter\AppointmentsController@DisplayListCallbackReport');
 
