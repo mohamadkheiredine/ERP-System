@@ -958,9 +958,20 @@ class AccountingController extends Controller
             ORDER BY accounts.aa_account_ref, tm_currency_id DESC;";
 
         $lst_accounts = DB::select($query);
+        $currencies = DB::select("
+            SELECT DISTINCT curr.cc_currency_code
+            FROM currency curr
+            JOIN acc_transaction_movements tm ON tm.tm_currency_id = curr.cc_id
+        ");
+
+        $lst_total_amounts_by_currency = collect($lst_accounts)->groupBy('cc_currency_code')->map(function($group) {
+            return collect($group)->sum('total_balance');
+        })->toArray();
 
         $data = array(
             "lst_accounts" => $lst_accounts,
+            "currencies" => $currencies,
+            "lst_total_amounts_by_currencies" => $lst_total_amounts_by_currency
         );
         $result_array['is_error'] = 0;
         $result_array['display'] = view("accounting.lstaccountstatmentgroup",$data)->render();
