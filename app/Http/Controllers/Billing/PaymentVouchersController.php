@@ -59,8 +59,10 @@ class PaymentVouchersController extends Controller
     public function index()
     {
         $lst_chart_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
-               $lst_currencies     = Currency::all();
-        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_currencies     = Currency::all();
+        $default_company_id = session('default_company_id');
+
+        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $data = array(
             "lst_chart_accounts" => $lst_chart_accounts,
             "lst_users" => $lst_users,
@@ -93,6 +95,7 @@ class PaymentVouchersController extends Controller
         $pv_end_date                = $request->input('pv_end_date');
         $page_number                = $request->input("page_number");
         $general_search             = $request->input("general_search");
+        $default_company_id = session('default_company_id');
         $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
 
@@ -103,7 +106,7 @@ class PaymentVouchersController extends Controller
         $lastday = date("Y-m-d",strtotime($strlastday));
 
 
-        $voucher_cond       = PaymentVouchers::wherePvIsDeleted(0);
+        $voucher_cond   = PaymentVouchers::wherePvIsDeleted(0)->wherePvCompanyId($default_company_id);
 
         // filter items
         if($pv_account_payable  > 0)
@@ -286,6 +289,7 @@ class PaymentVouchersController extends Controller
     {
         $pv_account_payable         = $request->input('account_payable');
         $pv_account_receivable      = $request->input('account_receivable');
+        $default_company_id = session('default_company_id');
         $pv_start_date              = $request->input('start_date');
         $pv_end_date                = $request->input('end_date');
         $page_number                = $request->input("page_number");
@@ -300,7 +304,7 @@ class PaymentVouchersController extends Controller
         $lastday = date("Y-m-d",strtotime($strlastday));
 
 
-        $voucher_cond       = PaymentVouchers::wherePvIsDeleted(0);
+        $voucher_cond       = PaymentVouchers::wherePvIsDeleted(0)->wherePvCompanyId($default_company_id);
 
         // filter items
         if($pv_account_payable  > 0)
@@ -503,7 +507,8 @@ class PaymentVouchersController extends Controller
         $payment_vouchers   = PaymentVouchers::find( $pv_id );
         $lst_accounts       = ChartAccounts::whereAaIsDeleted(0)->orderBy('aa_account', 'asc')->orderBy('aa_sub_account', 'asc')->get();
         $lst_currencies     = Currency::all();
-        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $default_company_id = session('default_company_id');
+        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
 
         $data = array(
             'payment_vouchers' => $payment_vouchers,
@@ -559,6 +564,7 @@ class PaymentVouchersController extends Controller
         $pv_creation_date           = $request->input('pv_creation_date');
         $pv_amount_secondary_amount           = $request->input('pv_amount_secondary_amount');
         $pv_creation_date           = date("Y-m-d",strtotime($pv_creation_date));
+        $default_company_id = session('default_company_id');
 
         $pv_payment_amount          = $request->input('pv_payment_amount');
         $pv_currency_id             = $request->input('pv_currency_id');
@@ -588,6 +594,7 @@ class PaymentVouchersController extends Controller
         $payment_vouchers->pv_sec_currency_id       = $pv_sec_currency_id;
         $payment_vouchers->pv_exchange_rate         = $pv_exchange_rate;
         $payment_vouchers->pv_amount_secondary_amount   = $pv_amount_secondary_amount;
+        $payment_vouchers->pv_company_id   = $default_company_id;
 
 
 

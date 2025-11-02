@@ -167,7 +167,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Customer:&nbsp;</label><br/>
-                                 <select  name="so_order_customer" id="SO_ORDER_CUSTOMER"  class="form-control form-select" data-control="select2" data-placeholder="Select Customer">
+                                 <select  name="so_order_customer" id="SO_ORDER_CUSTOMER"  class="form-control form-select" required data-control="select2" data-placeholder="Select Customer">
                                         <option value=""> -- Customer -- </option>
                                         @foreach ( $lst_customers as $key => $customer_info )
                                                 <option {{ $order_info->so_order_customer == $customer_info->ic_id ? "selected='selected'" : "" }} value="{{ $customer_info->ic_id }}">( {{ $customer_info->ic_customer_code }} ) {{ $customer_info->ic_customer_name }}</option>

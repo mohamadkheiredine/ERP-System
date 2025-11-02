@@ -77,8 +77,10 @@ class AccountsController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+        $default_company_id = session('default_company_id');
 
-        $accounts_cond = CRMAccounts::whereCaIsDeleted(0);
+
+        $accounts_cond = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id);
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -128,7 +130,8 @@ class AccountsController extends Controller
     public function GetAccountInfoByCode(Request $request)
     {
         $ad_account_code = $request->input('ad_account_code');
-        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->where('ca_account_code','LIKE','%' . $ad_account_code . '%')->get();
+        $default_company_id = session('default_company_id');
+        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->where('ca_account_code','LIKE','%' . $ad_account_code . '%')->get();
         $result_array = array();
 
         if(count($lst_account_info) == 0)
@@ -170,8 +173,9 @@ class AccountsController extends Controller
      */
     public function AddForm()
     {
+        $default_company_id = session('default_company_id');
         $lst_client_categories  = CRMClientCategories::whereCcIsDeleted(0)->get();
-        $lst_users              = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
+        $lst_users              = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->get();
         $lst_leads              = CRMLeads::whereClIsArchive(0)->whereClIsDeleted(0)->get();
         $lst_areas              = Areas::all();
         $lst_regions             = Regions::all();

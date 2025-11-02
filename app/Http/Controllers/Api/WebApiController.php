@@ -18,6 +18,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\library\CustomersManager;
 use App\models\Inventory\Customers;
+use App\models\Sales\Stores;
+use App\models\Sales\StoreWarehouses;
 use League\Csv\Writer;
 use Validator;
 use Input;
@@ -154,8 +156,79 @@ class WebApiController extends Controller
     }
 
 
+    /**
+     * get list of stock for every product with stock available value in the store
+     *
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void
+     */
     public function GetListProducts(Request $request)
     {
+        $online_store = Stores::wherePsIsDeleted(0)->wherePsIsActive(1)->wherePsOnlineStore(1)->first();
+        $result_array = array();
+        $warehouses_array = array();
+        $stock_array = array();
+
+        if(!$online_store)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = "Store not found";
+            return Response()->json($result_array);
+        }
+
+        $ps_id = $online_store->ps_id;
+
+        $lst_warehouses = StoreWarehouses::whereSwStoreId($ps_id)->get();
+
+        if(count($lst_warehouses) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = "No Warehouse Selected for this Store";
+            return Response()->json($result_array);
+        }
+
+        foreach ($lst_warehouses as $index => $warehouse_info)
+        {
+            $warehouses_array[] = $warehouse_info->sw_warehouse_id;
+        }
+
+
+
+        $query ="SELECT p.p_id AS product_id,p.p_product_ref AS product_reference,p.p_product_name AS product_name,p.p_barcode AS barcode,SUM(ist.is_quanity) AS total_quantity,COUNT(ist.is_id) AS stock_records_count,sc.cc_id as currency_id FROM inventory_products p LEFT JOIN inventory_stocks ist ON p.p_id = ist.fk_product_id LEFT JOIN sys_currency sc ON ist.is_price_currency = sc.cc_id WHERE p.p_product_is_deleted = 0 AND ist.is_is_deleted = 0 AND ist.fk_warehouse_id IN(" . implode(',',$warehouses_array) . ") AND ist.is_quanity > 0 GROUP BY p.p_id, p.p_product_ref, p.p_product_name, p.p_barcode,ist.is_price_currency ORDER BY  p.p_product_name;";
+
+
+        $lst_product_data = DB::select($query);
+
+
+        if(count($lst_product_data) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = "No Stock Available for this warehouses";
+            return Response()->json($result_array);
+        }
+
+
+            foreach ($lst_product_data as $index => $product_data)
+            {
+                $stock_array[] = array(
+                   'product_id' =>  $product_data->product_id,
+                   'product_reference' =>  $product_data->product_reference,
+                   'product_name' =>  $product_data->product_name,
+                   'barcode' =>  $product_data->barcode,
+                   'total_quantity' =>  $product_data->total_quantity,
+                   'stock_records_count' =>  $product_data->stock_records_count,
+                   'currency_id' =>  $product_data->currency_id,
+                );
+            }
+
+
+            $result_array['is_error'] = 0;
+            $result_array['stock_records'] = $stock_array;
+
+
+            return Response()->json($result_array);
 
     }
 

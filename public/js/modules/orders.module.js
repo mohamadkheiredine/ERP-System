@@ -94,8 +94,10 @@ orders_module = {
 	    });
 	},
 	OpenAddOrderProductsModal : function(){
-            $('select[name=ii_warehouse_id]').destroy().select2();
-            $('select[name=bi_product]').destroy().select2();
+        // if($('select[name=ii_warehouse_id]'))
+        //     $('select[name=ii_warehouse_id]').destroy().select2();
+        // if($('select[name=bi_product]'))
+        //     $('select[name=bi_product]').destroy().select2();
 		$('#OrderProductsModel').modal('toggle');
 	},
 	AddOrderProducts : function(){

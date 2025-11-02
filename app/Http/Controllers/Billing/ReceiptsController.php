@@ -68,9 +68,9 @@ class ReceiptsController extends Controller
 
         $default_company_id = session('default_company_id');
 
-        $lst_invoices = Invoices::whereBiIsDeleted(0)->get();
+        $lst_invoices = Invoices::whereBiIsDeleted(0)->whereBiCompanyId($default_company_id)->get();
         $lst_customers = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
-        $lst_clients = CRMAccounts::whereCaIsDeleted(0)->get();
+        $lst_clients = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->get();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::all();
         $lst_currencies= Currency::all();

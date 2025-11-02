@@ -382,3 +382,7 @@ ADD COLUMN `ic_sports` TEXT NULL DEFAULT NULL AFTER `ic_work_title`;
 
 
 
+ALTER TABLE `acc_accounting_accounts` ADD COLUMN `aa_company_id` INT NULL DEFAULT 0 AFTER `aa_id`;
+
+
+

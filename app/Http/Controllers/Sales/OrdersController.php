@@ -70,9 +70,10 @@ class OrdersController extends Controller
     public function index()
     {
 
-        $lst_customers  = Customers::whereIcIsDeleted(0)->get();
+        $default_company_id = session('default_company_id');
+        $lst_customers  = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_vendors    = Vendors::whereIvIsDeleted(0)->get();
-        $lst_warehouses = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->whereWWarehouseStatus(1)->get();
 
         $data = array(
             'lst_warehouses' => $lst_warehouses,
@@ -99,6 +100,7 @@ class OrdersController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+        $default_company_id = session('default_company_id');
 
         if ($page_number > 1)
             $skip = ($page_number - 1) * $nbr_rows_per_pages;
@@ -106,7 +108,7 @@ class OrdersController extends Controller
             $skip = 0;
 
 
-        $list_orders = Orders::whereSoIsDeleted(0);
+        $list_orders = Orders::whereSoIsDeleted(0)->whereSoCompanyId($default_company_id);
         if ($so_order_warehouse > 0)
             $list_orders = $list_orders->whereFkWarehouseId($so_order_warehouse);
         if ($so_vendor_id > 0)
@@ -366,18 +368,19 @@ class OrdersController extends Controller
     public function AddForm(Request $request)
     {
         $customer_id = $request->input('customer_id');
+        $default_company_id = session('default_company_id');
 
         $rand_barcode       = rand(10000000, 99999999999);
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39+", 150, 50);
 
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
-        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $lst_vat_tax        = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_currency       = Currency::all();
-        $lst_customers      = Customers::whereIcIsDeleted(0)->get();
+        $lst_customers      = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
         $lst_vendors        = Vendors::whereIvIsDeleted(0)->get();
-        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
+        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
 
         $OrderManager   = new OrdersManager();
         $order_code     = $OrderManager->GenerateOrdereCode();
@@ -431,6 +434,7 @@ class OrdersController extends Controller
         $so_order_customer          = $request->input('so_order_customer') != null ? $request->input('so_order_customer') : 0;
         $so_whole_sale              = $request->input('so_whole_sale');
         $so_vendor_id               = $request->input('so_vendor_id') != null ? $request->input('so_vendor_id') : 0;
+        $default_company_id = session('default_company_id');
 
         $result_array = array();
 
@@ -462,6 +466,7 @@ class OrdersController extends Controller
         $Orders->so_product_type     = $so_product_type;
         $Orders->so_vendor_id        = $so_vendor_id;
         $Orders->so_whole_sale       = $so_whole_sale;
+        $Orders->so_company_id       = $default_company_id;
 
         $Orders->save();
 
@@ -484,15 +489,16 @@ class OrdersController extends Controller
      */
     public function EditForm($so_id)
     {
+        $default_company_id = session('default_company_id');
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
-        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $lst_vat_tax        = VatAccounts::whereAvIsDeleted(0)->get();
-        $order_info         = Orders::find($so_id);
-        $lst_vendors        = Vendors::whereIvIsDeleted(0)->get();
         $lst_currency       = Currency::all();
+        $lst_customers      = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
+        $lst_vendors        = Vendors::whereIvIsDeleted(0)->get();
+        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
+        $order_info         = Orders::find($so_id);
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
-        $lst_customers      = Customers::whereIcIsDeleted(0)->get();
-        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
 
         $order_code = "";
         if ($order_info->so_order_code != null) {
@@ -702,6 +708,7 @@ class OrdersController extends Controller
     public function PayOrder(Request $request)
     {
         $so_id = $request->input('so_id');
+        $default_company_id = session('default_company_id');
         $result_array = array();
 
         $order_info = Orders::find($so_id);
@@ -738,6 +745,7 @@ class OrdersController extends Controller
         $invoice_info->bi_invoice_paid = 1;
         $invoice_info->bi_invoice_status = 1;
         $invoice_info->bi_number_payments = 1;
+        $invoice_info->bi_company_id = $default_company_id;
         $invoice_info->save();
 
         $bi_id = $invoice_info->bi_id;
@@ -749,6 +757,7 @@ class OrdersController extends Controller
 
         $receipt_info = new Receipts();
         $receipt_info->fk_invoice_id = $bi_id;
+        $receipt_info->br_company_id = $default_company_id;
         $receipt_info->br_customer_id = $customer_info->ic_id;
         $receipt_info->br_account_from = $customer_info->ic_account_number;
         $receipt_info->br_receipt_number = $receipt_code;
@@ -824,8 +833,8 @@ class OrdersController extends Controller
 
         $trans_mov = new TransactionMovements();
         $trans_mov->fk_tran_id              = $at_id;
-        $trans_mov->tm_ledger_account       = 601;
-        $trans_mov->tm_sub_ledger_account   = 601;
+        $trans_mov->tm_ledger_account       = 701;
+        $trans_mov->tm_sub_ledger_account   = 701;
         $trans_mov->tm_debit                = 0;
         $trans_mov->tm_credit               = $invoice_info->bi_total_price;
         $trans_mov->tm_creation_date        = date('Y-m-d');

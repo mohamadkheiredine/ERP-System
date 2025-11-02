@@ -173,7 +173,7 @@ class ProductStocksController extends Controller
 
         if($list_type == 'list')
         {
-            $lst_stocks     =Stocks::whereIsIsDeleted(0);
+            $lst_stocks     =Stocks::whereIsIsDeleted(0)->where('is_quanity','>',0);
             if( $stock_warehouse > 0 )
                 $lst_stocks= $lst_stocks->whereFkWarehouseId($stock_warehouse);
             else

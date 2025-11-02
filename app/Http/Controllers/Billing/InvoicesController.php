@@ -561,7 +561,7 @@ class InvoicesController extends Controller
 
         foreach ($lst_warehouses as $key => $value)
         {
-            $warehouses_array[$value->w_id] = $value->ss_supplier_code . " " . $value->ss_supplier_name;
+            $warehouses_array[$value->w_id] = $value->w_warehouse_name;
         }
 
 
@@ -1538,8 +1538,8 @@ class InvoicesController extends Controller
 
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
-                        $TransactionMovement->tm_ledger_account     = 601;
-                        $TransactionMovement->tm_sub_ledger_account = 601;
+                        $TransactionMovement->tm_ledger_account     = 701;
+                        $TransactionMovement->tm_sub_ledger_account = 701;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
                         $TransactionMovement->tm_debit              = 0;
                         $TransactionMovement->tm_credit             = $total_price;
@@ -1552,17 +1552,17 @@ class InvoicesController extends Controller
 
 
 
-                    $TransactionMovement = new TransactionMovements();
-                    $TransactionMovement->fk_tran_id            = $at_id;
-                    $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-                    $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
-                    $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
-                    $TransactionMovement->tm_debit              = $total_price;
-                    $TransactionMovement->tm_credit             = 0;
-                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
-                    $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-                    $TransactionMovement->tm_currency_id        = $bi_invoice_currency;
-                    $TransactionMovement->save();
+//                    $TransactionMovement = new TransactionMovements();
+//                    $TransactionMovement->fk_tran_id            = $at_id;
+//                    $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+//                    $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+//                    $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
+//                    $TransactionMovement->tm_debit              = $total_price;
+//                    $TransactionMovement->tm_credit             = 0;
+//                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
+//                    $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+//                    $TransactionMovement->tm_currency_id        = $bi_invoice_currency;
+//                    $TransactionMovement->save();
 
                 }
 

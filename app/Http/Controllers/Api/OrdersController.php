@@ -1700,9 +1700,10 @@ class OrdersController extends Controller
 
             $op_product_cost    = $price_item;
 
-            $stock_data['product_cost']              = $op_product_cost;
+            //$stock_data['product_cost']              = $op_product_cost;
             $stock_data['sec_cur_product_cost']      = $op_product_cost;
             $stock_data['product_quantity']          = $pos_quantity;
+
 
 
             $total_cost_row = $op_product_cost * $pos_quantity;

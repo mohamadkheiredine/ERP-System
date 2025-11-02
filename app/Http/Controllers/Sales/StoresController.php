@@ -153,6 +153,7 @@ class StoresController extends Controller
         $ps_manager_id                  = $request->input('ps_manager_id');
         $ps_employees_id                  = $request->input('ps_employees_id');
         $ps_warehouses_id                  = $request->input('ps_warehouses_id');
+        $ps_online_store                   = $request->has('ps_online_store') ? 1 : 0;
         $ps_is_active                   = $request->has('ps_is_active') ? 1 : 0;
 
         $result_array = array();
@@ -167,9 +168,10 @@ class StoresController extends Controller
 
         $store_info->ps_company_id          = $ps_company_id;
         $store_info->ps_store_name          = $ps_store_name;
-        $store_info->ps_location          = $ps_location;
+        $store_info->ps_location            = $ps_location;
         $store_info->ps_manager_id          = $ps_manager_id;
-        $store_info->ps_is_active          = $ps_is_active;
+        $store_info->ps_is_active           = $ps_is_active;
+        $store_info->ps_online_store        = $ps_online_store;
 
         $store_info->save();
 
