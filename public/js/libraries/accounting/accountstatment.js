@@ -59,4 +59,5 @@ $(function(){
 		else
 			transactions_module.ShowAccounttransactionDetails();
 	});
+    $(".dropdown-item").on("click",transactions_module.QuickActions);
 });

@@ -9,7 +9,7 @@ Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2020
 
 Page Description :
-debit : + 
+debit : +
 credit : -
 ***********************************************************/
 
@@ -20,16 +20,17 @@ $total_data_debit   = array();
 $total_data_credit   = array();
 $total_income   = array();
 $total_balance  = array();
- 
+$total_amount = 0;
+
 ?>
 
 
 <table class="table table-bordered table-hover">
 	<thead>
-		<tr> 
-			<th style="width:5%">Currency</th> 
+		<tr>
+			<th style="width:5%">Currency</th>
 			<th style="width:30%">Label</th>
-			<th style="width:10%">Account Code</th> 
+			<th style="width:10%">Account Code</th>
 			<th style="width:20%">Debit</th>
 			<th style="width:15%">Credit</th>
 			<th style="width:15%">Balance</th>
@@ -46,6 +47,16 @@ $total_balance  = array();
 			<td><span class="m--font-success">{{ ( $account_info->total_credit > 0 ) ? number_format($account_info->total_credit,2) : 0 }}&nbsp;<b>{{ $account_info->cc_currency_code }}</b></span></td>
 			<td><span class="{{ $account_info->total_balance >= 0 ? 'm--font-success' : 'm--font-danger' }}">{{  number_format($account_info->total_balance,2) }}&nbsp;<b>{{ $account_info->cc_currency_code }}</b></span></td>
 		</tr>
-		@endforeach 
+		@endforeach
 	</tbody>
+    <tfoot>
+        @foreach($lst_total_amounts_by_currencies as $currency => $total)
+            <tr>
+                <th colspan="5" class="text-end">Total ({{ $currency }})</th>
+                <th>{{ number_format($total, 2) }} {{ $currency }}</th>
+                <th></th>
+            </tr>
+        @endforeach
+    </tfoot>
+
 </table>
