@@ -1,0 +1,82 @@
+@extends('layouts.layout',['page_title' => "FNB Floor Management"])
+
+@section('themes')
+    <style>
+        th {
+            cursor: pointer;
+        }
+        #ModelPopUp {
+            width: 800px;
+        }
+        /* Optional: make inputs consistent full width */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+@endsection
+
+@section('plugins')
+    <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/modules/fnb.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/libraries/floors/savefloor.js') }}"></script>
+@endsection
+
+@section('content')
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Add New Floor</h3>
+        <div class="card-toolbar">
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Action
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <form name="frm_save_floor" id="FORM_SAVE_FLOOR">
+            <div class="form-body">
+                <span id="hidden_fields">
+                    {!! csrf_field() !!}
+                </span>
+
+                <div class="alert alert-success" style="display:none">
+                    <strong>Success!</strong> Floor Information is saved successfully!
+                </div>
+
+                <div class="alert alert-danger" style="display:none">
+                    <strong>Error!</strong> You have some form errors. Please check below.
+                </div>
+
+                {{-- Floor Name --}}
+                <div class="form-group">
+                    <label class="control-label">Floor Name <span class="required"> * </span></label>
+                    <input type="text" name="fl_floor_name" id="PS_FLOOR_NAME"
+                           class="form-control" required maxlength="255" value="" />
+                </div>
+
+                {{-- Company --}}
+                <div class="form-group">
+                    <label class="control-label">Company <span class="required"> * </span></label>
+                    <select class="form-select form-control" data-control="select2"
+                            id="FL_BRANCH_ID" name="fl_branch_id">
+                        <option value="0">-- Select Company --</option>
+                        @foreach($lst_companies as $index => $company_info)
+                            <option value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="d-flex justify-content-end">
+                    <button type="submit" name="btn_save_floor" id="BTN_SAVE_FLOOR"
+                            class="btn btn-info me-2">Save</button>
+                    <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

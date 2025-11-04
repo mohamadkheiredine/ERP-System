@@ -742,6 +742,10 @@ Route::post('/request/stores/saveinfo','Sales\StoresController@SaveStoreInfo');
 Route::delete('/request/stores/deletestoreinfo','Sales\StoresController@DeleteStoreInfo');
 Route::get('/request/stores/getlistwarehouses','Sales\StoresController@GetListWarehouses');
 
+Route::get('/request/floors/displaylistfloors', 'Fnb\FnbController@DisplayListFloors');
+Route::post('/request/floors/saveinfo', 'Fnb\FnbController@saveFloorInfo');
+Route::delete('/request/floors/deletefloorinfo', 'Fnb\FnbController@deleteFloorInfo');
+
 Route::get('/request/terminals/displaylist','Sales\TerminalsController@DisplayList');
 Route::post('/request/terminals/saveinfo','Sales\TerminalsController@SaveTerminalInfo');
 Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController@DeleteTerminalInfo');
