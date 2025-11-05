@@ -30,8 +30,8 @@ Add Product Category
 @endsection
 @section('plugins')
 <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/modules/productcategories.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/products/savecategories.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/modules/fnb-category.module.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/fnb/category/saveCategory.js') }}"></script>
 @endsection
 
 @section('content')
@@ -89,15 +89,6 @@ Add Product Category
         </div>
         <div class="row">
           <div class="col-md-4">
-            <div class="form-group">
-              <label> Parent Category </label>
-              <select name="fk_pc_id" id="FK_PC_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Product Category">
-                <option value="">No Parent</option>
-                <?php foreach ( $lst_product_categories as $key => $category_info ) { ?>
-                <option value="<?php echo $category_info->pc_id;  ?>"><?php echo $category_info->pc_category;  ?></option>
-                <?php  } ?>
-              </select>
-            </div>
           </div>
           <div class="col-md-4" style="display: none;">
             <div class="form-group">
@@ -108,60 +99,27 @@ Add Product Category
           <div class="col-md-4">
             <div class="form-group">
               <label class="control-label">Category Name <span class="required"> * </span></label>
-              <input type="text" name="pc_category" id="PC_CATEGORY" class="form-control" required="required" maxlength="100" value="" />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <br />
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="pc_use_serial_number" id="PC_USE_SERIAL_NUMBER" value="1" />
-                <span class="form-check-label fw-semibold text-muted">
-                  Products use Serialnumber
-                </span>
-              </label>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <br />
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="pc_maintenance_category" id="PC_MAINTENANCE_CATEGORY" value="1" />
-                <span class="form-check-label fw-semibold text-muted">
-                  Products Maintenance
-                </span>
-              </label>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <br />
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="pc_is_returnable" id="PC_IS_RETURNABLE" value="1" />
-                <span class="form-check-label fw-semibold text-muted">
-                  Products Returnable
-                </span>
-              </label>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <br />
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="pc_is_perishable" id="PC_IS_PERISHABLE" value="1" />
-                <span class="form-check-label fw-semibold text-muted">
-                  Products Perishable
-                </span>
-              </label>
+              <input type="text" name="mc_category_name" id="MC_CATEGORY_NAME" class="form-control" required="required" maxlength="100" value="" />
             </div>
           </div>
 
           <div class="col-md-12">
             <div class="form-group">
               <label class="control-label"> Category Description</label><br />
-              <textarea style="width:100%;height:250px;resize:none" id="PC_DESCRIPTION" class="form-control" name="pc_description" cols=""></textarea>
+              <textarea style="width:100%;height:250px;resize:none" id="MC_CATEGORY_DESCRIPTION" class="form-control" name="mc_category_description" cols=""></textarea>
             </div>
           </div>
+
+          <div class="form-group">
+          <br />
+          <label class="form-check form-switch form-check-custom form-check-solid">
+            <input class="form-check-input" type="checkbox" name="mc_is_active" id="MC_IS_ACTIVE" value="1" />
+            <span class="form-check-label fw-semibold text-muted">
+              Category Active
+            </span>
+          </label>
+        </div>
+
 
         </div>
         <div class="row" style="height:5px;"></div>

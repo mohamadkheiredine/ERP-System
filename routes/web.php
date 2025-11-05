@@ -586,4 +586,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/terminals/addform','Sales\TerminalsController@AddForm');
     Route::get('/terminals/editform/{pt_id}','Sales\TerminalsController@EditForm');
 
+    Route::get('/fnb/category', 'Fnb\Category\FnbCategoryController@index');
+    Route::get('/fnb/category/addform', 'Fnb\Category\FnbCategoryController@AddForm');
+
 });

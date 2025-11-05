@@ -746,3 +746,6 @@ Route::get('/request/stores/getlistwarehouses','Sales\StoresController@GetListWa
 Route::get('/request/terminals/displaylist','Sales\TerminalsController@DisplayList');
 Route::post('/request/terminals/saveinfo','Sales\TerminalsController@SaveTerminalInfo');
 Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController@DeleteTerminalInfo');
+
+Route::get('/request/category/displaylistcategories', 'Fnb\Category\FnbCategoryController@DisplayList');
+Route::get('/request/category/saveinfo', 'Fnb\Category\FnbCategoryController@SaveCategoryInfo');
