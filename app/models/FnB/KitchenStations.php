@@ -26,4 +26,9 @@ class KitchenStations extends Model
     protected $table = 'fnb_kitchen_stations';
     public $timestamps = false;
     protected $primaryKey = "ks_id";
+
+    public function Branch()
+    {
+        return $this->hasOne('App\models\System\Companies', 'cd_id', 'fl_branch_id');
+    }
 }

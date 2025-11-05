@@ -746,3 +746,7 @@ Route::get('/request/stores/getlistwarehouses','Sales\StoresController@GetListWa
 Route::get('/request/terminals/displaylist','Sales\TerminalsController@DisplayList');
 Route::post('/request/terminals/saveinfo','Sales\TerminalsController@SaveTerminalInfo');
 Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController@DeleteTerminalInfo');
+
+Route::get('/request/kitchen/displaylistkitchens', 'Fnb\FnbKitchenController@DisplayListKitchens');
+Route::post('/request/kitchen/saveinfo', 'Fnb\FnbKitchenController@SaveKitchenInfo');
+Route::delete('/request/kitchen/deletekitcheninfo', 'Fnb\FnbKitchenController@DeleteKitchenInfo');
