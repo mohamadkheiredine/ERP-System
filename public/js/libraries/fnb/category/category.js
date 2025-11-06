@@ -6,11 +6,11 @@ $(function () {
     $("#LstCategoriesGrid").on(
         "click",
         "a[id*=EDIT_CATEGORY_]",
-        kitchen_module.EditCategoryInfo
+        category_module.EditCategoryInfo
     );
     $("#LstCategoriesGrid").on(
         "click",
         "a[id*=DELETE_CATEGORY_]",
-        kitchen_module.DeleteCategoryData
+        category_module.DeleteCategoryData
     );
 });

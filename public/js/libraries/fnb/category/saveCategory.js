@@ -1,40 +1,41 @@
 /**
- *
+ * Category Form Handler
+ * Handles image preview and sends data to category_module.SaveCategoryInfo
  */
-$.editor
-$(function(){
-	 ClassicEditor
-     .create( document.querySelector( '#PC_DESCRIPTION' ) )
-     .then( newEditor => {
-        $.editor = newEditor;
-    } )
-     .catch( error => {
-         console.error( error );
-     } );
-	 $('#PC_AVATAR_PIC').on('change', function () {
-	        var countFiles   = $(this)[0].files.length;
-	        var imgPath      = $(this)[0].value;
-	        var extn         = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
-	        var image_holder = $(".ListFiles");
-	        image_holder.empty();
 
-	        if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
-	            if (typeof (FileReader) != "undefined") {
-	                //loop for each file selected for uploaded.
-	                for (var i = 0; i < countFiles; i++)
-	                {
-	                    var reader = new FileReader();
-	                    reader.onload = function (e) {
-	                        var base_url = $('#BASE_URL').val();
+$(function () {
+    // Initialize CKEditor for description
+    ClassicEditor.create(document.querySelector("#MC_CATEGORY_DESCRIPTION"))
+        .then((newEditor) => {
+            $.editor = newEditor;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 
-	                        $("#AVATAR_PIC").attr('src', e.target.result);
-	                    }
-	                    image_holder.show();
-	                    reader.readAsDataURL($(this)[0].files[i]);
-	                }
+    $("#MC_AVATAR_PIC").on("change", function () {
+        const fileInput = this;
+        const file = fileInput.files[0];
+        const allowedExt = ["jpg", "jpeg", "png", "gif"];
 
-	            }
-	        }
-	    });
-	 $("#BTN_SAVE_CATEGORY").on('click',category_module.SaveCategoryInfo);
-})
+        if (!file) return;
+
+        const ext = file.name.split(".").pop().toLowerCase();
+
+        if (allowedExt.includes(ext)) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // Update the image preview
+                $("#MC_PROFILE_PIC").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert(
+                "Invalid file type. Please upload an image (jpg, jpeg, png, gif)."
+            );
+            $(fileInput).val(""); // reset input
+        }
+    });
+
+    $("#BTN_SAVE_CATEGORY").on("click", category_module.SaveCategoryInfo);
+});

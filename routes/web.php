@@ -588,5 +588,6 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/fnb/category', 'Fnb\Category\FnbCategoryController@index');
     Route::get('/fnb/category/addform', 'Fnb\Category\FnbCategoryController@AddForm');
+    Route::get('/fnb/category/editform/{mc_id}', 'Fnb\Category\FnbCategoryController@EditForm');
 
 });

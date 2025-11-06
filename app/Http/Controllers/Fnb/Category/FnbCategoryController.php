@@ -23,6 +23,7 @@ use Config;
 use App\library\ProductCategoriesManager;
 use App\models\FnB\MenuCategories;
 
+
 class FnbCategoryController extends Controller
 {
 
@@ -36,7 +37,7 @@ class FnbCategoryController extends Controller
     {
         $page_number        = $request->input('page_number', 1);
         $search_query       = $request->input('search_query', '');
-        $nbr_rows_per_pages = Config::get('appconfig.max_rows_per_page', 10);
+        $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
 
         $skip = ($page_number > 1)
             ? ($page_number - 1) * $nbr_rows_per_pages
@@ -79,88 +80,94 @@ class FnbCategoryController extends Controller
 
     public function SaveCategoryInfo(Request $request)
     {
-        $mc_category_name                = $request->input('mc_category_name');
-        $pc_cat_ref                 = strtolower($mc_category_name);
-        $pc_cat_ref                 = str_replace(" ", "", $pc_cat_ref);
-        $pc_cat_ref                 = substr($pc_cat_ref, 0,3);
-        $mc_category_description             = $request->input('mc_category_description');
+        $mc_id                   = $request->input('mc_id');
+        $mc_category_name        = $request->input('mc_category_name');
+        $mc_category_description = $request->input('mc_category_description');
+        $mc_is_active            = $request->has('mc_is_active') ? 1 : 0;
 
-        $mc_id                      = $request->input( "mc_id");
-        $result_array = array();
-        $ProductCategoriesManager  = new FnbCategoriesManager();
-        $pc_avatar_base_src     = "";
-        $pc_avatar_file_name    = "";
-        $pc_avatar_extension    = "";
+        // Prepare reference code
+        $mc_category_code = strtolower($mc_category_name);
+        $mc_category_code = str_replace(" ", "", $mc_category_code);
+        $mc_category_code = substr($mc_category_code, 0, 3);
 
-        if(count($_FILES) > 0)
-        {
+        $result_array = [];
+        $FnbManager = new FnbCategoriesManager();
 
-            $image_data =  $ProductCategoriesManager->UploadAvatarCategory(null);
+        // Initialize image fields
+        $mc_profile_base_src  = '';
+        $mc_profile_file_name = '';
+        $mc_profile_extension = '';
 
-            $pc_avatar_base_src      = $image_data['data']['pc_avatar_base_src'];
-            $pc_avatar_file_name     = $image_data['data']['pc_avatar_file_name'];
-            $pc_avatar_extension     = $image_data['data']['pc_avatar_extentions'];
+        // Handle image upload
+        if (count($_FILES) > 0) {
+            $image_data = $FnbManager->UploadAvatarCategory($mc_id);
 
+            // Only assign if upload succeeded
+            if (isset($image_data['is_error']) && $image_data['is_error'] == 0 && isset($image_data['data'])) {
+                $mc_profile_base_src  = $image_data['data']['mc_profile_base_src'] ?? '';
+                $mc_profile_file_name = $image_data['data']['mc_profile_file_name'] ?? '';
+                $mc_profile_extension = $image_data['data']['mc_profile_extension'] ?? '';
+            }
         }
 
-        $MenuCategory = new MenuCategories();
-        if($mc_id != null)
-        {
-            $MenuCategory = MenuCategories::find($mc_id);
-        }
+        // Create or update record
+        $MenuCategory = $mc_id ? MenuCategories::find($mc_id) : new MenuCategories();
 
-        $MenuCategory->mc_name_category               = $mc_category_name;
-        $MenuCategory->mc_category_description            = $mc_category_description;
-        $MenuCategory->mc_cat_ref                = $pc_cat_ref;
+        $MenuCategory->mc_category_name        = $mc_category_name;
+        $MenuCategory->mc_category_description = $mc_category_description;
+        $MenuCategory->mc_category_code        = $mc_category_code;
+        $MenuCategory->mc_is_active            = $mc_is_active;
 
-        if(strlen($pc_avatar_base_src) > 0)
-        {
-            $MenuCategory->pc_avatar_base_src      = $pc_avatar_base_src;
-            $MenuCategory->pc_avatar_file_name     = $pc_avatar_file_name;
-            $MenuCategory->pc_avatar_extension     = $pc_avatar_extension;
+        // Update image fields only if upload succeeded
+        if (strlen($mc_profile_base_src) > 0) {
+            $MenuCategory->mc_profile_base_src  = $mc_profile_base_src;
+            $MenuCategory->mc_profile_file_name = $mc_profile_file_name;
+            $MenuCategory->mc_profile_extension = $mc_profile_extension;
         }
 
         $MenuCategory->save();
 
         $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Product Category Information Has been saved';
+        $result_array['error_msg'] = 'Menu Category Information has been saved successfully.';
+
+        return response()->json($result_array);
+    }
+
+
+
+    public function EditForm($mc_id)
+    {
+        $fnb_categories        = MenuCategories::find($mc_id);
+
+        $lst_fnb_categories = MenuCategories::whereMcIsDeleted(0)->get();
+
+        $data = array(
+            "fnb_categories" => $fnb_categories,
+            "lst_fnb_categories" => $lst_fnb_categories
+        );
+        return view('fnb.categories.editform', $data);
+    }
+
+    public function DeleteCategoryInfo(Request $request)
+    {
+
+        $mc_id = $request->input('mc_id');
+
+        $fnb_category = MenuCategories::find($mc_id);
+        $fnb_category->mc_is_deleted          = 1;
+        $fnb_category->mc_deleted_by          = Session('user_id');
+        $fnb_category->save();
+
+
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = "Operation Complete Successfully";
 
         return Response()->json($result_array);
     }
 
-    // public function EditForm($pc_id)
-    // {
-    //     $product_categories        = ProductCategories::find($pc_id);
-
-    //     $lst_product_categories = ProductCategories::wherePcIsDeleted(0)->whereNotIn("pc_id", array($pc_id))->get();
-
-    //     $data = array(
-    //         "product_categories" => $product_categories,
-    //         "lst_product_categories" => $lst_product_categories
-    //     );
-    //     return view('products.categories.editcategory', $data);
-    // }
-
-    // public function DeleteProductCategoryInfo(Request $request)
-    // {
-
-    //     $pc_id = $request->input('pc_id');
-
-    //     $product_category = ProductCategories::find($pc_id);
-    //     $product_category->pc_is_deleted          = 1;
-    //     $product_category->pc_deleted_by          = Session('user_id');
-    //     $product_category->save();
-
-
-    //     $result_array['is_error']   = 0;
-    //     $result_array['error_msg']  = "Operation Complete Successfully";
-
-    //     return Response()->json($result_array);
-    // }
-
 
     // /**
-    //  * Display list items in the selecvted pc_id category
+    //  * Display list items in the selecvted mc_id category
     //  *
     //  * @author Moe Mantach
     //  * @access public
@@ -168,10 +175,10 @@ class FnbCategoryController extends Controller
     //  */
     // public function DisplayListItems(Request $request)
     // {
-    //     $pc_id= $request->input('pc_id');
+    //     $mc_id= $request->input('mc_id');
     //     $page_number           = $request->input('page_number');
     //     $search_query           = $request->input('search_query');
-    //     $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+    //     $nbr_rows_per_pages    = Config::get('apmconfig.max_rows_per_page');
     //     if($page_number > 1)
     //         $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
     //     else
@@ -179,7 +186,7 @@ class FnbCategoryController extends Controller
 
 
 
-    //     $products_count = Products::wherePProductIsDeleted(0)->whereFkPcId($pc_id);
+    //     $products_count = Products::wherePProductIsDeleted(0)->whereFkmcId($mc_id);
 
     //     if(strlen($search_query) > 0)
     //         $products_count= $products_count->where('p_product_name' , 'LIKE' , '%' . $search_query . '%');
@@ -190,7 +197,7 @@ class FnbCategoryController extends Controller
     //         $total_pages = ceil( $products_count /$nbr_rows_per_pages );
     //     $total_pages = intval($total_pages);
 
-    //     $lst_products = Products::wherePProductIsDeleted(0)->whereFkPcId($pc_id);
+    //     $lst_products = Products::wherePProductIsDeleted(0)->whereFkmcId($mc_id);
 
 
     //     if(strlen($search_query) > 0)

@@ -15,13 +15,13 @@ Edit Product Category View
 {
     $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_categories->pc_avatar_base_src.$product_categories->pc_avatar_file_name.".".$product_categories->pc_avatar_extension;
     $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_categories->pc_avatar_base_src.$product_categories->pc_avatar_file_name.".".$product_categories->pc_avatar_extension;
- 
+
     if(strlen($product_categories->pc_avatar_base_src) > 0 ){
         $img_src = $image_src_url;
     }else{
         $img_src = url('images/NoImageAvailable.jpg');
     }
-    
+
 }
 
 ?>
@@ -145,7 +145,7 @@ th{
                                         <span class="form-check-label fw-semibold text-muted">
                                            Products use Serialnumber
                                         </span>
-                                    </label>  
+                                    </label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -156,7 +156,7 @@ th{
                                         <span class="form-check-label fw-semibold text-muted">
                                           Products Maintenance
                                         </span>
-                                    </label> 
+                                    </label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -167,7 +167,7 @@ th{
                                         <span class="form-check-label fw-semibold text-muted">
                                           Products Returnable
                                         </span>
-                                    </label> 
+                                    </label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -178,7 +178,7 @@ th{
                                         <span class="form-check-label fw-semibold text-muted">
                                           Products Perishable
                                         </span>
-                                    </label> 
+                                    </label>
                             </div>
                         </div>
                         <div class="col-md-12">

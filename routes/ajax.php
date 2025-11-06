@@ -748,4 +748,5 @@ Route::post('/request/terminals/saveinfo','Sales\TerminalsController@SaveTermina
 Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController@DeleteTerminalInfo');
 
 Route::get('/request/category/displaylistcategories', 'Fnb\Category\FnbCategoryController@DisplayList');
-Route::get('/request/category/saveinfo', 'Fnb\Category\FnbCategoryController@SaveCategoryInfo');
+Route::post('/request/category/saveinfo', 'Fnb\Category\FnbCategoryController@SaveCategoryInfo');
+Route::delete('/request/category/deletecategoryinfo', 'Fnb\Category\FnbCategoryController@DeleteCategoryInfo');

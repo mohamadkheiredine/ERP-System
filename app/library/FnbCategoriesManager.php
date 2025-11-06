@@ -1,101 +1,87 @@
 <?php
-/***********************************************************
-ProductCategoriesManager.php
-Product :
-Version : 1.0
-Release : 1
-Date Created : Jun 14, 2019
-Developed By  : Mohamad Mantach   PHP Department itm Solutions
-All Rights Reserved ,   itm Solutions COPYRIGHT 2019
-
-Page Description :
-
-***********************************************************/
-
 
 namespace App\library;
 
 use App\models\FnB\MenuCategories;
-use Validator;
-use Input;
 use Config;
-use Session;
-use Redirect;
-use Crypt;
-use Cookie;
-use Auth;
-use DB;
 use File;
-use App\models\Users\Users;
-use Illuminate\Support\Facades\Hash;
-use App\models\Inventory\ProductCategories;
-
 
 class FnbCategoriesManager
 {
-    public function UploadAvatarCategory( $rc_id)
+    /**
+     * Uploads a category avatar image and deletes the old one if it exists.
+     */
+    public function UploadAvatarCategory($mc_id)
     {
-        $result_array = array();
+        $result_array = ['is_error' => 1];
 
-
-        if( $rc_id != null ){
-
-            $this->DeleteCategoryAvatar($rc_id);////Delete The old Avatar in case of edit
-
+        // Check if file was uploaded
+        if (!isset($_FILES['mc_avatar_pic']) || $_FILES['mc_avatar_pic']['error'] !== UPLOAD_ERR_OK) {
+            $result_array['error_message'] = 'No file uploaded or upload error.';
+            return $result_array;
         }
 
-        $response  = array();
-        $file_name = $_FILES['pc_avatar_pic']['name'];
-        $file_type = $_FILES['pc_avatar_pic']['type'];
-        $file_tmp  = $_FILES['pc_avatar_pic']['tmp_name'];
-        $base_dir  = date('Y/m/d/');
-        $directory = public_path() . "/" . Config::get('constants.PRODUCTS_PATH') . $base_dir;
-        $main_url  = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $base_dir;
+        // Delete the old avatar if editing existing record
+        if ($mc_id != null) {
+            $this->DeleteCategoryAvatar($mc_id);
+        }
 
+        $file_name = $_FILES['mc_avatar_pic']['name'];
+        $file_tmp  = $_FILES['mc_avatar_pic']['tmp_name'];
+
+        // Prepare directory and URL
+        $base_dir  = date('Y/m/d/') . '/';
+        $directory = public_path(Config::get('constants.CATEGORIES_PATH') . $base_dir);
+        $main_url  = url(Config::get('constants.CATEGORIES_PATH') . $base_dir);
+
+        // Ensure directory exists
         if (!is_dir($directory)) {
-            $result = File::makeDirectory($directory, 0777, true);
+            File::makeDirectory($directory, 0777, true);
         }
 
-        $file_info = explode(".", $file_name);
-        $extention = $file_info[count($file_info) - 1];
-        $file_name = md5(date("Y-m-d H:i:s")) . "_" . date("YmdHis") . "_" . rand(0, 8888888);
-        $file_path = $directory . $file_name . "." . $extention;
-        $image_url = $main_url . $file_name . "." . $extention;
+        // Generate unique file name
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        $unique_name = md5(uniqid()) . "_" . time();
+        $file_path = $directory . $unique_name . "." . $extension;
+        $image_url = $main_url . $unique_name . "." . $extension;
 
-
+        // Move uploaded file
         if (move_uploaded_file($file_tmp, $file_path)) {
-
-            $pc_avatar_base_src   = $base_dir;
-            $pc_avatar_filename   = $file_name;
-            $pc_avatar_extentions = $extention;
-            $result_array['is_error']= 0;
-        }
-
-        if ($result_array['is_error'] == 0) {
-
-            $data = array(
-                "pc_avatar_base_src" => $pc_avatar_base_src,
-                "pc_avatar_file_name" => $pc_avatar_filename,
-                "pc_avatar_extentions" => $pc_avatar_extentions,
-            );
-            $result_array['data'] = $data;
+            $result_array['is_error'] = 0;
+            $result_array['data'] = [
+                "mc_profile_base_src" => $base_dir,
+                "mc_profile_file_name" => $unique_name,
+                "mc_profile_extension" => $extension,
+                "mc_profile_url" => $image_url,
+            ];
+        } else {
+            $result_array['error_message'] = 'Failed to move uploaded file.';
         }
 
         return $result_array;
     }
 
-
-    public function DeleteCategoryAvatar( $pc_id )
+    /**
+     * Deletes a category avatar image if it exists.
+     */
+    public function DeleteCategoryAvatar($mc_id)
     {
-        $product_cat_info = MenuCategories::find( $pc_id);
-        $pc_avatar_base_src     = $product_cat_info->pc_avatar_base_src;
-        $pc_avatar_file_name    = $product_cat_info->pc_avatar_file_name;
-        $pc_avatar_extension    = $product_cat_info->pc_avatar_extension;
-        $image_src_path= public_path() . "/" .Config::get('constants.PRODUCTS_PATH').$pc_avatar_base_src.$pc_avatar_file_name.".".$pc_avatar_extension;
+        $category = MenuCategories::find($mc_id);
 
-        if(file_exists($image_src_path) && strlen($pc_avatar_base_src) > 0 && strlen($pc_avatar_file_name) > 0 && strlen( $pc_avatar_extension) > 0 ){/////Find the related image to the product
-            unlink($image_src_path);
+        if (!$category) {
+            return;
+        }
+
+        $base_src   = $category->mc_profile_base_src;
+        $file_name  = $category->mc_profile_file_name;
+        $extension  = $category->mc_profile_extension;
+
+        if (strlen($base_src) > 0 && strlen($file_name) > 0 && strlen($extension) > 0) {
+            $image_path = public_path(Config::get('constants.CATEGORIES_PATH') . $base_src . $file_name . "." . $extension);
+
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
         }
     }
-
 }
