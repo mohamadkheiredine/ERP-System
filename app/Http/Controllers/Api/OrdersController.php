@@ -93,14 +93,13 @@ class OrdersController extends Controller
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
         $delcustomeraddress          = $request->input('delcustomeraddress');
-        $delivery_id          = $request->input('delivery_id');
+        $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
 
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
-
 
         // validate hash sequence for loggedin user
         if( $c_hash != $g_hash )
