@@ -177,7 +177,8 @@ th{
                                 <select class="bs-select form-control" name="bi_invoice_items_type" id="BI_INVOICE_ITEMS_TYPE" data-actions-box="true">
                                         <option value="">-- Select Type --</option>
                                         <option value="1">Products</option>
-                                        <option value="2">Services</option>
+                                    <option value="2">Services</option>
+                                    <option value="3">Products & Services</option>
                                 </select>
                             </div>
                             @else

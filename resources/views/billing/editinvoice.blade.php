@@ -183,6 +183,7 @@ th{
                                     <option value="">-- Select Type --</option>
                                     <option {{ $invoice_info->bi_invoice_type  == 1 ? "selected" : "" }} value="1">Products</option>
                                     <option {{ $invoice_info->bi_invoice_type  == 2 ? "selected" : "" }} value="2">Services</option>
+                                    <option {{ $invoice_info->bi_invoice_type  == 3 ? "selected" : "" }}  value="3">Products & Services</option>
                                 </select>
                                 <input type="hidden" name="ini_invoice_type" value="{{ $invoice_info->bi_invoice_type }}" />
                             </div>
