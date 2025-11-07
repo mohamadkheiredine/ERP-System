@@ -5,13 +5,18 @@
   <td>{{ $category_info->mc_category_name }}</td>
   <td>{{ $category_info->mc_category_description }}</td>
   <td>
+    <a href="{{ url('/fnb/categories/listitems/' . $category_info->mc_id) }}" align="center" id="DISPLAY_LIST_{{ $category_info->mc_id }}">
+      <i class="fa fa-bars" height="16"></i>
+    </a>
+  </td>
+  <td>
     <a href="#" data-mc_id="{{ $category_info->mc_id }}" id="EDIT_CATEGORY_{{ $category_info->mc_id }}">
-        <i class="fas fa-edit" height="16"></i>
+      <i class="fas fa-edit" height="16"></i>
     </a>
   </td>
   <td>
     <a href="#" data-mc_id="{{ $category_info->mc_id }}" id="DELETE_CATEGORY_{{ $category_info->mc_id }}">
-        <i class="fa fa-minus-circle" aria-hidden="true" height="16"></i>
+      <i class="fa fa-minus-circle" aria-hidden="true" height="16"></i>
     </a>
   </td>
 </tr>

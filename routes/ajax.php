@@ -1,4 +1,8 @@
 <?php
+
+use Illuminate\Support\Facades\Route;
+
+
 Route::post('/request/license/savelicenseinfo','IndexController@GenerateLicenseFile');
 Route::post('/request/login','Auth\LoginController@Login');
 
@@ -750,3 +754,6 @@ Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController
 Route::get('/request/category/displaylistcategories', 'Fnb\Category\FnbCategoryController@DisplayList');
 Route::post('/request/category/saveinfo', 'Fnb\Category\FnbCategoryController@SaveCategoryInfo');
 Route::delete('/request/category/deletecategoryinfo', 'Fnb\Category\FnbCategoryController@DeleteCategoryInfo');
+
+Route::get('/request/fnbcategories/displaylistitems', 'Fnb\Category\FnbCategoryController@DisplayListItems');
+Route::post('/request/fnbcategories/saveiteminfo', 'Fnb\Category\FnbCategoryController@saveItem');
