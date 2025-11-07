@@ -79,7 +79,7 @@ th{
 					</div>
 				</div>
 				<div class="col-xl-4 order-1 order-xl-2 align-right">
-					 
+
 				</div>
 			</div>
 		</div>
@@ -90,7 +90,7 @@ th{
         		<thead>
         			<tr>
         				<th title="#">#</th>
-        				<th title="Id"> ID </th> 
+        				<th title="Id"> ID </th>
         				<th title="Name"> Product Name  </th>
         				<th title="Price"> Selling Price </th>
         				<th title="Discount"> Discount </th>
@@ -101,7 +101,6 @@ th{
         		</thead>
             	<tbody  id="LstProducts" ></tbody>
             </table>
-            									
 		</div>
 		<div class="row">
              <div class="col-md-10" align="left">
@@ -125,5 +124,5 @@ th{
 		</div>
     </div>
 </div>
- 
+
 @endsection

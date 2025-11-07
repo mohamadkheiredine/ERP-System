@@ -1,0 +1,345 @@
+<?php
+
+/***********************************************************
+ProductCategoriesController.php
+Product :
+Version : 1.0
+Release : 1
+Date Created : Jun 19, 2019
+Developed By  : Mohamad Mantach   PHP Department itm Solutions
+All Rights Reserved ,   itm Solutions COPYRIGHT 2019
+
+Page Description :
+
+ ***********************************************************/
+
+
+namespace App\Http\Controllers\Fnb\Category;
+
+use App\Http\Controllers\Controller;
+use App\library\FnbCategoriesManager;
+use Illuminate\Http\Request;
+use Config;
+use App\library\ProductCategoriesManager;
+use App\models\FnB\KitchenStations;
+use App\models\FnB\MenuCategories;
+use App\models\FnB\ProductItems;
+use App\models\Sales\Terminals;
+use App\models\System\Companies;
+use App\models\Accounting\VatAccounts;
+use Milon\Barcode\DNS1D;
+
+
+class FnbCategoryController extends Controller
+{
+
+    public function index()
+    {
+        $data = array();
+        return Response()->view('fnb.categories.fnb-categories', $data);
+    }
+
+    public function DisplayList(Request $request)
+    {
+        $page_number        = $request->input('page_number', 1);
+        $search_query       = $request->input('search_query', '');
+        $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
+
+        $skip = ($page_number > 1)
+            ? ($page_number - 1) * $nbr_rows_per_pages
+            : 0;
+
+        // Base query
+        $query = MenuCategories::where('mc_is_deleted', 0);
+
+        if (!empty($search_query)) {
+            $query->where('mc_category_name', 'LIKE', '%' . $search_query . '%');
+        }
+
+        $categories_count = $query->count();
+        $total_pages = (int) ceil($categories_count / $nbr_rows_per_pages);
+        $categories = $query->skip($skip)->take($nbr_rows_per_pages)->get();
+
+        $data = [
+            'lst_categories' => $categories,
+        ];
+
+        $result_array = [
+            'total_pages' => $total_pages,
+            'display' => view('fnb.categories.listcategories', $data)->render(),
+        ];
+
+        return response()->json($result_array);
+    }
+
+    public function AddForm()
+    {
+
+        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
+
+        $data = array(
+            "lst_categories" => $lst_categories,
+        );
+        return view('fnb.categories.addform', $data);
+    }
+
+
+    public function SaveCategoryInfo(Request $request)
+    {
+        $mc_id                   = $request->input('mc_id');
+        $mc_category_name        = $request->input('mc_category_name');
+        $mc_category_description = $request->input('mc_category_description');
+        $mc_is_active            = $request->has('mc_is_active') ? 1 : 0;
+
+        // Prepare reference code
+        $mc_category_code = strtolower($mc_category_name);
+        $mc_category_code = str_replace(" ", "", $mc_category_code);
+        $mc_category_code = substr($mc_category_code, 0, 3);
+
+        $result_array = [];
+        $FnbManager = new FnbCategoriesManager();
+
+        // Initialize image fields
+        $mc_profile_base_src  = '';
+        $mc_profile_file_name = '';
+        $mc_profile_extension = '';
+
+        // Handle image upload
+        if (count($_FILES) > 0) {
+            $image_data = $FnbManager->UploadAvatarCategory($mc_id);
+
+            // Only assign if upload succeeded
+            if (isset($image_data['is_error']) && $image_data['is_error'] == 0 && isset($image_data['data'])) {
+                $mc_profile_base_src  = $image_data['data']['mc_profile_base_src'] ?? '';
+                $mc_profile_file_name = $image_data['data']['mc_profile_file_name'] ?? '';
+                $mc_profile_extension = $image_data['data']['mc_profile_extension'] ?? '';
+            }
+        }
+
+        // Create or update record
+        $MenuCategory = $mc_id ? MenuCategories::find($mc_id) : new MenuCategories();
+
+        $MenuCategory->mc_category_name        = $mc_category_name;
+        $MenuCategory->mc_category_description = $mc_category_description;
+        $MenuCategory->mc_category_code        = $mc_category_code;
+        $MenuCategory->mc_is_active            = $mc_is_active;
+
+        // Update image fields only if upload succeeded
+        if (strlen($mc_profile_base_src) > 0) {
+            $MenuCategory->mc_profile_base_src  = $mc_profile_base_src;
+            $MenuCategory->mc_profile_file_name = $mc_profile_file_name;
+            $MenuCategory->mc_profile_extension = $mc_profile_extension;
+        }
+
+        $MenuCategory->save();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Menu Category Information has been saved successfully.';
+
+        return response()->json($result_array);
+    }
+
+
+
+    public function EditForm($mc_id)
+    {
+        $fnb_categories        = MenuCategories::find($mc_id);
+
+        $lst_fnb_categories = MenuCategories::whereMcIsDeleted(0)->get();
+
+        $data = array(
+            "fnb_categories" => $fnb_categories,
+            "lst_fnb_categories" => $lst_fnb_categories
+        );
+        return view('fnb.categories.editform', $data);
+    }
+
+    public function DeleteCategoryInfo(Request $request)
+    {
+
+        $mc_id = $request->input('mc_id');
+
+        $fnb_category = MenuCategories::find($mc_id);
+        $fnb_category->mc_is_deleted          = 1;
+        $fnb_category->mc_deleted_by          = Session('user_id');
+        $fnb_category->save();
+
+
+        $result_array['is_error']   = 0;
+        $result_array['error_msg']  = "Operation Complete Successfully";
+
+        return Response()->json($result_array);
+    }
+
+    public function ListProducts($mc_id)
+    {
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
+        $data = array(
+            "mc_id" => $mc_id,
+            "lst_companies" => $lst_companies,
+            "lst_kitchens" => $lst_kitchens
+        );
+        return Response()->view('fnb.categories.itemscategory', $data);
+    }
+
+
+
+    public function DisplayListItems(Request $request)
+    {
+        $category_id   = $request->input('category_id'); // category to filter by
+        $page_number   = $request->input('page_number');
+        $search_query  = $request->input('search_query');
+        $branch_id     = $request->input('branch_id');
+        $kitchen_id    = $request->input('kitchen_id');
+
+        $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
+
+        $skip = ($page_number > 1)
+            ? ($page_number - 1) * $nbr_rows_per_pages
+            : 0;
+
+        // Base query
+        $query = ProductItems::where('fi_is_deleted', 0)
+            ->where('fi_category_id', $category_id);
+
+        // Filters
+        if ($category_id > 0) {
+            $query->where('fi_category_id', $category_id);
+        }
+
+        // Optional filters
+        if ($branch_id > 0) {
+            $query->where('fi_branch_id', $branch_id);
+        }
+
+        if ($kitchen_id > 0) {
+            $query->where('fi_kitchen_id', $kitchen_id);
+        }
+
+        if (!empty($search_query)) {
+            $query->where('fi_item_name', 'LIKE', '%' . $search_query . '%');
+        }
+
+        // Pagination count
+        $total_items  = $query->count();
+        $total_pages  = max(1, ceil($total_items / $nbr_rows_per_pages));
+
+        // Get current page items
+        $lst_products = $query->orderBy('fi_item_name', 'ASC')
+            ->skip($skip)
+            ->take($nbr_rows_per_pages)
+            ->get();
+
+        $data = [
+            "lst_products" => $lst_products,
+        ];
+
+        $result_array = [
+            'total_pages' => $total_pages,
+            'display'     => view("fnb.categories.displaylistitems", $data)->render(),
+        ];
+
+        return response()->json($result_array);
+    }
+
+    public function AddProductItem()
+    {
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
+        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
+        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
+        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
+
+        $rand_barcode = rand(10000000, 99999999999);
+
+        $barcode_obj = new DNS1D();
+        $barcode_obj->setStorPath(public_path('cache/')); // optional
+        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39", 2, 50);
+
+        $data = [
+            "lst_companies" => $lst_companies,
+            "lst_categories" => $lst_categories,
+            "lst_kitchens" => $lst_kitchens,
+            "lst_stations" => $lst_stations,
+            "lst_taxes" => $lst_taxes,
+            "rand_barcode" => $rand_barcode,
+            "bar_code_png" => $bar_code_png
+        ];
+
+        return response()->view('fnb.categories.addproductitem', $data);
+    }
+
+
+    public function saveItem(Request $request)
+    {
+        $fi_id = $request->input('fi_id');
+        $fi_item_name = $request->input('fi_item_name');
+        $fi_branch_id = $request->input('fi_branch_id');
+        $fi_kitchen_id = $request->input('fi_kitchen_id');
+        $fi_category_id = $request->input('fi_category_id');
+        $fi_station_id = $request->input('fi_station_id');
+        $fi_tax_id = $request->input('fi_tax_id');
+        $fi_is_active = $request->input('fi_is_active') ? 1 : 0;
+        $fi_is_sellable = $request->input('fi_is_sellable') ? 1 : 0;
+        $fi_is_stock_item = $request->input('fi_is_stock_item') ? 1 : 0;
+        $fi_print_to_kitchen = $request->input('fi_print_to_kitchen') ? 1 : 0;
+        $fi_barcode = $request->input('p_bar_code');
+
+        $result_array = array();
+
+        $item_info = new ProductItems();
+        if ($fi_id != null) {
+            $item_info = ProductItems::find($fi_id);
+        }
+
+        $item_info->fi_branch_id = $fi_branch_id;
+        $item_info->fi_kitchen_id = $fi_kitchen_id;
+        $item_info->fi_category_id = $fi_category_id;
+        $item_info->fi_station_id = $fi_station_id;
+        $item_info->fi_tax_id = $fi_tax_id;
+        $item_info->fi_is_active = $fi_is_active;
+        $item_info->fi_is_sellable = $fi_is_sellable;
+        $item_info->fi_is_stock_item = $fi_is_stock_item;
+        $item_info->fi_print_to_kitchen = $fi_print_to_kitchen;
+        $item_info->fi_barcode = $fi_barcode;
+        $item_info->fi_item_name = $fi_item_name;
+
+        $item_info->save();
+
+        $fi_id = $item_info->fi_id;
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Information Has been saved';
+
+        return Response()->json($result_array);
+    }
+
+    public function EditItem($mc_id, $fi_id)
+    {
+        // Fetch the item you want to edit
+        $item_info = ProductItems::findOrFail($fi_id);
+
+        // Fetch dropdown lists
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
+        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
+        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
+        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
+
+        $barcode_obj = new DNS1D();
+        $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
+
+        // Pass all data to the edit view
+        return view('fnb.categories.editproductitem', [
+            'item_info'      => $item_info,
+            'lst_companies'  => $lst_companies,
+            'lst_categories' => $lst_categories,
+            'lst_kitchens'   => $lst_kitchens,
+            'lst_stations'   => $lst_stations,
+            'lst_taxes'      => $lst_taxes,
+            'bar_code_png'   => $bar_code_png,
+            'mc_id'          => $mc_id, // keep the category ID for redirect/back link
+        ]);
+    }
+}
