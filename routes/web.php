@@ -597,7 +597,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/fnb/kitchen', 'Fnb\FnbKitchenController@index');
     Route::get('/fnb/kitchen/addform', 'Fnb\FnbKitchenController@addKitchen');
     Route::get('/fnb/kitchen/editform/{ks_id}', 'Fnb\FnbKitchenController@editKitchen');
-    
+
     Route::get("/fnb/tables", 'App\Http\Controllers\Fnb\FnbTablesController@index');
     Route::get("/fnb/tables/addform", "App\Http\Controllers\Fnb\FnbTablesController@addTable");
     Route::get("/fnb/tables/editform/{ft_id}", "App\Http\Controllers\Fnb\FnbTablesController@editTable");
