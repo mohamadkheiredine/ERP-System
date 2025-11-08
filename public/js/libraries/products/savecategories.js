@@ -1,10 +1,10 @@
 /**
- * 
+ *
  */
 $.editor
 $(function(){
 	 ClassicEditor
-     .create( document.querySelector( '#PC_DESCRIPTION' ) )
+     .create( document.querySelector( '#KS_DESCRIPTION' ) )
      .then( newEditor => {
         $.editor = newEditor;
     } )

@@ -53,12 +53,14 @@
           <strong>Error!</strong> You have some form errors. Please check below.
         </div>
 
-        {{-- Kitchen Name --}}
+        <div class="row">
+        <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Kitchen Name <span class="required"></span></label>
           <input type="text" name="ks_name" id="KS_KITCHEN_NAME" class="form-control" required maxlength="255" value="" />
         </div>
-
+        </div>
+            <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Company <span class="required"></span></label>
           <select class="form-select form-control" data-control="select2" id="PS_COMPANY_ID" name="ps_company_id" name="lead_category">
@@ -68,14 +70,14 @@
             @endforeach
           </select>
         </div>
-
-        {{-- Capacity --}}
+            </div>
+            <div class="col-md-12 col-xs-12">
         <div class="form-group">
           <label class="control-label">Description <span class="required"></span></label>
           <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" required></textarea>
         </div>
-
-        {{-- is active? --}}
+            </div>
+            <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <br />
           <label class="form-check form-switch form-check-custom form-check-solid">
@@ -85,12 +87,14 @@
             </span>
           </label>
         </div>
-
+            </div>
+            <div class="col-md-12 col-xs-12">
         {{-- Buttons --}}
         <div class="d-flex justify-content-end">
           <button type="submit" name="btn_save_kitchen" id="BTN_SAVE_KITCHEN" class="btn btn-info me-2">Save</button>
           <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
         </div>
+            </div></div>
       </div>
     </form>
   </div>

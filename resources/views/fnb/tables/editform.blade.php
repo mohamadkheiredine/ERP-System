@@ -47,13 +47,13 @@
         </div>
         <div class="row">
           <div class="row">
-            {{-- Table Name --}}
+                  <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Table Name <span class="required">*</span></label>
               <input type="text" name="ft_label" id="FT_LABEL" class="form-control" required maxlength="255" value="{{ $table_info->ft_label }}">
             </div>
-
-            {{-- Floor --}}
+                  </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Floor <span class="required">*</span></label>
               <select class="form-select form-control" data-control="select2" id="FL_ID" name="fl_id" required>
@@ -65,44 +65,45 @@
                 @endforeach
               </select>
             </div>
-
-
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Capacity <span class="required"></span></label>
               <input type="number" name="ft_capacity" id="FT_CAPACITY" class="form-control" min="2" value="{{ $table_info->ft_capacity }}" required />
             </div>
-
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">X Pos <span class="required"></span></label>
               <input type="text" name="ft_x_pos" id="FT_X_POS" class="form-control" required value="{{ $table_info->ft_x_pos }}">
             </div>
-
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Y Pos <span class="required"></span></label>
               <input type="text" name="ft_y_pos" id="FT_Y_POS" class="form-control" required value="{{ $table_info->ft_y_pos }}">
             </div>
-
-
-            {{-- rotation --}}
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Rotation <span class="required"></span></label>
               <input type="text" name="ft_rotation" id="FT_ROTATION" class="form-control" min="0" required value="{{ $table_info->ft_rotation }}">
             </div>
-
-            {{-- shape --}}
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Shape <span class="required"></span></label>
               <input type="number" name="ft_shape" id="FT_SHAPE" class="form-control" min="0" required value="{{ $table_info->ft_shape }}">
             </div>
-
-            {{-- color --}}
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Color <span class="required"></span></label>
               <input type="color" name="ft_color" id="FT_COLOR" class="form-control" value="#000000" required value="{{ $table_info->ft_color }}">
 
             </div>
-
-            {{-- is active? --}}
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <br />
               <label class="form-check form-switch form-check-custom form-check-solid">
@@ -112,7 +113,7 @@
                 </span>
               </label>
             </div>
-
+              </div>
             <div class="row" style="height:5px;"></div>
             <div class="row">
               <div class="col-md-9"></div>

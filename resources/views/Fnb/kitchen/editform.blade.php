@@ -13,7 +13,7 @@
 </style>
 @endsection
 @section('plugins')
-<script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
+    <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/fnb-kitchen.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/fnb/kitchen/saveKitchen.js') }}"></script>
 @endsection
@@ -45,44 +45,44 @@
         <div class="alert alert-danger" style="display:none">
           <strong>Error!</strong> You have some form errors. Please check below.
         </div>
-        <div class="row">
           <div class="row">
-            {{-- Kitchen Name --}}
+                  <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Kitchen Name <span class="required">*</span></label>
               <input type="text" name="ks_name" id="KS_NAME" class="form-control" required maxlength="255" value="{{ $kitchen_info->ks_name }}">
             </div>
-
+                  </div>
+                  <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Company <span class="required">*</span></label>
               <select class="form-select form-control" data-control="select2" id="KS_BRANCH_ID" name="ks_branch_id" required>
                 <option value="0">-- Select Company --</option>
                 @foreach($lst_companies as $company_info)
-                <option value="{{ $company_info->cd_id }}" {{ $kitchen_info->ks_branch_id == $company_info->cd_id ? 'selected' : '' }}>
+                <option  {{ $kitchen_info->ks_branch_id == $company_info->cd_id  ? "selected" : "" }} value="{{ $company_info->cd_id }}" {{ $kitchen_info->ks_branch_id == $company_info->cd_id ? 'selected' : '' }}>
                   {{ $company_info->cd_company_name }}
                 </option>
                 @endforeach
               </select>
             </div>
-
+                  </div>
+              <div class="col-md-12 col-xs-12">
 
             <div class="form-group">
               <label class="control-label">Description <span class="required"></span></label>
-              <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" required value="{{ $kitchen_info->ks_description }}"></textarea>
+              <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" required >{{ $kitchen_info->ks_description }}</textarea>
             </div>
-
-
-            {{-- is active? --}}
+              </div>
+              <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <br />
               <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="ks_active" id="KS_ACTIVE" value="{{ $kitchen_info->ks_is_active }}" />
+                <input class="form-check-input" type="checkbox" name="ks_active" id="KS_ACTIVE" {{ $kitchen_info->ks_is_active ? "checked" : "" }} value="1" />
                 <span class="form-check-label fw-semibold text-muted">
                   Kitchen Active
                 </span>
               </label>
             </div>
-
+              </div>
             <div class="row" style="height:5px;"></div>
             <div class="row">
               <div class="col-md-9"></div>
@@ -92,6 +92,7 @@
               </div>
             </div>
           </div>
+      </div>
     </form>
   </div>
 </div>

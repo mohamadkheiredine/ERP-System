@@ -586,6 +586,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/terminals/addform','Sales\TerminalsController@AddForm');
     Route::get('/terminals/editform/{pt_id}','Sales\TerminalsController@EditForm');
 
+    Route::get('/fnb/floors', 'Fnb\FnbFloorsController@index');
+    Route::get('/fnb/floors/addform', 'Fnb\FnbFloorsController@addFloor');
+    Route::get('/fnb/floors/editform/{fl_id}', 'Fnb\FnbFloorsController@editFloor');
+
     Route::get('/fnb/category', 'Fnb\Category\FnbCategoryController@index');
     Route::get('/fnb/category/addform', 'Fnb\Category\FnbCategoryController@AddForm');
     Route::get('/fnb/category/editform/{mc_id}', 'Fnb\Category\FnbCategoryController@EditForm');

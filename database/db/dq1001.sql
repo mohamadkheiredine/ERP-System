@@ -385,4 +385,10 @@ ADD COLUMN `ic_sports` TEXT NULL DEFAULT NULL AFTER `ic_work_title`;
 ALTER TABLE `acc_accounting_accounts` ADD COLUMN `aa_company_id` INT NULL DEFAULT 0 AFTER `aa_id`;
 
 
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('227', 'erp_fnb_management', 'Allow User to Access to Fnb Management', 'Allow User to Access to Fnb Management', 'Fnb Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('228', 'erp_floors_management', 'Allow Users to Access to Floors Management', 'Allow Users to Access to Floors Management', 'Fnb Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('229', 'erp_tables_management', 'Allow Users to Access to Tables Management', 'Allow Users to Access to Tables Management', 'Fnb Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('230', 'erp_kitchen_management', 'Allow Users to Access to kitchen Management', 'Allow Users to Access to kitchen Management', 'Fnb Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('231', 'erp_menu_categories', 'Allow Users to Access to Manage Menu Categories', 'Allow Users to Access to Manage Menu Categories', 'Fnb Module');
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('232', 'erp_menu_items', 'Allow Users to Access to Menu items for restaurants', 'Allow Users to Access to Menu items for restaurants', 'Fnb Module');
 

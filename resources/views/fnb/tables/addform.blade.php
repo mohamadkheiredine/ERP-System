@@ -52,14 +52,14 @@
         <div class="alert alert-danger" style="display:none">
           <strong>Error!</strong> You have some form errors. Please check below.
         </div>
-
-        {{-- Table Name --}}
+            <div class="row">
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Table Name <span class="required"></span></label>
           <input type="text" name="ft_label" id="FT_TABLE_NAME" class="form-control" required maxlength="255" value="" />
         </div>
-
-        {{-- Floor --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Floor <span class="required"></span></label>
           <select class="form-select form-control" data-control="select2" id="FL_ID" name="fl_id">
@@ -69,44 +69,45 @@
             @endforeach
           </select>
         </div>
-
-        {{-- Capacity --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Capacity <span class="required"></span></label>
           <input type="number" name="ft_capacity" id="FT_CAPACITY" class="form-control" min="2" value="2" required placeholder="Enter number of seats" />
         </div>
-
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">X Pos <span class="required"></span></label>
           <input type="text" name="ft_x_pos" id="FT_X_POS" class="form-control" required placeholder="Enter X position">
         </div>
-
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Y Pos <span class="required"></span></label>
           <input type="text" name="ft_y_pos" id="FT_Y_POS" class="form-control" required placeholder="Enter Y position">
         </div>
-
-
-        {{-- rotation --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Rotation <span class="required"></span></label>
           <input type="text" name="ft_rotation" id="FT_ROTATION" class="form-control" min="0" required>
         </div>
-
-        {{-- shape --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Shape <span class="required"></span></label>
           <input type="number" name="ft_shape" id="FT_SHAPE" class="form-control" min="0" required>
         </div>
-
-        {{-- color --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Color <span class="required"></span></label>
           <input type="color" name="ft_color" id="FT_COLOR" class="form-control" value="#000000" required>
 
         </div>
-
-        {{-- is active? --}}
+          </div>
+          <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <br />
           <label class="form-check form-switch form-check-custom form-check-solid">
@@ -116,12 +117,13 @@
             </span>
           </label>
         </div>
-
-        {{-- Buttons --}}
+          </div>
+          <div class="col-md-12 col-xs-12">
         <div class="d-flex justify-content-end">
           <button type="submit" name="btn_save_tables" id="BTN_SAVE_TABLE" class="btn btn-info me-2">Save</button>
           <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
         </div>
+          </div></div>
       </div>
     </form>
   </div>

@@ -1994,6 +1994,7 @@ Page Description :
                                         <!--end:Menu sub-->
                                     </div>
                                 @endif
+                                @if(CheckPrivilage('erp_fnb_management') == "allow")
                                 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
                                     <!--begin:Menu link-->
                                     <span class="menu-link menu-center">
@@ -2012,9 +2013,10 @@ Page Description :
                                             </div>
                                             <!--end:Menu content-->
                                         </div>
+                                        @if(CheckPrivilage('erp_floors_management') == "allow")
                                             <div class="menu-item">
                                                 <!--begin:Menu link-->
-                                                <a class="menu-link" href="#">
+                                                <a class="menu-link" href="{{ url('/fnb/floors')  }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
@@ -2022,9 +2024,11 @@ Page Description :
                                                 </a>
                                                 <!--end:Menu link-->
                                             </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_tables_management') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
-                                            <a class="menu-link" href="{{ url('/fnb/kitchen')  }}">
+                                            <a class="menu-link" href="{{ url('/fnb/tables')  }}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
@@ -2032,7 +2036,8 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
                                         </div>
-
+                                        @endif
+                                        @if(CheckPrivilage('erp_kitchen_management') == "allow")
                                         <div class="menu-item">
                                             <!--begin:Menu link-->
                                             <a class="menu-link" href="{{ url('/fnb/kitchen')  }}">
@@ -2044,8 +2049,9 @@ Page Description :
                                             <!--end:Menu link-->
                                         </div>
                                     </div>
-                                    <!--end:Menu sub-->
+                                    @endif
                                 </div>
+                                @endif
 							@if($license_array->CRM_MODULE == 1 && CheckPrivilage('erp_manage_orders') == "allow")
 
 								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">

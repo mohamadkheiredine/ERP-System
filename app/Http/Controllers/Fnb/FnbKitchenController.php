@@ -75,7 +75,7 @@ class FnbKitchenController extends Controller
         $ks_id = $request->input('ks_id');
         $ks_name = $request->input('ks_name');
         $ks_description = $request->input('ks_description');
-        $ks_active = $request->input('ks_active') ? 1 : 0;
+        $ks_active = $request->has('ks_active') ? 1 : 0;
         $ps_company_id = $request->input('ps_company_id');
 
         $result_array = array();
