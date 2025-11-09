@@ -754,3 +754,8 @@ Route::delete('/request/terminals/deleteterminalinfo','Sales\TerminalsController
 Route::get('/request/kitchen/displaylistkitchens', 'Fnb\FnbKitchenController@DisplayListKitchens');
 Route::post('/request/kitchen/saveinfo', 'Fnb\FnbKitchenController@SaveKitchenInfo');
 Route::delete('/request/kitchen/deletekitcheninfo', 'Fnb\FnbKitchenController@DeleteKitchenInfo');
+
+
+Route::get('/request/category/displaylistcategories', 'Fnb\Category\FnbCategoryController@DisplayList');
+Route::post('/request/category/saveinfo', 'Fnb\Category\FnbCategoryController@SaveCategoryInfo');
+Route::delete('/request/category/deletecategoryinfo', 'Fnb\Category\FnbCategoryController@DeleteCategoryInfo');
