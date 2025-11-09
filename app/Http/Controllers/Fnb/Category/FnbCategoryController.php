@@ -171,12 +171,11 @@ class FnbCategoryController extends Controller
         return Response()->json($result_array);
     }
 
-    public function ListProducts($mc_id)
+    public function ListProducts(Request $request)
     {
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
         $data = array(
-            "mc_id" => $mc_id,
             "lst_companies" => $lst_companies,
             "lst_kitchens" => $lst_kitchens
         );

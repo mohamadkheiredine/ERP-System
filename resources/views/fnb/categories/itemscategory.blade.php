@@ -35,7 +35,6 @@
     <!--begin: Search Form -->
     <span id="hidden_fields">
       <input type="hidden" name='page_number' value="1" />
-      <input type="hidden" name="mc_id" value="{{ $mc_id }}" />
     </span>
     <div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
       <div class="row align-items-center">

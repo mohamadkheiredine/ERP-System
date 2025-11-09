@@ -595,7 +595,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/fnb/category/editform/{mc_id}', 'Fnb\Category\FnbCategoryController@EditForm');
 
     Route::get('/fnb/categories/listitems/additem', 'Fnb\Category\FnbCategoryController@AddProductItem');
-    Route::get('/fnb/categories/listitems/{mc_id}', 'Fnb\Category\FnbCategoryController@ListProducts');
+    Route::get('/fnb/menuitems', 'Fnb\Category\FnbCategoryController@ListProducts');
     Route::get('/fnb/categories/edititem/{mc_id}/{fi_id}','Fnb\Category\FnbCategoryController@EditItem' );
 
     Route::get('/fnb/kitchen', 'Fnb\FnbKitchenController@index');

@@ -34,6 +34,32 @@ th{
 <script type="text/javascript" src="{{ url('js/modules/leads.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/inboundcalls.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/callcenter/inboundcalls.js') }}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('#CP_PRODUCT_NAME').select2({
+                dropdownParent: $('#AddMainVoucher'),
+                placeholder: 'Select used items',
+                allowClear: true
+            });
+            $('#CP_PRODUCT_ID').select2({
+                dropdownParent: $('#AddMainVoucher'),
+                placeholder: 'Select used items',
+                allowClear: true
+            });
+            $('#IC_CURRENCY_ID').select2({
+                dropdownParent: $('#AddMainVoucher'),
+                placeholder: 'Select Product',
+                allowClear: true
+            });
+            $('#IC_TECH_ID').select2({
+                dropdownParent: $('#AddMainVoucher'),
+                placeholder: 'Select Technician',
+                allowClear: true
+            });
+
+
+        })
+    </script>
 @endsection
 
 @section('content')

@@ -2048,8 +2048,32 @@ Page Description :
                                             </a>
                                             <!--end:Menu link-->
                                         </div>
+                                            @endif
+                                        @if(CheckPrivilage('erp_menu_categories') == "allow")
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('/fnb/category')  }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Menu Item Categories</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        @endif
+                                        @if(CheckPrivilage('erp_menu_items') == "allow")
+                                            <div class="menu-item">
+                                                <!--begin:Menu link-->
+                                                <a class="menu-link" href="{{ url('/fnb/menuitems')  }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                    <span class="menu-title">Menu Item</span>
+                                                </a>
+                                                <!--end:Menu link-->
+                                            </div>
+                                        @endif
                                     </div>
-                                    @endif
                                 </div>
                                 @endif
 							@if($license_array->CRM_MODULE == 1 && CheckPrivilage('erp_manage_orders') == "allow")
