@@ -31,6 +31,18 @@ th{
 <script type="text/javascript" src="{{ url('js/modules/invoices.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/modules/receipts.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/billing/saveinvoices.js') }}"></script>
+
+    <script>
+        $(function(){
+            $('#BI_PRODUCT').select2({
+                dropdownParent: $('#InserItems'),
+                placeholder: 'Select Item',
+                allowClear: true
+            });
+        })
+
+    </script>
+
 @endsection
 
 @section('content')
@@ -216,7 +228,7 @@ th{
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-4 InternalCompanies" style="display: none">
+                        <div class="col-md-4 InternalCompanies" style="{{ $invoice_info->bi_internal_invoice == 1 ? "" : "display:none" }}">
                             <div class="form-group">
                                 <label> Purchase Company</label><br/>
                                 <select required="required"  name="bi_company_to" id="BI_COMPANY_TO" class="form-control form-select" data-control="select2" data-placeholder="Select Company To">
@@ -227,16 +239,18 @@ th{
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 SupplierDropdownHolder" style="display:none">
+                        <div class="col-md-4 SupplierDropdownHolder" style="{{ $invoice_info->bi_internal_invoice == 1 ? "" : "display:none" }}">
                             <div class="form-group">
                                 <label class="control-label"> Supplier </label><br/>
                                 <div class="SupplierDropdown"></div>
+                                <input type="hidden" name="internal_supplier_target" value="{{ $invoice_info->bi_target_supplier }}" />
                             </div>
                         </div>
-                        <div class="col-md-4 WarehouseDropdownHolder" style="display:none">
+                        <div class="col-md-4 WarehouseDropdownHolder" style="{{ $invoice_info->bi_internal_invoice == 1 ? "" : "display:none" }}">
                             <div class="form-group">
                                 <label class="control-label"> Target warehouse </label><br/>
                                 <div class="WarehouseDropdown"></div>
+                                <input type="hidden" name="internal_warehouse_target" value="{{ $invoice_info->bi_target_warehouse_id }}" />
                             </div>
                         </div>
                         <div class="col-md-4">

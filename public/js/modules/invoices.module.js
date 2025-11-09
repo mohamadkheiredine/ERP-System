@@ -94,9 +94,13 @@ invoices_module = {
         var base_url 			= $('input[name=base_url]').val();
         var _token 				= $('input[name=_token]').val();
         var bi_company_to 	= $('select[name=bi_company_to]').val();
+        var internal_supplier_target 	= $('input[name=internal_supplier_target]').val();
+        var internal_warehouse_target 	= $('input[name=internal_warehouse_target]').val();
         let params = {
             _token : _token,
-            bi_company_to : bi_company_to
+            bi_company_to : bi_company_to,
+            internal_supplier_target : internal_supplier_target,
+            internal_warehouse_target : internal_warehouse_target,
         }
 
         let url = base_url + "/request/billing/getcompanysupplier";
@@ -947,10 +951,14 @@ invoices_module = {
 	    	              if(response.is_error == 0)
 	    	              {
 	    	            	  invoices_module.DisplayListInvoiceProducts();
-                              $("#FRM_INVOICE_ITEMS")[0].reset();
-                              $("#FRM_INVOICE_ITEMS").each(function (){
-                                  $(this).val(null);
-                              })
+                              bootbox.alert(response.error_msg,function(){
+                                  $("#II_WAREHOUSE_ID").val(0).trigger('change.select2');
+                                  $("#BI_PRODUCT").val(0).trigger('change.select2');
+                                  $("input[name=ii_product_serial_number]").val('');
+                                  $("input[name=bi_quanity]").val('0');
+                                  $("input[name=bi_item_price]").val('0');
+                                  $('#OrderProductsModel').modal('toggle');
+                              });
 	    	            	  $("#InserItems").modal('toggle');
 	    	              }
                           else

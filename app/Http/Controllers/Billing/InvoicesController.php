@@ -538,6 +538,8 @@ class InvoicesController extends Controller
     public function GetCompanySupplier(Request $request)
     {
         $bi_company_to = $request->input('bi_company_to');
+        $internal_supplier_target = $request->input('internal_supplier_target');
+        $internal_warehouse_target = $request->input('internal_warehouse_target');
         $lst_suppliers = Suppliers::whereSsCompanyId($bi_company_to)->whereSsIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWCompanyId($bi_company_to)->whereWIsDeleted(0)->get();
         $result_array = array();
@@ -552,6 +554,7 @@ class InvoicesController extends Controller
         $data = array(
             "html_array" => $suppliers_array,
             "name" => 'bi_target_supplier',
+            "value" => $internal_supplier_target,
             "is_required" => 1,
             "id" => 'BI_TARGET_SUPPLIER'
         );
@@ -568,6 +571,7 @@ class InvoicesController extends Controller
         $data = array(
             "html_array" => $warehouses_array,
             "name" => 'bi_target_warehouse_id',
+            "value" => $internal_warehouse_target,
             "is_required" => 1,
             "id" => 'BI_TARGET_WAREHOUSE_ID'
         );
@@ -1332,6 +1336,8 @@ class InvoicesController extends Controller
         $invoice_info->bi_contract_number       = $bi_contract_number;
         $invoice_info->bi_account_number        = $bi_account_number;
         $invoice_info->bi_internal_invoice      = $bi_internal_invoice;
+        $invoice_info->bi_target_supplier      = $bi_target_supplier;
+        $invoice_info->bi_target_warehouse_id      = $bi_target_warehouse_id;
         $invoice_info->bi_official_invoice      = $bi_official_invoice;
         $invoice_info->bi_company_to            = $bi_company_to;
         $invoice_info->save();
@@ -1591,8 +1597,8 @@ class InvoicesController extends Controller
                         $quotation_product->sp_product_serial           = "";
                         $quotation_product->fk_product_id               = $ii_info->ii_item_id;
                         $quotation_product->fk_quotation_id             = $quotation_info->sq_id;
-                        $quotation_product->sp_product_name             = $product_info->p_product_name;
-                        $quotation_product->sp_product_description      = $product_info->p_product_description;
+                        $quotation_product->sp_product_name             = $product_info ? $product_info->p_product_name : "";
+                        $quotation_product->sp_product_description      = $product_info ? $product_info->p_product_description : "";
                         $quotation_product->sp_product_pruchase_price   = $ii_info->ii_item_price;
                         $quotation_product->sp_product_selling_price    = $ii_info->ii_item_price;
                         $quotation_product->sp_product_wholesale_price  = $ii_info->ii_item_price;
