@@ -2,22 +2,20 @@
  *
  */
 
-fnb_itemscategory_module = {
-    DisplayListCategoryItems: function () {
+fnb_items_module = {
+    DisplayListItems: function () {
         var base_url = $("input[name=base_url]").val();
         var _token = $("input[name=_token]").val();
         var page_number = $("input[name=page_number]").val();
-        var category_id = $("input[name=mc_id]").val();
         var search_query = $("input[name=general_search]").val();
         var branch_id = $("select[name=fi_company_name]").val();
         var kitchen_id = $("select[name=fi_kitchen_name]").val();
         $.ajax({
-            url: base_url + "/request/fnbcategories/displaylistitems",
+            url: base_url + "/request/fnbitems/displaylistitems",
             data: {
                 _token: _token,
                 page_number: page_number,
                 search_query: search_query,
-                category_id: category_id,
                 branch_id: branch_id,
                 kitchen_id: kitchen_id,
             },
@@ -25,7 +23,7 @@ fnb_itemscategory_module = {
             dataType: "json",
             beforeSend: function () {},
             success: function (response) {
-                $("#LstProducts").html(response.display);
+                $("#LstItems").html(response.display);
                 $(".group-checkable").change(function () {
                     var set = $("item").find(
                         'tbody > tr > td:nth-child(1) input[type="checkbox"]'
@@ -36,7 +34,7 @@ fnb_itemscategory_module = {
                     });
                     $.uniform.update(set);
                 });
-                $.pagination = $("#ProductsPagination").twbsPagination({
+                $.pagination = $("#ItemsPagination").twbsPagination({
                     totalPages: response.total_pages,
                     visiblePages: 7,
                     onPageClick: function (event, page) {
@@ -48,7 +46,7 @@ fnb_itemscategory_module = {
         });
     },
     SaveItemInfo: function () {
-        return fnb_itemscategory_module.SaveItemInfoSubmitHandler();
+        return fnb_items_module.SaveItemInfoSubmitHandler();
     },
 
     SaveItemInfoSubmitHandler: function () {
@@ -108,25 +106,16 @@ fnb_itemscategory_module = {
                 var base_url = $("#BASE_URL").val();
                 var str_params = $("#FORM_SAVE_ITEM").serialize();
 
-                // Detect add or edit
-                const fi_id = $("input[name=fi_id]").val(); // empty if new item
-                const fi_category_id = $("#FI_CATEGORY_ID").val();
-
                 $.ajax({
-                    url: base_url + "/request/fnbcategories/saveiteminfo",
+                    url: base_url + "/request/menuitems/saveiteminfo",
                     data: str_params,
                     method: "POST",
                     dataType: "json",
                     success: function (response) {
                         if (response.is_error == 0) {
-                            const redirectCategory = fi_id
-                                ? fi_category_id
-                                : -1;
-
                             window.location.href =
                                 base_url +
-                                "/fnb/categories/listitems/" +
-                                redirectCategory;
+                                "/fnb/menuitems"
                         } else {
                             error3
                                 .show()
@@ -147,5 +136,28 @@ fnb_itemscategory_module = {
 
     backToPreviousPage: function () {
         window.history.back();
+    },
+
+    DeleteItem: function () {
+        var fi_id = $(this).data("fi_id");
+        bootbox.confirm("Are you sure you want to delete ?", function (result) {
+            //result
+            if (result == true) {
+                var base_url = $("#BASE_URL").val();
+                var _token = $("input[name=_token]").val();
+                var str_params = { fi_id: fi_id, _token: _token };
+                $.ajax({
+                    url: base_url + "/request/fnbitems/deleteiteminfo",
+                    data: str_params,
+                    dataType: "Json",
+                    type: "delete",
+                    success: function (response) {
+                        if (response.is_error == 0) {
+                            fnb_items_module.DisplayListItems();
+                        }
+                    },
+                });
+            }
+        });
     },
 };
