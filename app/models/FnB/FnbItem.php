@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductItems extends Model
+class FnbItem extends Model
 {
     protected $table = 'fnb_item';
     public $timestamps = false;

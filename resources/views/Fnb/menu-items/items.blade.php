@@ -1,4 +1,4 @@
-@extends('layouts.layout',['page_title' => "Products Menu Catgegory Management"])
+@extends('layouts.layout',['page_title' => "Items Menu Catgegory Management"])
 
 @section('themes')
 <style>
@@ -13,14 +13,14 @@
 </style>
 @endsection
 @section('plugins')
-<script type="text/javascript" src="{{ url('js/modules/fnb-itemscategory.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/fnb/category/itemscategory.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/modules/fnb-items.module.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/fnb/menu-items/items.js') }}"></script>
 @endsection
 
 @section('content')
 <div class="card shadow-sm">
   <div class="card-header">
-    <h3 class="card-title">Products</h3>
+    <h3 class="card-title">Items</h3>
     <div class="card-toolbar">
       <div class="btn-group">
         <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -51,7 +51,6 @@
                   <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" placeholder="Search" />
                 </div>
 
-                <!-- Company select -->
                 <div>
                   <select class="form-select form-select-solid w-auto" data-control="select2" id="FI_COMPANY_ID" name="fi_company_name">
                     <option value="0">-- Select Company --</option>
@@ -63,7 +62,6 @@
                   </select>
                 </div>
 
-                <!-- Kitchen select -->
                 <div>
                   <select class="form-select form-select-solid w-auto" data-control="select2" id="FI_KITCHEN_ID" name="fi_kitchen_name">
                     <option value="0">-- Select Kitchen --</option>
@@ -91,22 +89,23 @@
       </div>
       <!--end: Search Form -->
       <!--begin: Datatable -->
-      <div id="LstProductsMain" class="table-responsive">
+      <div id="LstItemsMain" class="table-responsive">
         <table class="table" id="html_table" width="100%">
           <thead>
             <tr>
               <th title="#">#</th>
               <th title="Id"> ID </th>
-              <th title="Name"> Product Name </th>
+              <th title="Name"> Item Name </th>
               <th title="edit"> edit </th>
+              <th title="delete">Delete</th>
             </tr>
           </thead>
-          <tbody id="LstProducts"></tbody>
+          <tbody id="LstItems"></tbody>
         </table>
       </div>
       <div class="row">
         <div class="col-md-10" align="left">
-          <ul id="ProductsPagination" class="pagination-sm"></ul>
+          <ul id="ItemsPagination" class="pagination-sm"></ul>
         </div>
         <div class="col-md-2" align="right"></div>
       </div>
@@ -114,11 +113,11 @@
       <div class="row">
         <div class="col-md-8"></div>
         <div class="col-md-4" align="right">
-          <a href="{{ url('fnb/categories/listitems/additem') }}" class="btn btn-info">
+          <a href="{{ url('fnb/menuitems/additem') }}" class="btn btn-info">
             <span>
               <i class="fas fa-user"></i>
               <span>
-                New Product Item
+                New Item
               </span>
             </span>
           </a>

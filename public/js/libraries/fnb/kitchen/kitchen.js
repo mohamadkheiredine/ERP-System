@@ -15,6 +15,6 @@ $(function () {
     $("#LstKitchensGrid").on(
         "click",
         "a[id*=DELETE_KITCHEN_]",
-        kitchen_module.DeleteKitchenData
+    kitchen_module.DeleteKitchenData
     );
 });

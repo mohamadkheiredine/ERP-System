@@ -73,7 +73,7 @@
             <th style="width:4px;white-space: nowrap;" title="Id">ID</th>
             <th title="Category Name">Name</th>
             <th title="Category Description">Description</th>
-            <th style="width:10px;">Products</th>
+            {{-- <th style="width:10px;">Products</th> --}}
             <th style="width:4px;white-space: nowrap;" title="#">edit</th>
             <th style="width:4px;white-space: nowrap;" title="#">Delete</th>
           </tr>
