@@ -186,7 +186,7 @@ class FnbCategoryController extends Controller
 
     public function DisplayListItems(Request $request)
     {
-        $category_id   = $request->input('category_id'); // category to filter by
+        $category_id   = $request->input('category_id');
         $page_number   = $request->input('page_number');
         $search_query  = $request->input('search_query');
         $branch_id     = $request->input('branch_id');
@@ -207,7 +207,6 @@ class FnbCategoryController extends Controller
             $query->where('fi_category_id', $category_id);
         }
 
-        // Optional filters
         if ($branch_id > 0) {
             $query->where('fi_branch_id', $branch_id);
         }
@@ -224,7 +223,6 @@ class FnbCategoryController extends Controller
         $total_items  = $query->count();
         $total_pages  = max(1, ceil($total_items / $nbr_rows_per_pages));
 
-        // Get current page items
         $lst_products = $query->orderBy('fi_item_name', 'ASC')
             ->skip($skip)
             ->take($nbr_rows_per_pages)
@@ -242,103 +240,4 @@ class FnbCategoryController extends Controller
         return response()->json($result_array);
     }
 
-    public function AddProductItem()
-    {
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
-        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
-        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
-        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
-
-        $rand_barcode = rand(10000000, 99999999999);
-
-        $barcode_obj = new DNS1D();
-        $barcode_obj->setStorPath(public_path('cache/')); // optional
-        $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39", 2, 50);
-
-        $data = [
-            "lst_companies" => $lst_companies,
-            "lst_categories" => $lst_categories,
-            "lst_kitchens" => $lst_kitchens,
-            "lst_stations" => $lst_stations,
-            "lst_taxes" => $lst_taxes,
-            "rand_barcode" => $rand_barcode,
-            "bar_code_png" => $bar_code_png
-        ];
-
-        return response()->view('fnb.categories.addproductitem', $data);
-    }
-
-
-    public function saveItem(Request $request)
-    {
-        $fi_id = $request->input('fi_id');
-        $fi_item_name = $request->input('fi_item_name');
-        $fi_branch_id = $request->input('fi_branch_id');
-        $fi_kitchen_id = $request->input('fi_kitchen_id');
-        $fi_category_id = $request->input('fi_category_id');
-        $fi_station_id = $request->input('fi_station_id');
-        $fi_tax_id = $request->input('fi_tax_id');
-        $fi_is_active = $request->input('fi_is_active') ? 1 : 0;
-        $fi_is_sellable = $request->input('fi_is_sellable') ? 1 : 0;
-        $fi_is_stock_item = $request->input('fi_is_stock_item') ? 1 : 0;
-        $fi_print_to_kitchen = $request->input('fi_print_to_kitchen') ? 1 : 0;
-        $fi_barcode = $request->input('p_bar_code');
-
-        $result_array = array();
-
-        $item_info = new ProductItems();
-        if ($fi_id != null) {
-            $item_info = ProductItems::find($fi_id);
-        }
-
-        $item_info->fi_branch_id = $fi_branch_id;
-        $item_info->fi_kitchen_id = $fi_kitchen_id;
-        $item_info->fi_category_id = $fi_category_id;
-        $item_info->fi_station_id = $fi_station_id;
-        $item_info->fi_tax_id = $fi_tax_id;
-        $item_info->fi_is_active = $fi_is_active;
-        $item_info->fi_is_sellable = $fi_is_sellable;
-        $item_info->fi_is_stock_item = $fi_is_stock_item;
-        $item_info->fi_print_to_kitchen = $fi_print_to_kitchen;
-        $item_info->fi_barcode = $fi_barcode;
-        $item_info->fi_item_name = $fi_item_name;
-
-        $item_info->save();
-
-        $fi_id = $item_info->fi_id;
-
-        $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Information Has been saved';
-
-        return Response()->json($result_array);
-    }
-
-    public function EditItem($mc_id, $fi_id)
-    {
-        // Fetch the item you want to edit
-        $item_info = ProductItems::findOrFail($fi_id);
-
-        // Fetch dropdown lists
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
-        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
-        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
-        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
-
-        $barcode_obj = new DNS1D();
-        $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
-
-        // Pass all data to the edit view
-        return view('fnb.categories.editproductitem', [
-            'item_info'      => $item_info,
-            'lst_companies'  => $lst_companies,
-            'lst_categories' => $lst_categories,
-            'lst_kitchens'   => $lst_kitchens,
-            'lst_stations'   => $lst_stations,
-            'lst_taxes'      => $lst_taxes,
-            'bar_code_png'   => $bar_code_png,
-            'mc_id'          => $mc_id, // keep the category ID for redirect/back link
-        ]);
-    }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace App\models\Fnb;
+namespace App\models\FnB;
 
 use DB;
 use Illuminate\Http\Request;
