@@ -7,7 +7,7 @@
   }
 
   #ModelPopUp {
-    width: 800px;
+    width: 100%;
   }
 
   .form-group {
@@ -198,14 +198,162 @@
           </div>
         </div>
 
-
         <div class="d-flex justify-content-end m-8">
           <button type="submit" name="btn_save_item" id="BTN_SAVE_ITEM" class="btn btn-info me-2">Save</button>
           <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
         </div>
-
-      </div>
     </form>
+
+    <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_1">Modifiers</a>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
+        {{-- content of my link table --}}
+        <div id="LstItemsMain" class="table-responsive">
+          <table class="table" id="html_table" width="100%">
+            <thead>
+              <tr>
+                <th title="#">#</th>
+                <th title="Id">ID</th>
+                <th title="Name">Item Name</th>
+                <th title="edit">Modifier Name</th>
+                <th title="override cost">Override Cost</th>
+                <th title="delete">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="LstItemsModifiers"></tbody>
+          </table>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-10" align="left">
+            <ul id="ItemsModifiersPagination" class="pagination-sm"></ul>
+          </div>
+          <div align="right">
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModelPopUp">
+              Add Modifier
+            </button>
+          </div>
+        </div>
+
+        {{-- modal here --}}
+        <div class="modal fade" id="ModelPopUp" tabindex="2" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add New Modifier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <form name="frm_save_items_modifiers" id="FORM_SAVE_ITEM_MODIFIERS">
+                  <div class="form-body">
+                    <span id="hidden_fields">
+                      {!! csrf_field() !!}
+                      <input type="hidden" id="FK_MENU_ITEM_ID" name="fk_menu_item_id" value="{{ $item_info->fi_id }}">
+                    </span>
+
+                    <div class="alert alert-success" style="display:none">
+                      <strong>Success!</strong> Information is saved successfully!
+                    </div>
+
+                    <div class="alert alert-danger" style="display:none">
+                      <strong>Error!</strong> You have some form errors. Please check below.
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Modifier</label>
+                          <select class="form-select form-control" data-control="select2" id="FK_MODIFIER_ID" name="fk_modifier_id">
+                            <option value="0">-- Select Modifier --</option>
+                            @foreach($lst_modifiers as $modifier_info)
+                            <option value="{{ $modifier_info->m_id }}">{{ $modifier_info->m_modifier_name }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Product</label>
+                          <select class="form-select form-control" data-control="select2" id="IM_PRODUCT_ID" name="im_product_id">
+                            <option value="0">-- Select Product --</option>
+                            @foreach($lst_products as $product_info)
+                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Currency</label>
+                          <select class="form-select form-control" data-control="select2" id="IM_CURRENCY_ID" name="im_currency_id">
+                            <option value="0">-- Select Currency --</option>
+                            @foreach($lst_currencies as $currency_info)
+                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mt-3">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Type</label>
+                          <select class="form-select form-control" data-control="select2" id="IM_TYPE_ID" name="im_type_id">
+                            <option value="0">-- Select Type --</option>
+                            <option value="1">Add</option>
+                            <option value="2">Remove</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Override Cost</label>
+                          <input type="text" name="im_override_cost" id="IM_OVERRIDE_COST" class="form-control" required />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" name="im_is_remove_ingredient" id="IM_IS_REMOVE_INGREDIENT" value="1" />
+                            <span class="form-check-label fw-semibold text-muted">Remove Ingredient</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12" align="right">
+
+                        <button type="submit" class="btn btn-primary" id="BTN_SAVE_MODIFIER">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+  </form>
+</div>
 </div>
 @endsection

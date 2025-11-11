@@ -7,7 +7,7 @@
   }
 
   #ModelPopUp {
-    width: 800px;
+    width: 100%;
   }
 
   .form-group {
@@ -118,7 +118,7 @@
         </div>
 
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="form-group">
               <label class="control-label">Station <span class="required"></span></label>
               <select class="form-select form-control" data-control="select2" id="FI_STATION_ID" name="fi_station_id">
@@ -130,7 +130,7 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="form-group">
               <label class="control-label">TAX <span class="required"></span></label>
               <select class="form-select form-control" data-control="select2" id="FI_TAX_ID" name="fi_tax_id">
@@ -141,8 +141,6 @@
               </select>
             </div>
           </div>
-
-
         </div>
 
         <div class="row">
@@ -195,11 +193,7 @@
             </div>
           </div>
         </div>
-
       </div>
-
-
-
   </div>
 
 

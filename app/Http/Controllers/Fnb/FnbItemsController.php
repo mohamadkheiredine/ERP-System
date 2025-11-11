@@ -11,6 +11,9 @@ use App\models\FnB\FnbItem;
 use App\models\Sales\Terminals;
 use App\models\System\Companies;
 use App\models\Accounting\VatAccounts;
+use App\models\FnB\Modifier;
+use App\models\Inventory\Products;
+use App\models\System\Currency;
 use Milon\Barcode\DNS1D;
 
 
@@ -42,7 +45,6 @@ class FnbItemsController extends Controller
             ? ($page_number - 1) * $nbr_rows_per_pages
             : 0;
 
-        // Base query
         $query = FnbItem::where('fi_is_deleted', 0);
 
         if ($branch_id > 0) {
@@ -162,6 +164,10 @@ class FnbItemsController extends Controller
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
 
+        $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)->get();
+        $lst_currencies = Currency::get();
+
         return view('fnb.menu-items.edititem', [
             'item_info'      => $item_info,
             'lst_companies'  => $lst_companies,
@@ -169,7 +175,10 @@ class FnbItemsController extends Controller
             'lst_kitchens'   => $lst_kitchens,
             'lst_stations'   => $lst_stations,
             'lst_taxes'      => $lst_taxes,
-            'bar_code_png'   => $bar_code_png
+            'bar_code_png'   => $bar_code_png,
+            'lst_modifiers'  => $lst_modifiers,
+            'lst_products'   => $lst_products,
+            'lst_currencies' => $lst_currencies
         ]);
     }
 

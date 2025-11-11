@@ -39,7 +39,7 @@ fnb_items_module = {
                     visiblePages: 7,
                     onPageClick: function (event, page) {
                         $("input[name=page_number]").val(page);
-                        itemscategory_module.DisplayListItems();
+                        fnb_items_module.DisplayListItems();
                     },
                 });
             },
@@ -113,9 +113,7 @@ fnb_items_module = {
                     dataType: "json",
                     success: function (response) {
                         if (response.is_error == 0) {
-                            window.location.href =
-                                base_url +
-                                "/fnb/menuitems"
+                            window.location.href = base_url + "/fnb/menuitems";
                         } else {
                             error3
                                 .show()
@@ -154,6 +152,168 @@ fnb_items_module = {
                     success: function (response) {
                         if (response.is_error == 0) {
                             fnb_items_module.DisplayListItems();
+                        }
+                    },
+                });
+            }
+        });
+    },
+
+    DisplayListItemsModifiers: function () {
+        var base_url = $("input[name=base_url]").val();
+        var _token = $("input[name=_token]").val();
+
+        var page_number = $("input[name=page_number]").val();
+        var modifier_id = $("select[name=fk_modifier_id]").val();
+        var product_id = $("select[name=im_product_id]").val();
+        var currency_id = $("select[name=im_currency_id]").val();
+        var item_id = $("input[name=fk_menu_item_id]").val();
+
+        $.ajax({
+            url:
+                base_url +
+                "/request/fnbitemsmodifiers/displaylistitemsmodifiers",
+            data: {
+                _token: _token,
+                page_number: page_number,
+                modifier_id: modifier_id,
+                product_id: product_id,
+                currency_id: currency_id,
+                item_id: item_id,
+            },
+            method: "GET",
+            dataType: "json",
+            beforeSend: function () {},
+            success: function (response) {
+                $("#LstItemsModifiers").html(response.display);
+                $(".group-checkable").change(function () {
+                    var set = $("table").find(
+                        'tbody > tr > td:nth-child(1) input[type="checkbox"]'
+                    );
+                    var checked = $(this).prop("checked");
+                    $(set).each(function () {
+                        $(this).prop("checked", checked);
+                    });
+                    $.uniform.update(set);
+                });
+                $.pagination = $("#ItemsModifiersPagination").twbsPagination({
+                    totalPages: response.total_pages,
+                    visiblePages: 7,
+                    onPageClick: function (event, page) {
+                        $("input[name=page_number]").val(page);
+                        fnb_items_module.DisplayListItemsModifiers();
+                    },
+                });
+            },
+        });
+    },
+
+    SaveItemModifierInfo: function () {
+        return fnb_items_module.SaveItemModifierHandlerSubmit();
+    },
+
+    SaveItemModifierHandlerSubmit: function () {
+        console.log("AAAAAAAAAAAAAAAAAAAAAAA");
+        var ItemModifierForm = $("#FORM_SAVE_ITEM_MODIFIERS");
+        var error3 = $(".alert-danger", ItemModifierForm);
+        var success3 = $(".alert-success", ItemModifierForm);
+
+        ItemModifierForm.validate({
+            errorElement: "span",
+            errorClass: "help-block help-block-error",
+            focusInvalid: false,
+            ignore: "",
+
+            rules: {
+                im_override_cost: { required: true, maxlength: 160 },
+                im_product_id: { required: true, min: 1 },
+                im_currency_id: { required: true, min: 1 },
+                im_type_id: { required: true, min: 1 },
+            },
+
+            messages: {
+                im_override_cost: {
+                    required: "Please enter the override cost",
+                },
+                im_product_id: "Please select a Product",
+                im_currency_id: "Please select a Currency",
+                im_type_id: "Please select a Type",
+            },
+
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            },
+
+            invalidHandler: function () {
+                success3.hide();
+                error3.show();
+            },
+            highlight: function (element) {
+                $(element).closest(".form-group").addClass("has-error");
+            },
+            unhighlight: function (element) {
+                $(element).closest(".form-group").removeClass("has-error");
+            },
+            success: function (label) {
+                label.closest(".form-group").removeClass("has-error");
+            },
+
+            submitHandler: function () {
+                success3.show();
+                error3.hide();
+
+                var base_url = $("#BASE_URL").val();
+                var str_params = ItemModifierForm.serialize();
+                console.log("strings params  ", str_params);
+
+                $.ajax({
+                    url: base_url + "/request/menuitemsmodifiers/saveiteminfo",
+                    data: str_params,
+                    method: "POST",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.is_error === 0) {
+                            fnb_items_module.DisplayListItemsModifiers();
+
+                            success3.text("Saved successfully!").fadeIn();
+                            setTimeout(function () {
+                                $("#ModelPopUp").modal("hide");
+                                success3.hide();
+                                ItemModifierForm[0].reset();
+                            }, 800);
+                        } else {
+                            error3
+                                .text(response.error_msg || "Unexpected error")
+                                .show();
+                        }
+                    },
+                    error: function (xhr) {
+                        error3.show().text("Request failed: " + xhr.statusText);
+                        success3.hide();
+                    },
+                });
+
+                return false;
+            },
+        });
+    },
+
+    DeleteItemModifier: function () {
+        var im_id = $(this).data("im_id");
+        bootbox.confirm("Are you sure you want to delete ?", function (result) {
+            //result
+            if (result == true) {
+                var base_url = $("#BASE_URL").val();
+                var _token = $("input[name=_token]").val();
+                var str_params = { im_id: im_id, _token: _token };
+                $.ajax({
+                    url: base_url + "/request/fnbitemsmodifiers/deleteiteminfo",
+                    data: str_params,
+                    dataType: "Json",
+                    type: "delete",
+                    success: function (response) {
+                        if (response.is_error == 0) {
+                            fnb_items_module.DisplayListItemsModifiers();
                         }
                     },
                 });
