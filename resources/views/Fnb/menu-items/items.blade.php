@@ -1,4 +1,4 @@
-@extends('layouts.layout',['page_title' => "Items Menu Catgegory Management"])
+@extends('layouts.layout',['page_title' => "Menu Items"])
 
 @section('themes')
 <style>
@@ -38,92 +38,90 @@
     </span>
     <div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
       <div class="row align-items-center">
-        <div class="col-xl-8 order-2 order-xl-1">
-          <div class="form-group m-form__group row align-items-center">
-            <div class="col-md-4">
-              <div class="d-flex flex-wrap align-items-center gap-3">
-                <!-- Search input -->
-                <div class="position-relative w-md-400px flex-grow-1">
+
+        <div class="col-xl-12">
+          <div class="form-group m-form__group">
+
+            <div class="row g-3 align-items-center">
+
+              <!-- Search input -->
+              <div class="col-md-3">
+                <div class="position-relative">
                   <i class="ki-duotone ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle-y ms-4">
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
                   <input type="text" class="form-control form-control-solid ps-10" name="general_search" id="generalSearch" placeholder="Search" />
                 </div>
+              </div>
 
-                <div>
-                  <select class="form-select form-select-solid w-auto" data-control="select2" id="FI_COMPANY_ID" name="fi_company_name">
-                    <option value="0">-- Select Company --</option>
-                    @foreach($lst_companies as $index => $company_info)
+              <!-- Select Company -->
+              <div class="col-md-3">
+                <select class="form-select form-select-solid" data-control="select2" id="FI_COMPANY_ID" name="fi_company_name">
+                  <option value="0">-- Select Company --</option>
+                  @foreach($lst_companies as $index => $company_info)
                     <option value="{{ $company_info->cd_id }}">
-                      {{ $company_info->cd_company_name }}
+                        {{ $company_info->cd_company_name }}
                     </option>
-                    @endforeach
-                  </select>
-                </div>
+                  @endforeach
+                </select>
+              </div>
 
-                <div>
-                  <select class="form-select form-select-solid w-auto" data-control="select2" id="FI_KITCHEN_ID" name="fi_kitchen_name">
-                    <option value="0">-- Select Kitchen --</option>
+              <!-- Select Kitchen -->
+              <div class="col-md-3">
+                <select class="form-select form-select-solid" data-control="select2" id="FI_KITCHEN_ID" name="fi_kitchen_name">
+                  <option value="0">-- Select Kitchen --</option>
                     @foreach($lst_kitchens as $index => $kitchen_info)
-                    <option value="{{ $kitchen_info->ks_id }}">
-                      {{ $kitchen_info->ks_name }}
-                    </option>
+                        <option value="{{ $kitchen_info->ks_id }}">
+                            {{ $kitchen_info->ks_name }}
+                        </option>
                     @endforeach
-                  </select>
-                </div>
+                </select>
               </div>
 
-              <div class="col-md-4">
-                <br />
-              </div>
-              <div class="col-md-4">
-                <br />
-              </div>
             </div>
           </div>
-          <div class="col-xl-4 order-1 order-xl-2 align-right">
-
-          </div>
-        </div>
-      </div>
-      <!--end: Search Form -->
-      <!--begin: Datatable -->
-      <div id="LstItemsMain" class="table-responsive">
-        <table class="table" id="html_table" width="100%">
-          <thead>
-            <tr>
-              <th title="#">#</th>
-              <th title="Id"> ID </th>
-              <th title="Name"> Item Name </th>
-              <th title="edit"> edit </th>
-              <th title="delete">Delete</th>
-            </tr>
-          </thead>
-          <tbody id="LstItems"></tbody>
-        </table>
-      </div>
-      <div class="row">
-        <div class="col-md-10" align="left">
-          <ul id="ItemsPagination" class="pagination-sm"></ul>
-        </div>
-        <div class="col-md-2" align="right"></div>
-      </div>
-      <!--end: Datatable -->
-      <div class="row">
-        <div class="col-md-8"></div>
-        <div class="col-md-4" align="right">
-          <a href="{{ url('fnb/menuitems/additem') }}" class="btn btn-info">
-            <span>
-              <i class="fas fa-user"></i>
-              <span>
-                New Item
-              </span>
-            </span>
-          </a>
         </div>
       </div>
     </div>
-  </div>
 
-  @endsection
+    <!--end: Search Form -->
+    <!--begin: Datatable -->
+    <div id="LstItemsMain" class="table-responsive">
+      <table class="table" id="html_table" width="100%">
+        <thead>
+          <tr>
+            <th title="#">#</th>
+            <th title="Id"> ID </th>
+            <th title="Name"> Item Name </th>
+            <th title="edit"> edit </th>
+            <th title="delete">Delete</th>
+          </tr>
+        </thead>
+        <tbody id="LstItems"></tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-md-10" align="left">
+        <ul id="ItemsPagination" class="pagination-sm"></ul>
+      </div>
+      <div class="col-md-2" align="right"></div>
+    </div>
+    <!--end: Datatable -->
+    <div class="row">
+      <div class="col-md-8"></div>
+      <div class="col-md-4" align="right">
+        <a href="{{ url('fnb/menuitems/additem') }}" class="btn btn-info">
+          <span>
+            <i class="fas fa-user"></i>
+            <span>
+              New Item
+            </span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@endsection
