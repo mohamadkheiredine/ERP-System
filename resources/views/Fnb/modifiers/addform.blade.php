@@ -71,7 +71,7 @@
 
         <div class="row">
           <div class="col-md-12">
-            <label class="form-label fw-bold">Category Description</label>
+            <label class="form-label fw-bold">Modifier Description</label>
             <textarea id="M_MODIFIER_DESCRIPTION" name="m_modifier_description" class="form-control" rows="6" placeholder="Enter description..."></textarea>
           </div>
         </div>
@@ -83,7 +83,7 @@
               <select class="form-select form-control" data-control="select2" id="M_UNIT_ID" name="m_unit_id">
                 <option value="0">-- Select Unit --</option>
                 @foreach($lst_units as $index => $unit_info)
-                <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_code }}</option>
+                <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_code }} - {{ $unit_info->su_unit_label }}</option>
                 @endforeach
               </select>
             </div>
@@ -95,7 +95,7 @@
               <select class="form-select form-control" data-control="select2" id="M_CURRENCY_ID" name="m_currency_id">
                 <option value="0">-- Select Currency --</option>
                 @foreach($lst_currencies as $index => $currency_info)
-                <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
                 @endforeach
               </select>
             </div>
