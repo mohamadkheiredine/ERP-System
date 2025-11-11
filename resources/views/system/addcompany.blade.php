@@ -228,6 +228,7 @@ th{
                                         <option value="0">--Select One--</option>
                                         <option value="1">Products</option>
                                         <option value="2">Services</option>
+                                    <option value="3">Products & Services</option>
                                 </select>
                             </div>
                         </div>

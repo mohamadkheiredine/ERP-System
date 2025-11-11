@@ -36,7 +36,7 @@
 @section('content')
     <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="card-title">Users</h3>
+            <h3 class="card-title">Stores Management</h3>
             <div class="card-toolbar">
                 <div class="btn-group">
                     <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

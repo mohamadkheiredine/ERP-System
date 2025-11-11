@@ -229,9 +229,10 @@ Page Description :
                             <div class="form-group">
                                 <label> Default Item Type&nbsp;:</label>
                                 <select class="bs-select form-control" name="cd_default_item" id="CD_DEFAULT_ITEM" data-actions-box="true">
-                                        <option value="0">--Select One--</option>
-                                        <option {{ $company_info->cd_default_item == 1 ? "selected" : "" }} value="1">Products</option>
-                                        <option {{ $company_info->cd_default_item == 2 ? "selected" : "" }}  value="2">Services</option>
+                                    <option value="0">--Select One--</option>
+                                    <option {{ $company_info->cd_default_item == 1 ? "selected" : "" }} value="1">Products</option>
+                                    <option {{ $company_info->cd_default_item == 2 ? "selected" : "" }}  value="2">Services</option>
+                                    <option {{ $company_info->cd_default_item == 3 ? "selected" : "" }}   value="3">Products & Services</option>
                                 </select>
                             </div>
                         </div>

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 $(function(){
 	ClassicEditor
@@ -10,55 +10,141 @@ $(function(){
     .catch( error => {
         console.error( error );
     } );
-	$('#PP_PREPARE_DATE').datepicker({
-		startDate :'+1d',
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
-	});
-	$('#PP_PREPARE_DATE').on('changeDate', function(e) {
-		$('#PP_END_DATE').datepicker({
-			startDate :e.date,
-			todayHighlight: true,
-			orientation: "bottom left",
-			format : "yyyy-mm-dd",
-			templates: {
-				leftArrow: '<i class="la la-angle-left"></i>',
-				rightArrow: '<i class="la la-angle-right"></i>'
-			}
-		});
-	});
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const PrepareDate = new tempusDominus.TempusDominus(document.getElementById('PP_PREPARE_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
 
-	$('#PP_START_DATE').datepicker({
-		startDate :'+1d',
-		todayHighlight: true,
-		orientation: "bottom left",
-		format : "yyyy-mm-dd",
-		templates: {
-			leftArrow: '<i class="la la-angle-left"></i>',
-			rightArrow: '<i class="la la-angle-right"></i>'
-		}
-	});
-	
-	$('#PP_START_DATE').on('changeDate', function(e) {
-		 $('#PP_FINISH_DATE').datepicker({
-			 startDate :e.date,
-			 todayHighlight: true,
-			 orientation: "bottom left",
-			 format : "yyyy-mm-dd",
-			 templates: {
-				 leftArrow: '<i class="la la-angle-left"></i>',
-				 rightArrow: '<i class="la la-angle-right"></i>'
-			 }
-		 });
-	});
+        },
+        restrictions: {
+            minDate : tomorrow
+        }
+    });
+
+    const EndDate = new tempusDominus.TempusDominus(document.getElementById('PP_END_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+    document.getElementById('PP_PREPARE_DATE').addEventListener('change.td', (e) => {
+        PrepareDate.updateOptions({
+            restrictions: {
+                minDate: e.detail.date
+            }
+        });
+    });
+
+
+    const DStartDate = new tempusDominus.TempusDominus(document.getElementById('PP_START_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        },
+        restrictions: {
+            minDate : tomorrow
+        }
+    });
+
+
+    const DFinishDate = new tempusDominus.TempusDominus(document.getElementById('PP_FINISH_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+    document.getElementById('PP_FINISH_DATE').addEventListener('change.td', (e) => {
+        PrepareDate.updateOptions({
+            restrictions: {
+                minDate: e.detail.date
+            }
+        });
+    });
+
+
+    new tempusDominus.TempusDominus(document.getElementById('PP_ESTIMATION_TIME'),{
+        display: {
+            components: {
+                calendar: false,
+                date: false,
+                month: false,
+                year: false,
+                decades: false,
+                clock: true,
+                hours: true,
+                minutes: true,
+                seconds: true,
+                useTwentyfourHour: true
+            }
+        },
+        localization: {
+            format : "HH:mm:ss"
+
+        }
+    });
+
 	$("#BTN_SAVE_PLAN").on('click',plans_module.SavePlanInformation);
 	$('select').select2();
-	
+
 	//check if edit mode
 	let pp_id = $('input[name=pp_id]').val();
 	if(pp_id != null)
@@ -85,14 +171,14 @@ $(function(){
 			    if (typeof event == 'undefined') {
 			        event = window.event;
 			    }
-			    if (event) {  
+			    if (event) {
 			        event.returnValue = message;
 			    }
 			    return message;
 			}
 		};
-		
-		
-		
+
+
+
 	}
 });

@@ -13,6 +13,7 @@ Page Description :
 ***********************************************************/
 
 
+
 ?>
 
 
@@ -53,7 +54,7 @@ function pad(val) {
 	     return valString;
 	     }
 	}
- 
+
 	function setTime(HoursLabel , minutesLabel, secondsLabel) {
 		 var hours 	= $("#hours").html();
 		 var minutes = $("#minutes").html();
@@ -73,16 +74,16 @@ function pad(val) {
 			 {
 				 minutes++;
 			 }
-			 
-			 
+
+
 			 seconds = 0;
 		 }
 		 else
 		 {
 			 seconds++;
 		 }
-		 
-		 
+
+
 		 HoursLabel.innerHTML = pad(hours);
 	    minutesLabel.innerHTML = pad(minutes);
 	    secondsLabel.innerHTML = pad(seconds);
@@ -103,71 +104,20 @@ function pad(val) {
 @endsection
 
 @section('content')
-
-<div class="m-portlet m-portlet--mobile">
-	<div class="m-portlet__head">
-		<div class="m-portlet__head-caption">
-			
-				<div class="row">
-					<div class="col-md-5 col-xs-5">
-						<div class="m-portlet__head-title">
-    						<h3 class="m-portlet__head-text">
-            					Edit Existing Plan
-            				</h3>
-						</div>
-					</div>
-					<div class="col-md-7 col-xs-7">
-						
-					</div>
-				</div>
-		</div>
-		<div class="m-portlet__head-tools">
-			<ul class="m-portlet__nav">
-				<li class="m-portlet__nav-item">
-					<div class="m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" data-dropdown-toggle="hover" aria-expanded="true">
-						<a href="#" class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
-							<i class="la la-ellipsis-h m--font-brand"></i>
-						</a>
-						<div class="m-dropdown__wrapper">
-							<span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
-							<div class="m-dropdown__inner">
-								<div class="m-dropdown__body">
-									<div class="m-dropdown__content">
-										<ul class="m-nav">
-											<li class="m-nav__section m-nav__section--first">
-												<span class="m-nav__section-text">
-													Quick Actions
-												</span>
-											</li>  
-											<li class="m-nav__item" id="AssignToUser">
-												<a href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-user-ok"></i>
-													<span class="m-nav__link-text">
-														Assign To
-													</span>
-												</a>
-											</li>
-											@if($plan_info->pp_approval_user == 0)
-											<li class="m-nav__item" id="PlanApproval">
-												<a  href="#" class="m-nav__link quickactions">
-													<i class="m-nav__link-icon flaticon-user-ok"></i>
-													<span class="m-nav__link-text">
-														Production Plan Approval
-													</span>
-												</a>
-											</li>
-											@endif
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="m-portlet__body">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="card-title">Edit Existing Production Plan</h3>
+            <div class="card-toolbar">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
 		<div class="row">
 			<div class="col-md-12 col-xs-12">
 				<button type="button" name="btn_start_production"  style="display:{{ $plan_info->pp_start_production == 1 ? 'none' : '' }}"  id="BTN_START_PRODUCTION" class="btn btn-accent m-btn m-btn--icon">
@@ -184,7 +134,7 @@ function pad(val) {
 						<span>
 							Quality Check
 						</span>
-					</span> 
+					</span>
 				</button>
 				<button type="button" name="btn_pause_production" id="BTN_PAUSE_PRODUCTION" style="display:{{ $plan_info->pp_start_production == 1 ? '' : 'none' }}" class="btn btn-warning m-btn m-btn--icon">
 					<span>
@@ -211,7 +161,7 @@ function pad(val) {
 						<span>
 							Quality Alert
 						</span>
-					</span> 
+					</span>
 				</button>
 				<button  id="BTN_MAINT_REQUEST" name="btn_maint_request"  style="display:{{ $plan_info->pp_run_production == 1 ? '' : 'none' }}"  type="button" class="btn btn-outline-accent m-btn m-btn--outline-2x ">
 					<span>
@@ -219,7 +169,7 @@ function pad(val) {
 						<span>
 							Maintenance Request
 						</span>
-					</span> 
+					</span>
 				</button>
 			</div>
 		</div>
@@ -287,22 +237,22 @@ function pad(val) {
                                         @endforeach
                                 </select>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                    <div class="row">
                    		<div class="col-md-12">
-                   			<ul class="nav nav-tabs" role="tablist"> 
+                   			<ul class="nav nav-tabs" role="tablist">
 								<li class="nav-item">
 									<a class="nav-link active" data-toggle="tab" href="#DescriptionTab">
 										Work Instruction
 									</a>
-								</li> 
+								</li>
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#ProductTab">
 										Products
 									</a>
-								</li> 
+								</li>
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#TimeTrackingTab">
 										Time Tracking
@@ -381,7 +331,7 @@ function pad(val) {
 								<div class="tab-pane" id="QualityCheckTab" role="tabpanel">
 									<div class="row">
 										<div class="col-md-12" id="LstQualityCheck">
-											
+
 										</div>
 									</div>
 								</div>
@@ -432,16 +382,16 @@ function pad(val) {
           				<label> Quanity </label><br/>
           				<input type="number" class="form-control" name="pi_item_quanity" id="PI_ITEM_QUANTITY" required="required" min="0.0000" max="999999999999.0000" />
           			</div>
-          		</div> 
+          		</div>
           		<div class="col-md-12" align="right">
       	  			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         			<button type="submit" name="btn_insert_item" id="BTN_INSERT_ITEM" class="btn btn-primary">Save Item</button>
           		</div>
           	</div>
-      	</form> 
+      	</form>
       </div>
       <div class="modal-footer">
-      
+
       </div>
     </div>
   </div>
@@ -507,7 +457,7 @@ function pad(val) {
           				<label> Comment </label><br/>
           				<textarea style="width:100%;height:250px;"  name="qc_description" id="QC_DESCRIPTION"  class="form-control" ></textarea>
           			</div>
-          		</div> 
+          		</div>
           		<div class="col-md-12" align="right">
       	  			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         			<button type="button" name="btn_check_pass" id="BTN_CHECK_PASS" class="btn btn-primary">Pass</button>
@@ -515,10 +465,10 @@ function pad(val) {
         			<button type="submit" name="btn_save_check" id="BTN_SAVE_CHECK" class="btn btn-success">Save Check</button>
           		</div>
           	</div>
-      	</form> 
+      	</form>
       </div>
       <div class="modal-footer">
-      
+
       </div>
     </div>
   </div>
@@ -555,10 +505,10 @@ function pad(val) {
         			<button type="submit" name="btn_assign_user" id="BTN_ASSIGN_USER" class="btn btn-primary">Save Item</button>
           		</div>
           	</div>
-      	</form> 
+      	</form>
       </div>
       <div class="modal-footer">
-      
+
       </div>
     </div>
   </div>
@@ -591,10 +541,10 @@ function pad(val) {
         			<button type="submit" name="btn_approval_user" id="BTN_APPROVAL_USER" class="btn btn-primary">Plan Approve</button>
           		</div>
           	</div>
-      	</form> 
+      	</form>
       </div>
       <div class="modal-footer">
-      
+
       </div>
     </div>
   </div>

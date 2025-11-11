@@ -98,7 +98,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                             		<label class="control-label">Customer <span class="required"> * </span></label><br/>
-                            		<select class="bs-select form-control"  readonly id="FK_CUSTOMER_ID" name="fk_customer_id">
+                            		<select  readonly id="FK_CUSTOMER_ID" name="fk_customer_id" class="form-control form-select" data-control="select2" data-placeholder="Select Customers">
                             			<option value="">-- Select Customer --</option>
                                         @foreach($list_customers as $index => $customer_info)
                                           <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
@@ -185,7 +185,8 @@ th{
                             <div class="form-group">
                                 <label> Item Type <span class="required"> * </span> </label><br/>
                                 <input type="hidden" name="bi_invoice_items_type" value="{{ Session('default_item') }}" />
-                                <label>{{ Session("default_item") == 1 ? "Products" : "Services" }}</label>
+
+                                <label>{{ Session("default_item") == 1 ? "Products" : (Session('default_item') == 2 ? "Services" : "Products & Services") }}</label>
                             </div>
                             @endif
                         </div>

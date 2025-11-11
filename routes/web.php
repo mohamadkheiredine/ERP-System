@@ -606,4 +606,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get("/fnb/tables/addform", "App\Http\Controllers\Fnb\FnbTablesController@addTable");
     Route::get("/fnb/tables/editform/{ft_id}", "App\Http\Controllers\Fnb\FnbTablesController@editTable");
 
+    Route::get('/fnb/modifiers', 'Fnb\FnbModifiersController@index');
+    Route::get('/fnb/modifiers/addform', 'Fnb\FnbModifiersController@addModifier');
+    Route::get('/fnb/modifiers/editform/{m_id}', 'Fnb\FnbModifiersController@editModifier');
+
 });
