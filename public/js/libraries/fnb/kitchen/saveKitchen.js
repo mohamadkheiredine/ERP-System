@@ -2,7 +2,6 @@ $(function() {
     ClassicEditor
         .create( document.querySelector( '#PC_DESCRIPTION' ) )
         .then( newEditor => {
-          /**  $.editor = newEditor;*/
         } )
         .catch( error => {
             console.error( error );
