@@ -763,3 +763,7 @@ Route::delete('/request/category/deletecategoryinfo', 'Fnb\Category\FnbCategoryC
 Route::get('/request/fnbitems/displaylistitems', 'Fnb\FnbItemsController@DisplayListItems');
 Route::post('/request/menuitems/saveiteminfo', 'Fnb\FnbItemsController@saveItem');
 Route::delete('/request/fnbitems/deleteiteminfo', 'Fnb\FnbItemsController@DeleteItem');
+
+Route::get('/request/fnbitemsmodifiers/displaylistitemsmodifiers', 'Fnb\FnbMenuItemModifierController@DisplayListItemsModifiers');
+Route::post('/request/menuitemsmodifiers/saveiteminfo', 'Fnb\FnbMenuItemModifierController@SaveItemModifierInfo');
+Route::delete('/request/fnbitemsmodifiers/deleteiteminfo', 'Fnb\FnbMenuItemModifierController@DeleteItemModifier');
