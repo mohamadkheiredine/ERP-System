@@ -392,3 +392,10 @@ INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('231', 'erp_menu_categories', 'Allow Users to Access to Manage Menu Categories', 'Allow Users to Access to Manage Menu Categories', 'Fnb Module');
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('232', 'erp_menu_items', 'Allow Users to Access to Menu items for restaurants', 'Allow Users to Access to Menu items for restaurants', 'Fnb Module');
 
+
+ALTER TABLE `acc_expense_categories` ADD COLUMN `ec_company_id` INT NULL DEFAULT 0 AFTER `ec_id`;
+ALTER TABLE `acc_expenses` ADD COLUMN `ac_company_id` INT NULL DEFAULT 0 AFTER `ac_payment_id`;
+ALTER TABLE `acc_expense_payments` ADD COLUMN `aa_company_id` INT NULL DEFAULT 0 AFTER `aa_id`;
+
+
+ALTER TABLE `srm_supplier_quotations` ADD COLUMN `sq_company_id` INT NULL DEFAULT 0 AFTER `sq_id`;

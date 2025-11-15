@@ -59,8 +59,10 @@ class SupplierQuotationsController extends Controller
      */
     public function index()
     {
-        $lst_suppliers     = Suppliers::whereSsIsDeleted(0)->get();
-        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->get();
+        $default_company_id   = session('default_company_id');
+
+        $lst_suppliers     = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
+        $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
 
         $data = array(
             "lst_suppliers" => $lst_suppliers,
@@ -93,13 +95,14 @@ class SupplierQuotationsController extends Controller
         $quotation_warehouse    = $request->input('quotation_warehouse');
         $quotation_supplier     = $request->input('quotation_supplier');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+        $default_company_id   = session('default_company_id');
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
 
-        $lst_supplier_quotations = SupplierQuotations::whereSqIsDeleted(0);
+        $lst_supplier_quotations = SupplierQuotations::whereSqIsDeleted(0)->whereSqCompanyId($default_company_id);
 
         if(strlen($search_query) > 0)//
         {
@@ -149,11 +152,13 @@ class SupplierQuotationsController extends Controller
      */
     public function AddForm()
     {
-        $lst_suppliers          = Suppliers::whereSsIsDeleted(0)->get();
+        $default_company_id   = session('default_company_id');
+
+        $lst_suppliers     = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
         $lst_currency           = Currency::all();
         $lst_supplier_bidding   = SuppliersBidding::whereSbIsDeleted(0)->get();
-        $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
+        $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
+        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $company_currency       = session('company_currency');
         $user_id                = session('user_id');
         $SRMManager             = new \App\library\SRMManager();
@@ -206,11 +211,12 @@ class SupplierQuotationsController extends Controller
     public function EditForm( $sq_id )
     {
         $bidding = new SuppliersBidding();
+        $default_company_id   = session('default_company_id');
         $supplier_quotation     = SupplierQuotations::find($sq_id);
-        $lst_suppliers          = Suppliers::whereSsIsDeleted(0)->get();
+        $lst_suppliers     = Suppliers::whereSsIsDeleted(0)->whereSsCompanyId($default_company_id)->get();
         $lst_currency           = Currency::all();
-        $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWWarehouseStatus(1)->get();
+        $lst_users              = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
+        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $quotation_products = SupplierProducts::whereFkQuotationId($sq_id)->get();
         $lst_vat = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_units              = Units::all();
@@ -348,6 +354,7 @@ class SupplierQuotationsController extends Controller
         $sq_quotation_notes         = $request->input('sq_quotation_notes');
         $sq_total_price             = $request->input('sq_total_price');
         $sq_currency_id             = $request->input('sq_currency_id');
+        $default_company_id   = session('default_company_id');
 
         $serial_numbers             = $request->input('serial_numbers');
         $pr_quantity                = $request->input('pr_quantity');
@@ -420,6 +427,7 @@ class SupplierQuotationsController extends Controller
         $supplier_quotation->sq_broker_amount         = $sq_broker_amount;
         $supplier_quotation->sq_invoice_number         = $sq_invoice_number;
         $supplier_quotation->sq_tva_id         = $sq_tva_id;
+        $supplier_quotation->sq_company_id         = $default_company_id;
         $supplier_quotation->save();
 
         $sq_id = $supplier_quotation->sq_id;

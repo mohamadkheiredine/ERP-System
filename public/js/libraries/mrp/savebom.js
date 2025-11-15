@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 $(function(){
 	 ClassicEditor
@@ -23,6 +23,6 @@ $(function(){
 	{
 		bom_module.DisplayProductInfo();
 	}
-	
-	
+    bom_module.DisplayListBOMItems();
+
 })

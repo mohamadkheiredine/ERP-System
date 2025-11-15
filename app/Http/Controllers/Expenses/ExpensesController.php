@@ -54,8 +54,9 @@ class ExpensesController extends Controller
      */
     public function index()
     {
-        $lst_expenses_categories = ExpensesCategories::whereEcIsDeleted(0)->get();
-        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $default_company_id     = session('default_company_id');
+        $lst_expenses_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id)->get();
+        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
 
         $data = array(
@@ -80,6 +81,7 @@ class ExpensesController extends Controller
         $search_query           = $request->input('search_query');
         $ac_category_id           = $request->input('ac_category_id');
         $ac_employee_id           = $request->input('ac_employee_id');
+        $default_company_id     = session('default_company_id');
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
         if($page_number > 1)
           $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -88,7 +90,7 @@ class ExpensesController extends Controller
 
 
 
-        $expenses_cond = Expenses::whereAcIsDeleted(0);
+        $expenses_cond = Expenses::whereAcIsDeleted(0)->whereAcCompanyId($default_company_id);
 
         if(strlen($search_query) > 0)
             $expenses_cond = $expenses_cond->where('ac_description' , 'LIKE' , '%' . $search_query . '%');
@@ -129,9 +131,10 @@ class ExpensesController extends Controller
      */
     public function AddForm()
     {
+        $default_company_id     = session('default_company_id');
         $lst_currencies = Currency::all();
-        $lst_expenses_categories = ExpensesCategories::whereEcIsDeleted(0)->get();
-        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_expenses_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id)->get();
+        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();
         $lst_expenses_status = SystemStatus::whereSsStatusType("expenses_status")->whereSsIsDeleted(0)->get();
@@ -170,7 +173,7 @@ class ExpensesController extends Controller
         $ac_cost_center_id                              = $request->input('ac_cost_center_id');
         $ac_payment_type                                = $request->input('ac_payment_type');
         $ac_is_paid                                     = $request->has('ac_is_paid') ? 1 : 0;
-
+        $default_company_id     = session('default_company_id');
         $result_array = array();
 
 
@@ -183,6 +186,7 @@ class ExpensesController extends Controller
 
 
         $expenses_info->ac_employee_id                  = $ac_employee_id;
+        $expenses_info->ac_company_id                  = $default_company_id;
         $expenses_info->ac_category_id                  = $ac_category_id;
         $expenses_info->ac_amount                  = $ac_amount;
         $expenses_info->ac_expense_date                  = $ac_expense_date;
@@ -242,6 +246,7 @@ class ExpensesController extends Controller
 
             $payment_info = new ExpensePayments();
             $payment_info->aa_expense_id = $expenses_info->ac_id;
+            $payment_info->aa_company_id = $default_company_id;
             $payment_info->aa_transaction_id = $at_id;
             $payment_info->aa_movement_id = 0;
             $payment_info->aa_paid_by = $ac_employee_id;
@@ -272,10 +277,11 @@ class ExpensesController extends Controller
      */
     public function EditForm( $ac_id )
     {
+        $default_company_id     = session('default_company_id');
         $expenses_info        = Expenses::find($ac_id);
         $lst_currencies = Currency::all();
-        $lst_expenses_categories = ExpensesCategories::whereEcIsDeleted(0)->get();
-        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_expenses_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id)->get();
+        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->whereFkCompanyId($default_company_id)->get();
         $lst_cost_centers = CostCenters::whereAcIsDeleted(0)->get();
         $lst_expenses_status = SystemStatus::whereSsStatusType("expenses_status")->whereSsIsDeleted(0)->get();
         $lst_payment_types = PaymentTypes::wherePtIsDeleted(0)->get();

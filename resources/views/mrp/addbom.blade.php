@@ -52,7 +52,7 @@ th{
                 <div class="form-body">
                      <span id="hidden_fields">
                        {!! csrf_field() !!}
-                       <input type="hidden" name="lst_items" value="" />  
+                       <input type="hidden" name="lst_items" value="" />
                     </span>
                     <div class="alert alert-success" style="display:none">
             				<strong>Success!</strong> Bill of Materials Information is saved successfully!
@@ -76,7 +76,7 @@ th{
                         <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Product</label><br/>
-                                 <select class="bs-select form-control" name="bm_product_id" id="BM_PRODUCT_ID" data-actions-box="true">
+                                     <select class="form-select"  name="bm_product_id" id="BM_PRODUCT_ID"  data-control="select2" data-placeholder="Select Product"  tabindex="4">
                                         <option value=""> -- Products --</option>
                                         @foreach ( $lst_products as $key => $product_info )
                                                 <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
@@ -104,14 +104,67 @@ th{
                         </div>
                         <div class="col-md-4">
                           <div class="form-group">
+                                <label class="control-label"> Final Quantity </label><br/>
+                                <input type="number" name="bm_final_quantity" id="BM_FINAL_QUANTITY" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Expected Percentage Waste </label><br/>
+                                <input type="number" name="bm_expected_waste_percentage" id="BM_EXPECTED_WASTE_PERCENTAGE" class="form-control" min="0.1" max="100" step="0.1" required="required" maxlength="5"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                                <label class="control-label"> Manufacturing Efficiency </label><br/>
+                                <input type="number" name="bm_manufacturing_efficiency" id="BM_MANUFACTURING_EFFICIENCY" class="form-control" min="0.1" max="100" step="0.1" required="required" maxlength="5"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
                                 <label class="control-label"> Product Variable Cost </label><br/>
                                 <input type="number" name="bm_variable_cost" id="BM_VARIABLE_COST" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="0" />
                             </div>
                         </div>
                          <div class="col-md-4">
                              <div class="form-group">
+                                <label class="control-label">Unit</label><br/>
+                                     <select class="form-select" name="bm_unit_id" id="BM_UNIT_ID"  data-control="select2" data-placeholder="Select a Unit"  tabindex="4">
+                                        <option value=""> -- Unit --</option>
+                                        @foreach ( $lst_sys_units as $key => $unit_info )
+                                                <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_code }}&nbsp;-&nbsp;{{ $unit_info->su_unit_label }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Company</label><br/>
+                                    <select class="form-select" name="bm_company_id" id="BM_COMPANY" >
+                                    <option value="0"> -- Company --</option>
+                                    @foreach ( $lst_companies as $key => $company )
+                                        <option value="{{ $company->cs_id }}">{{ $company->cd_company_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Warehouse</label><br/>
+                                <div class="col-md-12 WarehouseDropdown">
+                                    <select class="form-select" name="bm_target_warehouse" id="BM_TARGET_WAREHOUSE"  data-control="select2" data-placeholder="Select a Warehouse"  tabindex="4">
+                                        <option value=""> -- Warehouse --</option>
+                                        @foreach ( $lst_warehouses as $key => $warehouse_info )
+                                            <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
                                 <label class="control-label">Currency</label><br/>
-                                 <select class="bs-select form-control" name="bm_currency_id" id="BM_CURRENCY_ID" data-actions-box="true">
+                                     <select class="form-select" name="bm_currency_id" id="BM_CURRENCY_ID"  data-control="select2" data-placeholder="Select a Currency"  tabindex="4">
                                         <option value=""> -- Currency --</option>
                                         @foreach ( $lst_currency as $key => $curr_info )
                                                 <option value="{{ $curr_info->cc_id }}">{{ $curr_info->cc_currency_code }}&nbsp;-&nbsp;{{ $curr_info->cc_currency_name }}</option>
@@ -122,11 +175,11 @@ th{
                          <div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">BOM Type</label><br/>
-                                 <select class="bs-select form-control" name="bm_bom_type" id="BM_BOM_TYPE" data-actions-box="true">
-                                        <option value="">BOM Type</option> 
-                                        <option value="1">EBOM - Engineering</option> 
-                                        <option value="2">MBOM - Manufacturing</option> 
-                                        <option value="3">SBOM - Sales</option> 
+                                     <select class="form-select" name="bm_bom_type" id="BM_BOM_TYPE"  data-control="select2" data-placeholder="Select a Currency"  tabindex="4">
+                                        <option value="">BOM Type</option>
+                                        <option value="1">EBOM - Engineering</option>
+                                        <option value="2">MBOM - Manufacturing</option>
+                                        <option value="3">SBOM - Sales</option>
                                 </select>
                             </div>
                         </div>
@@ -136,12 +189,12 @@ th{
 									<a class="nav-link m-tabs__link active" data-toggle="tab" href="#mNotes" role="tab">
 										Notes
 									</a>
-								</li> 
+								</li>
 								<li class="nav-item m-tabs__item" style="display:none">
 									<a class="nav-link m-tabs__link" data-toggle="tab" href="#mProducts" role="tab">
 										Products
 									</a>
-								</li> 
+								</li>
 							</ul>
 							<div class="tab-content">
 								<div class="tab-pane active" id="mNotes" role="tabpanel">
@@ -149,7 +202,7 @@ th{
                                         <label class="control-label">BOM  Note</label>
         								<textarea name="bm_bom_notes" id="BM_BOM_NOTES" class="form-control" style="width:100%;height:250px;"></textarea>
                                     </div>
-								</div> 
+								</div>
 								<div class="tab-pane" id="mProducts" role="tabpanel">
 									<div class="row">
 										<div id="LstBOMProducts" class="col-md-12">
@@ -168,7 +221,7 @@ th{
 													<td>Product Label</td>
 													<td>Quantity</td>
 													<td>Price</td>
-												</tr> --> 
+												</tr> -->
 											</tbody>
 										</table>
 										</div>
@@ -178,8 +231,8 @@ th{
 											<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-primary" >Add Product</button>
 										</div>
 									</div>
-								</div> 
-							</div> 
+								</div>
+							</div>
                         </div>
                     </div>
                    <div class="row" style="height:5px;"></div>

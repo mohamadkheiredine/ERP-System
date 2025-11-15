@@ -45,7 +45,7 @@ th{
 <script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
 <script type="text/javascript" src="{{ url('js/modules/productionplans.module.js') }}"></script>
 <script type="text/javascript" src="{{ url('js/libraries/production/saveplaninfo.js') }}"></script>
-<<script type="text/javascript">
+<script type="text/javascript">
 function pad(val) {
 	  valString = val + "";
 	  if(valString.length < 2) {
@@ -238,57 +238,87 @@ function pad(val) {
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Prepare Date</label>
+                                <input type="text" name="pp_prepare_date" id="PP_PREPARE_DATE" class="form-control" readonly="readonly" maxlength="255"  value="{{ $plan_info->pp_prepare_date  }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> End Date</label>
+                                <input type="text" name="pp_end_date" id="PP_END_DATE" class="form-control" maxlength="255"  readonly="readonly"  value="{{ $plan_info->pp_end_date  }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Start Date</label>
+                                <input type="text" name="pp_start_date" id="PP_START_DATE" class="form-control" maxlength="255"  readonly="readonly"  value="{{ $plan_info->pp_start_date  }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Finish Date</label>
+                                <input type="text" name="pp_finish_date" id="PP_FINISH_DATE" class="form-control" maxlength="255"  readonly="readonly" value="{{ $plan_info->pp_finish_date }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Estimation Time</label><br/>
+                                <div class='input-group timepicker' id='PT_ESTIMATION_TIME' >
+                                    <div class="input-group-prepend">
+										<span class="input-group-text">
+											<i class="la la-clock-o"></i>
+										</span>
+                                    </div>
+                                    <input type='text' id="PP_ESTIMATION_TIME" name="pp_estimation_time" class="form-control m-input" placeholder="Select time" value="{{ $plan_info->pp_estimation_time }}" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                    <div class="row" style="height:5px;"></div>
                    <div class="row">
                    		<div class="col-md-12">
-                   			<ul class="nav nav-tabs" role="tablist">
-								<li class="nav-item">
-									<a class="nav-link active" data-toggle="tab" href="#DescriptionTab">
-										Work Instruction
-									</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#ProductTab">
-										Products
-									</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#TimeTrackingTab">
-										Time Tracking
-									</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#QualityCheckTab">
-										Quality Check
-									</a>
-								</li>
-							</ul>
-							<div class="tab-content">
-								<div class="tab-pane" id="ProductTab" role="tabpanel">
-									<div class="row">
-										<div class="col-md-12" id="LstPlanProducts">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12" align="right">
-											<button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-success" >Add Product</button>
-										</div>
-									</div>
-								</div>
-								<div class="tab-pane active" id="DescriptionTab" role="tabpanel">
-									<div class="row">
-										 <div class="col-md-12">
+                            <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_1">Work Instruction</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_2">Products</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_3">Time Tracking</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_4">Quality Check</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
+                                    <div class="row">
+                                         <div class="col-md-12">
                                              <div class="form-group">
                                                 <label class="control-label"> Work Instruction <span class="required"> * </span></label><br/>
                                                 <textarea style="width:100%;height:250px;resize:none" id="PP_PLAN_DESCRIPTION"  class="form-control" name="pp_plan_description"  cols="">{{ $plan_info->pp_plan_description }}</textarea>
                                              </div>
                                         </div>
-									</div>
-								</div>
-								<div class="tab-pane" id="TimeTrackingTab" role="tabpanel">
-									<div class="row">
-										 <div class="col-md-4">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12" id="LstPlanProducts">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" align="right">
+                                            <button type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-success" >Add Product</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="kt_tab_pane_3" role="tabpanel">
+                                    <div class="row">
+                                         <div class="col-md-4">
                                              <div class="form-group">
                                                 <label class="control-label"> Prepare Date <span class="required"> * </span></label>
                                                 <input type="text" name="pp_prepare_date" id="PP_PREPARE_DATE" class="form-control"  readonly="readonly" maxlength="255"  value="{{ $plan_info->pp_prepare_date }}" />
@@ -322,20 +352,19 @@ function pad(val) {
                                              <div class="form-group">
                                                 <label class="control-label"> Real Duration </label><br/>
                                                  <span class="m-badge m-badge--focus m-badge--wide">
-                                                 	<label id="hours">{{ $timer_array[0] }}</label><span class='bigger'>:</span><label id="minutes">{{ $timer_array[1] }}</label><span class='bigger'>:</span><label id="seconds">{{ $timer_array[2] }}</label>
+                                                    <label id="hours">{{ $timer_array[0] }}</label><span class='bigger'>:</span><label id="minutes">{{ $timer_array[1] }}</label><span class='bigger'>:</span><label id="seconds">{{ $timer_array[2] }}</label>
                                                  </span>
                                             </div>
                                         </div>
-									</div>
-								</div>
-								<div class="tab-pane" id="QualityCheckTab" role="tabpanel">
-									<div class="row">
-										<div class="col-md-12" id="LstQualityCheck">
-
-										</div>
-									</div>
-								</div>
-							</div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="kt_tab_pane_4" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12" id="LstQualityCheck">--}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                    		</div>
                    </div>
                    <div class="row" style="height:5px;"></div>

@@ -62,7 +62,8 @@ class ExpenseCategoriesController extends Controller
     {
         $page_number            = $request->input('page_number');
         $search_query           = $request->input('search_query');
-        $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+        $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
+        $default_company_id     = session('default_company_id');
         if($page_number > 1)
           $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
         else
@@ -70,7 +71,7 @@ class ExpenseCategoriesController extends Controller
 
 
 
-        $exp_categories_cond = ExpensesCategories::whereEcIsDeleted(0);
+        $exp_categories_cond = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id);
 
         if(strlen($search_query) > 0)
             $exp_categories_cond = $exp_categories_cond->where('ec_name' , 'LIKE' , '%' . $search_query . '%');
@@ -109,7 +110,8 @@ class ExpenseCategoriesController extends Controller
     {
         $lst_currencies = Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
-        $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->get();
+        $default_company_id     = session('default_company_id');
+        $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id)->get();
 
         $data = array(
             'lst_currencies' => $lst_currencies,
@@ -139,6 +141,7 @@ class ExpenseCategoriesController extends Controller
         $ec_parent_category                         = $request->input('ec_parent_category');
         $ec_require_receipt                     = $request->has('ec_require_receipt') ? 1 : 0;
         $ec_gl_account_id                       = $request->input('ec_gl_account_id');
+        $default_company_id     = session('default_company_id');
         $result_array = array();
 
 
@@ -148,13 +151,14 @@ class ExpenseCategoriesController extends Controller
             $expense_categories = ExpensesCategories::find($ec_id);
         }
 
-        $expense_categories->ec_name                  = $ec_name;
-        $expense_categories->ec_description                  = $ec_description;
-        $expense_categories->ec_max_amount                  = $ec_max_amount;
-        $expense_categories->ec_require_receipt                  = $ec_require_receipt;
-        $expense_categories->ec_gl_account_id                  = $ec_gl_account_id;
-        $expense_categories->ec_currency_id                  = $ec_currency_id;
-        $expense_categories->ec_parent_category                  = $ec_parent_category;
+        $expense_categories->ec_name                                = $ec_name;
+        $expense_categories->ec_description                         = $ec_description;
+        $expense_categories->ec_max_amount                          = $ec_max_amount;
+        $expense_categories->ec_require_receipt                     = $ec_require_receipt;
+        $expense_categories->ec_gl_account_id                       = $ec_gl_account_id;
+        $expense_categories->ec_currency_id                         = $ec_currency_id;
+        $expense_categories->ec_parent_category                     = $ec_parent_category;
+        $expense_categories->ec_company_id                          = $default_company_id;
 
 
         $expense_categories->save();
@@ -179,7 +183,8 @@ class ExpenseCategoriesController extends Controller
         $category_info        = ExpensesCategories::find($ec_id);
         $lst_currencies = Currency::all();
         $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
-        $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereNotIn('ec_id',array( $ec_id ))->get();
+        $default_company_id     = session('default_company_id');
+        $lst_categories  = ExpensesCategories::whereEcIsDeleted(0)->whereEcCompanyId($default_company_id)->get();
 
         $data = array(
             "category_info" => $category_info,

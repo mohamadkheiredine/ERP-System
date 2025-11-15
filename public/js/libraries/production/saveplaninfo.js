@@ -112,35 +112,42 @@ $(function(){
         }
     });
 
-    document.getElementById('PP_FINISH_DATE').addEventListener('change.td', (e) => {
-        PrepareDate.updateOptions({
-            restrictions: {
-                minDate: e.detail.date
+    if($("#PP_FINISH_DATE").length > 0)
+    {
+        document.getElementById('PP_FINISH_DATE').addEventListener('change.td', (e) => {
+            PrepareDate.updateOptions({
+                restrictions: {
+                    minDate: e.detail.date
+                }
+            });
+        });
+    }
+
+    if($("#PP_ESTIMATION_TIME").length > 0)
+    {
+        new tempusDominus.TempusDominus(document.getElementById('PP_ESTIMATION_TIME'),{
+            display: {
+                components: {
+                    calendar: false,
+                    date: false,
+                    month: false,
+                    year: false,
+                    decades: false,
+                    clock: true,
+                    hours: true,
+                    minutes: true,
+                    seconds: true,
+                    useTwentyfourHour: true
+                }
+            },
+            localization: {
+                format : "HH:mm:ss"
+
             }
         });
-    });
+    }
 
 
-    new tempusDominus.TempusDominus(document.getElementById('PP_ESTIMATION_TIME'),{
-        display: {
-            components: {
-                calendar: false,
-                date: false,
-                month: false,
-                year: false,
-                decades: false,
-                clock: true,
-                hours: true,
-                minutes: true,
-                seconds: true,
-                useTwentyfourHour: true
-            }
-        },
-        localization: {
-            format : "HH:mm:ss"
-
-        }
-    });
 
 	$("#BTN_SAVE_PLAN").on('click',plans_module.SavePlanInformation);
 	$('select').select2();
