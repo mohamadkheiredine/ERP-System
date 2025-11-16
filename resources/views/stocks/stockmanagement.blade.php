@@ -50,7 +50,7 @@ th{
     <div class="card-body">
     <span id="hiddenP_fields">
 			<input type="hidden" name="page_number" id="PAGE_NUMBER" value="1" />
-			<input type="hidden" name="list_type" id="LIST_TYPE" value="list" />
+			<input type="hidden" name="list_type" id="LIST_TYPE" value="group" />
 		</span>
 		<!--begin: Search Form -->
 		<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">

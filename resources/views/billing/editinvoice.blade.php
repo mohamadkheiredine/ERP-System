@@ -190,6 +190,7 @@ th{
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                @if(Session("default_item") == 0)
                                 <label> Item Type <span class="required"> * </span> </label><br/>
                                 <select {{  $invoice_info->bi_invoice_status == 1 ? "disabled='disabled'" : "" }} class="bs-select form-control" name="bi_invoice_items_type" id="BI_INVOICE_ITEMS_TYPE" data-actions-box="true">
                                     <option value="">-- Select Type --</option>
@@ -197,7 +198,14 @@ th{
                                     <option {{ $invoice_info->bi_invoice_type  == 2 ? "selected" : "" }} value="2">Services</option>
                                     <option {{ $invoice_info->bi_invoice_type  == 3 ? "selected" : "" }}  value="3">Products & Services</option>
                                 </select>
+                                @else
+                                    <label> Item Type <span class="required"> * </span> </label><br/>
+                                    <input type="hidden" name="bi_invoice_items_type" value="{{ $invoice_info->bi_invoice_type }}" />
+
+                                    <label>{{ $invoice_info->bi_invoice_type == 1 ? "Products" : ($invoice_info->bi_invoice_type == 2 ? "Services" : "Products & Services") }}</label>
+                                @endif
                                 <input type="hidden" name="ini_invoice_type" value="{{ $invoice_info->bi_invoice_type }}" />
+
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -387,7 +395,7 @@ th{
                    		<div class="col-md-12">
                    			<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">{{ $invoice_info->bi_invoice_type == 1 ? "Products" : "Services" }}</a>
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#tabProducts">{{ $invoice_info->bi_invoice_type == 1 ? "Products" : ($invoice_info->bi_invoice_type == 2 ? "Services" : "Products & Services") }}</a>
                                 </li>
                                 @if(Config::get("appconfig.crm_telemarketing") == 0)
                                 <li class="nav-item">
@@ -408,9 +416,10 @@ th{
 											<div class="col-md-12" align="right">
                                                 @if(Config::get("appconfig.crm_telemarketing") == 0)
 												@if($invoice_info->bi_invoice_status == 0)
-    												@if($invoice_info->bi_invoice_type == 1)
+    												@if($invoice_info->bi_invoice_type == 1 || $invoice_info->bi_invoice_type == 3)
     													<button  type="button" name="btn_add_product" id="BTN_ADD_PRODUCT" class="btn btn-danger">Add Product</button>
-    												@else
+                                                        @endif
+                                                        @if($invoice_info->bi_invoice_type == 1 || $invoice_info->bi_invoice_type == 3)
     													<button type="button" name="btn_add_service" id="BTN_ADD_SERVICE" class="btn btn-danger">Add Service</button>
     												@endif
 												@endif

@@ -160,7 +160,7 @@ th{
                             <div class="form-group">
                                 <label class="form-label"> Bill Status </label><br/>
                                 <select name="ip_payment_status" id="IP_PAYMENT_STATUS" class="form-control form-select" data-control="select2" data-placeholder="Select Payment Status" >
-                                    <option  value="-"> -- Select Status -- </option>
+                                    <option  value=""> -- Select Status -- </option>
                                     <option  value="0">Not Paid</option>
                                     <option  value="1">Partial Paid</option>
                                     <option  value="2">Paid</option>

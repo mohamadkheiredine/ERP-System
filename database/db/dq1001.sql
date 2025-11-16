@@ -399,3 +399,46 @@ ALTER TABLE `acc_expense_payments` ADD COLUMN `aa_company_id` INT NULL DEFAULT 0
 
 
 ALTER TABLE `srm_supplier_quotations` ADD COLUMN `sq_company_id` INT NULL DEFAULT 0 AFTER `sq_id`;
+ALTER TABLE  `mrp_bill_material` ADD COLUMN `bm_time_estimation` FLOAT NULL DEFAULT 0 AFTER `bm_expected_waste_percentage`;
+
+
+ALTER TABLE `acc_transactions` ADD COLUMN `at_company_id` INT NULL DEFAULT 0 AFTER `at_id`;
+ALTER TABLE `acc_transaction_movements` ADD COLUMN `tm_company_id` INT NULL DEFAULT 0 AFTER `fk_tran_id`;
+
+
+CREATE TABLE `srm_supplier_companies` (
+`sc_supplier_id` MEDIUMINT NULL DEFAULT 0,
+`sc_company_id` INT NULL DEFAULT 0,
+INDEX `idx_sc_supplier_id` USING BTREE (`sc_supplier_id`) VISIBLE,
+INDEX `idx_sc_company_id` USING BTREE (`sc_company_id`) VISIBLE,
+CONSTRAINT `fk_sc_supplier_id`
+    FOREIGN KEY (`sc_supplier_id`)
+        REFERENCES `srm_suppliers` (`ss_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+CONSTRAINT `fk_sc_company_id`
+    FOREIGN KEY (`sc_company_id`)
+        REFERENCES `company_details` (`cd_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE)
+    ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE `inventory_customer_companies` (
+`cc_customer_id` MEDIUMINT NULL DEFAULT 0,
+`cc_company_id` INT NULL DEFAULT 0,
+INDEX `idx_cc_customer_id` USING BTREE (`cc_customer_id` ASC) VISIBLE,
+INDEX `idx_cc_company_id` USING BTREE (`cc_company_id`) VISIBLE,
+CONSTRAINT `fk_cc_company_id`
+  FOREIGN KEY (`cc_company_id`)
+      REFERENCES `company_details` (`cd_id`)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+CONSTRAINT `fk_cc_customer_id`
+  FOREIGN KEY (`cc_customer_id`)
+      REFERENCES `inventory_customers` (`ic_id`)
+      ON DELETE CASCADE
+ON UPDATE CASCADE);
+

@@ -125,11 +125,13 @@ class PayrollsDedBenController extends Controller
     public function AddForm()
     {
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
         $lst_currencies = Currency::all();
 
 
         $data = array(
             "lst_companies" => $lst_companies,
+            "lst_employees" => $lst_employees,
             "lst_currencies" => $lst_currencies,
         );
         return view('payrolls.adddedben',$data);
@@ -145,6 +147,7 @@ class PayrollsDedBenController extends Controller
     {
         $db_id                      = $request->input('db_id');
         $db_company_id              = $request->input('db_company_id');
+        $db_employee_id              = $request->input('db_employee_id');
         $db_ben_ded_label            = $request->input('db_ben_ded_label');
         $db_description               = $request->input('db_description');
         $db_amount               = $request->input('db_amount');
@@ -170,6 +173,7 @@ class PayrollsDedBenController extends Controller
         $dedben_info->db_type                       = $db_type;
         $dedben_info->db_effective_date             = $db_effective_date;
         $dedben_info->db_end_date                   = $db_end_date;
+        $dedben_info->db_employee_id                   = $db_employee_id;
 
 
 
@@ -191,6 +195,7 @@ class PayrollsDedBenController extends Controller
     public function EditForm( $db_id )
     {
         $dedben_info  = PayrollsDeductionsBenefits::find($db_id);
+        $lst_employees = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
 
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_currencies = Currency::all();
@@ -199,6 +204,7 @@ class PayrollsDedBenController extends Controller
         $data = array(
             "dedben_info" => $dedben_info,
             "lst_companies" => $lst_companies,
+            "lst_employees" => $lst_employees,
             "lst_currencies" => $lst_currencies
         );
         return view('payrolls.editdedben',$data);

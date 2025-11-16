@@ -211,7 +211,7 @@ class ProductStocksController extends Controller
         }
         else
         {
-            $query_cond = " AND is_is_deleted = 0";
+            $query_cond = " AND is_is_deleted = 0 and stock.is_quanity > 0 ";
             if( $stock_warehouse > 0 )
                 $query_cond .= " AND fk_warehouse_id = " . $stock_warehouse;
             if( $stock_product > 0 )

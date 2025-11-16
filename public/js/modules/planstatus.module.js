@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 planstatus_module = {
 	DisplayListPlanStatus : function(){
@@ -24,22 +24,20 @@ planstatus_module = {
 						// height: 450, // datatable's body's fixed height
 						footer: false // display/hide footer
 					},
-					
+
 					// column sorting
 					sortable: true,
-					
+
 					pagination: true,
-					
+
 					search: {
 						input: $('#generalSearch')
 					},
-					
+
 					// inline and bactch editing(cooming soon)
 					// editable: false,
 				});
-				
-				$("a[id*=EDIT_STATUS_]").on('click',planstatus_module.EditStatusInfo);
-				$("a[id*=DELETE_STATUS_]").on('click',planstatus_module.DeleteStatusData);
+
 	        }
 	    });
 	},

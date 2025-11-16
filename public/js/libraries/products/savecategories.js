@@ -4,7 +4,7 @@
 $.editor
 $(function(){
 	 ClassicEditor
-     .create( document.querySelector( '#KS_DESCRIPTION' ) )
+     .create( document.querySelector( '#PC_DESCRIPTION' ) )
      .then( newEditor => {
         $.editor = newEditor;
     } )

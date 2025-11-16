@@ -271,13 +271,13 @@ class ProductionPlanController extends Controller
         $production_plan = ProductionPlan::find($pp_id);
 
         // check if the Plan Approved before start production
-        if($production_plan->pp_approval_user == 0)
-        {
-            $result_array['is_error']  = 1;
-            $result_array['error_msg'] = 'Production Plan Need to Be Approved before start production';
-
-            return Response()->json($result_array);
-        }
+//        if($production_plan->pp_approval_user == 0)
+//        {
+//            $result_array['is_error']  = 1;
+//            $result_array['error_msg'] = 'Production Plan Need to Be Approved before start production';
+//
+//            return Response()->json($result_array);
+//        }
 
 
 
