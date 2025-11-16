@@ -788,7 +788,11 @@ class ReceiptsController extends Controller
             $display = str_replace("%account_ledger_to%",$receipt_info->Customer->ic_account_number, $display);
         }
 
-        $display = str_replace("%paied_account%",$receipt_info->AccountPayable->aa_account_label, $display);
+        if($receipt_info->AccountPayable)
+            $display = str_replace("%paied_account%",$receipt_info->AccountPayable->aa_account_label, $display);
+        else
+            $display = str_replace("%paied_account%","-", $display);
+
         $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
         $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
         $display = str_replace("%receipt_code%",$receipt_info->br_receipt_number, $display);

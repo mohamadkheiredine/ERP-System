@@ -131,6 +131,7 @@ use Illuminate\Http\Request;
     Route::put('/web/api/updatecustomer','Api\WebApiController@UpdateWebCustomer');
     Route::get('/web/api/getlistproducts','Api\WebApiController@GetListProducts');
     Route::get('/web/api/getproductinfo','Api\WebApiController@Getproductinfo');
+    Route::post('/web/api/saveorder','Api\WebApiController@CreateOrder');
 
 
 //});

@@ -400,6 +400,7 @@ bills_module = {
                 var base_url = $('#BASE_URL').val();
     	       // var _token = $('input[name=_token]').val();
     	        var str_params = $("#FRM_SAVE_BILLS").serialize();
+                 $('#BTN_SAVE_BILLS').attr('disabled','disabled');
 
     	         $.ajax
     	        ({

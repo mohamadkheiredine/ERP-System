@@ -125,7 +125,7 @@ th{
                            <select class="form-control" required="required" id="IP_PAYMENT_TYPE_ID" name="ip_payment_type_id" data-control="select2" data-placeholder="Select Payment Type">
                                            <option value="">-- Select Payment Type --</option>
                                @foreach($lst_payment_types as $index => $paytype_info)
-                                 <option {{ $invoice_info->bi_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                 <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
                                @endforeach
                            </select>
                        </div>

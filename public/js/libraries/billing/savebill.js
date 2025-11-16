@@ -25,4 +25,29 @@ $(function(){
 
         }
     });
+    if($("#IP_BILLING_DATE").length > 0)
+    {
+        new tempusDominus.TempusDominus(document.getElementById('IP_BILLING_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+    }
+
 })

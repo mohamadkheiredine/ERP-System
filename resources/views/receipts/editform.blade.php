@@ -12,7 +12,7 @@ Page Description :
 
 ***********************************************************/
 
- 
+
 ?>
 
 @extends('layouts.layout',['page_title' => "Billing Module"])
@@ -100,7 +100,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Receipt Date </label><br/>
-                                    <input type="text" name="br_receipt_date" id="BR_RECEIPT_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('d/m/Y',strtotime($receipt_info->br_receipt_date)) }}" />
+                                    <input type="text" name="br_receipt_date" id="BR_RECEIPT_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ $receipt_info->br_receipt_date }}" />
                                 </div>
                         </div>
                         <div class="col-md-4">
@@ -109,7 +109,7 @@ th{
                                 <select required="required"  id="FK_PAYMENT_TYPE" name="fk_payment_type" class="form-control form-select" data-control="select2" data-placeholder="Select Payment Type">
                         			<option value="">-- Select Payment Type --</option>
                                     @foreach($lst_payment_types as $index => $paytype_info)
-                                      <option {{ $receipt_info->br_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                      <option {{ $receipt_info->fk_payment_type == $paytype_info->pt_id ? "selected" : "" }} value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -171,7 +171,7 @@ th{
 									</span>
 								</div>
 								</div>
-                        </div> 
+                        </div>
                         <div class="col-md-12">
                              <div class="form-group">
                                 <label class="control-label">Receipt Notes</label>

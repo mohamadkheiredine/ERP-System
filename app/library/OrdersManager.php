@@ -89,6 +89,24 @@ class OrdersManager
     }
 
 
+    public function GenerateWebOrderCode($params_array = array() )
+    {
+        $company_id     = $params_array['company_id'];
+        $company_info   = Companies::find($company_id);
+        $cd_company_name = $company_info->cd_company_name;
+        $year           = date("Y");
+        $count_orders = Orders::whereYear('so_creation_date' , $year)->count();
+
+        $index = $count_orders + 1;
+
+
+        $order_code = "W".sprintf('%04d', $index);
+
+        return $order_code;
+
+    }
+
+
     /**
      * Generate array to display in klist of order products based on info saved
      * in the order record and products already exist
