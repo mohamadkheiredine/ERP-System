@@ -2073,6 +2073,26 @@ Page Description :
                                                 <!--end:Menu link-->
                                             </div>
                                         @endif
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('system/statuses?ss_status_type=kitchen_order_statuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Kitchen Order Statuses</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('system/statuses?ss_status_type=pos_order_statuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">POS Order Statuses</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
                                     </div>
                                 </div>
                                 @endif
