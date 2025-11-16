@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  title: TitanERP Web API
+  description: API endpoints for external web services integration with TitanERP for customer, product, and order management.
+  version: 1.0.0
+servers:
+  - url: /web/api
+    description: Base path for Web API endpoints
+
+tags:
+  - name: Customer Management
+    description: Operations related to managing customers.
+  - name: Product Catalog
+    description: Operations related to fetching product lists and details.
+  - name: Order Processing
+    description: Operations related to creating new sales orders.
+
+paths:
+  /createcustomer:
+    post:
+      tags:
+        - Customer Management
+      summary: Create a new customer record
+      description: Creates a new customer in the ERP system, generating a unique customer code and an associated chart of accounts entry.
+      operationId: createWebCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveWebCustomerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaveWebCustomerRequestFormData'
+      responses:
+        '200':
+          description: Customer successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveWebCustomerResponse'
+        '400':
+          description: Invalid input.
+  
+  /updatecustomer:
+    put:
+      tags:
+        - Customer Management
+      summary: Update an existing customer record
+      description: Updates the details of an existing customer using the provided ID.
+      operationId: updateWebCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveWebCustomerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaveWebCustomerRequestFormData'
+      responses:
+        '200':
+          description: Customer successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveWebCustomerResponse'
+        '404':
+          description: Customer not found.
+  
+  /getlistproducts:
+    get:
+      tags:
+        - Product Catalog
+      summary: Get a list of available products
+      description: Retrieves a list of products with available stock quantity from the designated online store warehouses.
+      operationId: getListProducts
+      responses:
+        '200':
+          description: List of products with stock information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetListProductsResponse'
+        '404':
+          description: Store or warehouse not found, or no stock available.
+  
+  /getproductinfo:
+    get:
+      tags:
+        - Product Catalog
+      summary: Get detailed information for a specific product
+      description: Retrieves the detailed information and stock quantity for a single product by ID from the online store warehouses.
+      operationId: getProductInfo
+      parameters:
+        - name: product_id
+          in: query
+          description: The ID of the product to retrieve.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product details with stock information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductInfoResponse'
+        '404':
+          description: Product or stock not found.
+
+  /saveorder:
+    post:
+      tags:
+        - Order Processing
+      summary: Create a new sales order
+      description: Creates a sales order, manages customer delivery details, updates stock levels, generates an invoice, and posts accounting transactions.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '200':
+          description: Order, invoice, and accounting transactions successfully saved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
+        '400':
+          description: Invalid input or missing required store/warehouse configuration.
+
+components:
+  schemas:
+    SaveWebCustomerRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+          description: ID of the customer (0 for new, required for update).
+        ic_customer_name:
+          type: string
+          description: Customer's full name.
+        ic_customer_address:
+          type: string
+          description: Customer's physical address.
+        ic_customer_email:
+          type: string
+          format: email
+          description: Customer's email address.
+        ic_customer_website:
+          type: string
+          format: url
+          description: Customer's website.
+        ic_customer_phone:
+          type: string
+          description: Customer's landline phone number.
+        ic_customer_mobile:
+          type: string
+          description: Customer's mobile phone number.
+        ic_hobbies:
+          type: string
+          description: Customer's hobbies.
+        ic_favorite_foods:
+          type: string
+          description: Customer's favorite foods.
+        ic_work_title:
+          type: string
+          description: Customer's work title.
+        ic_sports:
+          type: string
+          description: Customer's sports interests.
+        ic_birth_date:
+          type: string
+          format: date
+          description: Customer's birth date (YYYY-MM-DD).
+      required:
+        - ic_customer_name
+    
+    SaveWebCustomerRequestFormData:
+      type: object
+      properties:
+        ic_avatar_pic:
+          type: string
+          format: binary
+          description: Customer's avatar image file.
+      allOf:
+        - $ref: '#/components/schemas/SaveWebCustomerRequest'
+
+    SaveWebCustomerResponse:
+      type: object
+      properties:
+        is_error:
+          type: integer
+          description: Error status (0 for success).
+          enum: [0, 1]
+        customer_id:
+          type: integer
+          description: The ID of the saved customer.
+        customer_name:
+          type: string
+          description: The name of the saved customer.
+    
+    ProductStockRecord:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        product_profile:
+          type: string
+          format: url
+          description: URL to the product image.
+        product_reference:
+          type: string
+        product_name:
+          type: string
+        barcode:
+          type: string
+        total_quantity:
+          type: number
+          format: float
+          description: Total available stock quantity in the online store warehouses.
+        stock_records_count:
+          type: integer
+          description: Number of stock records contributing to the total quantity.
+        currency_id:
+          type: integer
+          description: The ID of the price currency.
+          
+    GetListProductsResponse:
+      type: object
+      properties:
+        is_error:
+          type: integer
+          enum: [0, 1]
+        error_message:
+          type: string
+          nullable: true
+        stock_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductStockRecord'
+
+    GetProductInfoResponse:
+      type: object
+      properties:
+        is_error:
+          type: integer
+          enum: [0, 1]
+        error_message:
+          type: string
+          nullable: true
+        stock_records:
+          $ref: '#/components/schemas/ProductStockRecord'
+          description: Single product detail object.
+    
+    OrderItem:
+      type: object
+      properties:
+        p_id:
+          type: integer
+          description: Product ID.
+        is_id:
+          oneOf:
+            - type: integer
+              description: Stock ID of the product.
+            - type: string
+              enum: ['UNITS']
+              description: Special value for phone line units.
+        product_cost:
+          type: number
+          format: float
+          description: Price of one unit before discounts.
+        product_discount:
+          type: number
+          format: float
+          description: Discount percentage for this product (0-100).
+        product_quantity:
+          type: number
+          format: float
+          description: Quantity ordered.
+        uid:
+          type: string
+          description: Unique ID for specific stock items (e.g., serialized products).
+        number_id:
+          type: integer
+          description: Required if is_id is 'UNITS', ID of the Phone Line.
+        units_amount:
+          type: string
+          description: Required if is_id is 'UNITS', amount of units to be deducted.
+        product_name:
+          type: string
+          description: Required if is_id is 'UNITS', label for the unit item.
+
+    CreateOrderRequest:
+      type: object
+      properties:
+        company_currency:
+          type: integer
+          description: ID of the company's currency.
+        order_items:
+          type: string
+          description: A JSON string of the order items array.
+          example: '[{"p_id": 101, "is_id": 20, "product_cost": 50.00, "product_discount": 10, "product_quantity": 2, "uid": "ABC12345"}, ...]'
+        pos_sub_total:
+          type: number
+          format: float
+          description: Sub-total of all items before overall order discount.
+        pos_discount:
+          type: number
+          format: float
+          description: Overall order discount percentage.
+        pos_total:
+          type: number
+          format: float
+          description: Final total cost after all discounts and taxes (used for calculation verification).
+        vendor_id:
+          type: integer
+          description: ID of the vendor (often 0 or a default for web orders).
+        customer_id:
+          type: integer
+          description: ID of an existing customer (0 if new/delivery-based).
+        delcustomername:
+          type: string
+          description: Delivery customer name. Triggers customer creation/update if present.
+        delcustomerphone:
+          type: string
+          description: Delivery customer phone.
+        delcustomeraddress:
+          type: string
+          description: Delivery customer address.
+      required:
+        - company_currency
+        - order_items
+        - pos_sub_total
+        - pos_discount
+        - pos_total
+    
+    CreateOrderResponse:
+      type: object
+      properties:
+        is_error:
+          type: integer
+          enum: [0, 1]
+        order_id:
+          type: integer
+          description: The ID of the newly created sales order.
+        error_msg:
+          type: string
+          description: Confirmation or error message.
