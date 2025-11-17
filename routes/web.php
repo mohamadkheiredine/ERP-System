@@ -610,4 +610,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/fnb/modifiers/addform', 'Fnb\FnbModifiersController@addModifier');
     Route::get('/fnb/modifiers/editform/{m_id}', 'Fnb\FnbModifiersController@editModifier');
 
+
+    Route::get('/fnb/receipes', 'Fnb\FnbReceipesController@index');
+    Route::get('/fnb/receipes/addform', 'Fnb\FnbReceipesController@addIngredient');
+
 });

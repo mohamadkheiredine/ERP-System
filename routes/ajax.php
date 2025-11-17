@@ -772,3 +772,9 @@ Route::delete('/request/modifiers/deletemodifierinfo', 'Fnb\FnbModifiersControll
 Route::get('/request/fnbitemsmodifiers/displaylistitemsmodifiers', 'Fnb\FnbMenuItemModifierController@DisplayListItemsModifiers');
 Route::post('/request/menuitemsmodifiers/saveiteminfo', 'Fnb\FnbMenuItemModifierController@SaveItemModifierInfo');
 Route::delete('/request/fnbitemsmodifiers/deleteiteminfo', 'Fnb\FnbMenuItemModifierController@DeleteItemModifier');
+
+Route::get('/request/receipes/displaylistreceipes', 'Fnb\FnbReceipesController@DisplayListReceipes');
+Route::get('/request/receipes/getreceipe', 'Fnb\FnbReceipesController@GetReceipe');
+Route::get('/request/receipes/listingredients', 'Fnb\FnbReceipesController@DisplayListIngredients');
+Route::post('/request/receipe/saveinfo', 'Fnb\FnbReceipesController@SaveIngredientInfo');
+Route::delete("/request/receipe/deletereceipeinfo",'Fnb\FnbReceipesController@DeleteIngredientInfo');
