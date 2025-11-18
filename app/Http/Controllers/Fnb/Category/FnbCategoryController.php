@@ -198,11 +198,9 @@ class FnbCategoryController extends Controller
             ? ($page_number - 1) * $nbr_rows_per_pages
             : 0;
 
-        // Base query
         $query = ProductItems::where('fi_is_deleted', 0)
             ->where('fi_category_id', $category_id);
 
-        // Filters
         if ($category_id > 0) {
             $query->where('fi_category_id', $category_id);
         }

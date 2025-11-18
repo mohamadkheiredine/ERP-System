@@ -11,7 +11,7 @@ class Modifier extends Model {
 
     public function Item()
     {
-        return $this->hasOne('App\models\FnB\Item', 'fi_id', 'm_item_id');
+        return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'm_item_id');
     }
 
     public function Currency()

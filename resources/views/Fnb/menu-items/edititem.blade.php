@@ -214,7 +214,7 @@
       <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
         {{-- content of my link table --}}
         <div id="LstItemsMain" class="table-responsive">
-          <table class="table" id="html_table" width="100%">
+          <table class="table table-bordered table-hover" id="html_table" width="100%">
             <thead>
               <tr>
                 <th title="#">#</th>
@@ -255,6 +255,7 @@
                     <span id="hidden_fields">
                       {!! csrf_field() !!}
                       <input type="hidden" id="FK_MENU_ITEM_ID" name="fk_menu_item_id" value="{{ $item_info->fi_id }}">
+
                     </span>
 
                     <div class="alert alert-success" style="display:none">
@@ -281,24 +282,20 @@
                       <div class="col-md-4">
                         <div class="form-group">
                           <label class="control-label">Product</label>
-                          <select class="form-select form-control" data-control="select2" id="IM_PRODUCT_ID" name="im_product_id">
-                            <option value="0">-- Select Product --</option>
-                            @foreach($lst_products as $product_info)
-                            <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
-                            @endforeach
-                          </select>
+                          <input type="text" name="product_name" class="form-control" value="">
                         </div>
                       </div>
 
                       <div class="col-md-4">
                         <div class="form-group">
                           <label class="control-label">Currency</label>
-                          <select class="form-select form-control" data-control="select2" id="IM_CURRENCY_ID" name="im_currency_id">
-                            <option value="0">-- Select Currency --</option>
-                            @foreach($lst_currencies as $currency_info)
-                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
-                            @endforeach
+                          <select class="form-select form-control" id="IM_CURRENCY_ID" name="im_currency_id">
+                                <option value="0">-- Select Currency --</option>
+                                @foreach($lst_currencies as $currency_info)
+                                    <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                                @endforeach
                           </select>
+
                         </div>
                       </div>
                     </div>

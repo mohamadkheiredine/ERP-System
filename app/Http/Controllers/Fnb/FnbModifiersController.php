@@ -148,4 +148,17 @@ class FnbModifiersController extends Controller
 
         return Response()->json($result_array);
     }
+
+    public function getCost(Request $request)
+    {
+        $modifier_id = $request->input('modifier_id');
+
+        $modifier = Modifier::where('m_id', $modifier_id)
+            ->where('m_is_deleted', 0)
+            ->first();
+
+        return response()->json([
+            'cost' => $modifier->m_cost_modifier ?? 0
+        ]);
+    }
 }
