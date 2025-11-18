@@ -111,6 +111,12 @@ th{
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label class="control-label"> Time Estimation ( hrs ) </label><br/>
+                                <input type="number" name="bm_time_estimation" id="BM_TIME_ESTIMATION" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="{{ $bom_info->bm_time_estimation }}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label class="control-label"> Expected Percentage Waste </label><br/>
                                 <input type="number" name="bm_expected_waste_percentage" id="BM_EXPECTED_WASTE_PERCENTAGE" class="form-control" min="0.1" max="100" step="0.1" required="required" maxlength="5"  value="{{ $bom_info->bm_expected_waste_percentage }}" />
                             </div>
@@ -202,10 +208,10 @@ th{
                                 </div>
                                 <div class="tab-pane fade" id="tab_products" role="tabpanel">
                                    <div class="row">
-										<div id="LstBOMProducts" class="col-md-12">
-											<table class="table m-table m-table--head-bg-brand">
-											<thead>
-												<tr>
+										<div id="LstBOMProducts" class="col-md-12 table-responsive">
+                                       <table class="table table-row-dashed table-row-gray-300 gy-7">
+                                           <thead>
+                                           <tr class="fw-bold fs-6 text-gray-800">
 													<th> # </th>
 													<th>Product Label</th>
 													<th>Quantity</th>

@@ -67,8 +67,9 @@ class BillOfMaterialsController extends Controller
     public function DisplayListBom(Request $request)
     {
         $bo_product = $request->input('bo_product');
+        $default_company_id     = session('default_company_id');
 
-        $lst_bom = BillOfMaterials::whereBmIsDeleted(0)->get();
+        $lst_bom = BillOfMaterials::whereBmIsDeleted(0)->whereBmCompanyId($default_company_id)->get();
         $result_array = array();
 
         $data = array(
@@ -280,6 +281,7 @@ class BillOfMaterialsController extends Controller
         $bm_unit_id      = $request->input('bm_unit_id');
         $bm_company_id      = $request->input('bm_company_id');
         $bm_target_warehouse      = $request->input('bm_target_warehouse');
+        $bm_time_estimation      = $request->input('bm_time_estimation');
 
         $result_array =array();
 
@@ -306,6 +308,7 @@ class BillOfMaterialsController extends Controller
         $bom_obj->bm_unit_id    = $bm_unit_id;
         $bom_obj->bm_company_id    = $bm_company_id;
         $bom_obj->bm_target_warehouse    = $bm_target_warehouse;
+        $bom_obj->bm_time_estimation    = $bm_time_estimation;
         $bom_obj->save();
 
 

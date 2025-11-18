@@ -535,7 +535,7 @@ Route::post('/request/deleteorderstatus','Sales\OrderStatusController@DeleteOrde
 
 Route::post('/request/orders/displaylist','Sales\OrdersController@DisplayList');
 Route::post('/request/orders/displaylistproducts','Sales\OrdersController@DisplayListProducts');
-Route::post('/request/orders/deleteOrderProduct', 'Sales\OrdersController@DeleteOrderProduct');
+Route::delete('/request/orders/deleteorderproduct', 'Sales\OrdersController@DeleteOrderProduct');
 Route::post('/request/orders/saveproduct','Sales\OrdersController@AddOrderProduct');
 Route::post('/request/orders/saveinfo','Sales\OrdersController@SaveOrdersInfo');
 Route::post('/request/orders/deleteinfo','Sales\OrdersController@DeleteOrderInfo');

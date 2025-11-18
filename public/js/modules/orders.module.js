@@ -51,6 +51,33 @@ orders_module = {
             var base_url 	= $('input[name=base_url]').val();
             window.location.href = base_url + "/sales/orders";
         },
+        DeleteOrderProduct : function(){
+            var base_url 	= $('input[name=base_url]').val();
+            var _token 		= $('input[name=_token]').val();
+            var order_id 		= $('input[name=so_id]').val();
+            var stock_id 		= $(this).data('stock_id');
+
+            bootbox.confirm("Are you sure you want to Convert this Invoice to Official ?", function(result) {
+                //result
+                if (result == true) {
+                    $.ajax
+                    ({
+                        url: base_url + "/request/orders/deleteorderproduct",
+                        data: {_token: _token, order_id: order_id , stock_id : stock_id },
+                        method: 'delete',
+                        dataType: "json",
+                        beforeSend: function () {
+                        },
+                        success: function (response) {
+                            orders_module.DisplayListOrderProducts();
+                        }
+                    });
+                }
+            })
+
+
+
+        },
 		PayPaymentOrder : function(){
 			var base_url 	= $('input[name=base_url]').val();
 		    var _token 		= $('input[name=_token]').val();

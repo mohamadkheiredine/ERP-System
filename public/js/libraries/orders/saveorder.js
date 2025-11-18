@@ -72,7 +72,7 @@ $(function(){
 		orders_module.DisplayListOrderProducts();
 		$('#BTN_ADD_PRODUCT').on('click',orders_module.OpenAddOrderProductsModal);
 		$('#BTN_SAVE_PRODUCT').on('click',orders_module.AddOrderProducts);
-       // $("#LstProducts").on('click', 'button[id*=BTN_DELETE_PRODUCT]', orders_module.DeleteOrderProduct);
+        $("#LstProducts").on('click', 'button[id*=BTN_DELETE_PRODUCT]', orders_module.DeleteOrderProduct);
 	}
 	 //LstProducts
 	$('#ORDER_PRODUCT').on('change',orders_module.getProductPrice);

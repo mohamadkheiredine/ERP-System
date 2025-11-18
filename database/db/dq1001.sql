@@ -442,3 +442,31 @@ CONSTRAINT `fk_cc_customer_id`
       ON DELETE CASCADE
 ON UPDATE CASCADE);
 
+
+ALTER TABLE fnb_ingredients
+    ADD COLUMN in_waste_percent DECIMAL(10,2) DEFAULT '0.00' AFTER in_stock_quantity,
+ADD COLUMN in_line_cost DECIMAL(10,2) DEFAULT '0.00' AFTER in_cost_per_unit,
+ADD COLUMN in_notes VARCHAR(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL AFTER in_deleted_by;
+
+
+
+ALTER TABLE `acc_transactions` ADD COLUMN `at_store_id` INT NULL DEFAULT 0 AFTER `at_company_id`;
+ALTER TABLE `acc_transaction_movements` ADD COLUMN `tm_store_id` INT NULL DEFAULT 0 AFTER `tm_company_id`;
+
+
+ALTER TABLE `prod_production_plan`
+    ADD COLUMN `pp_bom_id` MEDIUMINT NULL DEFAULT 0 AFTER `pp_id`,
+ADD COLUMN `pp_product_id` INT NULL DEFAULT '0' AFTER `pp_bom_id`,
+ADD COLUMN `pp_final_quantity` DECIMAL(10,2) NULL DEFAULT '0' AFTER `pp_product_id`,
+ADD COLUMN `pp_unit_id` SMALLINT NULL DEFAULT '0' AFTER `pp_final_quantity`,
+ADD COLUMN `pp_target_warehouse` SMALLINT NULL DEFAULT '0' AFTER `pp_unit_id`,
+ADD COLUMN `pp_company_id` INT NULL DEFAULT '0' AFTER `pp_target_warehouse`,
+ADD COLUMN `pp_total_stock_price` DECIMAL(10,2) NULL DEFAULT 0 AFTER `pp_assign_to`,
+ADD COLUMN `pp_currency_id` SMALLINT NULL DEFAULT 0 AFTER `pp_total_stock_price`;
+
+
+ALTER TABLE `prod_production_plan`
+    ADD COLUMN `pp_is_finished` TINYINT NULL DEFAULT 0 AFTER `pp_production_block`,
+ADD COLUMN `pp_closing_date` DATETIME NULL DEFAULT NULL AFTER `pp_is_finished`,
+ADD COLUMN `pp_closing_by` INT NULL DEFAULT 0 AFTER `pp_closing_date`,
+ADD COLUMN `pp_stock_id` INT NULL DEFAULT 0 AFTER `pp_closing_by`;

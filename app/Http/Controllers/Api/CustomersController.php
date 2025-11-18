@@ -342,7 +342,6 @@ class CustomersController extends Controller
         $customer_data = array();
 
 
-
         if(count($customer_info) == 0)
         {
             $result_array['is_error'] = 1;

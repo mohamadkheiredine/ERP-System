@@ -15,6 +15,8 @@ Page Description :
 namespace App\Http\Controllers\Production;
 
 use App\Http\Controllers\Controller;
+use App\models\Inventory\WareHouses;
+use App\models\MRP\BillOfMaterials;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -132,12 +134,19 @@ class ProductionPlanController extends Controller
         $lst_plan_status    = PlanStatus::wherePsIsDeleted(0)->get();
         $lst_customers      = Customers::whereIcIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
+        $lst_bom_info         = BillOfMaterials::whereBmIsDeleted(0)->get();
+        $default_company_id     = session('default_company_id');
+        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
+        $lst_products         = Products::wherePProductIsDeleted(0)->where('p_product_type','!=',1)->get();
         $plan_code          = $plan_manag->GeneratePlanCode();
         unset($plan_manag);
         $data = array(
             "lst_plan_status" => $lst_plan_status,
             "lst_customers" => $lst_customers,
             "lst_users" => $lst_users,
+            "lst_bom_info" => $lst_bom_info,
+            "lst_warehouses" => $lst_warehouses,
+            "lst_products" => $lst_products,
             "plan_code" => $plan_code,
         );
         return view('production.addplan',$data);

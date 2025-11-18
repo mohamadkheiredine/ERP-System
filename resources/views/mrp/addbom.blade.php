@@ -109,6 +109,12 @@ th{
                             </div>
                         </div>
                         <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label"> Time Estimation ( hrs ) </label><br/>
+                                <input type="number" name="bm_time_estimation" id="BM_TIME_ESTIMATION" class="form-control" min="0.1" max="9999999999" step="0.1" required="required" maxlength="255"  value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                           <div class="form-group">
                                 <label class="control-label"> Expected Percentage Waste </label><br/>
                                 <input type="number" name="bm_expected_waste_percentage" id="BM_EXPECTED_WASTE_PERCENTAGE" class="form-control" min="0.1" max="100" step="0.1" required="required" maxlength="5"  value="0" />
