@@ -665,8 +665,8 @@ th{
 				 		<div class="col-md-12">
 				 			  <div class="form-group">
                                     <label class="control-label">Supplier</label><br/>
-                                     <select class="bs-select form-control" name="ii_supplier_id" id="II_SUPPLIER_ID" required="required"  style="width:100%" data-actions-box="true">
-                                            <option value=""> -- Supplier -- </option>
+                                     <select class="bs-select form-control" name="ii_supplier_id" id="II_SUPPLIER_ID"  style="width:100%" data-actions-box="true">
+                                            <option value="0"> -- Supplier -- </option>
                                             @foreach( $lst_suppliers as $key => $supp_info )
                                                     <option value="{{ $supp_info->ss_id }}">{{ $supp_info->ss_supplier_name }}</option>
                                             @endforeach
@@ -677,7 +677,7 @@ th{
 				 			  <div class="form-group PaymentType" style="display: none">
                                     <label class="control-label">Payment Type</label><br/>
                                      <select class="bs-select form-control" name="ii_payment_type" id="II_PAYMENT_TYPE" style="width:100%" data-actions-box="true">
-                                            <option value=""> -- Supplier -- </option>
+                                            <option value=""> -- Payment Type -- </option>
                                             @foreach( $lst_payment_types as $key => $pt_info )
                                                     <option value="{{ $pt_info->pt_id }}">{{ $pt_info->pt_payment_type }}</option>
                                             @endforeach

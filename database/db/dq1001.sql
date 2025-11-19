@@ -470,3 +470,5 @@ ALTER TABLE `prod_production_plan`
 ADD COLUMN `pp_closing_date` DATETIME NULL DEFAULT NULL AFTER `pp_is_finished`,
 ADD COLUMN `pp_closing_by` INT NULL DEFAULT 0 AFTER `pp_closing_date`,
 ADD COLUMN `pp_stock_id` INT NULL DEFAULT 0 AFTER `pp_closing_by`;
+
+INSERT INTO `acc_accounting_accounts` (`aa_id`, `aa_parent_account`, `aa_account_ref`, `aa_account`, `aa_account_label`) VALUES ('622', '52', '622', '622', 'Service Purchased');

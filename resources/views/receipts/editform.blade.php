@@ -71,7 +71,7 @@ th{
                         </div>
                         <div class="col-md-4" >
                              <div class="form-group">
-                                <label class="control-label"> Account <span class="required"> * </span></label><br/>
+                                <label class="control-label"> Account</label><br/>
                                 <select required="required" id="BR_ACCOUNT_ID" name="br_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select Account">
                         			<option value="0">-- Select Account --</option>
                                     @foreach($lst_accounts as $index => $acc_info)

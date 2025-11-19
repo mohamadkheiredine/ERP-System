@@ -1376,12 +1376,17 @@ class InvoicesController extends Controller
             {
                 $invoice_info = Invoices::find($bi_id);
 
+
+
                 $lst_invoice_items =  InvoiceProducts::whereFkInvoiceId($bi_id)->get();
                 $total_price = 0;
                 foreach ( $lst_invoice_items as $key => $ii_info )
                 {
                     $total_price = $total_price + $ii_info->ii_total_price;
                 }
+
+
+
 
 
 
@@ -1435,6 +1440,43 @@ class InvoicesController extends Controller
                     $pt_payment_account     = $payment_type_info->pt_payment_account;
 
 
+                    $vat_amount = 0;
+                    if($bi_vat_id > 0)
+                    {
+                        $vat_info = VatAccounts::find($bi_vat_id);
+                        $vat_amount = $vat_info->av_vat_rate * $total_price/100;
+
+                        $TransactionMovement = new TransactionMovements();
+                        $TransactionMovement->fk_tran_id            = $at_id;
+                        $TransactionMovement->tm_ledger_account     = 4427;
+                        $TransactionMovement->tm_sub_ledger_account =  4427;
+                        $TransactionMovement->tm_ledger_label       = $bi_invoice_code;
+                        $TransactionMovement->tm_debit              = 0;
+                        $TransactionMovement->tm_credit             = $vat_amount;
+                        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                        $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                        $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                        $TransactionMovement->save();
+
+
+                        $TransactionMovement = new TransactionMovements();
+                        $TransactionMovement->fk_tran_id            = $at_id;
+                        $TransactionMovement->tm_ledger_account     = 701;
+                        $TransactionMovement->tm_sub_ledger_account =  701;
+                        $TransactionMovement->tm_ledger_label       = $bi_invoice_code;
+                        $TransactionMovement->tm_debit              = 0;
+                        $TransactionMovement->tm_credit             = $vat_amount;
+                        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                        $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                        $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                        $TransactionMovement->save();
+
+                    }
+
+
+
+
+
                     if( $item_type == 2 )
                     {
                         // Save Service Income for all servbice items inside the invoice
@@ -1446,7 +1488,6 @@ class InvoicesController extends Controller
 
                             $ii_supplier_id = $ii_info->ii_supplier_id;
                             $service_info = CRMServices::find($item_id);
-                            $supplier_info = Suppliers::find($ii_supplier_id);
 
                             // get the payment method if it's selected
 
@@ -1478,35 +1519,53 @@ class InvoicesController extends Controller
 
                                 $TransactionMovement = new TransactionMovements();
                                 $TransactionMovement->fk_tran_id            = $at_id;
-                                $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-                                $TransactionMovement->tm_sub_ledger_account =  $pt_payment_account;
+                                $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+                                $TransactionMovement->tm_sub_ledger_account =  $customer_info->ic_account_number;
                                 $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                                $TransactionMovement->tm_debit              = 0;
-                                $TransactionMovement->tm_credit             = $ii_info->ii_item_price;
+                                $TransactionMovement->tm_debit              = ( $ii_info->ii_item_price + $vat_amount);
+                                $TransactionMovement->tm_credit             = 0;
                                 $TransactionMovement->tm_creation_date      = date("Y-m-d");
                                 $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
                                 $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
                                 $TransactionMovement->save();
 
-                                $TransactionMovement = new TransactionMovements();
-                                $TransactionMovement->fk_tran_id            = $at_id;
-                                $TransactionMovement->tm_ledger_account     = $supplier_info->ss_sale_account_id;
-                                $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
-                                $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                                $TransactionMovement->tm_debit              = 0;
-                                $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
-                                $TransactionMovement->tm_creation_date      = date("Y-m-d");
-                                $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-                                $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
-                                $TransactionMovement->save();
+                                if($ii_supplier_id > 0 )
+                                {
+                                    $supplier_info = Suppliers::find($ii_supplier_id);
+                                    $TransactionMovement = new TransactionMovements();
+                                    $TransactionMovement->fk_tran_id            = $at_id;
+                                    $TransactionMovement->tm_ledger_account     = $supplier_info->ss_sale_account_id;
+                                    $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
+                                    $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                                    $TransactionMovement->tm_debit              = 0;
+                                    $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
+                                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                                    $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                                    $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                                    $TransactionMovement->save();
+
+                                    $supplier_info = Suppliers::find($ii_supplier_id);
+                                    $TransactionMovement = new TransactionMovements();
+                                    $TransactionMovement->fk_tran_id            = $at_id;
+                                    $TransactionMovement->tm_ledger_account     = 622;
+                                    $TransactionMovement->tm_sub_ledger_account = 622;
+                                    $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
+                                    $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
+                                    $TransactionMovement->tm_credit             = 0;
+                                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                                    $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
+                                    $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
+                                    $TransactionMovement->save();
+                                }
+
 
                                 $TransactionMovement = new TransactionMovements();
                                 $TransactionMovement->fk_tran_id            = $at_id;
                                 $TransactionMovement->tm_ledger_account     = $purchase_account_id;
                                 $TransactionMovement->tm_sub_ledger_account = $purchase_account_id;
                                 $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                                $TransactionMovement->tm_debit              = $ii_info->ii_cost_price;
-                                $TransactionMovement->tm_credit             = 0;
+                                $TransactionMovement->tm_debit              = 0;
+                                $TransactionMovement->tm_credit             = $ii_info->ii_cost_price;
                                 $TransactionMovement->tm_creation_date      = date("Y-m-d");
                                 $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
                                 $TransactionMovement->tm_currency_id        = $ii_info->ii_price_currency;
@@ -1534,7 +1593,7 @@ class InvoicesController extends Controller
                         $TransactionMovement->tm_ledger_account     = $account_id;
                         $TransactionMovement->tm_sub_ledger_account = $account_id;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
-                        $TransactionMovement->tm_debit              = $total_price;
+                        $TransactionMovement->tm_debit              = $total_price + $vat_amount;
                         $TransactionMovement->tm_credit             = 0;
                         $TransactionMovement->tm_creation_date      = date("Y-m-d");
                         $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
@@ -1555,20 +1614,6 @@ class InvoicesController extends Controller
                         $TransactionMovement->save();
                     }
 
-
-
-
-//                    $TransactionMovement = new TransactionMovements();
-//                    $TransactionMovement->fk_tran_id            = $at_id;
-//                    $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-//                    $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
-//                    $TransactionMovement->tm_ledger_label       = strip_tags($bi_invoice_note);
-//                    $TransactionMovement->tm_debit              = $total_price;
-//                    $TransactionMovement->tm_credit             = 0;
-//                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
-//                    $TransactionMovement->tm_transaction_date   = $bi_invoice_date;
-//                    $TransactionMovement->tm_currency_id        = $bi_invoice_currency;
-//                    $TransactionMovement->save();
 
                 }
 
