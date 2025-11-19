@@ -28,7 +28,4 @@ class SystemStatus extends Model
     protected   $table          = 'sys_status';
     public      $timestamps     = false;
     protected   $primaryKey     = "ss_id";
-
-
-
 }
