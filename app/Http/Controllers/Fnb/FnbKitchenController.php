@@ -57,7 +57,6 @@ class FnbKitchenController extends Controller
         $total_pages = intval($total_pages);
 
         $lst_kitchens = $kitchen_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-        // dd('list kitchens', $lst_kitchens);
 
         $data = array(
             "lst_kitchens" => $lst_kitchens,

@@ -778,3 +778,7 @@ Route::get('/request/receipes/getreceipe', 'Fnb\FnbReceipesController@GetReceipe
 Route::get('/request/receipes/listingredients', 'Fnb\FnbReceipesController@DisplayListIngredients');
 Route::post('/request/receipe/saveinfo', 'Fnb\FnbReceipesController@SaveIngredientInfo');
 Route::delete("/request/receipe/deletereceipeinfo",'Fnb\FnbReceipesController@DeleteIngredientInfo');
+
+Route::get('/request/orders/displaylistorders', 'Fnb\FnbOrdersController@DisplayListOrders');
+Route::post('/request/fnb-orders/saveinfo', 'Fnb\FnbOrdersController@SaveOrderInfo');
+Route::delete('/request/orders/deleteorderinfo', 'Fnb\FnbOrdersController@DeleteOrderInfo');

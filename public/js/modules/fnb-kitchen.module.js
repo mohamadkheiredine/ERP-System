@@ -134,7 +134,6 @@ kitchen_module = {
     },
     EditKitchenInfo: function () {
         var ks_id = $(this).data("ks_id");
-        console.log("kitchen id is ", ks_id);
         var base_url = $("#BASE_URL").val();
         window.location.href = base_url + "/fnb/kitchen/editform/" + ks_id;
     },

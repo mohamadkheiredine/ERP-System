@@ -27,4 +27,29 @@ class FnbOrders extends Model
     public $timestamps = false;
     protected $primaryKey = "fo_id";
 
+    public function Branch()
+    {
+        return $this->hasOne('App\models\System\Companies', 'cd_id', 'fo_branch_id');
+    }
+
+    public function Store()
+    {
+        return $this->hasOne('App\models\Sales\Stores', 'pos_stores', 'fo_store_id');
+    }
+
+    public function Table()
+    {
+        return $this->hasOne('App\models\FnB\Tables', 'ft_id', 'fo_table_id');
+    }
+
+    public function Customer()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id', 'fo_customer_id');
+    }
+
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id', 'fo_currency_id');
+    }
+
 }
