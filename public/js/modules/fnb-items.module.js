@@ -213,7 +213,6 @@ fnb_items_module = {
     },
 
     SaveItemModifierHandlerSubmit: function () {
-        console.log("AAAAAAAAAAAAAAAAAAAAAAA");
         var ItemModifierForm = $("#FORM_SAVE_ITEM_MODIFIERS");
         var error3 = $(".alert-danger", ItemModifierForm);
         var success3 = $(".alert-success", ItemModifierForm);
@@ -318,6 +317,32 @@ fnb_items_module = {
                     },
                 });
             }
+        });
+    },
+
+    getValues: function () {
+        var modifier_id = $(this).val();
+        var base_url = $("#BASE_URL").val();
+        var _token = $("input[name=_token]").val();
+
+        if (modifier_id == 0) {
+            $("#IM_OVERRIDE_COST").val("");
+            $("input[name=product_name]").val("");
+            $("#IM_CURRENCY_ID").val(0).change();
+            return;
+        }
+
+        $.ajax({
+            url: base_url + "/request/modifier/details",
+            method: "GET",
+            data: { modifier_id: modifier_id, _token: _token },
+            success: function (response) {
+                if (response.success) {
+                    $("input[name=product_name]").val(response.product_name);
+                    $("#IM_CURRENCY_ID").val(response.currency_id).change();
+                    $("#IM_OVERRIDE_COST").val(response.cost);
+                }
+            },
         });
     },
 };

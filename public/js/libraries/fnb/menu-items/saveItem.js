@@ -1,6 +1,5 @@
 $(document).ready(function () {
     $(document).on("click", "#BTN_SAVE_ITEM", function (e) {
-        e.preventDefault();
         fnb_items_module.SaveItemInfo();
     });
 
@@ -12,9 +11,11 @@ $(document).ready(function () {
     fnb_items_module.DisplayListItemsModifiers();
 
     $(document).on("click", "#BTN_SAVE_MODIFIER", function (e) {
-        e.preventDefault();
         fnb_items_module.SaveItemModifierInfo();
     });
+
+
+    $(document).on("change", "#FK_MODIFIER_ID", fnb_items_module.getValues);
 
     $("#LstItemsModifiers").on(
         "click",

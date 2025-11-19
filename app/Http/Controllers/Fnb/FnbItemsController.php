@@ -11,6 +11,7 @@ use App\models\FnB\FnbItem;
 use App\models\Sales\Terminals;
 use App\models\System\Companies;
 use App\models\Accounting\VatAccounts;
+use App\Models\FnB\FnbMenuItemModifier;
 use App\models\FnB\Modifier;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
@@ -106,7 +107,6 @@ class FnbItemsController extends Controller
         return response()->view('fnb.menu-items.additem', $data);
     }
 
-
     public function saveItem(Request $request)
     {
         $fi_id = $request->input('fi_id');
@@ -164,8 +164,8 @@ class FnbItemsController extends Controller
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
 
-        $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
-        $lst_products = Products::wherePProductIsDeleted(0)->get();
+        $lst_modifiers = Modifier::whereMIsDeleted(0)->with(["Item", "Currency"])->get();
+
         $lst_currencies = Currency::get();
 
         return view('fnb.menu-items.edititem', [
@@ -177,8 +177,29 @@ class FnbItemsController extends Controller
             'lst_taxes'      => $lst_taxes,
             'bar_code_png'   => $bar_code_png,
             'lst_modifiers'  => $lst_modifiers,
-            'lst_products'   => $lst_products,
             'lst_currencies' => $lst_currencies
+        ]);
+    }
+
+    public function getDetails(Request $request)
+    {
+        $modifier_id = $request->input('modifier_id');
+
+        $modifier = Modifier::with('Item', 'Currency')
+            ->where('m_id', $modifier_id)
+            ->where('m_is_deleted', 0)
+            ->first();
+
+        if (!$modifier) {
+            return response()->json(['success' => false]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'product_id'    => $modifier->m_item_id,
+            'product_name'  => $modifier->Item->p_product_name ?? '',
+            'currency_id'   => $modifier->m_currency_id,
+            'cost'          => $modifier->m_cost_modifier
         ]);
     }
 

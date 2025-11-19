@@ -87,8 +87,8 @@
 
     <!--end: Search Form -->
     <!--begin: Datatable -->
-    <div id="LstItemsMain" class="table-responsive">
-      <table class="table" id="html_table" width="100%">
+    <div id="LstItemsMain" class="table-responsive mt-10">
+      <table class="table table-bordered table-hover" id="html_table" width="100%">
         <thead>
           <tr>
             <th title="#">#</th>

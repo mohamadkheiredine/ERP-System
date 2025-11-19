@@ -22,9 +22,6 @@ class FnbMenuItemModifierController extends Controller
     {
         $page_number   = $request->input('page_number');
         $item_id     = $request->input('item_id');
-        $modifier_id    = $request->input('modifier_id');
-        $product_id    = $request->input('product_id');
-        $currency_id    = $request->input('currency_id');
 
         $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
 
@@ -57,7 +54,6 @@ class FnbMenuItemModifierController extends Controller
 
     public function SaveItemModifierInfo(Request $request)
     {
-        dd("request ", $request);
         $fk_menu_item_id = $request->input('fk_menu_item_id');
         $fk_modifier_id = $request->input('fk_modifier_id');
         $im_type_id = $request->input('im_type_id');
