@@ -783,3 +783,11 @@ Route::delete("/request/receipe/deletereceipeinfo",'Fnb\FnbReceipesController@De
 Route::get('/request/orders/displaylistorders', 'Fnb\FnbOrdersController@DisplayListOrders');
 Route::post('/request/fnb-orders/saveinfo', 'Fnb\FnbOrdersController@SaveOrderInfo');
 Route::delete('/request/orders/deleteorderinfo', 'Fnb\FnbOrdersController@DeleteOrderInfo');
+
+Route::get('/request/fnbitemsorders/displaylistitemsorders', 'Fnb\FnbItemOrderController@DisplayListItemsOrders');
+Route::post('/request/orders/saveitemorder', 'Fnb\FnbItemOrderController@SaveItemOrderInfo');
+Route::delete('/request/fnbitemsorder/deleteiteminfo', 'Fnb\FnbItemOrderController@DeleteItemOrderInfo');
+
+Route::get('/request/orders/displaylistordersitemsmodifiers', 'Fnb\FnbItemOrderModifierController@DisplayListItemsOrdersModifiers');
+Route::post('/request/orders/savemodifieritemorder', 'Fnb\FnbItemOrderModifierController@SaveItemOrderModifierInfo');
+Route::delete('/request/orders/deleteitemordermodifier', 'Fnb\FnbItemOrderModifierController@DeleteItemOrderModifier');

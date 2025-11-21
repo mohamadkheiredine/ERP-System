@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\models\FnB\FnbItem;
+use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrders;
 use Illuminate\Http\Request;
 use App\Models\System\Companies;
 use App\Models\FnB\KitchenStations;
+use App\models\FnB\KitchenStations as FnBKitchenStations;
+use App\models\FnB\Modifier;
 use App\models\FnB\Tables;
 use App\models\Inventory\Customers;
 use App\models\Sales\OrderStatus;
@@ -155,6 +159,10 @@ class FnbOrdersController extends Controller
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
         $lst_tables = Tables::whereFtIsDeleted(0)->get();
+        $lst_items = FnbItem::whereFiIsDeleted(0)->get();
+        $lst_stations = KitchenStations::whereKsIsDeleted(0)->get();
+        $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
+        $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
 
         $data = array(
             "lst_companies" => $lst_companies,
@@ -163,7 +171,11 @@ class FnbOrdersController extends Controller
             "lst_tables" => $lst_tables,
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
-            "lst_order_status" => $lst_order_status
+            "lst_order_status" => $lst_order_status,
+            "lst_items" =>$lst_items,
+            "lst_stations" => $lst_stations,
+            "lst_kitchen_status" => $lst_kitchen_status,
+            "lst_modifiers" => $lst_modifiers
         );
         return view('fnb.orders.editform', $data);
     }

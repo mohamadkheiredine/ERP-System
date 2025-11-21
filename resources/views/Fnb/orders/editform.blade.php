@@ -7,7 +7,11 @@
   }
 
   #ModelPopUp {
-    width: 800px;
+    width: 100%;
+  }
+
+  #ModelPopUpModifiers {
+    width: 100%;
   }
 
   .form-group {
@@ -134,9 +138,9 @@
               <label class="control-label">Status <span class="required"></span></label>
               <select class="form-select form-control" data-control="select2" id="FO_ORDER_STATUS" name="fo_order_status" name="lead_category">
                 <option value="0">-- Select Status --</option>
-                  @foreach ( $lst_order_status as $key => $status_info )
-                        <option value="{{ $status_info->ss_id }}" @if($status_info->ss_id == $order_info->fo_order_status) selected @endif>{{ $status_info->ss_status_title }}</option>
-                   @endforeach
+                @foreach ( $lst_order_status as $key => $status_info )
+                <option value="{{ $status_info->ss_id }}" @if($status_info->ss_id == $order_info->fo_order_status) selected @endif>{{ $status_info->ss_status_title }}</option>
+                @endforeach
               </select>
             </div>
           </div>
@@ -230,11 +234,286 @@
         </div>
       </div>
 
-
-
-
-
   </div>
   </form>
+
+
+
+
+
+
+
+
+  <div class="m-6">
+    <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_1">Items</a>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
+
+        <div id="LstItemsMain" class="table-responsive">
+          <table class="table table-bordered table-hover" id="html_table" width="100%">
+            <thead>
+              <tr>
+                <th title="#">#</th>
+                <th title="Id">ID</th>
+                <th title="Name">Item Quantity</th>
+                <th title="edit">Item Unit Price</th>
+                <th title="override cost">Item Discount</th>
+                <th title="modifiers">Item Modifiers</th>
+                <th title="delete">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="LstItemsOrders"></tbody>
+            <tfoot id="ItemsOrdersTotal">
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-10" align="left">
+            <ul id="ItemsOrdersPagination" class="pagination-sm"></ul>
+          </div>
+          <div align="right">
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModelPopUp">
+              Add Item
+            </button>
+          </div>
+        </div>
+
+        {{-- modal here --}}
+        <div class="modal fade" id="ModelPopUp" tabindex="2" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add New Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <form name="frm_save_items_orders" id="FORM_SAVE_ITEM_ORDERS">
+                  <div class="form-body">
+                    <span id="hidden_fields">
+                      {!! csrf_field() !!}
+                      <input type="hidden" name="oi_order_id" id="OI_ORDER_ID" value="{{ $order_info->fo_id }}">
+
+                    </span>
+
+                    <div class="alert alert-success" style="display:none">
+                      <strong>Success!</strong> Information is saved successfully!
+                    </div>
+
+                    <div class="alert alert-danger" style="display:none">
+                      <strong>Error!</strong> You have some form errors. Please check below.
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Item <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="OI_ITEM_ID" name="oi_item_id">
+                            <option value="0">-- Select Item --</option>
+                            @foreach($lst_items as $item_info)
+                            <option value="{{ $item_info->fi_id }}">{{ $item_info->fi_item_name }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Quantity <span class="required"></span></label>
+                          <input type="number" name="oi_quantity" class="form-control">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Currency <span class="required"></span></label>
+                          <select class="form-select form-control" id="OI_CURRENCY_ID" name="oi_currency_id">
+                            <option value="0">-- Select Currency --</option>
+                            @foreach($lst_currencies as $currency_info)
+                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                            @endforeach
+                          </select>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mt-3">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Price <span class="required"></span></label>
+                          <input type="number" name="oi_unit_price" class="form-control">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="control-label">Item Discount <span class="required"></span></label>
+                          <input type="number" name="oi_item_discount" id="OI_ITEM_DISCOUNT" class="form-control" required />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Kitchen Status <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="OI_KITCHEN_STATUS" name="oi_kitchen_status" name="lead_category">
+                            <option value="0">-- Select Status --</option>
+                            @foreach ( $lst_kitchen_status as $key => $status_info )
+                            <option value="{{ $status_info->ss_id }}">{{ $status_info->ss_status_title }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Kitchen Stations <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="OI_STATION_ID" name="oi_station_id" name="lead_category">
+                            <option value="0">-- Select Station --</option>
+                            @foreach ( $lst_stations as $key => $station_info )
+                            <option value="{{ $station_info->ks_id }}">{{ $station_info->ks_name }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="control-label">Notes <span class="required"></span></label>
+                        <textarea name="oi_notes" id="OI_NOTES" class="form-control" rows="3" placeholder="Enter notes..." required></textarea>
+                      </div>
+                    </div>
+
+
+                    <div class="row">
+                      <div class="col-md-12" align="right">
+
+                        <button type="submit" class="btn btn-primary" id="BTN_SAVE_ITEM_ORDER">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        {{-- modal here --}}
+        <div class="modal fade" id="ModelPopUpModifiers" tabindex="2" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Modifiers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <div id="LstItemsModifiersMain" class="table-responsive">
+                  <table class="table table-bordered table-hover" id="html_table" width="100%">
+                    <thead>
+                      <tr>
+                        <th title="#">#</th>
+                        <th title="Id">ID</th>
+                        <th title="Name">Name</th>
+                        <th title="type">Type</th>
+                        <th title="cost">Cost</th>
+                        <th title="delete">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody id="LstItemsOrdersModifiers"></tbody>
+                  </table>
+                </div>
+                <form name="frm_save_items_orders_modifiers" id="FORM_SAVE_ITEM_ORDERS_MODIFIERS">
+                  <div class="form-body">
+                    <span id="hidden_fields">
+                      {!! csrf_field() !!}
+                      <input type="hidden" id="IM_ITEM_ID" name="im_item_id">
+                    </span>
+
+
+                    <div class="row">
+
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Modifier Cost <span class="required"></span></label>
+                          <input type="number" name="im_modifier_cost" id="IM_MODIFIER_COST" class="form-control" required />
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Modifier <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="IM_MODIFIER_ID" name="im_modifier_id" name="lead_category">
+                            <option value="0">-- Select Modifier --</option>
+                            @foreach($lst_modifiers as $index => $modifier_info)
+                            <option value="{{ $modifier_info->m_id }}">{{ $modifier_info->m_modifier_name }}</option>
+                            @endforeach
+                          </select>
+                          <input type="hidden" name="im_modifier_name" id="IM_MODIFIER_NAME">
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Modifier Type <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="IM_MODIFIER_TYPE" name="im_modifier_type" name="lead_category">
+                            <option value="0">-- Select Type --</option>
+                            <option value="add">Add</option>
+                            <option value="remove">Remove</option>
+                            <option value="option">Option</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+
+                      <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">Currency <span class="required"></span></label>
+                          <select class="form-select form-control" data-control="select2" id="IM_CURRENCY_ID" name="im_currency_id" name="lead_category">
+                            <option value="0">-- Select Currency --</option>
+                            @foreach($lst_currencies as $index => $currency_info)
+                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12" align="right">
+
+                        <button type="submit" class="btn btn-primary" id="BTN_SAVE_ITEM_ORDER_MODIFIER">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
 @endsection

@@ -19,4 +19,6 @@ $(function () {
         "a[id*=DELETE_ORDER_]",
     orders_module.DeleteOrderData
     );
+
+
 });

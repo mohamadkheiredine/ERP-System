@@ -27,4 +27,19 @@ class FnbOrderItemModifiers extends Model
     public $timestamps = false;
     protected $primaryKey = "im_id";
 
+    public function Item()
+    {
+        return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'im_item_id');
+    }
+
+    public function Modifier()
+    {
+        return $this->hasOne('App\models\FnB\Modifier', 'm_id', 'im_modifier_id');
+    }
+
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id', 'im_currency_id');
+    }
+
 }
