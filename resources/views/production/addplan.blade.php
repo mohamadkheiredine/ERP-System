@@ -84,6 +84,17 @@ th{
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Plan Manager </label>
+                                <select class="bs-select form-control" name="pp_assign_to" id="PP_ASSIGN_TO" data-actions-box="true">
+                                        <option value="">-- Assign To --</option>
+                                        @foreach ( $lst_users as $key => $user_info )
+                                                <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
                          <div class="col-md-4">
                             <div class="form-group">
                                 <label> Plan Status</label>
@@ -91,6 +102,28 @@ th{
                                         <option value="">-- Plan Status --</option>
                                         @foreach ( $lst_plan_status as $key => $status_info )
                                                 <option value="{{ $status_info->ps_id }}">{{ $status_info->ps_status_title }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Bill of Materials</label>
+                                <select class="bs-select form-control" name="pp_bom_id" id="PP_BOM_ID" data-actions-box="true">
+                                        <option value="">-- Bill of Materials --</option>
+                                        @foreach ( $lst_bom_info as $key => $bom_info )
+                                                <option value="{{ $bom_info->bm_id }}">{{ $bom_info->bm_code }} {{ $bom_info->bm_label }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Target Warehouse</label>
+                                <select class="bs-select form-control" name="pp_target_warehouse" id="PP_TARGET_WAREHOUSE" data-actions-box="true">
+                                        <option value="">-- Target warehouse --</option>
+                                        @foreach ( $lst_warehouses as $key => $warehouse_info )
+                                                <option value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
                                         @endforeach
                                 </select>
                             </div>
@@ -104,6 +137,23 @@ th{
                                                 <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
                                         @endforeach
                                 </select>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Currency</label>
+                                <select class="bs-select form-control" name="pp_currency_id" id="PP_CURRENCY_ID" data-actions-box="true">
+                                        <option value="">-- Currency --</option>
+                                        @foreach ( $lst_currencies as $key => $currency_info )
+                                                <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <div class="form-group">
+                                <label class="control-label"> Total Stock Price</label>
+                                <input type="text" name="pp_total_stock_price" id="PP_TOTAL_STOCK_PRICE" class="form-control"  maxlength="255"  value="" />
                             </div>
                         </div>
                         <div class="col-md-4">
