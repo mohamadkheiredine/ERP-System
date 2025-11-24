@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
+use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrders;
 use Illuminate\Http\Request;
@@ -20,6 +22,7 @@ use App\models\System\SystemStatus;
 use Illuminate\Support\Facades\DB;
 
 use Config;
+use Maatwebsite\Excel\Concerns\ToArray;
 
 class FnbOrdersController extends Controller
 {
@@ -113,9 +116,10 @@ class FnbOrdersController extends Controller
         $fo_payment_status = $request->input('fo_payment_status');
         $fo_notes = $request->input('fo_notes');
         $fo_paid_amount = $request->input('fo_paid_amount');
-
+        $fo_is_paid = $request->input('fo_is_paid') ? 1 : 0;
 
         $result_array = array();
+        $order_info_structure = array();
 
         $order_info = new FnbOrders();
         if ($fo_id != null) {
@@ -138,8 +142,68 @@ class FnbOrdersController extends Controller
         $order_info->fo_notes = $fo_notes;
         $order_info->fo_branch_id = $fo_branch_id;
         $order_info->fo_paid_amount = $fo_paid_amount;
+        $order_info->fo_is_paid = $fo_is_paid;
+
+        if ($fo_is_paid == 1) {
+            $lst_items = FnbOrderItems::where('oi_order_id', $fo_id)
+                ->where('oi_is_deleted', 0)
+                ->get();
+
+            $items_array = [];
+
+            foreach ($lst_items as $item) {
+
+                $item_info = $item->Item;
+                $item_name = $item_info ? $item_info->fi_item_name : "";
+
+                $ingredients = FnbIngredients::where('in_item_id', $item->oi_item_id)
+                    ->where('in_is_deleted', 0)
+                    ->get()
+                    ->map(function ($ing) {
+                        return [
+                            'id'        => $ing->in_id,
+                            'name'      => $ing->in_ingredient_name,
+                            'unit_cost' => $ing->in_cost_per_unit,
+                            'qty'       => $ing->in_stock_quantity,
+                            'currency'  => $ing->in_currency_id
+                        ];
+                    })
+                    ->toArray();
+
+                $modifiers = FnbOrderItemModifiers::where('im_item_id', $item->oi_id)
+                    ->get()
+                    ->map(function ($mod) {
+                        return [
+                            'id'      => $mod->im_id,
+                            'name'    => $mod->im_modifier_name,
+                            'type'    => $mod->im_modifier_type,
+                            'cost'    => $mod->im_modifier_cost,
+                            'currency' => $mod->im_currency_id
+                        ];
+                    })
+                    ->toArray();
+
+                $items_array[] = [
+                    'id'        => $item->oi_id,
+                    'item_id'   => $item->oi_item_id,
+                    'name'      => $item_name,
+                    'quantity'  => $item->oi_quantity,
+                    'unit_price' => $item->oi_unit_price,
+                    'total'     => $item->oi_total_price,
+                    'ingredients' => $ingredients,
+                    'modifiers' => $modifiers,
+                ];
+            }
+
+            $order_info_structure = [
+                'fo_id'   => $fo_id,
+                'fo_code' => $fo_order_code,
+                'items'   => $items_array
+            ];
+        }
 
 
+        $order_info->fo_order_structure = json_encode($order_info_structure);
         $order_info->save();
 
         $fo_id = $order_info->fo_id;
@@ -172,7 +236,7 @@ class FnbOrdersController extends Controller
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
             "lst_order_status" => $lst_order_status,
-            "lst_items" =>$lst_items,
+            "lst_items" => $lst_items,
             "lst_stations" => $lst_stations,
             "lst_kitchen_status" => $lst_kitchen_status,
             "lst_modifiers" => $lst_modifiers
