@@ -153,8 +153,8 @@ class FnbOrdersController extends Controller
 
             foreach ($lst_items as $item) {
 
-                $item_info = $item->Item;
-                $item_name = $item_info ? $item_info->fi_item_name : "";
+                // $item_info = $item->Item;
+                // $item_name = $item_info ? $item_info->fi_item_name : "";
 
                 $ingredients = FnbIngredients::where('in_item_id', $item->oi_item_id)
                     ->where('in_is_deleted', 0)
@@ -170,7 +170,7 @@ class FnbOrdersController extends Controller
                     })
                     ->toArray();
 
-                $modifiers = FnbOrderItemModifiers::where('im_item_id', $item->oi_id)
+                $modifiers = FnbOrderItemModifiers::where('im_item_id', $item->oi_item_id)
                     ->get()
                     ->map(function ($mod) {
                         return [
@@ -186,7 +186,6 @@ class FnbOrdersController extends Controller
                 $items_array[] = [
                     'id'        => $item->oi_id,
                     'item_id'   => $item->oi_item_id,
-                    'name'      => $item_name,
                     'quantity'  => $item->oi_quantity,
                     'unit_price' => $item->oi_unit_price,
                     'total'     => $item->oi_total_price,

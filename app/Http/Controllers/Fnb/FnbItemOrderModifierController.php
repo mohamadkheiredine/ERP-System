@@ -71,8 +71,11 @@ class FnbItemOrderModifierController extends Controller
     public function DeleteItemOrderModifier(Request $request)
     {
         $im_id = $request->input('im_id');
+
         $modifier = FnbOrderItemModifiers::find($im_id);
-        $item_order = FnbOrderItems::find($modifier->im_item_id);
+
+        $item_order = FnbOrderItems::where('oi_item_id',$modifier->im_item_id)->first();
+
         $item_order->oi_unit_price -= $modifier->im_modifier_cost;
         $item_order->save();
 
