@@ -27,4 +27,24 @@ class FnbOrderItems extends Model
     public $timestamps = false;
     protected $primaryKey = "oi_id";
 
+    public function Order()
+    {
+        return $this->hasOne('App\models\FnB\FnbOrders', 'fo_id', 'oi_order_id');
+    }
+
+    public function Item()
+    {
+        return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'oi_item_id');
+    }
+
+    public function Station()
+    {
+        return $this->hasOne('App\models\FnB\KitchenStations', 'ks_id', 'oi_station_id');
+    }
+
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id', 'oi_currency_id');
+    }
+
 }

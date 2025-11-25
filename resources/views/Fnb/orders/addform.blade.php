@@ -133,9 +133,9 @@
               <label class="control-label">Status <span class="required"></span></label>
               <select class="form-select form-control" data-control="select2" id="FO_ORDER_STATUS" name="fo_order_status" name="lead_category">
                 <option value="0">-- Select Status --</option>
-                  @foreach ( $lst_order_status as $key => $status_info )
-                        <option value="{{ $status_info->ss_id }}">{{ $status_info->ss_status_title }}</option>
-                   @endforeach
+                @foreach ( $lst_order_status as $key => $status_info )
+                <option value="{{ $status_info->ss_id }}">{{ $status_info->ss_status_title }}</option>
+                @endforeach
               </select>
             </div>
           </div>
@@ -217,6 +217,20 @@
             <div class="form-group">
               <label class="control-label">Notes <span class="required"></span></label>
               <textarea name="fo_notes" id="FO_NOTES" class="form-control" rows="3" placeholder="Enter orders notes..." required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <br />
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input class="form-check-input" type="checkbox" name="fo_is_paid" id="FO_IS_PAID" value="1" />
+                <span class="form-check-label fw-semibold text-muted">
+                  Paid
+                </span>
+              </label>
             </div>
           </div>
         </div>
