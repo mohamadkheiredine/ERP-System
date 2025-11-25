@@ -224,6 +224,7 @@ class JournalVouchersController extends Controller
         $pj_creation_date       = date("Y-m-d",strtotime($pj_creation_date));
         $pj_payment_amount      = $request->input('pj_payment_amount');
         $pj_currency_id         = $request->input('pj_currency_id');
+        $default_company_id = session('default_company_id');
 
         $journal_voucher     = new JournalVouchers();
         $is_new = true;
@@ -234,6 +235,7 @@ class JournalVouchersController extends Controller
         }
 
         $journal_voucher->pj_code                   = $pj_code;
+        $journal_voucher->pj_company_id                = $default_company_id;
         $journal_voucher->pj_user_id                = $pj_user_id;
         $journal_voucher->pj_account_credit         = $pj_account_credit;
         $journal_voucher->pj_account_debit          = $pj_account_debit;
@@ -269,6 +271,7 @@ class JournalVouchersController extends Controller
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->tm_ledger_account     = $pj_account_debit;
             $TransactionMovement->tm_sub_ledger_account = $pj_account_debit;
             $TransactionMovement->tm_ledger_label       = $pj_code . " " . $pj_voucher_label;
@@ -283,6 +286,7 @@ class JournalVouchersController extends Controller
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->tm_ledger_account     = $pj_account_credit;
             $TransactionMovement->tm_sub_ledger_account = $pj_account_credit;
             $TransactionMovement->tm_ledger_label       = $pj_code . " " . $pj_voucher_label;

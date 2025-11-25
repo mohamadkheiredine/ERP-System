@@ -60,4 +60,10 @@ class Receipts extends Model
     {
         return $this->hasOne('App\models\Inventory\Customers', 'ic_id','br_customer_id');
     }
+
+
+    public function CreatedUser()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','br_created_by');
+    }
 }

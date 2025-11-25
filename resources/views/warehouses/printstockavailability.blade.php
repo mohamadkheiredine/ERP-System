@@ -106,6 +106,37 @@
             width: 96px;
             height: auto;
         }
+
+
+        /* Fixed footer for printing at bottom of A4 */
+        .print-footer {
+            position: fixed;
+            bottom: 10mm; /* distance from bottom of page */
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #444;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        /* Print mode settings */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+
+            .print-footer {
+                position: fixed;
+                bottom: 10mm;
+                left: 0;
+                width: 100%;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -152,6 +183,11 @@
         </tbody>
     </table>
 
+</div>
+
+<div class="print-footer">
+    <span><strong>Printed By:</strong> {{ session('user_fullname') }}</span>
+    <span><strong>Print Date:</strong> {{ date('Y-m-d H:i:s') }}</span>
 </div>
 </body>
 </html>

@@ -109,6 +109,36 @@ Page Description :
             width: 96px;
             height: auto;
         }
+
+        .print-footer {
+            position: fixed;
+            bottom: 10mm;       /* distance from bottom of page */
+            left: 0;
+            width: 100%;
+            font-size: 12px;
+            color: #444;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* Print settings for A4 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+
+            body {
+                background: white !important;
+                padding: 0;
+            }
+
+            .print-footer {
+                position: fixed;
+                bottom: 10mm;
+            }
+        }
     </style>
 </head>
 <body>
@@ -160,6 +190,12 @@ Page Description :
         <div class="alert alert-info mb-0">No data found for the selected filters.</div>
     @endif
 
+
+
+    <div class="footer-notes" style="margin-top:25px; font-size:12px; color:#444; display:flex; justify-content:space-between;">
+        <span><strong>Printed By:</strong> {{ session('user_fullname') }}</span> |
+        <span><strong>Print Date:</strong> {{ date('Y-m-d H:i:s') }}</span>
+    </div>
 </div>
 </body>
 </html>

@@ -139,6 +139,28 @@ th{
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br />
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="pp_is_finished" id="PP_IS_FINISHED" value="1" />
+                                    <span class="form-check-label fw-semibold text-muted">
+                  Finish Production
+                </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br />
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="pp_is_approved" id="PP_IS_APPROVED" value="1" />
+                                    <span class="form-check-label fw-semibold text-muted">
+                  Plan Approved
+                </span>
+                                </label>
+                            </div>
+                        </div>
                          <div class="col-md-4">
                             <div class="form-group">
                                 <label> Currency</label>

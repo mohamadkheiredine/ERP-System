@@ -423,16 +423,27 @@ th{
                        </div>
                    </div>
                    <div class="col-md-6 PaymentTypesDropdown" style="display:none">
-                             <div class="form-group">
-                                <label class="control-label">Payment Type </label><br/>
-                                <select class="form-control form-select" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
-                        			<option value="">-- Select Payment Type --</option>
-                                    @foreach($lst_payment_types as $index => $paytype_info)
-                                      <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                         <div class="form-group">
+                            <label class="control-label">Payment Type </label><br/>
+                            <select class="form-control form-select" id="IC_PAYMENT_TYPE" name="ic_payment_type" data-control="select2" data-placeholder="Select Payment Type">
+                                <option value="">-- Select Payment Type --</option>
+                                @foreach($lst_payment_types as $index => $paytype_info)
+                                  <option value="{{ $paytype_info->pt_id }}">{{ $paytype_info->pt_payment_type }}</option>
+                                @endforeach
+                            </select>
                         </div>
+                    </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <br />
+                          <label class="form-check form-switch form-check-custom form-check-solid">
+                              <input class="form-check-input" type="checkbox" name="ic_is_paid" id="IC_IS_PAID" value="1" />
+                              <span class="form-check-label fw-semibold text-muted">
+                              Voucher Paid
+                            </span>
+                          </label>
+                      </div>
+                  </div>
                   <div class="col-md-12">&nbsp;</div>
                   <div class="col-md-12">
                       <div class="row">

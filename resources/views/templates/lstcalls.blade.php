@@ -142,7 +142,7 @@
         }
 
         #tablPendingCalls td {
-            padding: 15px;
+            padding: 5px;
             border-bottom: 1px solid #e9ecef;
             vertical-align: middle;
             transition: background-color 0.2s ease;
@@ -271,25 +271,56 @@
         .tech-section {
             animation: fadeIn 0.6s ease-out;
         }
+
+        /* Footer that stays at bottom of A4 landscape */
+        .print-footer {
+            position: fixed;
+            bottom: 10px;
+            left: 30%;
+            width: 100%;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            color: #333;
+        }
+
+        /* For print - landscape + A4 */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 15mm;
+            }
+
+            body {
+                padding: 0;
+                background: white !important;
+            }
+
+            .print-footer {
+                position: fixed;
+                bottom: 10mm;
+            }
+
+            .report-container {
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+        }
+
     </style>
 </head>
 <body>
 <div class="report-container">
-    <div class="report-header">
-        <h1 class="report-title">PENDING CALLS</h1>
-        <p class="report-subtitle">MAINTENANCE REPORT</p>
-    </div>
-
     <div class="report-body">
             @foreach($calls_array as $index => $tech_info)
             <div class="tech-section">
-                <div class="tech-header">
+                <div class="tech-header" style="text-align: center">
 {{ $tech_info['user_info']['name'] }}
             </div>
             <table id="tablPendingCalls">
                 <thead>
                     <tr>
-                        <th style="width: 80px;">#</th>
                         <th>Date</th>
                         <th>Client</th>
                         <th>Item</th>
@@ -301,21 +332,40 @@
                 <tbody class="LstInboundCalls">
 @foreach($tech_info['call_info'] as $index => $call_info)
                 <tr>
-                    <td><span class="call-id">{{$call_info['ic_id']}}</span></td>
                                     <td class="date-cell">{{$call_info['ic_call_date']}}</td>
                                     <td class="client-info"><span class="account-code">#{{$call_info['ca_account_code']}}</span> {{$call_info['ca_account_name']}}</td>
                                     <td><span class="machine-id">{{$call_info['ic_product_machine_id']}}</span></td>
-                                    <td class="address-cell">{{ $call_info['ca_billing_address'] }}</td>
+                                    <td class="address-cell"><span>{{ $call_info['ca_billing_address'] }}</span></td>
                                     <td class="phone-cell">{{$call_info['ca_account_mobile']}}</td>
-                    <td>{{ $call_info['ic_maintenance_type'] }}</td>
+                    <td>
+                        {{ $call_info['ic_maintenance_type'] }}
+                    </td>
 
                                 </tr>
+    <tr>
+        <td colspan="5">
+            @if(!empty($call_info['cr_result_title']))
+                <span style="color:#667eea;font-weight:600;font-size:16px">Result: {{ $call_info['cr_result_title'] }}</span>
+            @endif
+            <span style="color:#667eea;font-weight:600;font-size:16px">date: {{ $call_info['ic_callback_date'] }}</span>
+            @if(!empty($call_info['ic_result_notes']))
+                <span style="color:#718096;font-size:16px;font-weight:600;">Note: {{ strip_tags($call_info['ic_result_notes']) }}</span>
+            @endif
+        </td>
+    </tr>
                             @endforeach
             </tbody>
         </table>
     </div>
 @endforeach
     </div>
+
+
+</div>
+
+<div class="print-footer">
+    <span><strong>Printed By:</strong> {{ session('user_fullname') }}</span>
+    <span><strong>Print Date:</strong>{{ date('d-m-Y H:i:s') }}</span>
 </div>
 </body>
 </html>

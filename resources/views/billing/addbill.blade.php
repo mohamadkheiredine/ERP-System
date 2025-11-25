@@ -29,7 +29,7 @@ th{
 @endsection
 @section('plugins')
 <script type="text/javascript" src="{{ url('js/modules/bills.module.js') }}"></script>
-<script type="text/javascript" src="{{ url('js/libraries/billing/savebill.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/libraries/billing/savebill.js?v=' . rand(1,9999)) }}"></script>
 @endsection
 
 @section('content')
@@ -56,7 +56,7 @@ th{
               <div class="row">
                   <div class="col-md-6">
                        <div class="form-group">
-                          <label>Receipt </label>
+                          <label>Bill Nbr </label>
                            <input type="text"  autocomplete="off" required="required"  name="ip_billing_nbr" id="IP_BILLING_NBR" class="form-control"  maxlength="50" value="" />
                       </div>
                   </div>

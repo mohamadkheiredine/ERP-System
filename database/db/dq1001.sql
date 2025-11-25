@@ -472,3 +472,74 @@ ADD COLUMN `pp_closing_by` INT NULL DEFAULT 0 AFTER `pp_closing_date`,
 ADD COLUMN `pp_stock_id` INT NULL DEFAULT 0 AFTER `pp_closing_by`;
 
 INSERT INTO `acc_accounting_accounts` (`aa_id`, `aa_parent_account`, `aa_account_ref`, `aa_account`, `aa_account_label`) VALUES ('622', '52', '622', '622', 'Service Purchased');
+
+
+
+ALTER TABLE `crm_accounts`
+    ADD COLUMN `ca_maintenance_account` INT NULL DEFAULT 0 AFTER `ca_accounting_id`;
+
+
+ALTER TABLE `acc_accounting_accounts`
+    CHANGE COLUMN `aa_parent_account` `aa_parent_account` INT NULL DEFAULT '0' ;
+
+
+CREATE TABLE `prod_farm_cycles` (
+   `fc_id` INT NOT NULL AUTO_INCREMENT,
+   `fc_code` VARCHAR(50) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+   `fc_farm_name` VARCHAR(150) COLLATE utf8mb3_unicode_ci NOT NULL,
+   `fc_bird_type` VARCHAR(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+   `fc_birds_start` INT NOT NULL DEFAULT 0,
+   `fc_start_date` DATE DEFAULT NULL,
+   `fc_end_date` DATE DEFAULT NULL,
+   `fc_notes` TEXT COLLATE utf8mb3_unicode_ci,
+   `fc_is_closed` TINYINT NOT NULL DEFAULT 0,
+   `fc_created_by` INT DEFAULT 0,
+   `fc_created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+   `fc_updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`fc_id`),
+   KEY `idx_fc_code` (`fc_code`),
+   KEY `idx_fc_farm_name` (`fc_farm_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+
+ALTER TABLE `prod_farm_cycles`
+    ADD COLUMN `fc_assign_to` INT NULL DEFAULT 0 AFTER `fc_id`,
+ADD COLUMN `fc_warehouse_id` SMALLINT NULL DEFAULT 0 AFTER `fc_assign_to`,
+ADD COLUMN `fc_product_id` INT NULL DEFAULT 0 AFTER `fc_warehouse_id`,
+ADD COLUMN `fc_stock_id` INT NULL DEFAULT 0 AFTER `fc_product_id`,
+ADD COLUMN `fc_is_deleted` TINYINT NULL DEFAULT 0 AFTER `fc_updated_at`,
+ADD COLUMN `fc_deleted_by` INT NULL DEFAULT 0 AFTER `fc_is_deleted`;
+
+
+
+CREATE TABLE `prod_farm_cycle_days` (
+   `fcd_id` INT NOT NULL AUTO_INCREMENT,
+   `fcd_cycle_id` INT NOT NULL,
+   `fcd_date` DATE NOT NULL,
+   `fcd_age_days` INT NOT NULL DEFAULT 0,
+   `fcd_feed_type` VARCHAR(50) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+   `fcd_feed_received_kg` DECIMAL(12,3) DEFAULT 0,         -- Feed Received (kg)
+   `fcd_feed_intake_day_kg` DECIMAL(12,3) DEFAULT 0,       -- Feed Intake per day (kg)
+   `fcd_feed_in_stock_kg` DECIMAL(12,3) DEFAULT 0,         -- Feed in stock (kg)
+   `fcd_mortality` INT DEFAULT 0,                          -- Mortality (Deaths)
+   `fcd_closing_birds` INT DEFAULT 0,                      -- Closing Birds
+   `fcd_body_weight_g` DECIMAL(12,3) DEFAULT 0,            -- Body weight per Bird in Grams
+   `fcd_daily_intake_g_per_bird` DECIMAL(12,3) DEFAULT 0,  -- Daily Feed Intake Per Grams (per bird)
+   `fcd_cumulative_intake_g_per_bird` DECIMAL(12,3) DEFAULT 0, -- Cumulative Feed Intake in grams
+   `fcd_fcr` DECIMAL(12,4) DEFAULT 0,                      -- Feed Conversion Ratio(FCR)
+   `fcd_medicine` VARCHAR(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+   `fcd_water_liters` DECIMAL(12,3) DEFAULT 0,             -- Water
+   `fcd_diesel_liters` DECIMAL(12,3) DEFAULT 0,            -- Diesel
+   `fcd_notes` TEXT COLLATE utf8mb3_unicode_ci,
+   PRIMARY KEY (`fcd_id`),
+   KEY `idx_fcd_cycle_id` (`fcd_cycle_id`),
+   KEY `idx_fcd_date` (`fcd_date`),
+   CONSTRAINT `fk_fcd_cycle`
+       FOREIGN KEY (`fcd_cycle_id`) REFERENCES `prod_farm_cycles` (`fc_id`)
+           ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+
+
+
+ALTER TABLE `callcenter_inbound_calls` ADD COLUMN `ic_is_paid` TINYINT NULL DEFAULT 0 AFTER `ic_currency_id`;

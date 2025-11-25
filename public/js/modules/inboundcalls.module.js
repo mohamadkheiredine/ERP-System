@@ -579,6 +579,7 @@ inboundcalls_module = {
 
                      if(response.is_error == 0)
                      {
+                         inboundcalls_module.DisplayListInboundCalls();
                          $('input[name=ic_resolution_date]').val('');
                          $('input[name=ic_doc_number]').val('');
                          $('input[name=ic_call_index]').val('');

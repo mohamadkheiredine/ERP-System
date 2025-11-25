@@ -13,6 +13,7 @@ $(function(){
 	$('#LstInboundCalls').on('click',"a[id*=EDIT_CALL_]",inboundcalls_module.EditInboundCallInfo);
 	$('#LstInboundCalls').on('click',"a[id*=DELETE_CALL_]",inboundcalls_module.DeleteInboundCallData);
 	$('.LstCallWResults').on('dblclick',".CallResultRow",inboundcalls_module.GetResultRecordInfo);
+	$('.LstInboundCalls').on('dblclick',".SelectedRow",inboundcalls_module.OpenCallResultPopup);
     $("#IC_VISIT_PRICE").on("keyup",inboundcalls_module.ShowOrHidePaymentType);
     $("#CP_PRODUCT_ID").on("change",inboundcalls_module.SwitchOtherDropdownForProduct);
     $("#CP_PRODUCT_NAME").on("change",inboundcalls_module.SwitchPOtherDropdownForProduct);

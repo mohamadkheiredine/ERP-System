@@ -24,21 +24,27 @@ class PaymentVouchers extends Model
 {
     protected   $table          = 'billing_payment_vouchers';
     public      $timestamps     = false;
-    protected   $primaryKey     = "pv_id";   
-    
+    protected   $primaryKey     = "pv_id";
+
     public function currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','pv_currency_id');
     }
-    
+
      public function AccountPayable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pv_account_payable');
     }
-    
-    
+
+
       public function AccountReceivable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','pv_account_receivable');
+    }
+
+
+    public function User()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','pv_user_id');
     }
 }

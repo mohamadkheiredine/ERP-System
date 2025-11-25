@@ -192,6 +192,12 @@ body {
             <div>Client:<br> _______________<br></div>
         </div>
 
+
+            <div style="width:100%;position:fixed;bottom:-110px;font-size:18px;padding-top:20px;display:flex;justify-content:space-between;text-align:center;margin-top:25px;padding-top:10px;">
+                <span><strong>Created By:</strong> %CREATED_BY%</span>
+                <span><strong>Printed By:</strong> %PRINTED_BY%</span>
+                <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+            </div>
         </footer>
     </div>
 </body>

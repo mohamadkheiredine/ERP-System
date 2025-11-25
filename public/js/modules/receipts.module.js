@@ -110,11 +110,13 @@ receipts_module = {
                                 $('form[name=form_save_receipt]').find('input[name=br_payment_value]').val(response.receipt_obj.br_payment_value);
                                 $('form[name=form_save_receipt]').find('input[name=br_exchange_rate]').val(response.receipt_obj.br_exchange_rate);
                                 $('form[name=form_save_receipt]').find('textarea[name=br_receipt_note]').val(response.receipt_obj.br_receipt_note);
-                                $('form[name=form_save_receipt]').find('select[name=br_account_id]').val(response.receipt_obj.br_account_id).trigger('change');
-                                $('form[name=form_save_receipt]').find('select[name=br_client_id]').val(response.receipt_obj.br_client_id).trigger('change');
-                                $('form[name=form_save_receipt]').find('select[name=br_payment_type]').val(response.receipt_obj.br_payment_type).trigger('change');
-                                $('form[name=form_save_receipt]').find('select[name=br_receipt_currency]').val(response.receipt_obj.br_receipt_currency).trigger('change');
-                                $('form[name=form_save_receipt]').find('select[name=br_second_currency_id]').val(response.receipt_obj.br_second_currency_id).trigger('change');
+                                $('form[name=form_save_receipt]').find('select[name=br_account_id]').val(response.receipt_obj.br_account_id).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_account_from]').val(response.receipt_obj.br_account_from).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_payment_type]').val(response.receipt_obj.br_payment_type).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_client_id]').val(response.receipt_obj.br_client_id).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_payment_type]').val(response.receipt_obj.br_payment_type).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_receipt_currency]').val(response.receipt_obj.br_receipt_currency).trigger('change.select2');
+                                $('form[name=form_save_receipt]').find('select[name=br_second_currency_id]').val(response.receipt_obj.br_second_currency_id).trigger('change.select2');
                             }
                         });
                         }

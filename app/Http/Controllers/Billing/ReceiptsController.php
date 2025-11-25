@@ -202,11 +202,11 @@ class ReceiptsController extends Controller
 
         $result_array = array();
         $receipt_info = Receipts::find($br_id);
-
         $result_array['is_error'] = 0;
         $result_array['receipt_obj'] = array(
             'br_id' => $receipt_info->br_id,
             'br_receipt_number' => $receipt_info->br_receipt_number,
+            'br_account_from' => $receipt_info->br_account_from,
             'br_account_id' => $receipt_info->br_account_id,
             'br_client_id' => $receipt_info->br_client_id,
             'br_receipt_label' => $receipt_info->br_receipt_label,
@@ -459,6 +459,7 @@ class ReceiptsController extends Controller
             $receipt_info = new Receipts();
             $receipt_info->br_created_by    = session("user_id");
         }
+
         $receipt_info->br_receipt_number = $br_receipt_number;
         $receipt_info->br_account_id        = $br_account_id;
         $receipt_info->br_customer_id       = $br_customer_id;
@@ -530,11 +531,11 @@ class ReceiptsController extends Controller
             $pt_payment_account = $payment_info->pt_payment_account;
 
 
-
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $account_number;
             $TransactionMovement->tm_sub_ledger_account = $account_number;
+            $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $br_payment_value;
@@ -547,6 +548,7 @@ class ReceiptsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+            $TransactionMovement->tm_company_id         = $default_company_id;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
             $TransactionMovement->tm_debit              = $br_payment_value;
             $TransactionMovement->tm_credit             = 0;
@@ -562,16 +564,16 @@ class ReceiptsController extends Controller
             }
             $receipt_info->save();
         }
-        else
-        {
-            $trans_id = $receipt_info->br_trans_id;
-            if( $trans_id > 0 )
-            {
-                $delete_trans = Transactions::where('at_id',$trans_id)->delete();
-                $delete_mov = TransactionMovements::where('fk_tran_id',$trans_id)->delete();
-
-            }
-        }
+//        else
+//        {
+//            $trans_id = $receipt_info->br_trans_id;
+//            if( $trans_id > 0 )
+//            {
+//                $delete_trans = Transactions::where('at_id',$trans_id)->delete();
+//                $delete_mov = TransactionMovements::where('fk_tran_id',$trans_id)->delete();
+//
+//            }
+//        }
 
 
 
@@ -779,8 +781,17 @@ class ReceiptsController extends Controller
         $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
         if(Config::get('appconfig.crm_telemarketing') == 1)
         {
-            $display = str_replace("%account_to%",$receipt_info->Client->ca_account_name, $display);
-            $display = str_replace("%account_ledger_to%",$receipt_info->Client->ca_accounting_id, $display);
+            if($receipt_info->br_client_id == 0 || $receipt_info->br_client_id == "" || $receipt_info->br_client_id == null)
+            {
+                $display = str_replace("%account_to%",$receipt_info->AccountPayable->aa_account, $display);
+                $display = str_replace("%account_ledger_to%",$receipt_info->AccountPayable->aa_id, $display);
+            }
+            else
+            {
+                $display = str_replace("%account_to%",$receipt_info->Client->ca_account_name, $display);
+                $display = str_replace("%account_ledger_to%",$receipt_info->Client->ca_accounting_id, $display);
+            }
+
         }
         else
         {
@@ -801,6 +812,12 @@ class ReceiptsController extends Controller
         $display = str_replace("%receipt_amount%",$receipt_info->br_payment_value, $display);
         $display = str_replace("%receipt_amount_letters%",self::numberToWords($receipt_info->br_payment_value), $display);
         $display = str_replace("%receipt_currency%",$receipt_info->Currency->cc_currency_code, $display);
+
+
+        $display = str_replace("%CREATED_BY%",$receipt_info->CreatedUser->u_fullname, $display);
+        $display = str_replace("%PRINTED_BY%",Session('user_fullname'), $display);
+        $display = str_replace("%PRINT_DATE%",date('d-m-Y H:i:s'), $display);
+
 
 
 
@@ -827,6 +844,7 @@ class ReceiptsController extends Controller
 
         $receipt_info   = Receipts::find($br_id);
         $invoice_id     = $receipt_info->fk_invoice_id;
+        $default_company_id = session('default_company_id');
         //get invoice information
         $invoice_info = Invoices::find($receipt_info->fk_invoice_id);
 
@@ -860,6 +878,7 @@ class ReceiptsController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_company_id            = $default_company_id;
         $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
         $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
         $TransactionMovement->tm_ledger_label       = $receipt_info->br_receipt_number . " For the Invoice #" . $invoice_info->bi_invoice_code;

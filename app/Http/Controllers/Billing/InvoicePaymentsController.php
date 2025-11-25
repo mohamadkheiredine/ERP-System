@@ -192,6 +192,17 @@ class InvoicePaymentsController extends Controller
 
 
 
+
+        if (strlen($general_search) > 0) {
+            $bills_cond = $bills_cond->where(function ($q) use ($general_search) {
+                $q->where('ip_client_name', 'like', "%{$general_search}%")
+                    ->orWhere('ip_client_code', 'like', "%{$general_search}%")
+                    ->orWhere('ip_payment_doc', 'like', "%{$general_search}%");
+            });
+        }
+
+
+
         if(strlen($pi_start_date) > 0)
             $bills_cond = $bills_cond->where('ip_billing_date','>=',$pi_start_date);
         if(strlen($pi_end_date) > 0)
@@ -427,6 +438,8 @@ class InvoicePaymentsController extends Controller
     {
         $ip_id                              = $request->input('ip_id');
         $ip_payment_doc                     = $request->input('ip_payment_doc');
+        $ip_client_code                     = $request->input('ip_client_code');
+        $ip_client_id                     = $request->input('ip_client_id');
         $ip_collector_id                    = $request->input('ip_collector_id');
         $ip_payment_type_id                 = $request->input('ip_payment_type_id');
         $ip_billing_nbr                     = $request->input('ip_billing_nbr');
@@ -444,7 +457,8 @@ class InvoicePaymentsController extends Controller
 
         $bills_info     = new InvoicePayments();
         $is_new = true;
-        $ip_client_id = 0;
+
+        //$ip_client_id = 0;
         if( $ip_id  > 0 )
         {
             $bills_info    = InvoicePayments::find( $ip_id );
@@ -453,14 +467,13 @@ class InvoicePaymentsController extends Controller
             $ip_client_id = $bills_info->ip_client_id;
             $is_new = false;
         }
-
         if($ip_client_id == null)
         {
-            $client_code = $bills_info->ip_client_code;
-            $client_info = CRMAccounts::whereCaAccountCode($client_code)->first();
+            $client_info = CRMAccounts::whereCaAccountCode($ip_client_code)->first();
 
             $ip_client_id = $client_info->ca_id;
         }
+
 
 
         if($ip_remaining_amount > 0) // partial payment
@@ -470,6 +483,10 @@ class InvoicePaymentsController extends Controller
         else if($ip_remaining_amount == 0) // full payment
         {
             $ip_payment_status = 2;
+        }
+        else if($ip_remaining_amount == null)
+        {
+            $ip_payment_status = 0;
         }
 
 

@@ -1557,7 +1557,7 @@ Page Description :
     												<span class="menu-bullet">
     													<span class="bullet bullet-dot"></span>
     												</span>
-    												<span class="menu-title">Receipts</span>
+    												<span class="menu-title">Receipts ( RV ) </span>
     											</a>
     											<!--end:Menu link-->
     										</div>
@@ -1581,7 +1581,7 @@ Page Description :
                                                                 <span class="menu-bullet">
                                                                         <span class="bullet bullet-dot"></span>
                                                                 </span>
-                                                                <span class="menu-title">Vouchers</span>
+                                                                <span class="menu-title">Vouchers ( PV ) </span>
                                                         </a>
                                                         <!--end:Menu link-->
                                                 </div>
@@ -1593,7 +1593,7 @@ Page Description :
                                                                     <span class="menu-bullet">
                                                                             <span class="bullet bullet-dot"></span>
                                                                     </span>
-                                                                    <span class="menu-title">Journal Vouchers</span>
+                                                                    <span class="menu-title">Journal Vouchers ( JV ) </span>
                                                             </a>
                                                             <!--end:Menu link-->
                                                     </div>

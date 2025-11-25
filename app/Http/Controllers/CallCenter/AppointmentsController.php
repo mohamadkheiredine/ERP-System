@@ -193,7 +193,7 @@ class AppointmentsController extends Controller
         SELECT
             u.id AS salesman_id,
             u.u_fullname AS salesman_name,
-            COUNT(lapp.ca_id) AS app,
+            COUNT(lapp.ca_id) AS total_app,
             $cols,
             ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2) * 100 AS closing_average,
             SUM(lapp.ca_nbr_leads) AS number_of_leads
@@ -259,7 +259,7 @@ class AppointmentsController extends Controller
         SELECT
             u.id AS salesman_id,
             u.u_fullname AS salesman_name,
-            COUNT(lapp.ca_id) AS app,
+            COUNT(lapp.ca_id) AS total_app,
             $cols,
             ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2)  * 100 AS closing_average,
             SUM(lapp.ca_nbr_leads) AS number_of_leads

@@ -88,8 +88,19 @@ th{
                         </div>
                         <div class="col-md-4" >
                              <div class="form-group">
-                                <label class="control-label"> Source Account </label><br/>
+                                <label class="control-label"> From Account </label><br/>
                                  <select id="BR_ACCOUNT_FROM" name="br_account_from" class="form-control form-select" data-control="select2" data-placeholder="Select Source Account">
+                        			<option value="0">-- Select Account --</option>
+                                    @foreach($lst_accounts as $index => $acc_info)
+                                      <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account }}&nbsp;-&nbsp;{{ $acc_info->aa_account_label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4" >
+                             <div class="form-group">
+                                <label class="control-label"> To Account </label><br/>
+                                 <select id="BR_ACCOUNT_ID" name="br_account_id" class="form-control form-select" data-control="select2" data-placeholder="Select To Account">
                         			<option value="0">-- Select Account --</option>
                                     @foreach($lst_accounts as $index => $acc_info)
                                       <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account }}&nbsp;-&nbsp;{{ $acc_info->aa_account_label }}</option>
@@ -177,7 +188,7 @@ th{
 								<div class="col-12">
                                                                              <br/>
                                                                     <label class="form-check form-switch form-check-custom form-check-solid">
-                                                                          <input class="form-check-input" type="checkbox" name="br_receipt_paid" checked="checked" value="1"  />
+                                                                          <input class="form-check-input" type="checkbox" name="br_receipt_paid"  value="1"  />
                                                                           <span class="form-check-label fw-semibold text-muted">
                                                                             Receipt Paid
                                                                           </span>

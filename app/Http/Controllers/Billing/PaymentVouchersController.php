@@ -278,6 +278,9 @@ class PaymentVouchersController extends Controller
         $display = str_replace("%voucher_amount%",$voucher_info->pv_payment_amount, $display);
         $display = str_replace("%voucher_amount_letters%",self::numberToWords($voucher_info->pv_payment_amount), $display);
         $display = str_replace("%voucher_currency%",$voucher_info->currency->cc_currency_code, $display);
+        $display = str_replace("%CREATED_BY%",$voucher_info->User->u_fullname, $display);
+        $display = str_replace("%PRINTED_BY%",Session('user_fullname'), $display);
+        $display = str_replace("%PRINT_DATE%",date('d-m-Y H:i:s'), $display);
 
 
         return PDF::loadHTML($display)
@@ -640,6 +643,7 @@ class PaymentVouchersController extends Controller
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
             $TransactionMovement->tm_transaction_date   = $pv_creation_date;
             $TransactionMovement->tm_currency_id        = $payment_currency;
+            $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->save();
 
 
@@ -678,6 +682,7 @@ class PaymentVouchersController extends Controller
 
                 $TransactionMovement = new TransactionMovements();
                 $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_company_id            = $default_company_id;
                 $TransactionMovement->tm_ledger_account     = $pv_account_payable;
                 $TransactionMovement->tm_sub_ledger_account = $pv_extension_account[$i];
                 $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
@@ -701,6 +706,7 @@ class PaymentVouchersController extends Controller
                 $TransactionMovement = new TransactionMovements();
                 $TransactionMovement->fk_tran_id            = $at_id;
                 $TransactionMovement->tm_ledger_account     = $pv_account_payable;
+                $TransactionMovement->tm_company_id            = $default_company_id;
                 $TransactionMovement->tm_sub_ledger_account =  $extension->ve_extention_account_id;
                 $TransactionMovement->tm_ledger_label       =  $extension->ve_extension_notes;
                 $TransactionMovement->tm_debit              =   $extension->ve_extension_amount;
@@ -725,6 +731,7 @@ class PaymentVouchersController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $pv_account_receivable;
+        $TransactionMovement->tm_company_id            = $default_company_id;
         $TransactionMovement->tm_sub_ledger_account = $pv_account_payable;
         $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
         $TransactionMovement->tm_debit              = 0;

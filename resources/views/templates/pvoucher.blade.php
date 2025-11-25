@@ -5,138 +5,206 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Voucher</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: white;
-            padding: 20px;
         }
-        .container {
-            max-width: 800px;
+
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
             margin: 0 auto;
-            padding: 20px;
+            background: white;
+            padding: 20mm;
+            position: relative;
         }
+
         .header {
-            text-align: left;
             margin-bottom: 30px;
-            background-color: white;
-            padding: 20px;
         }
+
         .header h1 {
-            margin: 0;
             font-size: 24px;
+            margin-bottom: 8px;
         }
+
         .header p {
-            margin: 2px;
+            margin: 3px 0;
+            font-size: 14px;
         }
-        .voucher-container {
-            background-color: white;
-            border: 2px solid black;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            min-height: 500px;
-        }
-        .voucher-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+
         .voucher-title {
             text-align: center;
-            flex-grow: 1;
-        }
-        .doc-date {
-            text-align: right;
-            min-width: 200px;
-        }
-        .doc-date div {
-            margin-bottom: 5px;
-        }
-        .details {
             margin-bottom: 30px;
         }
-        .details div {
-            margin-bottom: 10px;
+
+        .voucher-title h1 {
+            font-size: 28px;
+            text-decoration: underline;
         }
+
+        .doc-date {
+            float: right;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .doc-date div {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .details {
+            clear: both;
+            margin-bottom: 30px;
+        }
+
+        .details div {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         table, th, td {
             border: 1px solid black;
         }
+
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+            font-size: 14px;
         }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .footer-section {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            width: calc(100% - 40mm);
+        }
+
         .signature {
             display: flex;
-            margin-top: 30px;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-top: 80px;
         }
-        .signature div {
+
+        .signature span {
             text-align: center;
-            float: left;
-            width: 25%;
+            width: 23%;
+            font-size: 14px;
+            padding-right:40px ;
+        }
+
+        .print-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                background: white;
+            }
+
+            .a4-container {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 20mm;
+            }
+
+            .footer-section {
+                position: absolute;
+                bottom: 20mm;
+                left: 20mm;
+                right: 20mm;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="a4-container">
     <div class="header">
         <h1>%company_name%</h1>
         <p>%company_address%</p>
         <p>Phone: %company_phone%</p>
     </div>
 
-    <div class="voucher-container">
-        <div class="voucher-header">
-            <div></div>
-            <div class="voucher-title">
-                <h1><u>Payment Voucher</u></h1>
-            </div>
-        </div>
+    <div class="voucher-title">
+        <h1>Payment Voucher</h1>
+    </div>
 
-        <div class="details">
-            <div class="doc-date">
-                <div>Doc. #: <strong>%voucher_code%</strong></div>
-                <div>Date: <strong>%payment_date%</strong></div>
-                <div>VAT Value: <strong>0.00</strong></div>
-            </div>
-            <div>Paid To: <strong>%account_ledger_to%</strong></div>
-            <div>Account #: <strong>%account_to%</strong></div>
-            <div>The Amount of: <strong>%voucher_amount% %voucher_currency%</strong> (%voucher_amount_letters% %voucher_currency% ONLY)</div>
-            <div>Being For: <strong>%voucher_description%</strong></div>
-        </div>
+    <div class="doc-date">
+        <div>Doc. #: <strong>%voucher_code%</strong></div>
+        <div>Date: <strong>%payment_date%</strong></div>
+        <div>VAT Value: <strong>0.00</strong></div>
+    </div>
 
-        <table aria-label="Payment details including amount, currency, payment mode, and value date">
-            <thead>
-            <tr>
-                <th scope="col">Amount</th>
-                <th scope="col">Curr.</th>
-                <th scope="col">Payment Mode</th>
-                <th scope="col">Value Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>%voucher_amount%</td>
-                <td>%voucher_currency%</td>
-                <td>%voucher_from%</td>
-                <td>%payment_date%</td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="details">
+        <div>Paid To: <strong>%account_ledger_to%</strong></div>
+        <div>Account #: <strong>%account_to%</strong></div>
+        <div>The Amount of: <strong>%voucher_amount% %voucher_currency%</strong> (%voucher_amount_letters% %voucher_currency% ONLY)</div>
+        <div>Being For: <strong>%voucher_description%</strong></div>
+    </div>
 
-        <div style="width:100%;height:100px">&nbsp;</div>
+    <table aria-label="Payment details including amount, currency, payment mode, and value date">
+        <thead>
+        <tr>
+            <th scope="col">Amount</th>
+            <th scope="col">Curr.</th>
+            <th scope="col">Payment Mode</th>
+            <th scope="col">Value Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>%voucher_amount%</td>
+            <td>%voucher_currency%</td>
+            <td>%voucher_from%</td>
+            <td>%payment_date%</td>
+        </tr>
+        </tbody>
+    </table>
 
+    <div class="footer-section">
         <div class="signature">
-            <div>Prepared By</div>
-            <div>Received By</div>
-            <div>Management</div>
-            <div>Accounting</div>
+            <span>Prepared By</span>
+            <span>Received By</span>
+            <span>Management</span>
+            <span>Accounting</span>
         </div>
-        <div style="width:100%;height:50px">&nbsp;</div>
+
+        <div class="print-info">
+            <span><strong>Created By:</strong> %CREATED_BY%</span>
+            <span><strong>Printed By:</strong> %PRINTED_BY%</span>
+            <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+        </div>
     </div>
 </div>
 </body>

@@ -228,8 +228,9 @@ class AccountsController extends Controller
     public function ViewFile( $ca_id )
     {
         $client_info = CRMAccounts::find($ca_id);
-        $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpBillingStatus(0)->get();
-        $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpBillingStatus(1)->get();
+        $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(0)->get();
+        $lst_bills_partial_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(1)->get();
+        $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(2)->get();
         $lst_pendingcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcClientCode($client_info->ca_account_code)->get();
         $lst_closedcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(1)->whereIcClientCode($client_info->ca_account_code)->get();
         $lst_call_products = InboundCallProducts::whereCpClientId($client_info->ca_id)->get();
@@ -237,6 +238,7 @@ class AccountsController extends Controller
         $data = array(
            "client_info" => $client_info,
            "lst_bills_unpaid" => $lst_bills_unpaid,
+           "lst_bills_partial_paid" => $lst_bills_partial_paid,
            "lst_pendingcalls" => $lst_pendingcalls,
            "lst_call_products" => $lst_call_products,
            "lst_closedcalls" => $lst_closedcalls,
@@ -377,10 +379,12 @@ class AccountsController extends Controller
             $account_info   = ChartAccounts::where("aa_account_ref","=","4111")->get();
             $account_info = $account_info[0];
 
-            $count   = ChartAccounts::where("aa_account_ref","LIKE","4111%")->count();
+            $aa_account_ref = $account_info->aa_account . $ca_account_code;
 
-            $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (String)sprintf('%05d', $new_count);
+            $accounts_info   = ChartAccounts::where("aa_account_ref","=","4121")->get();
+            $accounts_info = $accounts_info[0];
+
+            $aa_account_main = $accounts_info->aa_account . $ca_account_code;
 
 
              $AccAccounting = new ChartAccounts();
@@ -393,6 +397,18 @@ class AccountsController extends Controller
              $AccAccounting->save();
              $aa_id = $AccAccounting->aa_id;
              $AccountInfo->ca_accounting_id = $aa_id;
+
+            $AccAccounting = new ChartAccounts();
+            $AccAccounting->aa_parent_account   = $accounts_info->aa_id;
+            $AccAccounting->aa_account_ref      = $aa_account_main;
+            $AccAccounting->aa_account          = $aa_account_main;
+            $AccAccounting->aa_sub_account      = $accounts_info->aa_id;
+            $AccAccounting->aa_account_label    = $ca_account_name . " Maintenance Account";
+            $AccAccounting->fk_country_id       = 0;
+            $AccAccounting->save();
+            $aa_id = $AccAccounting->aa_id;
+            $AccountInfo->ca_maintenance_account = $aa_id;
+
         }
 
         // upload file to the CRM photo
@@ -405,8 +421,9 @@ class AccountsController extends Controller
             $AccountInfo->ca_image_extension   = $image_data['data']['ca_image_extension'];
 
         }
-
+        $default_company_id = session('default_company_id');
         $AccountInfo->fk_account_owner_id       = $fk_account_owner_id;
+        $AccountInfo->ca_company_id       = $default_company_id;
         $AccountInfo->ca_lead_id                = $ca_lead_id;
         $AccountInfo->ca_parent_account         = $ca_parent_account;
         $AccountInfo->ca_account_category       = $ca_account_category;

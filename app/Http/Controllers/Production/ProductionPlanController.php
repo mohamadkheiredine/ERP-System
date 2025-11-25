@@ -434,11 +434,17 @@ class ProductionPlanController extends Controller
         $lst_plan_status    = PlanStatus::wherePsIsDeleted(0)->get();
         $lst_customers      = Customers::whereIcIsDeleted(0)->get();
         $lst_users          = Users::whereUIsDeleted(0)->whereUIsActive(1)->get();
-        $lst_products       = Products::wherePProductIsDeleted(0)->wherePProductType(1)->get();
         $lst_teams          = UserTeam::whereUtIsDeleted(0)->get();
         $lst_check_status   = CheckStatus::whereCsIsDeleted(0)->get();
 
         $lst_prod_dep_users =  Users::whereUIsDeleted(0)->whereUIsActive(1)->whereUDepartmentId(DepartmentsManager::DEPARTMENT_PRODUCTION)->get();
+
+        $lst_bom_info         = BillOfMaterials::whereBmIsDeleted(0)->get();
+        $lst_currencies         = Currency::all();
+        $default_company_id     = session('default_company_id');
+        $lst_warehouses         = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
+        $lst_products         = Products::wherePProductIsDeleted(0)->where('p_product_type','!=',1)->get();
+
         $real_estimation    = $plan_info->pp_estimation_time;
         $timer_array = explode(":", $real_estimation);
         $data = array(
@@ -447,6 +453,9 @@ class ProductionPlanController extends Controller
             "lst_teams" => $lst_teams,
             "lst_customers" => $lst_customers,
             "lst_products" => $lst_products,
+            "lst_bom_info" => $lst_bom_info,
+            "lst_warehouses" => $lst_warehouses,
+            "lst_currencies" => $lst_currencies,
             "lst_users" => $lst_users,
             "lst_check_status" => $lst_check_status,
             "timer_array" => $timer_array,
