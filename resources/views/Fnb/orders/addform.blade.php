@@ -57,7 +57,7 @@
           <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Order Code <span class="required"></span></label>
-              <input type="text" name="fo_order_code" id="FO_ORDER_CODE" class="form-control" required maxlength="255" value="" />
+              <input type="text" name="fo_order_code" id="FO_ORDER_CODE" class="form-control" required maxlength="255" value="{{ $order_code }}" />
             </div>
           </div>
 

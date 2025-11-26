@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\library\OrdersManager;
 use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
 use App\models\FnB\FnbOrderItemModifiers;
@@ -45,13 +46,18 @@ class FnbOrdersController extends Controller
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
 
+        $OrderManager   = new OrdersManager();
+        $order_code     = $OrderManager->GenerateFnbOrderCode();
+        unset($OrderManager);
+
         $data = array(
             "lst_companies" => $lst_companies,
             "lst_stores" => $lst_stores,
             "lst_tables" => $lst_tables,
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
-            "lst_order_status" => $lst_order_status
+            "lst_order_status" => $lst_order_status,
+        "order_code" => $order_code
         );
         return Response()->view('fnb.orders.addform', $data);
     }
