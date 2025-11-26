@@ -151,7 +151,7 @@ Page Description :
 		<div class="col-xl-8 ps-xl-12">
 		 	<div class="row">
 		 		<div class="col-md-6">
-                                   
+
 		 		</div>
 		 		<div class="col-md-6">
 		 		</div>
@@ -167,8 +167,8 @@ Page Description :
                     </div>
                     <div class="card-body">
                            <div id="StockAmountCategory" class="DashboardItem">
-                                            
-                                            
+
+
                           </div>
                     </div>
                 </div>
@@ -181,8 +181,8 @@ Page Description :
                     </div>
                     <div class="card-body">
                         <div id="InventoryLevels" class="DashboardItem">
-                                            
-                                            
+
+
                           </div>
                     </div>
                 </div>
@@ -193,10 +193,37 @@ Page Description :
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Monthly Expenses
+                        <h2>List of Maintenance For this Month</h2>
                     </div>
                     <div class="card-body">
-                        <canvas id="expensesChart"></canvas>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr class="fw-bold fs-6 text-gray-800">
+                                    <th>Client Code</th>
+                                    <th>Client Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Region</th>
+                                    <th>Area</th>
+                                    <th>Phone</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($lst_inboundcalls as $index => $call_info)
+                                <tr>
+                                    <td>{{ $call_info->Client ? $call_info->Client->ca_account_code : "-" }}&nbsp;</td>
+                                    <td>{{ $call_info->Client ? $call_info->Client->ca_account_name : "-" }}</td>
+                                    <td>{{ $call_info->ic_call_date }}</td>
+                                    <td>{{ $call_info->ic_call_start_time }}</td>
+                                    <td>{{ $call_info->Client  ? $call_info->Client->ca_billing_region : "-" }}</td>
+                                    <td>{{ $call_info->Client  ? $call_info->Client->ca_billing_area : "-" }}</td>
+                                    <td>{{ $call_info->Client  ? $call_info->Client->ca_account_mobile : "-" }}</td>
+                                </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -204,10 +231,35 @@ Page Description :
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Revenue Distribution
+                        <h2>Pending Bills</h2>
                     </div>
                     <div class="card-body">
-                        <canvas id="revenueChart"></canvas>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr class="fw-bold fs-6 text-gray-800">
+                                    <th>Client Code</th>
+                                    <th>Client Name</th>
+                                    <th>Bill Nbr</th>
+                                    <th>Date</th>
+                                    <th>Phone</th>
+                                    <th>Payment Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($lst_bills as $index => $bill_info)
+                                    <tr>
+                                        <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_code : "-" }}&nbsp;</td>
+                                        <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_name : "-" }}</td>
+                                        <td>{{ $bill_info->ip_billing_nbr }}</td>
+                                        <td>{{ $bill_info->ip_billing_date }}</td>
+                                        <td>{{ $bill_info->Client->ca_account_mobile }}</td>
+                                        <td>{{ $bill_info->ip_payment_amount }} {{ $bill_info->Currency ? $bill_info->Currency->cc_currency_code : "" }}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -216,4 +268,3 @@ Page Description :
 	</div>
 	<!--end::Row-->
 @endsection
-	

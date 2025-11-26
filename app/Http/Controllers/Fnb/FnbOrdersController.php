@@ -46,8 +46,9 @@ class FnbOrdersController extends Controller
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
 
+
         $OrderManager   = new OrdersManager();
-        $order_code     = $OrderManager->GenerateOrdereCode();
+        $order_code     = $OrderManager->GenerateFnbOrderCode();
         unset($OrderManager);
 
         $data = array(
@@ -57,7 +58,7 @@ class FnbOrdersController extends Controller
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
             "lst_order_status" => $lst_order_status,
-            "order_code" => $order_code,
+        "order_code" => $order_code
         );
         return Response()->view('fnb.orders.addform', $data);
     }

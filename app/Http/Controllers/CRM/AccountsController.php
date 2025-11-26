@@ -362,6 +362,9 @@ class AccountsController extends Controller
         $ca_account_code          = $request->input("ca_account_code");
         $ca_billing_region          = $request->input("ca_billing_region");
         $ca_paper_type          = $request->input("ca_paper_type");
+        $ca_location          = $request->input("ca_location");
+        $ca_account_lat          = $request->input("ca_account_lat");
+        $ca_account_long          = $request->input("ca_account_long");
 
         $ca_image_base_src      = "";
         $ca_image_file_name     = "";
@@ -458,6 +461,9 @@ class AccountsController extends Controller
         $AccountInfo->ca_account_code            = $ca_account_code;
         $AccountInfo->ca_nationality_id            = $ca_nationality_id;
         $AccountInfo->ca_paper_type            = $ca_paper_type;
+        $AccountInfo->ca_location            = $ca_location;
+        $AccountInfo->ca_account_lat            = $ca_account_lat;
+        $AccountInfo->ca_account_long            = $ca_account_long;
         $AccountInfo->save();
 
 

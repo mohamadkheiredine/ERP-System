@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\models\Roles\RolePrivileges;
+use App\models\System\Countries;
 use App\models\Users\UserAllowedCompanies;
 use Validator;
 use Input;
@@ -150,6 +151,9 @@ class LoginController extends Controller
             $currency_id    = $company_info->cd_company_currency;
             $currency_info  = Currency::find($currency_id);
 
+            $country_id    = $company_info->cd_company_country;
+            $country_info  = Countries::find($country_id);
+
             $secondary_currency_id      = $company_info->cd_secondary_currency;
             $secondary_currency_info    = Currency::find($secondary_currency_id);
 
@@ -168,6 +172,7 @@ class LoginController extends Controller
             session()->put('company_name', $company_info->cd_company_name);
             session()->put('sec_currency_symbol', $secondary_currency_info->cc_currency_code);
             session()->put('default_item', $company_info->cd_default_item);
+            session()->put('country_code', $country_info->code);
             session()->put('company_transportation_fees', $company_info->cd_transportation_fees);
             session()->put('company_logo', $company_logo);
             session()->put('company_homepage', $company_info->cd_company_homepage);

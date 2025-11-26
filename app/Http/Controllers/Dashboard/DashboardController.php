@@ -15,6 +15,8 @@ Page Description :
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\models\Billing\InvoicePayments;
+use App\models\CallCenter\InboundCall;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -28,6 +30,7 @@ use App\models\Inventory\Customers;
 use App\models\Billing\Invoices;
 use App\models\System\CurrencyExchangeRates;
 use App\models\System\Currency;
+use Carbon\Carbon;
 
 
 
@@ -65,13 +68,28 @@ class DashboardController extends Controller
         $todays_date = date("Y-m-d");
         $count_rates   = CurrencyExchangeRates::whereErDateExchange($todays_date)->count();
 
+
+
+        $first = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $last  = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+        $lst_inboundcalls = InboundCall::whereIcIsDeleted(0)->whereIcIsPaid(0)->whereIcClosedVoucher(0)->whereBetween('ic_call_date',[$first,$last])->limit(10)->orderBy('ic_call_date','DESC')->get();
+
+        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
+
         $data = array(
             "count_orders" => $count_orders,
             "count_customers" => $count_customers,
             "count_rates" => $count_rates,
+            "lst_inboundcalls" => $lst_inboundcalls,
+            "lst_bills" => $lst_bills,
             "count_invoices" => $count_invoices,
         );
-        return Response()->view("dashboard.dashboard",$data);
+
+        if(Session('user_type') == 1)
+            return Response()->view("dashboard.dashboard",$data);
+        else
+            return view('dashboard.empty',array());
     }
 
 

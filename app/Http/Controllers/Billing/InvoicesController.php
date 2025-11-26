@@ -1631,9 +1631,8 @@ class InvoicesController extends Controller
                 {
                     $quotation_info = new SupplierQuotations();
                     $quotation_info->fk_supplier_id          = $bi_target_supplier;
-                    $quotation_info->tm_company_id            = $bi_company_to;
                     $quotation_info->sq_user_id              = session('user_id');
-                    $quotation_info->sq_company_id              = session('user_id');
+                    $quotation_info->sq_company_id              = $bi_company_to;
                     $quotation_info->sq_date_submit          = $bi_invoice_date;
                     $quotation_info->sq_due_date             = $bi_invoice_date;
                     $quotation_info->sq_total_price          = $total_price;

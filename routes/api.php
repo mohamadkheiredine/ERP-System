@@ -133,5 +133,19 @@ use Illuminate\Http\Request;
     Route::get('/web/api/getproductinfo','Api\WebApiController@Getproductinfo');
     Route::post('/web/api/saveorder','Api\WebApiController@CreateOrder');
 
+    Route::get(' /api/inventory/getlistrawmaterials','Api\ProductsController@GetListRawMaterials');
+    Route::get(' /api/inventory/validatestock','Api\ProductsController@ValidateStock');
+
+    Route::post('/api/orders/createorder','Api\FnbController@CreateOrder');
+    Route::get('/api/inventory/listitemcategories','Api\FnbController@ListItemCategories');
+    Route::get('/api/inventory/getlistofitems','Api\FnbController@GetListOfItems');
+    Route::get('/api/inventory/getlistoforders','Api\FnbController@GetListOfOrders');
+    Route::get('/api/inventory/getlistmodifiers','Api\FnbController@GetListModifiers');
+    Route::get('/api/inventory/getlisttables','Api\FnbController@GetListTables');
+
+
+
+
+
 
 //});
