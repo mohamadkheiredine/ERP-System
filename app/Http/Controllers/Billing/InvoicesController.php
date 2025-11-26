@@ -1389,12 +1389,6 @@ class InvoicesController extends Controller
                     $total_price = $total_price + $ii_info->ii_total_price;
                 }
 
-
-
-
-
-
-
                 $trans_id = $invoice_info->bi_transaction_id;
                 $invoice_info->bi_transaction_id = 0;
                 $invoice_info->bi_invoice_status    = 0;

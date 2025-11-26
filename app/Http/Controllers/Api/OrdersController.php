@@ -189,7 +189,9 @@ class OrdersController extends Controller
 
         // get default customer id
         $vendor_account_id = 0;
+
         $vendor_info = new Vendors();
+
         if($customer_id == 0)
         {
             // check if we select a vendor we get info of it
@@ -235,8 +237,8 @@ class OrdersController extends Controller
 
         $so_order_barcode = rand(100000000,999999999);
 
-        $creation_date    = date("Y-m-d");
-		$creation_time = date("H:i:s");
+        $creation_date      = date("Y-m-d");
+		$creation_time      = date("H:i:s");
         $so_vat_id = 0;
 
         // create a new order
@@ -325,6 +327,10 @@ class OrdersController extends Controller
                // change stock id if exist to sold
                DB::statement("UPDATE `inventory_stock_ids` SET si_stock_sold=1 WHERE si_stock_uid='" . $item_order['uid'] . "'");
            }
+
+           // check if stock of this warehouse exist
+
+
         }
 
 	// update order

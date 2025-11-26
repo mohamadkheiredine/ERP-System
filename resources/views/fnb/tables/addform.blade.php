@@ -97,7 +97,12 @@
           <div class="col-md-4 col-xs-12">
         <div class="form-group">
           <label class="control-label">Shape <span class="required"></span></label>
-          <input type="number" name="ft_shape" id="FT_SHAPE" class="form-control" min="0" required>
+            <select class="form-select form-control" data-control="select2" name="ft_shape" id="FT_SHAPE">
+                <option value="0">-- Select Shape --</option>
+                <option value="1">Round</option>
+                <option value="2">Square</option>
+                <option value="3">Rectangle</option>
+            </select>
         </div>
           </div>
           <div class="col-md-4 col-xs-12">
