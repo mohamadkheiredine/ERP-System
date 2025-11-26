@@ -517,4 +517,158 @@ orders_module = {
             }
         });
     },
+
+    SaveDeliveryInfo: function () {
+        return orders_module.SaveDeliveryHandlerSubmit();
+    },
+
+    SaveDeliveryHandlerSubmit: function () {
+        var DeliveryForm = $("#FORM_SAVE_DELIVERY");
+        var error4 = $(".alert-danger", DeliveryForm);
+        var success4 = $(".alert-success", DeliveryForm);
+
+        DeliveryForm.validate({
+            errorElement: "span",
+            errorClass: "help-block help-block-error",
+            focusInvalid: false,
+            ignore: "",
+
+            rules: {
+                od_delivery_status: { required: true, min: 1 },
+                od_delivery_address: { required: true },
+                ic_customer_name: { required: true },
+                ic_customer_phone: { required: true, digits: true },
+                od_delivery_cost: { required: true, number: true, min: 0 },
+            },
+
+            messages: {
+                od_delivery_status: "Please select a delivery status",
+                od_delivery_address: "Please enter the delivery address",
+                ic_customer_name: "Please enter customer name",
+                ic_customer_phone: "Please enter valid phone number",
+                od_delivery_cost: "Please enter valid delivery cost",
+            },
+
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            },
+
+            invalidHandler: function () {
+                success4.hide();
+                error4.show();
+            },
+
+            highlight: function (element) {
+                $(element).closest(".form-group").addClass("has-error");
+            },
+            unhighlight: function (element) {
+                $(element).closest(".form-group").removeClass("has-error");
+            },
+
+            submitHandler: function () {
+                success4.hide();
+                error4.hide();
+
+                let base_url = $("#BASE_URL").val();
+                let formData = DeliveryForm.serialize();
+
+                $.ajax({
+                    url: base_url + "/request/orders/savedelivery",
+                    method: "POST",
+                    data: formData,
+                    dataType: "json",
+
+                    success: function (response) {
+                        if (response.is_error === 0) {
+                            success4.text("Saved successfully!").fadeIn();
+                            setTimeout(function () {
+                                DeliveryForm[0].reset();
+
+                                $("#OD_DELIVERY_STATUS")
+                                    .val(0)
+                                    .trigger("change");
+                                $("#IC_CUSTOMER_PHONE").val("");
+                                $("#OD_DELIVERY_COST").val("");
+
+                                success4.hide();
+                                $("#DeliveryPopUp").modal("hide");
+                            }, 800);
+                        } else {
+                            error4
+                                .text(response.error_msg || "Unexpected error!")
+                                .show();
+                        }
+                    },
+
+                    error: function (xhr) {
+                        error4.text("Request failed: " + xhr.statusText).show();
+                        success4.hide();
+                    },
+                });
+
+                return false;
+            },
+        });
+    },
+
+    DisplayListDeliveries: function() {
+        var base_url = $("input[name=base_url]").val();
+        var _token = $("input[name=_token]").val();
+
+        $.ajax({
+            url: base_url + "/request/orders/displaydeliveries",
+            data: {
+                _token: _token,
+            },
+            method: "get",
+            dataType: "json",
+            beforeSend: function () {},
+            success: function (response) {
+                $("#LstDeliveries").html(response.display);
+                $(".group-checkable").change(function () {
+                    var set = $("table").find(
+                        'tbody > tr > td:nth-child(1) input[type="checkbox"]'
+                    );
+                    var checked = $(this).prop("checked");
+                    $(set).each(function () {
+                        $(this).prop("checked", checked);
+                    });
+                    $.uniform.update(set);
+                });
+                if (response.total_pages > 0) {
+                    $.pagination = $("#DeliveryPagination").twbsPagination({
+                        totalPages: response.total_pages,
+                        visiblePages: 7,
+                        onPageClick: function (event, page) {
+                            $("input[name=page_number]").val(page);
+                            orders_module.DisplayListOrders();
+                        },
+                    });
+                }
+            },
+        });
+    },
+
+    DeleteDelivery: function (el) {
+        var delivery_id = $(el).data("delivery_id");
+        bootbox.confirm("Are you sure you want to delete ?", function (result) {
+            //result
+            if (result == true) {
+                var base_url = $("#BASE_URL").val();
+                var _token = $("input[name=_token]").val();
+                var str_params = { delivery_id: delivery_id, _token: _token };
+                $.ajax({
+                    url: base_url + "/request/orders/deletedelivery",
+                    data: str_params,
+                    dataType: "Json",
+                    type: "delete",
+                    success: function (response) {
+                        if (response.is_error == 0) {
+                            orders_module.DisplayListDeliveries();
+                        }
+                    },
+                });
+            }
+        });
+    },
 };

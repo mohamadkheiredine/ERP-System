@@ -792,7 +792,11 @@ Route::delete('/request/orders/deleteorderinfo', 'Fnb\FnbOrdersController@Delete
 Route::get('/request/fnbitemsorders/displaylistitemsorders', 'Fnb\FnbItemOrderController@DisplayListItemsOrders');
 Route::post('/request/orders/saveitemorder', 'Fnb\FnbItemOrderController@SaveItemOrderInfo');
 Route::delete('/request/fnbitemsorder/deleteiteminfo', 'Fnb\FnbItemOrderController@DeleteItemOrderInfo');
+Route::post('/request/orders/savedelivery', 'Fnb\FnbOrderDeliveryController@SaveDelivery');
+Route::get('/request/orders/displaydeliveries', 'Fnb\FnbOrderDeliveryController@DisplayDeliveries');
+Route::delete('/request/orders/deletedelivery', 'Fnb\FnbOrderDeliveryController@DeleteDelivery');
 
 Route::get('/request/orders/displaylistordersitemsmodifiers', 'Fnb\FnbItemOrderModifierController@DisplayListItemsOrdersModifiers');
 Route::post('/request/orders/savemodifieritemorder', 'Fnb\FnbItemOrderModifierController@SaveItemOrderModifierInfo');
 Route::delete('/request/orders/deleteitemordermodifier', 'Fnb\FnbItemOrderModifierController@DeleteItemOrderModifier');
+

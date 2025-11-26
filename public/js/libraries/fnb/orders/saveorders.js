@@ -19,6 +19,7 @@ $(function () {
     $("button[name=back_form]").on("click", orders_module.backToPreviousPage);
 
     orders_module.DisplayListItemsOrder();
+    orders_module.DisplayListDeliveries();
 
     $(document).on("click", "#BTN_SAVE_ITEM_ORDER", function () {
         orders_module.SaveItemOrderInfo();
@@ -42,15 +43,48 @@ $(function () {
         $("#IM_MODIFIER_NAME").val(modifierName);
     });
 
-    $(document).on("click", "#BTN_SAVE_ITEM_ORDER_MODIFIER", function() {
+    $(document).on("click", "#BTN_SAVE_ITEM_ORDER_MODIFIER", function () {
         orders_module.SaveOrderItemModifierInfo();
     });
 
-    $('#ModelPopUpModifiers').on('hidden.bs.modal', function () {
+    $("#ModelPopUpModifiers").on("hidden.bs.modal", function () {
         orders_module.DisplayListItemsOrder();
     });
 
-    $(document).on("click", "a[id^='DELETE_ITEM_ORDER_MODIFIER_']", function () {
-        orders_module.DeleteItemOrdersModifiers(this);
+    $("#DeliveryPopUp").on("hidden.bs.modal", function () {
+        orders_module.DisplayListDeliveries();
+    });
+
+    $(document).on(
+        "click",
+        "a[id^='DELETE_ITEM_ORDER_MODIFIER_']",
+        function () {
+            orders_module.DeleteItemOrdersModifiers(this);
+        }
+    );
+
+    $(document).ready(function () {
+        function toggleDeliveryTab() {
+            var type = $("#FO_ORDER_TYPE").val();
+
+            if (type === "delivery") {
+                $("#DELIVERY_TAB").show();
+            } else {
+                $("#DELIVERY_TAB").hide();
+                $('a[href="#kt_tab_pane_1"]').tab("show");
+            }
+        }
+        toggleDeliveryTab();
+        $("#FO_ORDER_TYPE").on("change", function () {
+            toggleDeliveryTab();
+        });
+    });
+
+    $(document).on("click", "#BTN_SAVE_DELIVERY", function () {
+        orders_module.SaveDeliveryInfo();
+    });
+
+    $(document).on("click", "a[id^='DELETE_DELIVERY_']", function () {
+        orders_module.DeleteDelivery(this);
     });
 });
