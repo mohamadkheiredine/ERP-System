@@ -12,7 +12,9 @@ use App\models\Sales\Terminals;
 use App\models\System\Companies;
 use App\models\Accounting\VatAccounts;
 use App\Models\Fnb\FnbMenuItemModifier;
+use App\models\FnB\FnbOrderDelivery;
 use App\models\FnB\FnbOrderItems;
+use App\models\Inventory\Customers;
 use Milon\Barcode\DNS1D;
 
 
@@ -41,17 +43,13 @@ class FnbItemOrderController extends Controller
             ->take($nbr_rows_per_pages)
             ->get();
 
-        $grand_total = $lst_menu_items_orders->sum('oi_total_price');
-
         $data = [
-            "lst_menu_items_orders" => $lst_menu_items_orders,
-            "grand_total" => $grand_total
+            "lst_menu_items_orders" => $lst_menu_items_orders
         ];
 
         $result_array = [
             'total_pages' => $total_pages,
-            'display'     => view("fnb.orders.displaylistitemsorders", $data)->render(),
-            'total_price'  => view("fnb.orders.total", $data)->render(),
+            'display'     => view("fnb.orders.displaylistitemsorders", $data)->render()
         ];
 
         return response()->json($result_array);
@@ -106,5 +104,6 @@ class FnbItemOrderController extends Controller
 
         return Response()->json($result_array);
     }
+
 
 }

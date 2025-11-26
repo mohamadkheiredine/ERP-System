@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\library\OrdersManager;
 use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
 use App\models\FnB\FnbOrderItemModifiers;
@@ -45,13 +46,18 @@ class FnbOrdersController extends Controller
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
 
+        $OrderManager   = new OrdersManager();
+        $order_code     = $OrderManager->GenerateOrdereCode();
+        unset($OrderManager);
+
         $data = array(
             "lst_companies" => $lst_companies,
             "lst_stores" => $lst_stores,
             "lst_tables" => $lst_tables,
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
-            "lst_order_status" => $lst_order_status
+            "lst_order_status" => $lst_order_status,
+            "order_code" => $order_code,
         );
         return Response()->view('fnb.orders.addform', $data);
     }
@@ -226,6 +232,14 @@ class FnbOrdersController extends Controller
         $lst_stations = KitchenStations::whereKsIsDeleted(0)->get();
         $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
         $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
+        $lst_statuses = SystemStatus::whereSsIsDeleted(0)->get();
+
+        $order_code = "";
+        if ($order_info->so_order_code != null) {
+            $OrderManager = new OrdersManager();
+            $order_code = $OrderManager->GenerateOrdereCode();
+            unset($OrderManager);
+        }
 
         $data = array(
             "lst_companies" => $lst_companies,
@@ -238,7 +252,9 @@ class FnbOrdersController extends Controller
             "lst_items" => $lst_items,
             "lst_stations" => $lst_stations,
             "lst_kitchen_status" => $lst_kitchen_status,
-            "lst_modifiers" => $lst_modifiers
+            "lst_modifiers" => $lst_modifiers,
+            "order_code" => $order_code,
+            "lst_statuses" => $lst_statuses,
         );
         return view('fnb.orders.editform', $data);
     }

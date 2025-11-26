@@ -17,6 +17,10 @@
         .form-group {
             margin-bottom: 1.5rem;
         }
+
+        #DELIVERY_TAB {
+            display: none;
+        }
     </style>
 @endsection
 
@@ -61,9 +65,10 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Order Code <span class="required"></span></label>
-                                <input type="text" name="fo_order_code" id="FO_ORDER_CODE" class="form-control" required
-                                    maxlength="255" value="{{ $order_info->fo_order_code }}" />
+                                <label class="control-label"> Order Code :&nbsp;</label><br />
+                                <input type="text" name="fo_order_code" id="FO_ORDER_CODE" class="form-control"
+                                    readonly="readonly" required="required" maxlength="25" tabindex="1"
+                                    value="{{ $order_info->fo_order_code != null ? $order_info->fo_order_code : $order_code }}" />
                             </div>
                         </div>
 
@@ -76,7 +81,8 @@
                                     @foreach($lst_companies as $index => $company_info)
                                         <option value="{{ $company_info->cd_id }}"
                                             @if($company_info->cd_id == $order_info->fo_branch_id) selected @endif>
-                                            {{ $company_info->cd_company_name }}</option>
+                                            {{ $company_info->cd_company_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -112,7 +118,8 @@
                                     @foreach($lst_stores as $index => $store_info)
                                         <option value="{{ $store_info->ps_id }}"
                                             @if($store_info->ps_id == $order_info->fo_store_id) selected @endif>
-                                            {{ $store_info->ps_store_name }}</option>
+                                            {{ $store_info->ps_store_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -127,7 +134,8 @@
                                     @foreach($lst_tables as $index => $table_info)
                                         <option value="{{ $table_info->ft_id }}"
                                             @if($table_info->ft_id == $order_info->fo_table_id) selected @endif>
-                                            {{ $table_info->ft_label }}</option>
+                                            {{ $table_info->ft_label }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -142,7 +150,8 @@
                                     @foreach($lst_customers as $index => $customer_info)
                                         <option value="{{ $customer_info->ic_id }}"
                                             @if($customer_info->ic_id == $order_info->fo_customer_id) selected @endif>
-                                            {{ $customer_info->ic_customer_name }}</option>
+                                            {{ $customer_info->ic_customer_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -160,7 +169,8 @@
                                     @foreach ($lst_order_status as $key => $status_info)
                                         <option value="{{ $status_info->ss_id }}"
                                             @if($status_info->ss_id == $order_info->fo_order_status) selected @endif>
-                                            {{ $status_info->ss_status_title }}</option>
+                                            {{ $status_info->ss_status_title }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -228,7 +238,8 @@
                                 @foreach($lst_currencies as $index => $currency_info)
                                     <option value="{{ $currency_info->cc_id }}"
                                         @if($currency_info->cc_id == $order_info->fo_currency_id) selected @endif>
-                                        {{ $currency_info->cc_currency_code }}</option>
+                                        {{ $currency_info->cc_currency_code }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -281,12 +292,15 @@
                     <div class="row">
                         <div class="col-md-7"></div>
                         <div class="col-md-5" align="right">
-                             <button type="submit" name="btn_save_order" id="BTN_SAVE_ORDER"  class="btn btn-info">Save</button>
-                        @if( $order_info->fo_is_paid == 0 )
-                             <button type="button" name="btn_pay_order" id="BTN_PAY_ORDER"  class="btn btn-danger">Pay Order</button>
-                        @endif
+                            <button type="submit" name="btn_save_order" id="BTN_SAVE_ORDER"
+                                class="btn btn-info">Save</button>
+                            @if($order_info->fo_is_paid == 0)
+                                <button type="button" name="btn_pay_order" id="BTN_PAY_ORDER" class="btn btn-danger">Pay
+                                    Order</button>
+                            @endif
                             <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
-                            <button type="button" id="BTN_CLOSE_PAGE" name="btn_close_page" class="btn btn-success">Close</button>
+                            <button type="button" id="BTN_CLOSE_PAGE" name="btn_close_page"
+                                class="btn btn-success">Close</button>
                         </div>
                     </div>
 
@@ -307,6 +321,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_1">Items</a>
                 </li>
+                <li class="nav-item" id="DELIVERY_TAB">
+                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_2">Deliveries</a>
+                </li>
             </ul>
 
             <div class="tab-content" id="myTabContent">
@@ -317,12 +334,13 @@
                             <thead>
                                 <tr>
                                     <th title="#">#</th>
-                                    <th title="Id">ID</th>
+                                    <th title="item name">Name</th>
                                     <th title="Name">Item Quantity</th>
                                     <th title="edit">Item Unit Price</th>
                                     <th title="override cost">Item Discount</th>
                                     <th title="modifiers">Item Modifiers</th>
                                     <th title="delete">Delete</th>
+                                    <th title="total price">Total Price</th>
                                 </tr>
                             </thead>
                             <tbody id="LstItemsOrders"></tbody>
@@ -379,7 +397,8 @@
                                                             <option value="0">-- Select Item --</option>
                                                             @foreach($lst_items as $item_info)
                                                                 <option value="{{ $item_info->fi_id }}">
-                                                                    {{ $item_info->fi_item_name }}</option>
+                                                                    {{ $item_info->fi_item_name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -402,7 +421,8 @@
                                                             <option value="0">-- Select Currency --</option>
                                                             @foreach($lst_currencies as $currency_info)
                                                                 <option value="{{ $currency_info->cc_id }}">
-                                                                    {{ $currency_info->cc_currency_code }}</option>
+                                                                    {{ $currency_info->cc_currency_code }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
 
@@ -440,7 +460,8 @@
                                                             <option value="0">-- Select Status --</option>
                                                             @foreach ($lst_kitchen_status as $key => $status_info)
                                                                 <option value="{{ $status_info->ss_id }}">
-                                                                    {{ $status_info->ss_status_title }}</option>
+                                                                    {{ $status_info->ss_status_title }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -455,7 +476,8 @@
                                                             <option value="0">-- Select Station --</option>
                                                             @foreach ($lst_stations as $key => $station_info)
                                                                 <option value="{{ $station_info->ks_id }}">
-                                                                    {{ $station_info->ks_name }}</option>
+                                                                    {{ $station_info->ks_name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -544,7 +566,8 @@
                                                             <option value="0">-- Select Modifier --</option>
                                                             @foreach($lst_modifiers as $index => $modifier_info)
                                                                 <option value="{{ $modifier_info->m_id }}">
-                                                                    {{ $modifier_info->m_modifier_name }}</option>
+                                                                    {{ $modifier_info->m_modifier_name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                         <input type="hidden" name="im_modifier_name" id="IM_MODIFIER_NAME">
@@ -578,7 +601,8 @@
                                                             <option value="0">-- Select Currency --</option>
                                                             @foreach($lst_currencies as $index => $currency_info)
                                                                 <option value="{{ $currency_info->cc_id }}">
-                                                                    {{ $currency_info->cc_currency_code }}</option>
+                                                                    {{ $currency_info->cc_currency_code }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -590,6 +614,137 @@
 
                                                     <button type="submit" class="btn btn-primary"
                                                         id="BTN_SAVE_ITEM_ORDER_MODIFIER">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
+
+                    <div id="LstDeliveriesMain" class="table-responsive">
+                        <table class="table table-bordered table-hover" id="html_table" width="100%">
+                            <thead>
+                                <tr>
+                                    <th title="#">#</th>
+                                    <th title="Address">Address</th>
+                                    <th title="Cost">Cost</th>
+                                    <th title="Delete">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="LstDeliveries"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-10" align="left">
+                            <ul id="DeliveryPagination" class="pagination-sm"></ul>
+                        </div>
+                        <div align="right">
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#DeliveryPopUp">
+                                Add Delivery
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- modal here --}}
+                    <div class="modal fade" id="DeliveryPopUp" tabindex="2" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delivery</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form name="frm_save_delivery" id="FORM_SAVE_DELIVERY">
+                                        <div class="form-body">
+                                            <span id="hidden_fields">
+                                                {!! csrf_field() !!}
+                                                <input type="hidden" name="od_order_id" id="OD_ORDER_ID"
+                                                    value="{{ $order_info->fo_id }}">
+
+                                            </span>
+
+                                            <div class="alert alert-success" style="display:none">
+                                                <strong>Success!</strong> Information is saved successfully!
+                                            </div>
+
+                                            <div class="alert alert-danger" style="display:none">
+                                                <strong>Error!</strong> You have some form errors. Please check below.
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Status <span
+                                                                class="required"></span></label>
+                                                        <select class="form-select form-control" data-control="select2"
+                                                            id="OD_DELIVERY_STATUS" name="od_delivery_status">
+                                                            <option value="0">-- Select Status --</option>
+                                                            @foreach($lst_statuses as $status_info)
+                                                            <option value="{{ $status_info->ss_id }}">
+                                                                {{ $status_info->ss_status_title }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Address <span
+                                                                class="required"></span></label>
+                                                        <input type="text" name="od_delivery_address" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row mt-3">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Customer Name <span
+                                                                class="required"></span></label>
+                                                        <input type="text" name="ic_customer_name" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Customer Phone Number <span
+                                                                class="required"></span></label>
+                                                        <input type="text" name="ic_customer_phone" id="IC_CUSTOMER_PHONE"
+                                                            class="form-control" required />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Delivery Cost <span
+                                                                class="required"></span></label>
+                                                        <input type="text" name="od_delivery_cost" id="OD_DELIVERY_COST"
+                                                            class="form-control" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-md-12" align="right">
+
+                                                    <button type="submit" class="btn btn-primary"
+                                                        id="BTN_SAVE_DELIVERY">Save</button>
                                                 </div>
                                             </div>
                                         </div>

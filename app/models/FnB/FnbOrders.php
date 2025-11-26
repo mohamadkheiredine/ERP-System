@@ -51,5 +51,4 @@ class FnbOrders extends Model
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id', 'fo_currency_id');
     }
-
 }
