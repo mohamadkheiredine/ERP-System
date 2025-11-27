@@ -143,6 +143,8 @@ use Illuminate\Http\Request;
     Route::get('/api/inventory/getlistmodifiers','Api\FnbController@GetListModifiers');
     Route::get('/api/inventory/getlisttables','Api\FnbController@GetListTables');
 
+    Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
+
 
 
 

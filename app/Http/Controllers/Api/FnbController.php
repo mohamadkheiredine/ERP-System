@@ -411,4 +411,24 @@ class FnbController extends Controller
 
         return Response()->json($result_array);
     }
+
+    public function GetLastItemId(Request $request)
+    {
+        $g_hash = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+
+        if (hash('sha256', $c_hash) != $g_hash) {
+            return response()->json(['is_error' => 1, 'msg' => 'Invalid hash']);
+        }
+
+        $last = FnbOrderItems::orderBy('oi_id', 'DESC')->first();
+        dd("last id is ", $last);
+        return response()->json([
+            'is_error' => 0,
+            'last_id' => $last ? $last->oi_id : 0
+        ]);
+    }
 }
