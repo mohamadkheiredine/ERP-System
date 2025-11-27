@@ -159,7 +159,7 @@ class FnbController extends Controller
 
         $fo_id = $order_info->fo_id;
 
-        $final_items = []; // <--- add this line before loop
+        $final_items = [];
 
         foreach ($order_items as $key => $item_order) {
             $item = new FnbOrderItems();
@@ -175,8 +175,6 @@ class FnbController extends Controller
             $item->save();
 
             $item_db = FnbItem::find($item_order['item_id']);
-
-            // dd("item db", $item_db);
 
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
@@ -224,36 +222,95 @@ class FnbController extends Controller
     public function ListItemCategories(Request $request)
     {
         $category_id = $request->input('category_id');
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
 
         if (!empty($category_id)) {
             $lst_categories = MenuCategories::where('mc_id', $category_id)->where('mc_is_deleted', 0)->get();
         } else {
             $lst_categories = MenuCategories::where('mc_is_deleted', 0)->get();
         }
-        return Response()->json([
-            'is_error' => 0,
-            'error_msg' => '',
-            'lst_item_categories' => $lst_categories
-        ]);
+
+        $categories_array = array();
+        foreach ($lst_categories as $index => $category_info) {
+            $categories_array[$index]['mc_id'] = $category_info->mc_id;
+            $categories_array[$index]['mc_category_name'] = $category_info->mc_category_name;
+            $categories_array[$index]['mc_category_description'] = $category_info->mc_category_description;
+        }
+
+        $result_array['is_error'] = 1;
+        $result_array['error_msg'] = '';
+        $result_array['lst_item_categories'] = $categories_array;
+        return Response()->json($result_array);
     }
 
     public function GetListOfItems(Request $request)
     {
         $category_id = $request->input('category_id');
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         if (!empty($category_id)) {
             $lst_items = FnbItem::where('fi_category_id', $category_id)->where('fi_is_deleted', 0)->get();
         } else {
             $lst_items = FnbItem::where('fi_is_deleted', 0)->get();
         }
-        return Response()->json([
-            'is_error' => 0,
-            'error_msg' => '',
-            'lst_items' => $lst_items
-        ]);
+        $items_array = array();
+        foreach ($lst_items as $index => $item_info) {
+            $items_array[$index]['fi_id'] = $item_info->fi_id;
+            $items_array[$index]['fi_item_name'] = $item_info->fi_item_name;
+            $items_array[$index]['fi_category_id'] = $item_info->fi_category_id;
+        }
+
+        $result_array['is_error'] = 1;
+        $result_array['error_msg'] = '';
+        $result_array['lst_items'] = $items_array;
+        return Response()->json($result_array);
     }
 
     public function GetListOfOrders(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $date_from    = $request->input('date_from');
         $date_to      = $request->input('date_to');
         $warehouse_id = $request->input('warehouse_id');
@@ -272,32 +329,84 @@ class FnbController extends Controller
         }
         $lst_orders = $query->orderBy('fo_order_datetime', 'DESC')->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_orders' => $lst_orders
-        ]);
+        $orders_array = array();
+        foreach ($lst_orders as $index => $order) {
+            $orders_array[$index]['fo_id']            = $order->fo_id;
+            $orders_array[$index]['fo_order_code']          = $order->fo_order_code;
+            $orders_array[$index]['fo_total_amount']  = $order->fo_total_amount;
+            $orders_array[$index]['fo_order_datetime'] = $order->fo_order_datetime;
+            $orders_array[$index]['fo_warehouse_id']  = $order->fo_warehouse_id;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_orders'] = $orders_array;
+        return Response()->json($result_array);
     }
 
     public function GetListModifiers(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_modifiers' => $lst_modifiers
-        ]);
+        $modifiers_array = [];
+        foreach ($lst_modifiers as $index => $modifier_info) {
+            $modifiers_array[$index]['m_id']   = $modifier_info->m_id;
+            $modifiers_array[$index]['m_modifier_name'] = $modifier_info->m_modifier_name;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_modifiers'] = $modifiers_array;
+
+        return Response()->json($result_array);
     }
 
     public function GetListTables(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $lst_tables = FnbOrderTables::whereFtIsDeleted(0)->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_tables' => $lst_tables
-        ]);
+        $tables_array = [];
+        foreach ($lst_tables as $index => $table_info) {
+            $tables_array[$index]['ft_id']   = $table_info->ft_id;
+            $tables_array[$index]['ft_table_name'] = $table_info->ft_table_name;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_tables'] = $tables_array;
+
+        return Response()->json($result_array);
     }
 }
