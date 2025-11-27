@@ -400,8 +400,9 @@ class FnbController extends Controller
         $tables_array = [];
         foreach ($lst_tables as $index => $table_info) {
             $tables_array[$index]['ft_id']   = $table_info->ft_id;
-            $tables_array[$index]['ft_table_name'] = $table_info->ft_table_name;
+            $tables_array[$index]['ft_label'] = $table_info->ft_label;
             $tables_array[$index]['ft_number_seats'] = $table_info->ft_number_seats;
+            $tables_array[$index]['ft_status_id'] = $table_info->ft_status_id;
         }
 
         $result_array['is_error'] = 0;
