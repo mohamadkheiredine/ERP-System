@@ -401,6 +401,7 @@ class FnbController extends Controller
         foreach ($lst_tables as $index => $table_info) {
             $tables_array[$index]['ft_id']   = $table_info->ft_id;
             $tables_array[$index]['ft_table_name'] = $table_info->ft_table_name;
+            $tables_array[$index]['ft_number_seats'] = $table_info->ft_number_seats;
         }
 
         $result_array['is_error'] = 0;
