@@ -275,19 +275,35 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
+        $query = FnbItem::select(
+            'fnb_item.fi_id',
+            'fnb_item.fi_item_name',
+            'fnb_item.fi_category_id',
+            DB::raw('(SELECT oi_unit_price
+                      FROM fnb_order_items
+                      WHERE oi_item_id = fnb_item.fi_id
+                      ORDER BY oi_id DESC
+                      LIMIT 1) AS last_unit_price')
+        )
+            ->where('fnb_item.fi_is_deleted', 0);
+
+
         if (!empty($category_id)) {
-            $lst_items = FnbItem::where('fi_category_id', $category_id)->where('fi_is_deleted', 0)->get();
-        } else {
-            $lst_items = FnbItem::where('fi_is_deleted', 0)->get();
-        }
-        $items_array = array();
-        foreach ($lst_items as $index => $item_info) {
-            $items_array[$index]['fi_id'] = $item_info->fi_id;
-            $items_array[$index]['fi_item_name'] = $item_info->fi_item_name;
-            $items_array[$index]['fi_category_id'] = $item_info->fi_category_id;
+            $query->where('fi_category_id', $category_id);
         }
 
-        $result_array['is_error'] = 1;
+        $lst_items = $query->get();
+        $items_array = array();
+        foreach ($lst_items as $i => $item) {
+            $items_array[$i] = [
+                'fi_id'          => $item->fi_id,
+                'fi_item_name'   => $item->fi_item_name,
+                'fi_category_id' => $item->fi_category_id,
+                'fi_item_price'  => $item->last_unit_price ?? 0
+            ];
+        }
+
+        $result_array['is_error'] = 0;
         $result_array['error_msg'] = '';
         $result_array['lst_items'] = $items_array;
         return Response()->json($result_array);
