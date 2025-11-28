@@ -250,7 +250,7 @@ class FnbController extends Controller
             $categories_array[$index]['mc_category_description'] = $category_info->mc_category_description;
         }
 
-        $result_array['is_error'] = 1;
+        $result_array['is_error'] = 0;
         $result_array['error_msg'] = '';
         $result_array['lst_item_categories'] = $categories_array;
         return Response()->json($result_array);
@@ -275,16 +275,19 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $query = FnbItem::select(
-            'fnb_item.fi_id',
-            'fnb_item.fi_item_name',
-            'fnb_item.fi_category_id',
-            DB::raw('(SELECT oi_unit_price
+        $query = DB::table('fnb_item')
+            ->leftJoin('fnb_menu_categories', 'fnb_item.fi_category_id', '=', 'fnb_menu_categories.mc_id')
+            ->select(
+                'fnb_item.fi_id',
+                'fnb_item.fi_item_name',
+                'fnb_item.fi_category_id',
+                'fnb_menu_categories.mc_category_name',
+                DB::raw('(SELECT oi_unit_price
                       FROM fnb_order_items
                       WHERE oi_item_id = fnb_item.fi_id
                       ORDER BY oi_id DESC
                       LIMIT 1) AS last_unit_price')
-        )
+            )
             ->where('fnb_item.fi_is_deleted', 0);
 
 
@@ -299,6 +302,7 @@ class FnbController extends Controller
                 'fi_id'          => $item->fi_id,
                 'fi_item_name'   => $item->fi_item_name,
                 'fi_category_id' => $item->fi_category_id,
+                'category_name'    => $item->mc_category_name,
                 'fi_item_price'  => $item->last_unit_price ?? 0
             ];
         }
@@ -333,7 +337,7 @@ class FnbController extends Controller
         $query = FnbOrders::where('fo_is_deleted', 0);
 
         if (!empty($warehouse_id)) {
-            $query->where('fo_warehouse_id', $warehouse_id);
+            $query->where('warehouse_id', $warehouse_id);
         }
 
         if (!empty($date_from)) {
@@ -351,7 +355,7 @@ class FnbController extends Controller
             $orders_array[$index]['fo_order_code']          = $order->fo_order_code;
             $orders_array[$index]['fo_total_amount']  = $order->fo_total_amount;
             $orders_array[$index]['fo_order_datetime'] = $order->fo_order_datetime;
-            $orders_array[$index]['fo_warehouse_id']  = $order->fo_warehouse_id;
+            $orders_array[$index]['warehouse_id']  = $order->warehouse_id;
         }
 
         $result_array['is_error'] = 0;
@@ -426,25 +430,5 @@ class FnbController extends Controller
         $result_array['lst_tables'] = $tables_array;
 
         return Response()->json($result_array);
-    }
-
-    public function GetLastItemId(Request $request)
-    {
-        $g_hash = $request->input('g_hash');
-        $user_id = $request->input('user_id');
-
-        $user_info = Users::find($user_id);
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-
-        if (hash('sha256', $c_hash) != $g_hash) {
-            return response()->json(['is_error' => 1, 'msg' => 'Invalid hash']);
-        }
-
-        $last = FnbOrderItems::orderBy('oi_id', 'DESC')->first();
-        dd("last id is ", $last);
-        return response()->json([
-            'is_error' => 0,
-            'last_id' => $last ? $last->oi_id : 0
-        ]);
     }
 }
