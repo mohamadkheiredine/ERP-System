@@ -1277,6 +1277,22 @@ class ProductsController extends Controller
 
     public function GetListRawMaterials(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $raw_material = Products::wherePProductIsDeleted(0)->get();
         $materials_array = array();
 
@@ -1285,15 +1301,30 @@ class ProductsController extends Controller
             $materials_array[$index]['p_product_name'] = $raw_material_info->p_product_name;
             $materials_array[$index]['p_product_description'] = $raw_material_info->p_product_description;
         }
-        $response_array = array();
-        $response_array['is_error'] = 0;
-        $response_array['raw_materials'] = $materials_array;
+        $result_array['is_error'] = 0;
+        $result_array['raw_materials'] = $materials_array;
 
-        return Response()->json($response_array);
+        return Response()->json($result_array);
     }
 
     public function ValidateStock(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $store_id           = $request->input('store_id');
         $product_id         = $request->input('product_id');
         $quantity_requested = $request->input('quantity_requested');

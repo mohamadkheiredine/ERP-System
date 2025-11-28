@@ -26,4 +26,10 @@ class FnbOrderTables extends Model
     protected $table = 'fnb_order_tables';
     public $timestamps = false;
 
+    protected $primaryKey = 'ft_id';
+
+    public function Floor()
+    {
+        return $this->hasOne('App\models\FnB\Floor', 'fl_id', 'ft_floor_id');
+    }
 }

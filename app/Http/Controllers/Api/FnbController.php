@@ -159,7 +159,7 @@ class FnbController extends Controller
 
         $fo_id = $order_info->fo_id;
 
-        $final_items = []; // <--- add this line before loop
+        $final_items = [];
 
         foreach ($order_items as $key => $item_order) {
             $item = new FnbOrderItems();
@@ -175,8 +175,6 @@ class FnbController extends Controller
             $item->save();
 
             $item_db = FnbItem::find($item_order['item_id']);
-
-            // dd("item db", $item_db);
 
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
@@ -224,43 +222,122 @@ class FnbController extends Controller
     public function ListItemCategories(Request $request)
     {
         $category_id = $request->input('category_id');
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
 
         if (!empty($category_id)) {
             $lst_categories = MenuCategories::where('mc_id', $category_id)->where('mc_is_deleted', 0)->get();
         } else {
             $lst_categories = MenuCategories::where('mc_is_deleted', 0)->get();
         }
-        return Response()->json([
-            'is_error' => 0,
-            'error_msg' => '',
-            'lst_item_categories' => $lst_categories
-        ]);
+
+        $categories_array = array();
+        foreach ($lst_categories as $index => $category_info) {
+            $categories_array[$index]['mc_id'] = $category_info->mc_id;
+            $categories_array[$index]['mc_category_name'] = $category_info->mc_category_name;
+            $categories_array[$index]['mc_category_description'] = $category_info->mc_category_description;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_item_categories'] = $categories_array;
+        return Response()->json($result_array);
     }
 
     public function GetListOfItems(Request $request)
     {
         $category_id = $request->input('category_id');
-        if (!empty($category_id)) {
-            $lst_items = FnbItem::where('fi_category_id', $category_id)->where('fi_is_deleted', 0)->get();
-        } else {
-            $lst_items = FnbItem::where('fi_is_deleted', 0)->get();
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
         }
-        return Response()->json([
-            'is_error' => 0,
-            'error_msg' => '',
-            'lst_items' => $lst_items
-        ]);
+
+        $query = DB::table('fnb_item')
+            ->leftJoin('fnb_menu_categories', 'fnb_item.fi_category_id', '=', 'fnb_menu_categories.mc_id')
+            ->select(
+                'fnb_item.fi_id',
+                'fnb_item.fi_item_name',
+                'fnb_item.fi_category_id',
+                'fnb_menu_categories.mc_category_name',
+                DB::raw('(SELECT oi_unit_price
+                      FROM fnb_order_items
+                      WHERE oi_item_id = fnb_item.fi_id
+                      ORDER BY oi_id DESC
+                      LIMIT 1) AS last_unit_price')
+            )
+            ->where('fnb_item.fi_is_deleted', 0);
+
+
+        if (!empty($category_id)) {
+            $query->where('fi_category_id', $category_id);
+        }
+
+        $lst_items = $query->get();
+        $items_array = array();
+        foreach ($lst_items as $i => $item) {
+            $items_array[$i] = [
+                'fi_id'          => $item->fi_id,
+                'fi_item_name'   => $item->fi_item_name,
+                'fi_category_id' => $item->fi_category_id,
+                'category_name'    => $item->mc_category_name,
+                'fi_item_price'  => $item->last_unit_price ?? 0
+            ];
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_items'] = $items_array;
+        return Response()->json($result_array);
     }
 
     public function GetListOfOrders(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $date_from    = $request->input('date_from');
         $date_to      = $request->input('date_to');
         $warehouse_id = $request->input('warehouse_id');
         $query = FnbOrders::where('fo_is_deleted', 0);
 
         if (!empty($warehouse_id)) {
-            $query->where('fo_warehouse_id', $warehouse_id);
+            $query->where('warehouse_id', $warehouse_id);
         }
 
         if (!empty($date_from)) {
@@ -272,32 +349,86 @@ class FnbController extends Controller
         }
         $lst_orders = $query->orderBy('fo_order_datetime', 'DESC')->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_orders' => $lst_orders
-        ]);
+        $orders_array = array();
+        foreach ($lst_orders as $index => $order) {
+            $orders_array[$index]['fo_id']            = $order->fo_id;
+            $orders_array[$index]['fo_order_code']          = $order->fo_order_code;
+            $orders_array[$index]['fo_total_amount']  = $order->fo_total_amount;
+            $orders_array[$index]['fo_order_datetime'] = $order->fo_order_datetime;
+            $orders_array[$index]['warehouse_id']  = $order->warehouse_id;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_orders'] = $orders_array;
+        return Response()->json($result_array);
     }
 
     public function GetListModifiers(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_modifiers' => $lst_modifiers
-        ]);
+        $modifiers_array = [];
+        foreach ($lst_modifiers as $index => $modifier_info) {
+            $modifiers_array[$index]['m_id']   = $modifier_info->m_id;
+            $modifiers_array[$index]['m_modifier_name'] = $modifier_info->m_modifier_name;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_modifiers'] = $modifiers_array;
+
+        return Response()->json($result_array);
     }
 
     public function GetListTables(Request $request)
     {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
         $lst_tables = FnbOrderTables::whereFtIsDeleted(0)->get();
 
-        return Response()->json([
-            'is_error'   => 0,
-            'error_msg'  => '',
-            'lst_tables' => $lst_tables
-        ]);
+        $tables_array = [];
+        foreach ($lst_tables as $index => $table_info) {
+            $tables_array[$index]['ft_id']   = $table_info->ft_id;
+            $tables_array[$index]['ft_label'] = $table_info->ft_label;
+            $tables_array[$index]['ft_number_seats'] = $table_info->ft_number_seats;
+            $tables_array[$index]['ft_status_id'] = $table_info->ft_status_id;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_tables'] = $tables_array;
+
+        return Response()->json($result_array);
     }
 }
