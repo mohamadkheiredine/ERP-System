@@ -86,15 +86,26 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label>Email *</label>
-                        <input type="email" name="ca_account_email" class="form-control" required value="{{ $account_info->ca_account_email }}">
+                        <label>Email</label>
+                        <input type="email" name="ca_account_email" class="form-control" value="{{ $account_info->ca_account_email }}">
                     </div>
 
                     <div class="col-md-4">
                         <label>Mobile *</label>
                         <input type="text" name="ca_account_mobile" class="form-control" required value="{{ $account_info->ca_account_mobile }}">
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Contract Type </label>
+                            <select name="ca_contract_type" id="CA_CONTRACT_TYPE" class="form-control form-select" data-control="select2" data-placeholder="Select Contract Type">
+                                <option value="0">-- Select Contract Type --</option>
+                                @foreach( $lst_contract_types as $key => $type_info )
+                                    <option {{ $account_info->ca_contract_type == $type_info->ct_id ? 'selected' : '' }} value="{{ $type_info->ct_id }}">{{ $type_info->ct_contract_type }}</option>
+                                @endforeach
 
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <label>Nationality *</label>
                         <select name="ca_nationality_id" class="form-control" required>

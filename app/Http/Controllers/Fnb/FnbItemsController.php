@@ -64,7 +64,7 @@ class FnbItemsController extends Controller
         $total_items  = $query->count();
         $total_pages  = max(1, ceil($total_items / $nbr_rows_per_pages));
 
-        $lst_products = $query->orderBy('fi_item_name', 'ASC')
+        $lst_products = $query->orderBy('fi_id', 'DESC')
             ->skip($skip)
             ->take($nbr_rows_per_pages)
             ->get();
@@ -88,6 +88,7 @@ class FnbItemsController extends Controller
         $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
         $lst_stations = Terminals::wherePtIsDeleted(0)->get();
         $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
 
         $rand_barcode = rand(10000000, 99999999999);
 
@@ -99,6 +100,7 @@ class FnbItemsController extends Controller
             "lst_categories" => $lst_categories,
             "lst_kitchens" => $lst_kitchens,
             "lst_stations" => $lst_stations,
+            "lst_currencies" => $lst_currencies,
             "lst_taxes" => $lst_taxes,
             "rand_barcode" => $rand_barcode,
             "bar_code_png" => $bar_code_png
@@ -121,6 +123,8 @@ class FnbItemsController extends Controller
         $fi_is_stock_item = $request->input('fi_is_stock_item') ? 1 : 0;
         $fi_print_to_kitchen = $request->input('fi_print_to_kitchen') ? 1 : 0;
         $fi_barcode = $request->input('p_bar_code');
+        $fi_cost_price = $request->input('fi_cost_price');
+        $fi_currency_id = $request->input('fi_currency_id');
 
         $result_array = array();
 
@@ -140,6 +144,8 @@ class FnbItemsController extends Controller
         $item_info->fi_print_to_kitchen = $fi_print_to_kitchen;
         $item_info->fi_barcode = $fi_barcode;
         $item_info->fi_item_name = $fi_item_name;
+        $item_info->fi_cost_price = $fi_cost_price;
+        $item_info->fi_currency_id = $fi_currency_id;
 
         $item_info->save();
 
@@ -160,13 +166,13 @@ class FnbItemsController extends Controller
         $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
         $lst_stations = Terminals::wherePtIsDeleted(0)->get();
         $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
 
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
 
         $lst_modifiers = Modifier::whereMIsDeleted(0)->with(["Item", "Currency"])->get();
 
-        $lst_currencies = Currency::get();
 
         return view('fnb.menu-items.edititem', [
             'item_info'      => $item_info,

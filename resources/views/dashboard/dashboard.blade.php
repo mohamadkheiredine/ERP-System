@@ -27,6 +27,7 @@ Page Description :
     <script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
+
     <script src="{{ url('default/assets/app/js/dashboard.js') }}" type="text/javascript"></script>
 @endsection
 @section('themes')
@@ -35,6 +36,11 @@ Page Description :
 <style>
     .amcharts-export-menu.amcharts-export-menu-top-right.amExportButton {
         display: none;
+    }
+
+    #chartsalesbyproducts {
+        width: 100%;
+        height: 500px;
     }
 </style>
 @endsection
@@ -260,6 +266,16 @@ Page Description :
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Sales Pie By Product</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartsalesbyproducts"></div>
                     </div>
                 </div>
             </div>

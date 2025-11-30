@@ -30,4 +30,15 @@ class FnbItem extends Model
         return $this->hasOne('App\models\Sales\Terminals', 'pt_id', 'fi_tax_id');
     }
 
+
+    public function Category()
+    {
+        return $this->hasOne('App\models\FnB\MenuCategories', 'mc_id', 'fi_category_id');
+    }
+
+    public function Currency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id', 'fi_currency_id');
+    }
+
 }

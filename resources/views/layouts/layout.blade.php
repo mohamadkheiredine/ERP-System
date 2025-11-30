@@ -858,6 +858,16 @@ Page Description :
                                                     </a>
                                                     <!--end:Menu link-->
                                                 </div>
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{ url('inventory/reports/stockstatuses') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                        <span class="menu-title">Stock Status Report</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
                                             </div>
                                         </div>
 

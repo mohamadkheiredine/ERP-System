@@ -545,3 +545,7 @@ CREATE TABLE `prod_farm_cycle_days` (
 ALTER TABLE  `callcenter_inbound_calls` ADD COLUMN `ic_is_paid` TINYINT NULL DEFAULT 0 AFTER `ic_currency_id`;
 ALTER TABLE  `callcenter_inbound_calls` ADD COLUMN `ic_comission_paid` TINYINT NULL DEFAULT 0 AFTER `ic_is_paid`;
 ALTER TABLE crm_accounts` ADD COLUMN `ca_location` VARCHAR(255) NULL DEFAULT NULL AFTER `ca_shipping_code`;
+ALTER TABLE `acc_transaction_movements` ADD COLUMN `tm_trans_code` VARCHAR(15) NULL DEFAULT NULL AFTER `tm_store_id`;
+
+
+ALTER TABLE  `prod_farm_cycles` ADD COLUMN `fc_company_id` INT NULL DEFAULT 0 AFTER `fc_id`;

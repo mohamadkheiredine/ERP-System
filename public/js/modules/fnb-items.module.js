@@ -67,6 +67,10 @@ fnb_items_module = {
                 fi_kitchen_id: { required: true, min: 1 },
                 fi_station_id: { required: true, min: 1 },
                 fi_tax_id: { required: true, min: 1 },
+                fi_cost_price : {
+                    number : true,
+                    required :true
+                }
             },
 
             messages: {

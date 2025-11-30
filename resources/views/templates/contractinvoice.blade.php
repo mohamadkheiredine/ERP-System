@@ -106,6 +106,63 @@ body {
 
 
 
+        /* Make tbody fill the available A4 printable area */
+        .invoice-table tbody {
+            display: block;
+            min-height: 800px; /* A4 remaining height – adjust if needed */
+            position: relative;
+        }
+
+        /* Remove all row borders */
+        .invoice-table tbody td {
+            border-top: none !important;
+            border-bottom: none !important;
+            border-left: solid 1px #000;
+        }
+
+        /* Header & footer table sections remain normal */
+        .invoice-table thead,
+        .invoice-table tfoot {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .invoice-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        /* Create FULL-HEIGHT vertical column borders */
+        .invoice-table tbody::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;      /* stretch full height */
+            left: 0;
+            right: 0;
+            z-index: 0;
+
+            /* 6 columns = 5 divider lines */
+            background:
+                linear-gradient(to bottom, #000 0%, #000 100%) 0% 0 / 1px 100% no-repeat,
+                linear-gradient(to bottom, #000 0%, #000 100%) 20% 0 / 1px 100% no-repeat,
+                linear-gradient(to bottom, #000 0%, #000 100%) 40% 0 / 1px 100% no-repeat,
+                linear-gradient(to bottom, #000 0%, #000 100%) 60% 0 / 1px 100% no-repeat,
+                linear-gradient(to bottom, #000 0%, #000 100%) 80% 0 / 1px 100% no-repeat,
+                linear-gradient(to bottom, #000 0%, #000 100%) 100% 0 / 1px 100% no-repeat;
+        }
+
+        /* Ensure table cells layout above the background */
+        .invoice-table tbody td {
+            position: relative;
+            z-index: 2;
+        }
+
+
+
+
     </style>
 </head>
 <body>
@@ -158,14 +215,7 @@ body {
             </thead>
             <tbody>
                 %LST_CONTRACT_INVOICES%
-                <tr style="height:950px">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+
             </tbody>
             <tfoot>
                 <tr style="height:60px">

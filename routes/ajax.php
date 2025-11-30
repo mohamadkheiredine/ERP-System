@@ -18,6 +18,7 @@ Route::post('/request/dashboard/displaylistaccountgroup','Dashboard\DashboardCon
 Route::post('/request/dashboard/getstockbyproducts','Dashboard\DashboardController@GetStockByProducts');
 Route::post('/request/dashboard/getstockbywarehouses','Dashboard\DashboardController@GetStockByWarehouse');
 Route::post('/request/dashboard/getsellingproducts','Dashboard\DashboardController@GetTopSellingProducts');
+Route::post('/request/dashboard/getproductsellpercentage','Dashboard\DashboardController@GetProductSellPercentage');
 
 Route::post('/request/dashboard/getstockbycategories','Dashboard\DashboardController@GetStockByCategories');
 
@@ -722,10 +723,12 @@ Route::delete('/request/system/deletestatusinfo','System\SystemStatusController@
 
 
 
+Route::get('/request/reports/displayliststockstatuses','Reports\InventoryReportsController@DisplayListStockStatus');
 Route::get('/request/reports/displayliststockavailability','WareHouses\WarehouseController@DisplayListStockAvailability');
 Route::get('/request/reports/displayliststockmovement','WareHouses\WarehouseController@displaylistWarehouseMovement');
 Route::get('/request/reports/downloadstockavailability','WareHouses\WarehouseController@DownloadStockAvailability');
 Route::get('/request/reports/downloadstockmovements','WareHouses\WarehouseController@DownloadStockMovements');
+Route::get('/request/reports/downloadstockstatuses','Reports\InventoryReportsController@DownloadStockStatusReport');
 
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\models\FnB\Tables;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -275,35 +276,24 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $query = DB::table('fnb_item')
-            ->leftJoin('fnb_menu_categories', 'fnb_item.fi_category_id', '=', 'fnb_menu_categories.mc_id')
-            ->select(
-                'fnb_item.fi_id',
-                'fnb_item.fi_item_name',
-                'fnb_item.fi_category_id',
-                'fnb_menu_categories.mc_category_name',
-                DB::raw('(SELECT oi_unit_price
-                      FROM fnb_order_items
-                      WHERE oi_item_id = fnb_item.fi_id
-                      ORDER BY oi_id DESC
-                      LIMIT 1) AS last_unit_price')
-            )
-            ->where('fnb_item.fi_is_deleted', 0);
-
-
-        if (!empty($category_id)) {
-            $query->where('fi_category_id', $category_id);
+        $item_cond = FnbItem::whereFiIsDeleted(0)->whereFiIsActive(1);
+        if ($category_id != null) {
+            $item_cond = $item_cond->whereFiCategoryId($category_id);
         }
 
-        $lst_items = $query->get();
+        $lst_fnb_items = $item_cond->get();
+
+
         $items_array = array();
-        foreach ($lst_items as $i => $item) {
+        foreach ($lst_fnb_items as $i => $item) {
             $items_array[$i] = [
                 'fi_id'          => $item->fi_id,
                 'fi_item_name'   => $item->fi_item_name,
                 'fi_category_id' => $item->fi_category_id,
-                'category_name'    => $item->mc_category_name,
-                'fi_item_price'  => $item->last_unit_price ?? 0
+                'category_name'    => $item->Category ? $item->Category->mc_category_name : "",
+                'fi_item_price'  => $item->fi_cost_price,
+                'currency_code'  => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
+                'cc_id'  => $item->Currency ? $item->Currency->cc_id : 0
             ];
         }
 
@@ -415,7 +405,7 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $lst_tables = FnbOrderTables::whereFtIsDeleted(0)->get();
+        $lst_tables = Tables::whereFtIsDeleted(0)->get();
 
         $tables_array = [];
         foreach ($lst_tables as $index => $table_info) {

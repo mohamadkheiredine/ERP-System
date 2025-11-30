@@ -102,6 +102,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/inventory/reports/stockavailability','WareHouses\WareHouseController@WarehouseStockAvailability');
     Route::get('/inventory/reports/stockmovements','WareHouses\WareHouseController@WarehouseStockMovements');
     Route::get('/inventory/reports/expirydatereport','WareHouses\WareHouseController@ExpiryDateReport');
+    Route::get('/inventory/reports/stockstatuses','Reports\InventoryReportsController@StockStatusReport');
 
 
     Route::get('/inventory/zones','WareHouses\WarehouseZonesController@index');

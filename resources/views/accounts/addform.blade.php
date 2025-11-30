@@ -70,7 +70,7 @@ th{
                                         @foreach( $lst_leads as $key => $lead_info )
                                           <option value="{{ $lead_info->cl_id }}">{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -85,7 +85,7 @@ th{
                                         @foreach( $lst_accounts as $key => $acc_info )
                                           <option value="{{ $acc_info->ca_id }}">{{ $acc_info->ca_account_name }}</option>
                                         @endforeach
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -99,7 +99,7 @@ th{
                                 @endforeach
                             </select>
                         </div>
-    					</div> 
+    					</div>
                     	<div class="col-md-4">
                              <div class="form-group">
                                 <label class="control-label">Name <span class="required"> * </span></label>
@@ -132,7 +132,7 @@ th{
                         </div>
                     	<div class="col-md-4">
                              <div class="form-group">
-                                <label class="control-label">Email <span class="required"> * </span></label>
+                                <label class="control-label">Email</label>
                                 <input type="text" name="ca_account_email" id="CA_ACCOUNT_EMAIL" class="form-control"  maxlength="255"  value="" />
                             </div>
                         </div>
@@ -159,7 +159,7 @@ th{
                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                         <img id="AVATAR_PIC" width="100" src="{{ url('images/NoImageAvailable.jpg') }}" alt="" /> </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
-        
+
                                 </div>
                             </div>
                             <div class="col-md-8">

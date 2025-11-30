@@ -626,20 +626,16 @@ class PaymentVouchersController extends Controller
             $org_payment_amount = $pv_payment_amount;
             $payment_currency = $pv_currency_id;
             $payment_amount = $org_payment_amount;
-//             if(strlen($pv_sec_currency_id) > 0)
-//             {
-//             $payment_amount = $org_payment_amount * $pv_exchange_rate;
-//             $payment_currency= $pv_sec_currency_id;
-//             }
+
 
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $pv_account_payable;
-            $TransactionMovement->tm_sub_ledger_account = $pv_account_receivable;
+            $TransactionMovement->tm_sub_ledger_account = $pv_account_payable;
             $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
-            $TransactionMovement->tm_debit              = $payment_amount;
-            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $payment_amount;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
             $TransactionMovement->tm_transaction_date   = $pv_creation_date;
             $TransactionMovement->tm_currency_id        = $payment_currency;
@@ -668,7 +664,6 @@ class PaymentVouchersController extends Controller
         $extra_amount = 0;
         if(is_array($pv_extension_account))
         {
-            //$voucher_ext_delete = VoucherExtensions::whereFkVoucherId($pv_id)->delete();
             for ($i = 0; $i < count($pv_extension_account); $i++) {
                 $voucheer_extension = new VoucherExtensions();
                 $voucheer_extension->fk_voucher_id = $pv_id;
@@ -731,18 +726,16 @@ class PaymentVouchersController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $pv_account_receivable;
+        $TransactionMovement->tm_sub_ledger_account = $pv_account_receivable;
         $TransactionMovement->tm_company_id            = $default_company_id;
-        $TransactionMovement->tm_sub_ledger_account = $pv_account_payable;
         $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
-        $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $payment_amount;
+        $TransactionMovement->tm_debit              = $payment_amount;
+        $TransactionMovement->tm_credit             = 0;
         $TransactionMovement->tm_creation_date      = date("Y-m-d");
         $TransactionMovement->tm_transaction_date   = $pv_creation_date;
         $TransactionMovement->tm_currency_id        = $payment_currency;
         $TransactionMovement->save();
 
-
-        // update total amount to be total + total extension
 
         $voucher_info = PaymentVouchers::find($pv_id);
         $voucher_info->pv_extra_amount  = $extra_amount;

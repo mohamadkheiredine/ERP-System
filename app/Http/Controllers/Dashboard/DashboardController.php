@@ -93,6 +93,34 @@ class DashboardController extends Controller
     }
 
 
+    public function GetProductSellPercentage(Request $request)
+    {
+        $query = "WITH total_sales AS ( SELECT SUM(ii_item_qyt) AS total_qty_all FROM billing_invoice_items WHERE ii_item_type = 1 ), product_sales AS ( SELECT ii_item_id, ii_item_label, SUM(ii_item_qyt) AS qty_sold, SUM(ii_total_price) AS total_revenue FROM billing_invoice_items WHERE ii_item_type = 1 GROUP BY ii_item_id, ii_item_label ) SELECT p.ii_item_id, p.ii_item_label, p.qty_sold, p.total_revenue, ROUND((p.qty_sold / t.total_qty_all) * 100, 2) AS percentage_contribution FROM product_sales p CROSS JOIN total_sales t ORDER BY p.qty_sold DESC LIMIT 10;";
+
+
+        $total_sales_products = DB::select($query);
+
+        $sales_products = array();
+
+
+        foreach ($total_sales_products as $key => $product_info ) {
+            if($product_info->ii_item_label != null && $product_info->ii_item_label != "" && $product_info->ii_item_label != "null")
+            {
+                $sales_products[] = array(
+                    'product' =>   $product_info->ii_item_label,
+                    'value' =>   $product_info->percentage_contribution
+                );
+
+            }
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "";
+        $result_array['sales_products'] = $sales_products;
+
+        return Response()->json($result_array);
+    }
+
 
     public function CallcenterDashboard()
     {

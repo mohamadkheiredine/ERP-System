@@ -95,15 +95,31 @@ class ProductStockTransferController extends Controller
             $lst_items = json_decode($list_transfer_items);
         }
         // validate if quantity for this product exist in this warehoouse
-        $lst_stock_info = DB::select("SELECT stock.fk_product_id , product.p_barcode , product.p_product_name , stock.fk_warehouse_id , w_warehouse_name , SUM(stock.is_quanity) as total_quantity  FROM inventory_stocks stock left join inventory_warehouses warehouse on warehouse.w_id = stock.fk_warehouse_id left join inventory_products product on product.p_id = stock.fk_product_id where stock.is_quanity > 0 and stock.fk_product_id=" . $mp_product_id ." and stock.fk_warehouse_id=" . $warehouse_source . " group by fk_warehouse_id , fk_product_id;");
+        // Validate stock availability in warehouse
+        $lst_stock_info = DB::table('inventory_stocks AS stock')
+            ->leftJoin('inventory_warehouses AS warehouse', 'warehouse.w_id', '=', 'stock.fk_warehouse_id')
+            ->leftJoin('inventory_products AS product', 'product.p_id', '=', 'stock.fk_product_id')
+            ->select(
+                'stock.fk_product_id',
+                'product.p_barcode',
+                'product.p_product_name',
+                'stock.fk_warehouse_id',
+                'warehouse.w_warehouse_name',
+                DB::raw('SUM(stock.is_quanity) AS total_quantity')
+            )
+            ->where('stock.is_quanity', '>', 0)
+            ->where('stock.fk_product_id', $mp_product_id)
+            ->where('stock.fk_warehouse_id', $warehouse_source)
+            ->groupBy('stock.fk_warehouse_id', 'stock.fk_product_id')
+            ->first();
 
-        if(count($lst_stock_info) == 0)
-        {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = 'this item is out of Stock from Selected Warehouse';
-
-            return Response()->json($result_array);
+        if (!$lst_stock_info || $lst_stock_info->total_quantity <= 0) {
+            return response()->json([
+                'is_error'  => 1,
+                'error_msg' => 'This item is out of stock in the selected warehouse'
+            ]);
         }
+
 
         $product_info = Products::find($mp_product_id);
 

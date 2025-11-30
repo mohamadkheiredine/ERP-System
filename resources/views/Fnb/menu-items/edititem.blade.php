@@ -120,9 +120,23 @@
               </select>
             </div>
           </div>
-        </div>
-
-        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label">Item Price <span class="required"></span></label>
+                    <input type="text" name="fi_cost_price" id="FI_COST_PRICE" class="form-control" required maxlength="10" value="{{ $item_info->fi_cost_price  }}" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label">Currency</label>
+                    <select class="form-select form-control" data-control="select2" id="FI_CURRENCY_ID" name="fi_currency_id">
+                        <option value="0">-- Select Currency --</option>
+                        @foreach($lst_currencies as $index => $currency_info)
+                            <option {{ $item_info->fi_currency_id == $currency_info->cc_id ? 'selected' : '' }} value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="control-label">Station</label>
@@ -136,26 +150,6 @@
               </select>
             </div>
           </div>
-
-          <div class="col-md-6">
-
-            <div class="form-group">
-              <label class="control-label">TAX</label>
-              <select class="form-select form-control" id="FI_TAX_ID" name="fi_tax_id">
-                <option value="0">-- Select TAX --</option>
-                @foreach($lst_taxes as $tax_info)
-                <option value="{{ $tax_info->av_id }}" {{ $item_info->fi_tax_id == $tax_info->av_id ? 'selected' : '' }}>
-                  {{ $tax_info->av_vat_label }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-        </div>
-
-
-
-        <div class="row">
           <div class="col-md-6">
             <div class="form-group">
               <br />
@@ -212,7 +206,6 @@
 
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
-        {{-- content of my link table --}}
         <div id="LstItemsMain" class="table-responsive">
           <table class="table table-bordered table-hover" id="html_table" width="100%">
             <thead>
@@ -228,7 +221,6 @@
             <tbody id="LstItemsModifiers"></tbody>
           </table>
         </div>
-
         <div class="row mt-3">
           <div class="col-md-10" align="left">
             <ul id="ItemsModifiersPagination" class="pagination-sm"></ul>
@@ -239,118 +231,113 @@
             </button>
           </div>
         </div>
-
-        {{-- modal here --}}
-        <div class="modal fade" id="ModelPopUp" tabindex="2" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
-            <div class="modal-content">
-              <div class="modal-header">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="ModelPopUp" tabindex="2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h5 class="modal-title">Add New Modifier</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
+            </div>
 
-              <div class="modal-body">
+            <div class="modal-body">
                 <form name="frm_save_items_modifiers" id="FORM_SAVE_ITEM_MODIFIERS">
-                  <div class="form-body">
+                    <div class="form-body">
                     <span id="hidden_fields">
                       {!! csrf_field() !!}
                       <input type="hidden" id="FK_MENU_ITEM_ID" name="fk_menu_item_id" value="{{ $item_info->fi_id }}">
 
                     </span>
 
-                    <div class="alert alert-success" style="display:none">
-                      <strong>Success!</strong> Information is saved successfully!
-                    </div>
-
-                    <div class="alert alert-danger" style="display:none">
-                      <strong>Error!</strong> You have some form errors. Please check below.
-                    </div>
-
-                    <div class="row">
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="control-label">Modifier</label>
-                          <select class="form-select form-control" data-control="select2" id="FK_MODIFIER_ID" name="fk_modifier_id">
-                            <option value="0">-- Select Modifier --</option>
-                            @foreach($lst_modifiers as $modifier_info)
-                            <option value="{{ $modifier_info->m_id }}">{{ $modifier_info->m_modifier_name }}</option>
-                            @endforeach
-                          </select>
+                        <div class="alert alert-success" style="display:none">
+                            <strong>Success!</strong> Information is saved successfully!
                         </div>
-                      </div>
 
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="control-label">Product</label>
-                          <input type="text" name="product_name" class="form-control" value="">
+                        <div class="alert alert-danger" style="display:none">
+                            <strong>Error!</strong> You have some form errors. Please check below.
                         </div>
-                      </div>
 
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="control-label">Currency</label>
-                          <select class="form-select form-control" id="IM_CURRENCY_ID" name="im_currency_id">
-                                <option value="0">-- Select Currency --</option>
-                                @foreach($lst_currencies as $currency_info)
-                                    <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
-                                @endforeach
-                          </select>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Modifier</label>
+                                    <select class="form-select form-control" data-control="select2" id="FK_MODIFIER_ID" name="fk_modifier_id">
+                                        <option value="0">-- Select Modifier --</option>
+                                        @foreach($lst_modifiers as $modifier_info)
+                                            <option value="{{ $modifier_info->m_id }}">{{ $modifier_info->m_modifier_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Product</label>
+                                    <input type="text" name="product_name" class="form-control" value="">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Currency</label>
+                                    <select class="form-select form-control" id="IM_CURRENCY_ID" name="im_currency_id">
+                                        <option value="0">-- Select Currency --</option>
+                                        @foreach($lst_currencies as $currency_info)
+                                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+                                        @endforeach
+                                    </select>
+
+                                </div>
+                            </div>
                         </div>
-                      </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Type</label>
+                                    <select class="form-select form-control" data-control="select2" id="IM_TYPE_ID" name="im_type_id">
+                                        <option value="0">-- Select Type --</option>
+                                        <option value="1">Add</option>
+                                        <option value="2">Remove</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Override Cost</label>
+                                    <input type="text" name="im_override_cost" id="IM_OVERRIDE_COST" class="form-control" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" name="im_is_remove_ingredient" id="IM_IS_REMOVE_INGREDIENT" value="1" />
+                                        <span class="form-check-label fw-semibold text-muted">Remove Ingredient</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" align="right">
+
+                                <button type="submit" class="btn btn-primary" id="BTN_SAVE_MODIFIER">Save</button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="row mt-3">
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="control-label">Type</label>
-                          <select class="form-select form-control" data-control="select2" id="IM_TYPE_ID" name="im_type_id">
-                            <option value="0">-- Select Type --</option>
-                            <option value="1">Add</option>
-                            <option value="2">Remove</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="control-label">Override Cost</label>
-                          <input type="text" name="im_override_cost" id="IM_OVERRIDE_COST" class="form-control" required />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" name="im_is_remove_ingredient" id="IM_IS_REMOVE_INGREDIENT" value="1" />
-                            <span class="form-check-label fw-semibold text-muted">Remove Ingredient</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12" align="right">
-
-                        <button type="submit" class="btn btn-primary" id="BTN_SAVE_MODIFIER">Save</button>
-                      </div>
-                    </div>
-                  </div>
                 </form>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-  </div>
-  </form>
-</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

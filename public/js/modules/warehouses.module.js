@@ -54,23 +54,6 @@ var warehouses_module = {
                     }
                 });
             },
-			DisplayWarehouseDimensionsTab : function(){
-				var base_url 			= $('input[name=base_url]').val();
-				var _token	 			= $('input[name=_token]').val();
-				var warehouse_id	 	= $('input[name=warehouse_id]').val();
-				var params = { _token : _token , warehouse_id : warehouse_id };
-				$.ajax
-				({
-					url : base_url + "/request/warehouse/displaydimensions",
-					data : params,
-					dataType : "json",
-					type : "POST",
-					success : function(response){
-						$('#WAREHOUSEDIMENSIONS').html(response.display);
-
-					}
-				});
-			},
             QuickSAActionMenu : function(){
                 let action_type = $(this).data('action_type');
                 switch(action_type)
@@ -173,6 +156,23 @@ var warehouses_module = {
 
             window.open(url, '_blank');
             },
+    DisplayWarehouseDimensionsTab : function(){
+        var base_url 			= $('input[name=base_url]').val();
+        var _token	 			= $('input[name=_token]').val();
+        var warehouse_id	 	= $('input[name=warehouse_id]').val();
+        var params = { _token : _token , warehouse_id : warehouse_id };
+        $.ajax
+        ({
+            url : base_url + "/request/warehouse/displaydimensions",
+            data : params,
+            dataType : "json",
+            type : "POST",
+            success : function(response){
+                $('#WAREHOUSEDIMENSIONS').html(response.display);
+
+            }
+        });
+    },
             DownloadReportAsPDF : function(){
                 let sw_stock_warehouse = $('select[name=sw_stock_warehouse]').val();
                 let base_url = $('#BASE_URL').val();
@@ -835,5 +835,77 @@ var warehouses_module = {
 							}
 						}
 					});
-			}
+			},
+            DisplayWarehouseStockStatus : function(){
+                var base_url 			= $('input[name=base_url]').val();
+                var _token	 			= $('input[name=_token]').val();
+                var sm_stock_warehouse	 	= $('select[name=sm_stock_warehouse]').val();
+                var params = { _token : _token , sm_stock_warehouse : sm_stock_warehouse };
+                $.ajax
+                ({
+                    url : base_url + "/request/reports/displayliststockstatuses",
+                    data : params,
+                    dataType : "json",
+                    type : "get",
+                    success : function(response){
+                        $('#LstStockStatus').html(response.display);
+
+                    }
+                });
+            },
+        QuickAsActionMenu : function(){
+            let action_type = $(this).data('action_type');
+            switch(action_type)
+            {
+                case "EXPORT_AS_CSV":
+                {
+                    warehouses_module.DownloadReportAsCSV();
+                }
+                    break;
+                case "EXPORT_AS_PDF":
+                {
+                    warehouses_module.DownloadAsReportAsPDF();
+                }
+                    break;
+            }
+        },
+        DownloadReportAsCSV : function(){
+            let sm_stock_warehouse = $('select[name=sm_stock_warehouse]').val();
+            let base_url = $('#BASE_URL').val();
+            let _token = $('input[name=_token]').val();
+            $.ajax({
+                url: base_url + "/request/reports/downloadstockstatuses?type=csv&_token=" + _token + "&sm_stock_warehouse=" + sm_stock_warehouse,
+                method: "GET",
+                success: function(data) {
+
+                    const blob = new Blob([data]);
+                    // Create a Blob URL for the binary data
+                    var blobUrl = window.URL.createObjectURL(blob);
+                    // Create a temporary anchor element
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = 'stock-status-report.csv'; // Set the desired file name
+
+                    // Programmatically trigger a click on the anchor to start the download
+                    document.body.appendChild(a);
+                    a.click();
+
+                    // Clean up resources
+                    window.URL.revokeObjectURL(blobUrl);
+                    document.body.removeChild(a);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error downloading file:", error);
+                }
+            });
+        },
+    DownloadAsReportAsPDF : function(){
+        var sm_stock_warehouse	 	= $('select[name=sm_stock_warehouse]').val();
+        let base_url = $('#BASE_URL').val();
+        let _token = $('input[name=_token]').val();
+        let url = base_url + "/request/reports/downloadstockstatuses?type=pdf&_token=" + _token + "&sm_stock_warehouse=" + sm_stock_warehouse ;
+
+        window.open(url, '_blank');
+    },
+
 };

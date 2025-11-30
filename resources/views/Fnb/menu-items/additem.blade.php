@@ -53,31 +53,42 @@
         </div>
 
         <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <img id="BARCODE_IMG" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150" /><br />
+                    <label class='lblbarcode'>{{ $rand_barcode }}</label>
+                </div>
+            </div>
 
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label"> Product Barcode <span class="required"> * </span></label>
+                    <input type="text" name="p_bar_code" id="P_BAR_CODE" class="form-control" required="required" maxlength="50" value="{{ $rand_barcode }}" />
+                </div>
+            </div>
           <div class="col-md-4">
             <div class="form-group">
               <label class="control-label">Item Name <span class="required"></span></label>
               <input type="text" name="fi_item_name" id="FI_ITEM_NAME" class="form-control" required maxlength="255" value="" />
             </div>
           </div>
-
-          <div class="col-md-4">
+            <div class="col-md-4">
             <div class="form-group">
-              <img id="BARCODE_IMG" src="data:image/png;base64,{{ $bar_code_png }}" alt="barcode" height="50" width="150" /><br />
-              <label class='lblbarcode'>{{ $rand_barcode }}</label>
+              <label class="control-label">Item Price <span class="required"></span></label>
+              <input type="text" name="fi_cost_price" id="FI_COST_PRICE" class="form-control" required maxlength="10" value="" />
             </div>
           </div>
-
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="control-label"> Product Barcode <span class="required"> * </span></label>
-              <input type="text" name="p_bar_code" id="P_BAR_CODE" class="form-control" required="required" maxlength="50" value="{{ $rand_barcode }}" />
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label">Currency</label>
+                    <select class="form-select form-control" data-control="select2" id="FI_CURRENCY_ID" name="fi_currency_id">
+                        <option value="0">-- Select Currency --</option>
+                        @foreach($lst_currencies as $index => $currency_info)
+                            <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-          </div>
-
-        </div>
-
-        <div class="row">
           <div class="col-md-4">
             <div class="form-group">
               <label class="control-label">Company <span class="required"></span></label>
@@ -125,18 +136,6 @@
                 <option value="0">-- Select Station --</option>
                 @foreach($lst_stations as $index => $station_info)
                 <option value="{{ $station_info->pt_id }}">{{ $station_info->pt_terminal_name }}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="control-label">TAX <span class="required"></span></label>
-              <select class="form-select form-control" data-control="select2" id="FI_TAX_ID" name="fi_tax_id">
-                <option value="0">-- Select TAX --</option>
-                @foreach($lst_taxes as $index => $tax_info)
-                <option value="{{ $tax_info->av_id }}">{{ $tax_info->av_vat_label }}</option>
                 @endforeach
               </select>
             </div>
@@ -194,14 +193,10 @@
           </div>
         </div>
       </div>
-  </div>
-
-
   <div class="d-flex justify-content-end m-8">
     <button type="submit" name="btn_save_item" id="BTN_SAVE_ITEM" class="btn btn-info me-2">Save</button>
     <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
   </div>
-</div>
 </form>
 </div>
 </div>

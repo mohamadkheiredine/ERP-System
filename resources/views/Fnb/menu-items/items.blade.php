@@ -88,14 +88,15 @@
     <!--end: Search Form -->
     <!--begin: Datatable -->
     <div id="LstItemsMain" class="table-responsive mt-10">
-      <table class="table table-bordered table-hover" id="html_table" width="100%">
-        <thead>
-          <tr>
-            <th title="#">#</th>
-            <th title="Id"> ID </th>
+        <table class="table table-rounded table-striped border gy-7 gs-7">
+            <thead>
+            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+            <th title="#" style="width: 2px">#</th>
+            <th title="Id" style="width: 2px"> ID </th>
             <th title="Name"> Item Name </th>
-            <th title="edit"> edit </th>
-            <th title="delete">Delete</th>
+                <th title="Price"> Price </th>
+            <th title="edit" style="width: 2px"> edit </th>
+            <th title="delete" style="width: 2px">Delete</th>
           </tr>
         </thead>
         <tbody id="LstItems"></tbody>

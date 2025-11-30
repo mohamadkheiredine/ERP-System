@@ -91,7 +91,7 @@ $(function () {
             dataType: "json",
             beforeSend: function () {
             },
-            success: function (response) { 
+            success: function (response) {
                 // Create root element
                 // https://www.amcharts.com/docs/v5/getting-started/#Root_element
                 var root = am5.Root.new("InventoryLevels");
@@ -122,8 +122,8 @@ $(function () {
 
                 // Create axes
                 // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-                var xRenderer = am5xy.AxisRendererX.new(root, { 
-                  minGridDistance: 30, 
+                var xRenderer = am5xy.AxisRendererX.new(root, {
+                  minGridDistance: 30,
                   minorGridEnabled: true
                 });
 
@@ -189,6 +189,51 @@ $(function () {
                 // https://www.amcharts.com/docs/v5/concepts/animations/
                 series.appear(1000);
                 chart.appear(1000, 100);
+            }
+        });
+
+        $.ajax
+        ({
+            url: base_url + "/request/dashboard/getproductsellpercentage",
+            data: {_token: _token},
+            method: 'post',
+            dataType: "json",
+            beforeSend: function () {
+            },
+            success: function (response) {
+
+
+                // Create root element
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+                var root = am5.Root.new("chartsalesbyproducts");
+
+
+                root.setThemes([
+                    am5themes_Animated.new(root)
+                ]);
+
+
+                var chart = root.container.children.push(
+                    am5percent.PieChart.new(root, {
+                        endAngle: 270
+                    })
+                );
+
+                var series = chart.series.push(
+                    am5percent.PieSeries.new(root, {
+                        valueField: "value",
+                        categoryField: "product",
+                        endAngle: 270
+                    })
+                );
+
+                series.states.create("hidden", {
+                    endAngle: -90
+                });
+
+                series.data.setAll(response.sales_products);
+
+                series.appear(1000, 100);
             }
         });
 

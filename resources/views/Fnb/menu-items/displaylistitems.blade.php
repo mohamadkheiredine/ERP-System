@@ -5,6 +5,7 @@
   </td>
   <td>{{ $item_info->fi_id }}</td>
   <td>{{ $item_info->fi_item_name }}</td>
+  <td>{{ $item_info->fi_cost_price }}&nbsp;<b>{{ $item_info->Currency ? $item_info->Currency->cc_currency_code : "" }}</b></td>
   <td>
     <a href="{{ url('/fnb/menuitems/edititem/' . $item_info->fi_id) }}" id="EDIT_ITEM_{{ $item_info->fi_id }}">
       <i class="fas fa-edit"></i>
