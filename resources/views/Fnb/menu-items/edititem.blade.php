@@ -25,7 +25,7 @@
 @section('content')
     <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="card-title">Edit Item: {{ $item_info->fi_item_name }}</h3>
+            <h3 class="card-title">Edit Item: {{ $item_info->mi_item_name }}</h3>
             <div class="card-toolbar">
                 <div class="btn-group">
                     <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
@@ -230,7 +230,7 @@
 
                         <div class="col-md-3">
                             <label class="form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" name="fi_is_active" id="FI_IS_ACTIVE"
+                                <input class="form-check-input" type="checkbox" name="mi_is_active" id="MI_IS_ACTIVE"
                                     value="1" @if($item_info->mi_is_active == 1) checked @endif />
                                 <span class="form-check-label fw-semibold text-muted">Active</span>
                             </label>
@@ -294,6 +294,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="ModelPopUp" tabindex="2" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width:800px;">
             <div class="modal-content">
@@ -308,7 +309,7 @@
                             <span id="hidden_fields">
                                 {!! csrf_field() !!}
                                 <input type="hidden" id="FK_MENU_ITEM_ID" name="fk_menu_item_id"
-                                    value="{{ $item_info->fi_id }}">
+                                    value="{{ $item_info->mi_id }}">
 
                             </span>
 
@@ -339,6 +340,7 @@
                                     <div class="form-group">
                                         <label class="control-label">Product</label>
                                         <input type="text" name="product_name" class="form-control" value="">
+                                        <input type="hidden" name="im_product_id" value="">
                                     </div>
                                 </div>
 

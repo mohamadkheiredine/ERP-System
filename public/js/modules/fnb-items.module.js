@@ -410,6 +410,7 @@ fnb_items_module = {
                     $("input[name=product_name]").val(response.product_name);
                     $("#IM_CURRENCY_ID").val(response.currency_id).change();
                     $("#IM_OVERRIDE_COST").val(response.cost);
+                    $("input[name=im_product_id]").val(response.product_id);
                 }
             },
         });

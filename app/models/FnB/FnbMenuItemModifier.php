@@ -12,7 +12,7 @@ class FnbMenuItemModifier extends Model
 
     public function Item()
     {
-        return $this->belongsTo('App\models\FnB\FnbItem', 'fk_menu_item_id', 'fi_id');
+        return $this->belongsTo('App\models\FnB\FnbMenuItem', 'fk_menu_item_id', 'mi_id');
     }
 
     public function Modifier()

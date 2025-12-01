@@ -127,13 +127,13 @@ class FnbItemsController extends Controller
         $item->mi_unit_id = $request->mi_unit_id;
         $item->mi_category_id = $request->mi_category_id;
         $item->mi_sku_code = $request->mi_sku_code;
-        $item->mi_preparation_time_minutes= $request->mi_preparation_time_minutes;
-        $item->mi_tax_percentage= $request->mi_tax_percentage;
+        $item->mi_preparation_time_minutes = $request->mi_preparation_time_minutes;
+        $item->mi_tax_percentage = $request->mi_tax_percentage;
         $item->mi_pos_order_display = $request->mi_pos_order_display;
         $item->mi_calories = $request->mi_calories;
         $item->mi_max_order_quantity = $request->mi_max_order_quantity;
         $item->mi_is_available = $request->has('mi_is_available') ? 1 : 0;
-        $item->mi_is_vegetarian= $request->has('mi_is_vegetarian') ? 1 : 0;
+        $item->mi_is_vegetarian = $request->has('mi_is_vegetarian') ? 1 : 0;
         $item->mi_is_spicy = $request->has('mi_is_spicy') ? 1 : 0;
         $item->mi_is_active = $request->has('fi_is_active') ? 1 : 0;
 
@@ -184,7 +184,7 @@ class FnbItemsController extends Controller
     {
         $modifier_id = $request->input('modifier_id');
 
-        $modifier = Modifier::with('Item', 'Currency')
+        $modifier = Modifier::with(['Currency'])
             ->where('m_id', $modifier_id)
             ->where('m_is_deleted', 0)
             ->first();
@@ -193,14 +193,20 @@ class FnbItemsController extends Controller
             return response()->json(['success' => false]);
         }
 
+        $product = Products::where('p_id', $modifier->m_item_id)
+            ->where('p_product_is_deleted', 0)
+            ->first();
+
         return response()->json([
-            'success' => true,
-            'product_id'    => $modifier->m_item_id,
-            'product_name'  => $modifier->Item->p_product_name ?? '',
-            'currency_id'   => $modifier->m_currency_id,
-            'cost'          => $modifier->m_cost_modifier
+            'success'      => true,
+            'product_id'   => $product->p_id ?? 0,
+            'product_name' => $product->p_product_name ?? '',
+            'currency_id'  => $modifier->m_currency_id,
+            'cost'         => $modifier->m_cost_modifier
         ]);
     }
+
+
 
     public function DeleteItem(Request $request)
     {
