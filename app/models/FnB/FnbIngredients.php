@@ -17,7 +17,7 @@ class FnbIngredients extends Model
 
     public function Item()
     {
-        return $this->belongsTo('App\models\FnB\FnbItem', 'in_item_id', 'fi_id');
+        return $this->belongsTo('App\models\FnB\FnbMenuItem', 'in_item_id', 'mi_id');
     }
 
     public function Unit()

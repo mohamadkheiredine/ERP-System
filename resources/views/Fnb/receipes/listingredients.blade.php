@@ -6,7 +6,7 @@
                 <option value="">Select ingredient</option>
 
                 @foreach($lst_products as $product)
-                    <option value="{{ $product->fi_id }}"
+                    <option value="{{ $product->p_id }}"
                         @if($product->p_id == $ingredient_info->in_product_id) selected @endif>
                         {{ $product->p_product_name }}
                     </option>
@@ -47,7 +47,6 @@
             <input type="text" class="form-control" name="in_notes" value="{{ $ingredient_info->in_notes }}" placeholder="optional">
         </td>
 
-        {{-- Delete --}}
        <td class="text-center delete-ingredient"
             data-in_id="{{ $ingredient_info->in_id }}"
             data-item_id="{{ $ingredient_info->in_item_id }}">

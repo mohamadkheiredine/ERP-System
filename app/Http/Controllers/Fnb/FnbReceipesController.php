@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\System\Companies;
 use App\Models\FnB\Floor;
-use App\models\FnB\FnbItem;
 use App\Models\FnB\FnbIngredients;
+use App\models\FnB\FnbMenuItem;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
 use App\models\System\Units;
@@ -17,10 +17,7 @@ class FnbReceipesController extends Controller
 {
     public function index()
     {
-        // $lst_floors = Floor::whereFlIsDeleted(0)->get();
-        $data = array(
-            // "lst_floors" => $lst_floors
-        );
+        $data = array();
         return Response()->view('fnb.receipes.fnb-receipes', $data);
     }
 
@@ -28,12 +25,11 @@ class FnbReceipesController extends Controller
     {
         $general_search = $request->input('general_search');
 
-        $receipe_cond = FnbItem::whereFiIsDeleted(0);
+        $receipe_cond = FnbMenuItem::whereMiIsDeleted(0);
 
         if (!empty($general_search)) {
-            $receipe_cond->where('fi_item_name', 'LIKE', '%' . $general_search . '%');
+            $receipe_cond->where('mi_item_name', 'LIKE', '%' . $general_search . '%');
         }
-
 
         $list_receipes = $receipe_cond->get();
 
@@ -49,17 +45,23 @@ class FnbReceipesController extends Controller
 
     public function GetReceipe(Request $request)
     {
-        $fi_id = $request->input('fi_id');
+        $mi_id = $request->input('mi_id');
         $ingredients = FnbIngredients::with(['Product', 'Item'])
-            ->where('in_item_id', $fi_id)
+            ->where('in_item_id', $mi_id)
             ->where('in_is_deleted', 0)
             ->get();
 
-        $item = FnbItem::find($fi_id);
+        $item = FnbMenuItem::find($mi_id);
+        $lst_units = Units::whereSuIsDeleted(0)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)
+            ->wherePProductType(21)
+            ->get();
 
         $data = array(
-            "ingredients" => $ingredients,
-            "item" => $item
+            "ingredients"  => $ingredients,
+            "item"         => $item,
+            "lst_units"    => $lst_units,
+            "lst_products" => $lst_products,
         );
 
         $result_array = array();
@@ -68,32 +70,39 @@ class FnbReceipesController extends Controller
         return Response()->json($result_array);
     }
 
+
     public function DisplayListIngredients(Request $request)
     {
-        $fi_id = $request->input('fi_id');
-        $lst_ingredients = FnbIngredients::with(['Unit', 'Item'])->where('in_item_id', $fi_id)
+        $mi_id = $request->input('mi_id');
+
+        $lst_ingredients = FnbIngredients::with(['Unit', 'Item'])
+            ->where('in_item_id', $mi_id)
             ->where('in_is_deleted', 0)
             ->get();
 
         $lst_units = Units::whereSuIsDeleted(0)->get();
-        $lst_products = Products::wherePProductIsDeleted(0)->wherePProductType(21)->get();
+        $lst_products = Products::wherePProductIsDeleted(0)
+            ->wherePProductType(21)
+            ->get();
 
         $data = array(
             "lst_ingredients" => $lst_ingredients,
-            "lst_units" => $lst_units,
-            "lst_products" => $lst_products
+            "lst_units"       => $lst_units,
+            "lst_products"    => $lst_products,
         );
+
         $result_array = array();
         $result_array['display'] = view("fnb.receipes.listingredients", $data)->render();
 
         return Response()->json($result_array);
     }
 
+
     public function addIngredient(Request $request)
     {
         $item_id = $request->item_id;
         $lst_products = Products::wherePProductIsDeleted(0)->wherePProductType(21)->get();
-        $lst_items = FnbItem::whereFiIsDeleted(0)->get();
+        $lst_items = FnbMenuItem::whereMiIsDeleted(0)->get();
         $lst_unit_of_measure = Units::whereSuIsDeleted(0)->get();
         $lst_currencies = Currency::get();
 
