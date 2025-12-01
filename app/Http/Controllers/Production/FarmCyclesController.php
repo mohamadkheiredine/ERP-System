@@ -156,21 +156,29 @@ class FarmCyclesController extends Controller
 
 
         $farm_cycle = new FarmCycles();
-        if( $pr_id != null )
+        if( $fc_id != null )
         {
-            $project_roles = ProjectRoles::find($pr_id);
+            $farm_cycle = FarmCycles::find($fc_id);
         }
 
-        $project_roles->pr_name            = $pr_name;
-        $project_roles->pr_description     = $pr_description;
-        $project_roles->pr_is_billable_default           = $pr_is_billable_default;
+        $farm_cycle->fc_assign_to            = $fc_assign_to;
+        $farm_cycle->fc_warehouse_id            = $fc_warehouse_id;
+        $farm_cycle->fc_product_id            = $fc_product_id;
+        $farm_cycle->fc_code            = $fc_code;
+        $farm_cycle->fc_farm_name            = $fc_farm_name;
+        $farm_cycle->fc_bird_type            = $fc_bird_type;
+        $farm_cycle->fc_birds_start            = $fc_birds_start;
+        $farm_cycle->fc_start_date            = $fc_start_date;
+        $farm_cycle->fc_end_date            = $fc_end_date;
+        $farm_cycle->fc_notes            = $fc_notes;
+        $farm_cycle->fc_is_closed            = $fc_is_closed;
 
 
 
-        $project_roles->save();
+        $farm_cycle->save();
 
         $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Project Role Information Has been saved';
+        $result_array['error_msg'] = 'Farm Cycle Information Has been saved';
 
         return Response()->json($result_array);
     }
