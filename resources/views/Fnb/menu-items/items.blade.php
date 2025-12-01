@@ -57,28 +57,15 @@
 
               <!-- Select Company -->
               <div class="col-md-3">
-                <select class="form-select form-select-solid" data-control="select2" id="FI_COMPANY_ID" name="fi_company_name">
-                  <option value="0">-- Select Company --</option>
-                  @foreach($lst_companies as $index => $company_info)
-                    <option value="{{ $company_info->cd_id }}">
-                        {{ $company_info->cd_company_name }}
+                <select class="form-select form-select-solid" data-control="select2" id="MI_CATEGORY_ID" name="mi_category_id">
+                  <option value="0">-- Select Category --</option>
+                  @foreach($lst_categories as $index => $category_info)
+                    <option value="{{ $category_info->mc_id }}">
+                        {{ $category_info->mc_category_name }}
                     </option>
                   @endforeach
                 </select>
               </div>
-
-              <!-- Select Kitchen -->
-              <div class="col-md-3">
-                <select class="form-select form-select-solid" data-control="select2" id="FI_KITCHEN_ID" name="fi_kitchen_name">
-                  <option value="0">-- Select Kitchen --</option>
-                    @foreach($lst_kitchens as $index => $kitchen_info)
-                        <option value="{{ $kitchen_info->ks_id }}">
-                            {{ $kitchen_info->ks_name }}
-                        </option>
-                    @endforeach
-                </select>
-              </div>
-
             </div>
           </div>
         </div>

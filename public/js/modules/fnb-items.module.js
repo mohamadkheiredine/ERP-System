@@ -8,16 +8,14 @@ fnb_items_module = {
         var _token = $("input[name=_token]").val();
         var page_number = $("input[name=page_number]").val();
         var search_query = $("input[name=general_search]").val();
-        var branch_id = $("select[name=fi_company_name]").val();
-        var kitchen_id = $("select[name=fi_kitchen_name]").val();
+        var category_id = $("select[name=mi_category_id]").val();
         $.ajax({
             url: base_url + "/request/fnbitems/displaylistitems",
             data: {
                 _token: _token,
                 page_number: page_number,
                 search_query: search_query,
-                branch_id: branch_id,
-                kitchen_id: kitchen_id,
+                category_id: category_id,
             },
             method: "GET",
             dataType: "json",
@@ -48,7 +46,6 @@ fnb_items_module = {
     SaveItemInfo: function () {
         return fnb_items_module.SaveItemInfoSubmitHandler();
     },
-
     SaveItemInfoSubmitHandler: function () {
         var ItemForm = $("#FORM_SAVE_ITEM");
         var error3 = $(".alert-danger", ItemForm);
@@ -61,28 +58,91 @@ fnb_items_module = {
             ignore: "",
 
             rules: {
-                fi_item_name: { required: true, maxlength: 160 },
-                fi_branch_id: { required: true, min: 1 },
-                fi_category_id: { required: true, min: 1 },
-                fi_kitchen_id: { required: true, min: 1 },
-                fi_station_id: { required: true, min: 1 },
-                fi_tax_id: { required: true, min: 1 },
-                fi_cost_price : {
-                    number : true,
-                    required :true
-                }
+                mi_item_name: {
+                    required: true,
+                    maxlength: 150,
+                },
+                mi_barcode: {
+                    required: true,
+                    maxlength: 100,
+                },
+                mi_base_price: {
+                    required: true,
+                    number: true,
+                },
+                mi_currency_id: {
+                    required: true,
+                    min: 1,
+                },
+                mi_unit_id: {
+                    required: true,
+                    min: 1,
+                },
+                mi_category_id: {
+                    required: true,
+                    min: 1,
+                },
+                mi_sku_code: {
+                    maxlength: 50,
+                },
+                mi_preparation_time_minutes: {
+                    number: true,
+                    min: 0,
+                },
+                mi_tax_percentage: {
+                    number: true,
+                },
+                mi_pos_order_display: {
+                    required: true,
+                },
+                mi_calories: {
+                    number: true,
+                    min: 0,
+                },
+                mi_cost_price: {
+                    number: true,
+                    required: true,
+                },
+                mi_max_order_quantity: {
+                    number: true,
+                    min: 0,
+                },
+                mi_item_description: {
+                    maxlength: 5000,
+                },
             },
 
             messages: {
-                fi_item_name: {
+                mi_item_name: {
                     required: "Please enter the item name",
-                    maxlength: "Item name cannot exceed 160 characters",
+                    maxlength: "Item name cannot exceed 150 characters",
                 },
-                fi_branch_id: "Please select a company",
-                fi_category_id: "Please select a category",
-                fi_kitchen_id: "Please select a kitchen",
-                fi_station_id: "Please select a station",
-                fi_tax_id: "Please select a tax",
+                mi_barcode: {
+                    required: "Please enter product barcode",
+                },
+                mi_base_price: {
+                    required: "Please enter item price",
+                    number: "Invalid price format",
+                },
+                mi_currency_id: "Please select a currency",
+                mi_unit_id: "Please select a unit",
+                mi_category_id: "Please select a category",
+                mi_preparation_time_minutes: {
+                    number: "Enter only a valid number",
+                },
+                mi_tax_percentage: {
+                    number: "Enter valid tax percentage",
+                },
+                mi_cost_price: {
+                    required: "Please enter cost price",
+                    number: "Invalid number",
+                },
+                mi_max_order_quantity: {
+                    number: "Enter valid number",
+                },
+                mi_calories: {
+                    number: "Enter valid caloric value",
+                },
             },
 
             errorPlacement: function (error, element) {
@@ -93,12 +153,15 @@ fnb_items_module = {
                 success3.hide();
                 error3.show();
             },
+
             highlight: function (element) {
                 $(element).closest(".form-group").addClass("has-error");
             },
+
             unhighlight: function (element) {
                 $(element).closest(".form-group").removeClass("has-error");
             },
+
             success: function (label) {
                 label.closest(".form-group").removeClass("has-error");
             },
@@ -108,13 +171,15 @@ fnb_items_module = {
                 error3.hide();
 
                 var base_url = $("#BASE_URL").val();
-                var str_params = $("#FORM_SAVE_ITEM").serialize();
+                var formData = new FormData($("#FORM_SAVE_ITEM")[0]);
 
                 $.ajax({
                     url: base_url + "/request/menuitems/saveiteminfo",
-                    data: str_params,
+                    data: formData,
                     method: "POST",
                     dataType: "json",
+                    processData: false,
+                    contentType: false,
                     success: function (response) {
                         if (response.is_error == 0) {
                             window.location.href = base_url + "/fnb/menuitems";
@@ -141,13 +206,13 @@ fnb_items_module = {
     },
 
     DeleteItem: function () {
-        var fi_id = $(this).data("fi_id");
+        var mi_id = $(this).data("mi_id");
         bootbox.confirm("Are you sure you want to delete ?", function (result) {
             //result
             if (result == true) {
                 var base_url = $("#BASE_URL").val();
                 var _token = $("input[name=_token]").val();
-                var str_params = { fi_id: fi_id, _token: _token };
+                var str_params = { mi_id: mi_id, _token: _token };
                 $.ajax({
                     url: base_url + "/request/fnbitems/deleteiteminfo",
                     data: str_params,
