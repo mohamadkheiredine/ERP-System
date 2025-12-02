@@ -22,7 +22,6 @@ class FnbMenuItemModifierController extends Controller
     {
         $page_number   = $request->input('page_number');
         $item_id     = $request->input('item_id');
-
         $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
 
         $skip = ($page_number > 1)
@@ -43,7 +42,6 @@ class FnbMenuItemModifierController extends Controller
         $data = [
             "lst_menu_items_modifiers" => $lst_menu_items_modifiers,
         ];
-
         $result_array = [
             'total_pages' => $total_pages,
             'display'     => view("fnb.menu-items.displaylistitemsmodifiers", $data)->render(),
@@ -96,5 +94,6 @@ class FnbMenuItemModifierController extends Controller
 
         return Response()->json($result_array);
     }
+
 
 }

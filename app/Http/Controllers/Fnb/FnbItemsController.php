@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\library\MenuItemsManager;
 use Illuminate\Http\Request;
 use Config;
 use App\models\FnB\KitchenStations;
@@ -11,22 +12,22 @@ use App\models\FnB\FnbItem;
 use App\models\Sales\Terminals;
 use App\models\System\Companies;
 use App\models\Accounting\VatAccounts;
+use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
 use App\models\FnB\Modifier;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
+use App\models\System\SystemStatus;
 use Milon\Barcode\DNS1D;
-
+use Termwind\Components\Raw;
 
 class FnbItemsController extends Controller
 {
     public function ListItems(Request $request)
     {
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
+        $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
         $data = array(
-            "lst_companies" => $lst_companies,
-            "lst_kitchens" => $lst_kitchens
+            "lst_categories" => $lst_categories
         );
         return Response()->view('fnb.menu-items.items', $data);
     }
@@ -37,8 +38,7 @@ class FnbItemsController extends Controller
     {
         $page_number   = $request->input('page_number');
         $search_query  = $request->input('search_query');
-        $branch_id     = $request->input('branch_id');
-        $kitchen_id    = $request->input('kitchen_id');
+        $category_id     = $request->input('category_id');
 
         $nbr_rows_per_pages = Config::get('apmconfig.max_rows_per_page', 10);
 
@@ -46,25 +46,21 @@ class FnbItemsController extends Controller
             ? ($page_number - 1) * $nbr_rows_per_pages
             : 0;
 
-        $query = FnbItem::where('fi_is_deleted', 0);
+        $query = FnbMenuItem::where('mi_is_deleted', 0);
 
-        if ($branch_id > 0) {
-            $query->where('fi_branch_id', $branch_id);
-        }
-
-        if ($kitchen_id > 0) {
-            $query->where('fi_kitchen_id', $kitchen_id);
+        if ($category_id > 0) {
+            $query->where('mi_category_id', $category_id);
         }
 
         if (!empty($search_query)) {
-            $query->where('fi_item_name', 'LIKE', '%' . $search_query . '%');
+            $query->where('mi_item_name', 'LIKE', '%' . $search_query . '%');
         }
 
         // Pagination count
         $total_items  = $query->count();
         $total_pages  = max(1, ceil($total_items / $nbr_rows_per_pages));
 
-        $lst_products = $query->orderBy('fi_id', 'DESC')
+        $lst_products = $query
             ->skip($skip)
             ->take($nbr_rows_per_pages)
             ->get();
@@ -83,12 +79,9 @@ class FnbItemsController extends Controller
 
     public function AddProductItem()
     {
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
-        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
-        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
-        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_currencies = Currency::all();
+        $lst_units = SystemStatus::whereSsStatusType('pos_order_statuses')->whereSsIsDeleted(0)->get();
 
         $rand_barcode = rand(10000000, 99999999999);
 
@@ -96,12 +89,9 @@ class FnbItemsController extends Controller
         $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39", 2, 50);
 
         $data = [
-            "lst_companies" => $lst_companies,
+            "lst_units" => $lst_units,
             "lst_categories" => $lst_categories,
-            "lst_kitchens" => $lst_kitchens,
-            "lst_stations" => $lst_stations,
             "lst_currencies" => $lst_currencies,
-            "lst_taxes" => $lst_taxes,
             "rand_barcode" => $rand_barcode,
             "bar_code_png" => $bar_code_png
         ];
@@ -111,76 +101,79 @@ class FnbItemsController extends Controller
 
     public function saveItem(Request $request)
     {
-        $fi_id = $request->input('fi_id');
-        $fi_item_name = $request->input('fi_item_name');
-        $fi_branch_id = $request->input('fi_branch_id');
-        $fi_kitchen_id = $request->input('fi_kitchen_id');
-        $fi_category_id = $request->input('fi_category_id');
-        $fi_station_id = $request->input('fi_station_id');
-        $fi_tax_id = $request->input('fi_tax_id');
-        $fi_is_active = $request->input('fi_is_active') ? 1 : 0;
-        $fi_is_sellable = $request->input('fi_is_sellable') ? 1 : 0;
-        $fi_is_stock_item = $request->input('fi_is_stock_item') ? 1 : 0;
-        $fi_print_to_kitchen = $request->input('fi_print_to_kitchen') ? 1 : 0;
-        $fi_barcode = $request->input('p_bar_code');
-        $fi_cost_price = $request->input('fi_cost_price');
-        $fi_currency_id = $request->input('fi_currency_id');
+        $mi_id = $request->input('mi_id');
+
+        $image_data = null;
+        if ($request->hasFile('mi_avatar_pic')) {
+            $itemManager = new MenuItemsManager();
+            $upload = $itemManager->UploadItemImage($mi_id);
+            if ($upload['is_error'] == 0) {
+                $image_data = $upload['data'];
+            }
+        }
+
+        if ($mi_id != null) {
+            $item = FnbMenuItem::find($mi_id);
+        } else {
+            $item = new FnbMenuItem();
+            $item->mi_created_by = session('user_id');
+        }
+        $item->mi_item_name = $request->mi_item_name;
+        $item->mi_item_description = $request->mi_item_description;
+        $item->mi_barcode = $request->mi_barcode;
+        $item->mi_base_price = $request->mi_base_price;
+        $item->mi_cost_price = $request->mi_cost_price;
+        $item->mi_currency_id = $request->mi_currency_id;
+        $item->mi_unit_id = $request->mi_unit_id;
+        $item->mi_category_id = $request->mi_category_id;
+        $item->mi_sku_code = $request->mi_sku_code;
+        $item->mi_preparation_time_minutes = $request->mi_preparation_time_minutes;
+        $item->mi_tax_percentage = $request->mi_tax_percentage;
+        $item->mi_pos_order_display = $request->mi_pos_order_display;
+        $item->mi_calories = $request->mi_calories;
+        $item->mi_max_order_quantity = $request->mi_max_order_quantity;
+        $item->mi_is_available = $request->has('mi_is_available') ? 1 : 0;
+        $item->mi_is_vegetarian = $request->has('mi_is_vegetarian') ? 1 : 0;
+        $item->mi_is_spicy = $request->has('mi_is_spicy') ? 1 : 0;
+        $item->mi_is_active = $request->has('fi_is_active') ? 1 : 0;
+
+        if ($image_data != null) {
+            $item->mi_image_base_src  = $image_data['mi_image_base_src'];
+            $item->mi_image_file_name = $image_data['mi_image_file_name'];
+            $item->mi_image_extension = $image_data['mi_image_extension'];
+        }
+
+        $item->mi_updated_by = session('user_id');
+
+        $item->save();
 
         $result_array = array();
 
-        $item_info = new FnbItem();
-        if ($fi_id != null) {
-            $item_info = FnbItem::find($fi_id);
-        }
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'Item saved successfully';
 
-        $item_info->fi_branch_id = $fi_branch_id;
-        $item_info->fi_kitchen_id = $fi_kitchen_id;
-        $item_info->fi_category_id = $fi_category_id;
-        $item_info->fi_station_id = $fi_station_id;
-        $item_info->fi_tax_id = $fi_tax_id;
-        $item_info->fi_is_active = $fi_is_active;
-        $item_info->fi_is_sellable = $fi_is_sellable;
-        $item_info->fi_is_stock_item = $fi_is_stock_item;
-        $item_info->fi_print_to_kitchen = $fi_print_to_kitchen;
-        $item_info->fi_barcode = $fi_barcode;
-        $item_info->fi_item_name = $fi_item_name;
-        $item_info->fi_cost_price = $fi_cost_price;
-        $item_info->fi_currency_id = $fi_currency_id;
 
-        $item_info->save();
-
-        $fi_id = $item_info->fi_id;
-
-        $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Information Has been saved';
-
-        return Response()->json($result_array);
+        return  Response()->json($result_array);
     }
 
-    public function EditItem($fi_id)
+    public function EditItem($mi_id)
     {
-        $item_info = FnbItem::findOrFail($fi_id);
+        $item_info = FnbMenuItem::findOrFail($mi_id);
 
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_units = SystemStatus::whereSsIsDeleted(0)->get();
         $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
-        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
-        $lst_stations = Terminals::wherePtIsDeleted(0)->get();
-        $lst_taxes = VatAccounts::whereAvIsDeleted(0)->get();
         $lst_currencies = Currency::all();
 
         $barcode_obj = new DNS1D();
-        $bar_code_png = $barcode_obj->getBarcodePNG($item_info->fi_barcode, "C39+", 150, 50);
+        $bar_code_png = $barcode_obj->getBarcodePNG($item_info->mi_barcode, "C39+", 150, 50);
 
         $lst_modifiers = Modifier::whereMIsDeleted(0)->with(["Item", "Currency"])->get();
 
 
         return view('fnb.menu-items.edititem', [
             'item_info'      => $item_info,
-            'lst_companies'  => $lst_companies,
+            'lst_units'  => $lst_units,
             'lst_categories' => $lst_categories,
-            'lst_kitchens'   => $lst_kitchens,
-            'lst_stations'   => $lst_stations,
-            'lst_taxes'      => $lst_taxes,
             'bar_code_png'   => $bar_code_png,
             'lst_modifiers'  => $lst_modifiers,
             'lst_currencies' => $lst_currencies
@@ -191,7 +184,7 @@ class FnbItemsController extends Controller
     {
         $modifier_id = $request->input('modifier_id');
 
-        $modifier = Modifier::with('Item', 'Currency')
+        $modifier = Modifier::with(['Currency'])
             ->where('m_id', $modifier_id)
             ->where('m_is_deleted', 0)
             ->first();
@@ -200,22 +193,28 @@ class FnbItemsController extends Controller
             return response()->json(['success' => false]);
         }
 
+        $product = Products::where('p_id', $modifier->m_item_id)
+            ->where('p_product_is_deleted', 0)
+            ->first();
+
         return response()->json([
-            'success' => true,
-            'product_id'    => $modifier->m_item_id,
-            'product_name'  => $modifier->Item->p_product_name ?? '',
-            'currency_id'   => $modifier->m_currency_id,
-            'cost'          => $modifier->m_cost_modifier
+            'success'      => true,
+            'product_id'   => $product->p_id ?? 0,
+            'product_name' => $product->p_product_name ?? '',
+            'currency_id'  => $modifier->m_currency_id,
+            'cost'         => $modifier->m_cost_modifier
         ]);
     }
 
+
+
     public function DeleteItem(Request $request)
     {
-        $fi_id = $request->input('fi_id');
+        $mi_id = $request->input('mi_id');
 
-        $item_info = FnbItem::find($fi_id);
-        $item_info->fi_is_deleted = 1;
-        $item_info->fi_deleted_by = Session('user_id');
+        $item_info = FnbMenuItem::find($mi_id);
+        $item_info->mi_is_deleted = 1;
+        $item_info->mi_deleted_by = Session('user_id');
         $item_info->save();
 
         $result_array['is_error']   = 0;
@@ -223,5 +222,4 @@ class FnbItemsController extends Controller
 
         return Response()->json($result_array);
     }
-
 }

@@ -20,7 +20,7 @@ fnb_receipes_module = {
         });
     },
 
-    DisplayReceipeInfo: function (fi_id) {
+    DisplayReceipeInfo: function (mi_id) {
         var base_url = $("input[name=base_url]").val();
         var _token = $("input[name=_token]").val();
 
@@ -29,29 +29,30 @@ fnb_receipes_module = {
             method: "get",
             data: {
                 _token: _token,
-                fi_id: fi_id,
+                mi_id: mi_id,
             },
             success: function (response) {
                 $("#RECIPE_CONTENT_WRAPPER").html(response.display);
             },
         });
     },
-    DisplayListIngredients: function (fi_id) {
+    DisplayListIngredients: function (mi_id) {
         var base_url = $("input[name=base_url]").val();
         var _token = $("input[name=_token]").val();
 
         $.ajax({
             url: base_url + "/request/receipes/listingredients",
-            method: "get",
+            method: "GET",
             data: {
                 _token: _token,
-                fi_id: fi_id,
+                mi_id: mi_id,
             },
             success: function (response) {
                 $("#INGREDIENTS_BODY").html(response.display);
             },
         });
     },
+
     SaveIngredientInfo: function () {
         return fnb_receipes_module.SaveReceipeInfoSubmitHandler();
     },
@@ -67,12 +68,12 @@ fnb_receipes_module = {
             ignore: "",
 
             rules: {
-                in_ingredient_name: { required: true, maxlength: 255 },
+                in_product_id: { required: true },
                 in_stock_quantity: { required: true },
                 in_unit_of_measure: { required: true },
                 in_waste_percent: { required: true },
                 in_cost_per_unit: { required: true },
-                in_notes: { required: true },
+                in_notes: { required: false },
             },
 
             messages: {},
@@ -94,27 +95,34 @@ fnb_receipes_module = {
             success: function (label) {
                 label.closest(".form-group").removeClass("has-error");
             },
+        });
 
-            submitHandler: function () {
-                success3.show();
-                error3.hide();
-                var base_url = $("#BASE_URL").val();
-                var str_params = $("#FORM_SAVE_INGREDIENTS").serialize();
-                console.log("string params ", str_params);
+        if (!receipeForm.valid()) {
+            success3.hide();
+            error3.show();
+            return;
+        }
 
-                $.ajax({
-                    url: base_url + "/request/receipe/saveinfo",
-                    data: str_params,
-                    method: "POST",
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.is_error == 0) {
-                            window.location.href = base_url + "/fnb/receipes";
-                            let id = response.item_id;
-                            fnb_receipes_module.DisplayReceipeInfo(id);
-                        }
-                    },
-                });
+        success3.show();
+        error3.hide();
+
+        var base_url = $("#BASE_URL").val();
+        var str_params = receipeForm.serialize();
+
+        $.ajax({
+            url: base_url + "/request/receipe/saveinfo",
+            data: str_params,
+            method: "POST",
+            dataType: "json",
+            success: function (response) {
+                if (response.is_error == 0) {
+                    $("#INGREDIENT_MODAL").modal("hide");
+
+                    var mi_id = response.item_id;
+                    fnb_receipes_module.DisplayListIngredients(mi_id);
+
+                    receipeForm[0].reset();
+                }
             },
         });
     },

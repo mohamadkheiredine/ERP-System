@@ -49,7 +49,6 @@
     <div class="container-fluid py-4">
       <div class="row">
 
-        <!-- LEFT SIDEBAR ONLY -->
         <div class="col-3">
           <div class="card shadow-sm">
             <div class="card-body">
@@ -57,14 +56,12 @@
               <input type="text" class="form-control mb-3" placeholder="Search recipes…" id="GENERAL_SEARCH" name="general_search">
 
               <div id="LST_RECIPES">
-                <!-- AJAX injected recipe cards -->
               </div>
 
             </div>
           </div>
         </div>
 
-        <!-- RIGHT CONTENT (HIDDEN UNTIL ONE CARD CLICKED) -->
         <div class="col-9" id="RECIPE_CONTENT_WRAPPER">
         </div>
 

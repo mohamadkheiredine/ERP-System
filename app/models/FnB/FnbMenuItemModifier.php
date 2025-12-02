@@ -12,7 +12,7 @@ class FnbMenuItemModifier extends Model
 
     public function Item()
     {
-        return $this->belongsTo('App\models\FnB\FnbItem', 'fk_menu_item_id', 'fi_id');
+        return $this->belongsTo('App\models\FnB\FnbMenuItem', 'fk_menu_item_id', 'mi_id');
     }
 
     public function Modifier()
@@ -22,7 +22,7 @@ class FnbMenuItemModifier extends Model
 
     public function Currency()
     {
-        return $this->belongsTo('App\models\Sales\Currency', 'im_currency_id', 'cc_id');
+        return $this->belongsTo('App\models\System\Currency', 'im_currency_id', 'cc_id');
     }
 
     public function Product()
