@@ -22,7 +22,7 @@ class FnbMenuItemModifier extends Model
 
     public function Currency()
     {
-        return $this->belongsTo('App\models\Sales\Currency', 'im_currency_id', 'cc_id');
+        return $this->belongsTo('App\models\System\Currency', 'im_currency_id', 'cc_id');
     }
 
     public function Product()

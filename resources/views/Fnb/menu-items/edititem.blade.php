@@ -158,7 +158,7 @@
                         <div class="col-md-4">
                             <label>SKU Code</label>
                             <input type="text" name="mi_sku_code" id="MI_SKU_CODE" class="form-control"
-                                value="{{ $item_info->mi_sku_code }}" />
+                                value="{{ $item_info->mi_barcode }}" />
                         </div>
 
                         <div class="col-md-4">

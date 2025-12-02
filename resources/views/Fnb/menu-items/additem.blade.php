@@ -117,7 +117,7 @@
                             <div class="form-group">
                                 <label class="control-label">Currency <span class="required"></span></label>
                                 <select class="form-select form-control" data-control="select2" id="MI_CURRENCY_ID"
-                                    name="mi_currency_id">
+                                    name="mi_currency_id" required>
                                     <option value="0">-- Select Currency --</option>
                                     @foreach($lst_currencies as $index => $currency_info)
                                         <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} -
@@ -129,7 +129,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Units <span class="required"></span></label>
+                                <label class="control-label">Units</label>
                                 <select class="form-select form-control" data-control="select2" id="MI_UNIT_ID"
                                     name="mi_unit_id">
                                     <option value="0">-- Select Unit --</option>
@@ -143,7 +143,7 @@
                         <div class="col-md-4">
 
                             <div class="form-group">
-                                <label class="control-label">Category <span class="required"></span></label>
+                                <label class="control-label">Category</label>
                                 <select class="form-select form-control" data-control="select2" id="MI_CATEGORY_ID"
                                     name="mi_category_id">
                                     <option value="0">-- Select Category --</option>
@@ -160,16 +160,15 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">SKU Code <span class="required"></span></label>
+                                <label class="control-label">SKU Code</label>
                                 <input type="text" name="mi_sku_code" id="MI_SKU_CODE" class="form-control"
-                                    maxlength="50" />
+                                    value="{{ $rand_barcode }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Preparation Time (minutes) <span
-                                        class="required"></span></label>
+                                <label class="control-label">Preparation Time (minutes)</label>
                                 <input type="number" name="mi_preparation_time_minutes" id="MI_PREPARATION_TIME"
                                     class="form-control" min="0" />
                             </div>
@@ -177,7 +176,7 @@
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Tax Percentage <span class="required"></span></label>
+                                <label class="control-label">Tax Percentage</label>
                                 <input type="text" name="mi_tax_percentage" id="MI_TAX_PERCENTAGE" class="form-control"
                                     maxlength="5" />
                             </div>
@@ -189,7 +188,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="control-label">POS Order Display <span class="required"></span></label>
+                                <label class="control-label">POS Order Display</label>
                                 <select name="mi_pos_order_display" id="MI_POS_ORDER_DISPLAY" class="form-select">
                                     <option value="1">Show</option>
                                     <option value="0">Hide</option>
@@ -199,14 +198,14 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="control-label">Calories <span class="required"></span></label>
+                                <label class="control-label">Calories</label>
                                 <input type="number" name="mi_calories" id="MI_CALORIES" class="form-control" />
                             </div>
                         </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="control-label">Cost Price <span class="required"></span></label>
+                                <label class="control-label">Cost Price</label>
                                 <input type="text" name="mi_cost_price" id="MI_COST_PRICE" class="form-control"
                                     maxlength="10" />
                             </div>
@@ -214,7 +213,7 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="control-label">Max Order Quantity <span class="required"></span></label>
+                                <label class="control-label">Max Order Quantity</label>
                                 <input type="number" name="mi_max_order_quantity" id="MI_MAX_ORDER_QUANTITY"
                                     class="form-control" />
                             </div>
@@ -228,9 +227,8 @@
                                 <br />
                                 <label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" name="mi_is_available"
-                                        id="MI_IS_AVAILABLE" value="1" checked />
-                                    <span class="form-check-label fw-semibold text-muted">Available <span
-                                            class="required"></span></span>
+                                        id="MI_IS_AVAILABLE" value="1" />
+                                    <span class="form-check-label fw-semibold text-muted">Available</span>
                                 </label>
                             </div>
                         </div>
@@ -241,8 +239,7 @@
                                 <label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" name="mi_is_vegetarian"
                                         id="MI_IS_VEGETARIAN" value="1" />
-                                    <span class="form-check-label fw-semibold text-muted">Vegetarian <span
-                                            class="required"></span></span>
+                                    <span class="form-check-label fw-semibold text-muted">Vegetarian</span>
                                 </label>
                             </div>
                         </div>
@@ -253,8 +250,7 @@
                                 <label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" name="mi_is_spicy" id="MI_IS_SPICY"
                                         value="1" />
-                                    <span class="form-check-label fw-semibold text-muted">Spicy <span
-                                            class="required"></span></span>
+                                    <span class="form-check-label fw-semibold text-muted">Spicy</span>
                                 </label>
                             </div>
                         </div>
@@ -266,7 +262,7 @@
                                     <input class="form-check-input" type="checkbox" name="fi_is_active" id="FI_IS_ACTIVE"
                                         value="1" />
                                     <span class="form-check-label fw-semibold text-muted">
-                                        Active <span class="required"></span>
+                                        Active
                                     </span>
                                 </label>
                             </div>

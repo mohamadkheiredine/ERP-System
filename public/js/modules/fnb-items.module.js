@@ -74,41 +74,9 @@ fnb_items_module = {
                     required: true,
                     min: 1,
                 },
-                mi_unit_id: {
-                    required: true,
-                    min: 1,
-                },
                 mi_category_id: {
                     required: true,
                     min: 1,
-                },
-                mi_sku_code: {
-                    maxlength: 50,
-                },
-                mi_preparation_time_minutes: {
-                    number: true,
-                    min: 0,
-                },
-                mi_tax_percentage: {
-                    number: true,
-                },
-                mi_pos_order_display: {
-                    required: true,
-                },
-                mi_calories: {
-                    number: true,
-                    min: 0,
-                },
-                mi_cost_price: {
-                    number: true,
-                    required: true,
-                },
-                mi_max_order_quantity: {
-                    number: true,
-                    min: 0,
-                },
-                mi_item_description: {
-                    maxlength: 5000,
                 },
             },
 
@@ -125,24 +93,7 @@ fnb_items_module = {
                     number: "Invalid price format",
                 },
                 mi_currency_id: "Please select a currency",
-                mi_unit_id: "Please select a unit",
                 mi_category_id: "Please select a category",
-                mi_preparation_time_minutes: {
-                    number: "Enter only a valid number",
-                },
-                mi_tax_percentage: {
-                    number: "Enter valid tax percentage",
-                },
-                mi_cost_price: {
-                    required: "Please enter cost price",
-                    number: "Invalid number",
-                },
-                mi_max_order_quantity: {
-                    number: "Enter valid number",
-                },
-                mi_calories: {
-                    number: "Enter valid caloric value",
-                },
             },
 
             errorPlacement: function (error, element) {

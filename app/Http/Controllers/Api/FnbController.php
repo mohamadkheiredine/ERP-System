@@ -49,6 +49,7 @@ use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
 use App\models\FnB\FnbItem;
+use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrders;
@@ -175,11 +176,11 @@ class FnbController extends Controller
             $item->oi_currency_id = 1;
             $item->save();
 
-            $item_db = FnbItem::find($item_order['item_id']);
+            $item_db = FnbMenuItem::find($item_order['item_id']);
 
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
-                "item_name" => $item_db ? $item_db->fi_item_name : "",
+                "item_name" => $item_db ? $item_db->mi_item_name : "",
                 "quantity"  => $item_order['quantity'],
                 "price"     => $item_order['price'],
                 "total"     => $item_order['quantity'] * $item_order['price'],
@@ -276,24 +277,30 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $item_cond = FnbItem::whereFiIsDeleted(0)->whereFiIsActive(1);
+        $item_cond = FnbMenuItem::whereMiIsDeleted(0);
         if ($category_id != null) {
-            $item_cond = $item_cond->whereFiCategoryId($category_id);
+            $item_cond = $item_cond->whereMiCategoryId($category_id);
         }
 
         $lst_fnb_items = $item_cond->get();
 
 
         $items_array = array();
-        foreach ($lst_fnb_items as $i => $item) {
-            $items_array[$i] = [
-                'fi_id'          => $item->fi_id,
-                'fi_item_name'   => $item->fi_item_name,
-                'fi_category_id' => $item->fi_category_id,
+        foreach ($lst_fnb_items as $index => $item) {
+            $items_array[$index] = [
+                'mi_id'            => $item->mi_id,
+                'mi_item_name'     => $item->mi_item_name,
+                'mi_category_id'   => $item->mi_category_id,
                 'category_name'    => $item->Category ? $item->Category->mc_category_name : "",
-                'fi_item_price'  => $item->fi_cost_price,
-                'currency_code'  => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
-                'cc_id'  => $item->Currency ? $item->Currency->cc_id : 0
+                'mi_base_price'    => $item->mi_base_price,
+                'mi_cost_price'    => $item->mi_cost_price,
+                'currency_code'    => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
+                'cc_id'      => $item->mi_currency_id,
+                'mi_is_available'  => $item->mi_is_available,
+                'mi_is_spicy'      => $item->mi_is_spicy,
+                'mi_is_vegetarian' => $item->mi_is_vegetarian,
+                'mi_barcode'       => $item->mi_barcode,
+                'mi_image'         => $item->mi_image_file_name,
             ];
         }
 
@@ -378,6 +385,7 @@ class FnbController extends Controller
         foreach ($lst_modifiers as $index => $modifier_info) {
             $modifiers_array[$index]['m_id']   = $modifier_info->m_id;
             $modifiers_array[$index]['m_modifier_name'] = $modifier_info->m_modifier_name;
+            $modifiers_array[$index]['m_price_modifier'] = $modifier_info->m_price_modifier;
         }
 
         $result_array['is_error'] = 0;
@@ -405,7 +413,7 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $lst_tables = Tables::whereFtIsDeleted(0)->get();
+        $lst_tables = FnbOrderTables::whereFtIsDeleted(0)->get();
 
         $tables_array = [];
         foreach ($lst_tables as $index => $table_info) {
