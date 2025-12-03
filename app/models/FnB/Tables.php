@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tables extends Model
 {
-    protected $table = 'fnb_table';
+    protected $table = 'fnb_order_tables';
     public $timestamps = false;
     protected $primaryKey = "ft_id";
 
