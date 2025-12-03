@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\library\OrdersManager;
 use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
+use App\models\FnB\FnbMenuItem;
 use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrders;
@@ -45,6 +46,7 @@ class FnbOrdersController extends Controller
         $lst_customers = Customers::whereIcIsDeleted(0)->get();
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
+        $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('kitchen_order_statuses')->get();
 
 
         $OrderManager   = new OrdersManager();
@@ -58,7 +60,8 @@ class FnbOrdersController extends Controller
             "lst_customers" => $lst_customers,
             "lst_currencies" => $lst_currencies,
             "lst_order_status" => $lst_order_status,
-        "order_code" => $order_code
+            "order_code" => $order_code,
+            "lst_kitchen_status" => $lst_kitchen_status,
         );
         return Response()->view('fnb.orders.addform', $data);
     }
@@ -212,6 +215,30 @@ class FnbOrdersController extends Controller
         $order_info->fo_order_structure = json_encode($order_info_structure);
         $order_info->save();
 
+        //update kitchen status for all order items and menu items
+        $kitchen_status = $request->input('oi_kitchen_status');
+
+        if (!empty($fo_id) && $kitchen_status != null && $kitchen_status != 0) {
+
+            FnbOrderItems::where('oi_order_id', $fo_id)
+                ->where('oi_is_deleted', 0)
+                ->update([
+                    'oi_kitchen_status' => $kitchen_status
+                ]);
+
+            $order_items = FnbOrderItems::where('oi_order_id', $fo_id)
+                ->where('oi_is_deleted', 0)
+                ->pluck('oi_item_id')
+                ->toArray();
+
+            if (!empty($order_items)) {
+                FnbMenuItem::whereIn('mi_id', $order_items)
+                    ->update([
+                        'mi_kitchen_status_id' => $kitchen_status
+                    ]);
+            }
+        }
+
         $fo_id = $order_info->fo_id;
 
         $result_array['is_error']  = 0;
@@ -229,11 +256,12 @@ class FnbOrdersController extends Controller
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
         $lst_tables = Tables::whereFtIsDeleted(0)->get();
-        $lst_items = FnbItem::whereFiIsDeleted(0)->get();
+        $lst_items = FnbMenuItem::whereMiIsDeleted(0)->get();
         $lst_stations = KitchenStations::whereKsIsDeleted(0)->get();
-        $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
+        $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('kitchen_order_statuses')->get();
         $lst_modifiers = Modifier::whereMIsDeleted(0)->get();
         $lst_statuses = SystemStatus::whereSsIsDeleted(0)->get();
+
 
         $order_code = "";
         if ($order_info->so_order_code != null) {

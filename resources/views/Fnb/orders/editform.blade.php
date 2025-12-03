@@ -279,6 +279,29 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-md-4 col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label">Kitchen Status <span class="required"></span></label>
+
+                                <select class="form-select form-control" data-control="select2" id="OI_KITCHEN_STATUS"
+                                    name="oi_kitchen_status">
+
+                                    <option value="0">-- Select Status --</option>
+
+                                    @foreach ($lst_kitchen_status as $status_info)
+                                        <option value="{{ $status_info->ss_id }}"
+                                            @if($status_info->ss_id == $order_info->fo_kitchen_status) selected @endif>
+                                            {{ $status_info->ss_status_title }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-12 col-xs-12">
                             <div class="form-group">
                                 <label class="control-label">Notes <span class="required"></span></label>
@@ -287,7 +310,6 @@
                             </div>
                         </div>
                     </div>
-
 
                     <div class="row">
                         <div class="col-md-7"></div>
@@ -308,11 +330,6 @@
 
         </div>
         </form>
-
-
-
-
-
 
 
 
@@ -652,7 +669,8 @@
                             <ul id="DeliveryPagination" class="pagination-sm"></ul>
                         </div>
                         <div align="right">
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#DeliveryPopUp">
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#DeliveryPopUp">
                                 Add Delivery
                             </button>
                         </div>
@@ -694,8 +712,9 @@
                                                             id="OD_DELIVERY_STATUS" name="od_delivery_status">
                                                             <option value="0">-- Select Status --</option>
                                                             @foreach($lst_statuses as $status_info)
-                                                            <option value="{{ $status_info->ss_id }}">
-                                                                {{ $status_info->ss_status_title }}</option>
+                                                                <option value="{{ $status_info->ss_id }}">
+                                                                    {{ $status_info->ss_status_title }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
