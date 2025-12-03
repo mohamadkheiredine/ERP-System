@@ -57,6 +57,7 @@ use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbOrderTables;
 use App\models\FnB\MenuCategories;
 use App\models\FnB\Modifier;
+use App\models\System\SystemStatus;
 
 class FnbController extends Controller
 {
@@ -449,16 +450,12 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $lst_kitchen_status = FnbOrderKitchen::whereKoIsDeleted(0)->with(['Order', 'Status', 'Kitchen'])->get();
+        $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('kitchen_order_statuses')->get();
 
         $kitchen_status_array = [];
         foreach ($lst_kitchen_status as $index => $kitchen_status_info) {
-            $kitchen_status_array[$index]['ko_id']   = $kitchen_status_info->ko_id;
-            $kitchen_status_array[$index]['ko_order_id'] = $kitchen_status_info->ko_order_id;
-            $kitchen_status_array[$index]['fo_order_code'] = $kitchen_status_info->Order->fo_order_code;
-            $kitchen_status_array[$index]['ko_status_id'] = $kitchen_status_info->ko_status_id;
-            $kitchen_status_array[$index]['ss_status_title'] = $kitchen_status_info->Status->ss_status_title;
-            $kitchen_status_array[$index]['ks_name'] = $kitchen_status_info->Kitchen->ks_name;
+            $kitchen_status_array[$index]['ss_id']   = $kitchen_status_info->ss_id;
+            $kitchen_status_array[$index]['ss_status_title'] = $kitchen_status_info->ss_status_title;
         }
 
         $result_array['is_error'] = 0;
