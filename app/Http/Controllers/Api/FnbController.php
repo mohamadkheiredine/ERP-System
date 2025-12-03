@@ -52,6 +52,7 @@ use App\models\FnB\FnbItem;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
 use App\models\FnB\FnbOrderItems;
+use App\models\FnB\FnbOrderKitchen;
 use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbOrderTables;
 use App\models\FnB\MenuCategories;
@@ -426,6 +427,43 @@ class FnbController extends Controller
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = '';
         $result_array['lst_tables'] = $tables_array;
+
+        return Response()->json($result_array);
+    }
+
+    public function GetListKitchenOrderStatus(Request $request)
+    {
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $lst_kitchen_status = FnbOrderKitchen::whereKoIsDeleted(0)->with(['Order', 'Status', 'Kitchen'])->get();
+
+        $kitchen_status_array = [];
+        foreach ($lst_kitchen_status as $index => $kitchen_status_info) {
+            $kitchen_status_array[$index]['ko_id']   = $kitchen_status_info->ko_id;
+            $kitchen_status_array[$index]['ko_order_id'] = $kitchen_status_info->ko_order_id;
+            $kitchen_status_array[$index]['fo_order_code'] = $kitchen_status_info->Order->fo_order_code;
+            $kitchen_status_array[$index]['ko_status_id'] = $kitchen_status_info->ko_status_id;
+            $kitchen_status_array[$index]['ss_status_title'] = $kitchen_status_info->Status->ss_status_title;
+            $kitchen_status_array[$index]['ks_name'] = $kitchen_status_info->Kitchen->ks_name;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_kitchen_statuses'] = $kitchen_status_array;
 
         return Response()->json($result_array);
     }

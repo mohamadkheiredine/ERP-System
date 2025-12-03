@@ -131,3 +131,6 @@ CREATE TABLE fnb_order_audit_log (
  oa_changed_by INT default 0,
  oa_changed_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+
+alter table fnb_kitchen_orders add column ko_kitchen_id smallint DEFAULT '0'
