@@ -298,8 +298,7 @@ class AppointmentsController extends Controller
         $from = $request->input('from', date('Y-m-01'));
         $to = $request->input('to', date('Y-m-t'));
 
-        $sql = "
-            SELECT
+        $sql = "SELECT
                 u.u_fullname AS telemarketer,
                 ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) AS average,
                 COUNT(lapp.ca_id) AS app,
@@ -311,8 +310,10 @@ class AppointmentsController extends Controller
                 SUM(CASE WHEN res.ar_app_result = 'RESET' THEN 1 ELSE 0 END) AS reset,
                 SUM(CASE WHEN res.ar_app_result = 'RESET DA' THEN 1 ELSE 0 END) AS reset_da
             FROM callcenter_lead_appointments AS lapp
-            LEFT JOIN users AS u ON lapp.ca_telemarketing_id = u.id
-            LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+            LEFT JOIN users AS u
+                ON lapp.ca_telemarketing_id = u.id
+            LEFT JOIN crm_lead_app_results AS res
+                ON lapp.ca_apt_result = res.ar_id
             WHERE lapp.ca_apt_date BETWEEN ? AND ?
             GROUP BY u.id, u.u_fullname
 
@@ -330,12 +331,12 @@ class AppointmentsController extends Controller
                 SUM(CASE WHEN res.ar_app_result = 'RESET' THEN 1 ELSE 0 END) AS reset,
                 SUM(CASE WHEN res.ar_app_result = 'RESET DA' THEN 1 ELSE 0 END) AS reset_da
             FROM callcenter_lead_appointments AS lapp
-            LEFT JOIN crm_lead_app_results AS res ON lapp.ca_apt_result = res.ar_id
+            LEFT JOIN crm_lead_app_results AS res
+                ON lapp.ca_apt_result = res.ar_id
             WHERE lapp.ca_apt_date BETWEEN ? AND ?
         ";
 
         $results = DB::select($sql, [$from, $to, $from, $to]);
-
         return view('reports.telemarketer-appointments', compact('results', 'from', 'to'));
     }
 

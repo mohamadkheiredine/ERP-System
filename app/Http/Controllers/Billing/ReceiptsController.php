@@ -781,16 +781,8 @@ class ReceiptsController extends Controller
         $display = str_replace("%company_name_translation%",$company_info->cd_company_name_translation, $display);
         if(Config::get('appconfig.crm_telemarketing') == 1)
         {
-            if($receipt_info->br_client_id == 0 || $receipt_info->br_client_id == "" || $receipt_info->br_client_id == null)
-            {
-                $display = str_replace("%account_to%",$receipt_info->AccountPayable->aa_account, $display);
-                $display = str_replace("%account_ledger_to%",$receipt_info->AccountPayable->aa_id, $display);
-            }
-            else
-            {
-                $display = str_replace("%account_to%",$receipt_info->Client->ca_account_name, $display);
-                $display = str_replace("%account_ledger_to%",$receipt_info->Client->ca_accounting_id, $display);
-            }
+            $display = str_replace("%account_to%",$receipt_info->AccountReceivable->aa_account, $display);
+            $display = str_replace("%account_ledger_to%",$receipt_info->AccountReceivable->aa_account_label, $display);
 
         }
         else
@@ -804,14 +796,18 @@ class ReceiptsController extends Controller
         else
             $display = str_replace("%paied_account%","-", $display);
 
+
+        $display = str_replace("%account_from%",$receipt_info->AccountPayable->aa_id, $display);
+
         $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
         $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
         $display = str_replace("%receipt_code%",$receipt_info->br_receipt_number, $display);
-        $display = str_replace("%payment_date%",$receipt_info->br_receipt_date, $display);
+        $display = str_replace("%payment_date%",date('m-d-Y',strtotime($receipt_info->br_receipt_date)), $display);
         $display = str_replace("%receipt_description%",$receipt_info->br_receipt_label, $display);
         $display = str_replace("%receipt_amount%",$receipt_info->br_payment_value, $display);
         $display = str_replace("%receipt_amount_letters%",self::numberToWords($receipt_info->br_payment_value), $display);
         $display = str_replace("%receipt_currency%",$receipt_info->Currency->cc_currency_code, $display);
+        $display = str_replace("%payment_method%",$receipt_info->PaymentType ? $receipt_info->PaymentType->pt_payment_type : "-", $display);
 
 
         $display = str_replace("%CREATED_BY%",$receipt_info->CreatedUser->u_fullname, $display);

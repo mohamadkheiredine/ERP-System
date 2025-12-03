@@ -239,11 +239,11 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
+        $categories_cond = MenuCategories::whereMcIsDeleted(0);
         if (!empty($category_id)) {
-            $lst_categories = MenuCategories::where('mc_id', $category_id)->where('mc_is_deleted', 0)->get();
-        } else {
-            $lst_categories = MenuCategories::where('mc_is_deleted', 0)->get();
+            $categories_cond = $categories_cond->whereCategoryId($category_id);
         }
+        $lst_categories = $categories_cond->get();
 
         $categories_array = array();
         foreach ($lst_categories as $index => $category_info) {
@@ -253,7 +253,7 @@ class FnbController extends Controller
         }
 
         $result_array['is_error'] = 0;
-        $result_array['error_msg'] = '';
+        $result_array['error_msg'] = 'Fetch Data Completed';
         $result_array['lst_item_categories'] = $categories_array;
         return Response()->json($result_array);
     }

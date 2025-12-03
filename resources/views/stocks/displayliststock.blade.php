@@ -16,10 +16,6 @@ Page Description :
 
 
 @foreach($lst_stock as $index => $si_info)
-    <?php
-        if($si_info->is_quanity <= 0)
-            continue;
-        ?>
 <tr  class="odd gradeX" data-is_id="{{ $si_info->is_id }}">
 	<td><input type="checkbox" name="ck_si_{{ $si_info->is_id }}" id="CK_SI_{{ $si_info->is_id }}" class="checkboxes" value="{{ $si_info->is_id }}" /></td>
    <td>{{ $si_info->is_id }}</td>

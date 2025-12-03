@@ -17,8 +17,8 @@
         }
 
         .a4-container {
-            width: 210mm;
-            min-height: 297mm;
+            width: 310mm;
+            min-height: 397mm;
             margin: 0 auto;
             background: white;
             padding: 20mm;
@@ -100,25 +100,46 @@
         }
 
         .signature {
-            display: flex;
+            width:100%;
             justify-content: space-between;
             margin-bottom: 30px;
             padding-top: 60px;
+            margin-top: 200px;
         }
-
-        .signature div {
+        .signature ul{
+            list-style-type: none;
+            width: 100%;
+            position: relative;
+        }
+        .signature ul li {
             text-align: center;
             width: 23%;
             font-size: 14px;
+            float: left;
+
         }
 
         .print-info {
             display: flex;
+            width: 100%;
             justify-content: space-between;
             font-size: 12px;
             color: #666;
             padding-top: 15px;
             border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: -20px;
+        }
+
+        .print-info ul {
+            width: 100%;
+            position: relative;
+        }
+
+        .print-info ul li{
+            width: 32%;
+            float: left;
+            list-style-type: none;
         }
 
         @media print {
@@ -150,7 +171,7 @@
 
         @media screen {
             .a4-container {
-                margin: 20px auto;
+                margin: 10px auto;
             }
         }
     </style>
@@ -174,9 +195,9 @@
         <div>VAT Value: <strong>0.00</strong></div>
     </div>
 
-    <div class="details">
-        <div>Paid To: <strong>%account_to%</strong></div>
-        <div>Account #: <strong>%account_ledger_to%</strong></div>
+    <div class="details" >
+        <div>Account #: <strong>%paied_account%</strong> -  %account_from% </div>
+        <div>Paid To: <strong>%account_ledger_to%</strong> -  <strong>%account_to%</strong></div>
         <div>The Amount of: <strong>%receipt_amount% %receipt_currency%</strong> (%receipt_amount_letters% %receipt_currency% ONLY)</div>
         <div>Being For: <strong dir="rtl">%receipt_description%</strong></div>
     </div>
@@ -194,20 +215,34 @@
         <tr>
             <td>%receipt_amount%</td>
             <td>%receipt_currency%</td>
-            <td>%paied_account%</td>
+            <td>%payment_method%</td>
             <td>%payment_date%</td>
         </tr>
         </tbody>
     </table>
-
+    <div class="signature">
+        <ul>
+            <li>Prepared By:</li>
+            <li>Received By:</li>
+            <li>Management:</li>
+            <li>Accounting:</li>
+        </ul>
+    </div>
+    <br/>
+    <br/>
     <div class="footer-section">
-        <div class="signature"> <span style="padding-right: 50px">Prepared By:</span> <span style="padding-right: 50px">Received By:</span> <span style="padding-right: 50px">Management:</span> <span style="padding-right: 50px">Accounting:</span> </div>
-        <br/>
-        <br/>
         <div class="print-info">
-            <span><strong>Created By:</strong> %CREATED_BY%</span> |
-            <span><strong>Printed By:</strong> %PRINTED_BY%</span> |
-            <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+            <ul>
+                <li>
+                    <span><strong>Created By:</strong> %CREATED_BY%</span>
+                </li>
+                <li>
+                    <span><strong>Printed By:</strong> %PRINTED_BY%</span>
+                </li>
+                <li>
+                    <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

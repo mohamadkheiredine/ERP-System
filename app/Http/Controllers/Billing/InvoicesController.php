@@ -943,7 +943,7 @@ class InvoicesController extends Controller
         }
         else
         {
-// Variable for the quantity we still need to fulfill.
+            // Variable for the quantity we still need to fulfill.
             $quantity_to_fulfill = $bi_quanity;
 
 // Wrap the entire operation in a database transaction.

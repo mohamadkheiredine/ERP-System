@@ -80,7 +80,6 @@ class OrdersController extends Controller
         $order_id           = $request->input('order_id');
         $warehouse_id       = $request->input('warehouse_id');
         $company_currency   = $request->input('company_currency');
-        $customer_id        = $request->input('customer_id');
         $order_items        = $request->input('order_items');
         $order_items        = json_decode( $order_items , true );
         $pos_sub_total      = $request->input('pos_sub_total');
@@ -312,23 +311,120 @@ class OrdersController extends Controller
            }
            else
            {
-			   $discount = isset($item_order['product_discount']) ? $item_order['product_discount'] : 0;
-               $orderitem = new OrderProducts();
-               $orderitem->fk_order_id          = $so_id;
-               $orderitem->fk_product_id        = $item_order['p_id'];
-               $orderitem->so_stock_id          = $item_order['is_id'];
-               $orderitem->so_product_cost      = $item_order['product_cost'];
-               $orderitem->so_discount          = $discount;
-               $orderitem->so_product_price     = $item_order['product_cost'] - ( $item_order['product_cost'] * $discount /100);
-               $orderitem->so_product_quantity  = $item_order['product_quantity'];
-               $orderitem->so_product_currency  = $company_currency;
-               $orderitem->save();
+               $product_id          = $item_order['p_id'];
+               $product_quantity    = $item_order['product_quantity'];
 
-               // change stock id if exist to sold
-               DB::statement("UPDATE `inventory_stock_ids` SET si_stock_sold=1 WHERE si_stock_uid='" . $item_order['uid'] . "'");
+               DB::beginTransaction();
+
+               try {
+
+                   $product_id       = $item_order['p_id'];
+                   $qty_requested    = $item_order['product_quantity'];
+
+                   $stock_row = DB::table('inventory_stocks')
+                       ->where('fk_product_id', $product_id)
+                       ->where('fk_warehouse_id', $warehouse_id)
+                       ->where('is_is_deleted', 0)
+                       ->select(DB::raw("SUM(is_quanity) as total_quantity"))
+                       ->first();
+
+                   $qty_available = $stock_row->total_quantity ?? 0;
+                   if ($qty_available >= $qty_requested) {
+
+                       // decrease from FIFO stock records
+                       $remaining = $qty_requested;
+
+                       $stock_batches = DB::table('inventory_stocks')
+                           ->where('fk_product_id', $product_id)
+                           ->where('fk_warehouse_id', $warehouse_id)
+                           ->where('is_quanity', '>', 0)
+                           ->orderBy('is_id', 'ASC')  // FIFO
+                           ->get();
+
+                       foreach ($stock_batches as $batch) {
+                           if ($remaining <= 0) break;
+
+                           if ($batch->is_quanity >= $remaining) {
+                               // subtract from this batch only
+                               DB::table('inventory_stocks')
+                                   ->where('is_id', $batch->is_id)
+                                   ->update([
+                                       'is_quanity'   => $batch->is_quanity - $remaining,
+                                       'is_updated_at'=> now()
+                                   ]);
+
+                               $remaining = 0;
+                           } else {
+                               // use full batch and continue
+                               $remaining -= $batch->is_quanity;
+
+                               DB::table('inventory_stocks')
+                                   ->where('is_id', $batch->is_id)
+                                   ->update([
+                                       'is_quanity'   => 0,
+                                       'is_updated_at'=> now()
+                                   ]);
+                           }
+                       }
+
+                   }
+                   // -----------------------------------------------------
+                   // 3. ELSE → CREATE NEGATIVE STOCK RECORD
+                   // -----------------------------------------------------
+                   else {
+
+                       $negative_qty = $qty_requested - $qty_available;
+
+                       // if product had stock, reduce to zero
+                       if ($qty_available > 0) {
+                           DB::table('inventory_stocks')
+                               ->where('fk_product_id', $product_id)
+                               ->where('fk_warehouse_id', $warehouse_id)
+                               ->update([
+                                   'is_quanity'   => 0,
+                                   'is_updated_at'=> now()
+                               ]);
+                       }
+
+
+                       // create negative stock (backorder)
+                       DB::table('inventory_stocks')->insert([
+                           'fk_product_id'    => $product_id,
+                           'fk_warehouse_id'  => $warehouse_id,
+                           'is_quanity'       => -$negative_qty,
+                           'is_price_currency'       => $company_currency,
+                           'is_stock_currency'       => $company_currency,
+                           'is_stock_label'   => 'NEGATIVE STOCK AUTO-GENERATED',
+                           'is_created_by'    => auth()->id() ?? 0,
+                           'is_creation_date' => now()
+                       ]);
+                   }
+
+
+                   $discount = $item_order['product_discount'] ?? 0;
+
+                   $orderitem = new OrderProducts();
+                   $orderitem->fk_order_id          = $so_id;
+                   $orderitem->fk_product_id        = $product_id;
+                   $orderitem->so_stock_id          = $item_order['is_id'];
+                   $orderitem->so_product_cost      = $item_order['product_cost'];
+                   $orderitem->so_discount          = $discount;
+                   $orderitem->so_product_price     = $item_order['product_cost'] - ($item_order['product_cost'] * $discount / 100);
+                   $orderitem->so_product_quantity  = $qty_requested;
+                   $orderitem->so_product_currency  = $company_currency;
+                   $orderitem->save();
+
+                   DB::commit();
+
+               } catch (\Exception $e) {
+
+                   DB::rollBack();
+                   return response()->json([
+                       'error' => 1,
+                       'message' => $e->getMessage()
+                   ]);
+               }
            }
-
-           // check if stock of this warehouse exist
 
 
         }

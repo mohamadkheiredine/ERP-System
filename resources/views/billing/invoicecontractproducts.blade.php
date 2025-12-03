@@ -15,12 +15,23 @@ Page Description :
 ?>
 
 @foreach( $items_array as $index => $item_info )
-<tr>
+    <tr>
         <td>{{ $item_info['p_product_ref'] }}</td>
         <td>{{ $item_info['label'] }} {{ isset($item_info['serialnumber']) ? $item_info['serialnumber'] : "" }}</td>
         <td>{{ $item_info['quantity'] }}</td>
         <td>{{ $item_info['cost'] }}&nbsp;&nbsp;{{ $item_info['currency'] }}</td>
         <td>0</td>
         <td>{{ $item_info['price'] }}&nbsp;&nbsp;{{ $item_info['currency'] }}</td>
-</tr>
+    </tr>
 @endforeach
+<!-- Empty rows to fill invoice space -->
+@for ($i = count($items_array); $i < 20; $i++)
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+@endfor

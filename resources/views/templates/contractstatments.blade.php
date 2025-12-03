@@ -14,7 +14,6 @@
             text-align: center;
             padding: 8px;
             font-size: 16px;
-            height: 40px;
         }
         .Payments th {
             background-color: #f2f2f2;

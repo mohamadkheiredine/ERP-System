@@ -38,6 +38,12 @@ class Receipts extends Model
         return $this->hasOne('App\models\Billing\Invoices', 'bi_id','fk_invoice_id');
     }
 
+
+    public function PaymentType()
+    {
+        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id','br_payment_type');
+    }
+
      public function AccountPayable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','br_account_from');

@@ -404,6 +404,7 @@ class DealsController extends Controller
         $ad_contract_type                        = $request->input('ad_contract_type');
         $bill_sales_commission                        = $request->input('bill_sales_commission');
         $bill_amount                                = $request->input('bill_amount');
+        $default_company_id = session('default_company_id');
 
         $result_array = array();
 
@@ -425,6 +426,7 @@ class DealsController extends Controller
 
         $account_deal->fk_account_id         =   $fk_account_id;
         $account_deal->fk_contact_id         =   $fk_contact_id;
+        $account_deal->ad_company_id         =   $default_company_id;
         $account_deal->fk_lead_id            =   $fk_lead_id;
         $account_deal->ad_deal_code          =   $ad_deal_code;
         $account_deal->ad_deal_title         =   $ad_deal_title;
@@ -490,7 +492,7 @@ class DealsController extends Controller
             // create comissions records
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_sales_id;
-            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_company_id = $default_company_id;
             $payroll_comissions->pc_comission_value = $ad_sales_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = $ad_deal_date;
@@ -501,7 +503,7 @@ class DealsController extends Controller
 
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_technician_id;
-            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_company_id = $default_company_id;
             $payroll_comissions->pc_comission_value = $ad_technician_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = $ad_deal_date;
@@ -512,7 +514,7 @@ class DealsController extends Controller
 
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_telemarketing_id;
-            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_company_id = $default_company_id;
             $payroll_comissions->pc_comission_value = $ad_telemarketing_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = $ad_deal_date;
@@ -523,7 +525,7 @@ class DealsController extends Controller
 
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_supervisor_id;
-            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_company_id = $default_company_id;
             $payroll_comissions->pc_comission_value = $ad_supervisor_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = $ad_deal_date;
@@ -535,7 +537,7 @@ class DealsController extends Controller
 
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_manager_id;
-            $payroll_comissions->pc_company_id = session('company_id');
+            $payroll_comissions->pc_company_id = $default_company_id;
             $payroll_comissions->pc_comission_value = $ad_manager_comm;
             $payroll_comissions->pc_currency_id = $ad_currency_id;
             $payroll_comissions->pc_effective_date = $ad_deal_date;
@@ -670,6 +672,7 @@ class DealsController extends Controller
             $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
             $call_info->ic_contract_code      = $account_deal->ad_deal_code;
             $call_info->ic_serial_number      = $ad_serial_number;
+            $call_info->ic_company_id      = $default_company_id;
             $call_info->ic_call_date            = $today;
             $call_info->ic_call_start_time      = "00:00";
             $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;
@@ -700,6 +703,7 @@ class DealsController extends Controller
                 $call_info->ic_contract_code      = $account_deal->ad_deal_code;
                 $call_info->ic_serial_number      = $ad_serial_number;
                 $call_info->ic_call_date      = $ro_date;
+            $call_info->ic_company_id      = $default_company_id;
                 $call_info->ic_call_start_time      = "00:00";
                 $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_RO;
                 $call_info->save();
@@ -718,6 +722,7 @@ class DealsController extends Controller
                 $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
                 $call_info->ic_contract_code      = $account_deal->ad_deal_code;
                 $call_info->ic_serial_number      = $ad_serial_number;
+                $call_info->ic_company_id      = $default_company_id;
                 $call_info->ic_call_date      = $three_maint_date;
                 $call_info->ic_call_start_time      = "00:00";
                 $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_SCHEDULED_MAIN;

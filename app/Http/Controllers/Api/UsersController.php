@@ -143,9 +143,9 @@ class UsersController extends Controller
                 // calculate exchange rate of primary and seconday
                 $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)->whereErToCurrency($sec_currency_id)->orderBy('er_date_exchange','DESC')->get();
 				if(count($exchange_rate) > 0 )
-					$result_array['exchange_rate']                   = $exchange_rate[0]['er_exchange_rate'];
+					$result_array['exchange_rate']             = $exchange_rate[0]['er_exchange_rate'];
 				else
-					$result_array['exchange_rate'] = 1;
+					$result_array['exchange_rate']             = 1;
             }
 
         }

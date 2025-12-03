@@ -17,8 +17,8 @@
         }
 
         .a4-container {
-            width: 210mm;
-            min-height: 297mm;
+            width: 310mm;
+            min-height: 397mm;
             margin: 0 auto;
             background: white;
             padding: 20mm;
@@ -100,26 +100,46 @@
         }
 
         .signature {
-            display: flex;
+            width:100%;
             justify-content: space-between;
             margin-bottom: 30px;
-            padding-top: 80px;
+            padding-top: 60px;
+            margin-top: 200px;
         }
-
-        .signature span {
+        .signature ul{
+            list-style-type: none;
+            width: 100%;
+            position: relative;
+        }
+        .signature ul li {
             text-align: center;
             width: 23%;
             font-size: 14px;
-            padding-right:40px ;
+            float: left;
+
         }
 
         .print-info {
             display: flex;
+            width: 100%;
             justify-content: space-between;
             font-size: 12px;
             color: #666;
             padding-top: 15px;
             border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: -20px;
+        }
+
+        .print-info ul {
+            width: 100%;
+            position: relative;
+        }
+
+        .print-info ul li{
+            width: 32%;
+            float: left;
+            list-style-type: none;
         }
 
         @media print {
@@ -178,7 +198,7 @@
         <tr>
             <th scope="col">Amount</th>
             <th scope="col">Curr.</th>
-            <th scope="col">Payment Mode</th>
+            <th scope="col">Pay From</th>
             <th scope="col">Value Date</th>
         </tr>
         </thead>
@@ -192,18 +212,29 @@
         </tbody>
     </table>
 
+    <div class="signature">
+        <ul>
+            <li>Prepared By:</li>
+            <li>Received By:</li>
+            <li>Management:</li>
+            <li>Accounting:</li>
+        </ul>
+    </div>
+    <br/>
+    <br/>
     <div class="footer-section">
-        <div class="signature">
-            <span>Prepared By</span>
-            <span>Received By</span>
-            <span>Management</span>
-            <span>Accounting</span>
-        </div>
-
         <div class="print-info">
-            <span><strong>Created By:</strong> %CREATED_BY%</span>
-            <span><strong>Printed By:</strong> %PRINTED_BY%</span>
-            <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+            <ul>
+                <li>
+                    <span><strong>Created By:</strong> %CREATED_BY%</span>
+                </li>
+                <li>
+                    <span><strong>Printed By:</strong> %PRINTED_BY%</span>
+                </li>
+                <li>
+                    <span><strong>Print Date:</strong> %PRINT_DATE%</span>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
