@@ -93,6 +93,7 @@ class FnbController extends Controller
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
         $delcustomeraddress          = $request->input('delcustomeraddress');
+        $customer_type         = $request->input('customer_type');
         $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
         $customer_info = null;
 
@@ -108,13 +109,14 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        if ($order_type == 'delivery') {
+        if ($order_type == 'takeaway') {
             if ($customer_id > 0) {
                 $customer_info = Customers::find($customer_id);
                 $customer_info->ic_customer_name = $delcustomername;
                 $customer_info->ic_customer_address = $delcustomeraddress;
                 $customer_info->ic_customer_phone = $delcustomerphone;
                 $customer_info->ic_customer_mobile = $delcustomerphone;
+                $customer_info->ic_customer_type = $customer_type;
                 $customer_info->save();
             } else {
                 $customer_check = Customers::whereIcCustomerName($delcustomername)->get();
@@ -126,6 +128,8 @@ class FnbController extends Controller
                     $customer_info->ic_customer_phone = $delcustomerphone;
                     $customer_info->ic_customer_mobile = $delcustomerphone;
                     $customer_info->ic_customer_code = rand(10000, 99999);
+                    $customer_info->ic_customer_type = $customer_type;
+
                     $customer_info->save();
                     $customer_id = $customer_info->ic_id;
                 } else {
