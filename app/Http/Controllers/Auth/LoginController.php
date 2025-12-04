@@ -22,6 +22,7 @@ use App\models\System\Companies;
 use App\models\Users\Users;
 use App\models\System\Currency;
 use App\models\Accounting\VatAccounts;
+use App\Models\UserSession;
 
 class LoginController extends Controller
 {
@@ -79,6 +80,18 @@ class LoginController extends Controller
 
              return Response()->json($result_array);
              }*/
+
+            // Destroy all previous sessions of this user
+            UserSession::where('user_id', $user_info->id)->delete();
+
+            // Save new session
+            UserSession::create([
+                'user_id' => $user_info->id,
+                'session_id' => Session::getId(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->header('User-Agent'),
+                'location'   => geoip($request->ip())['city'] ?? null, // optional
+            ]);
 
 
             // Save information in the session

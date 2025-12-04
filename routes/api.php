@@ -75,6 +75,7 @@ use Illuminate\Http\Request;
 
     Route::get('/request/api/listcustomers','Api\CustomersController@GetListCustomers');
     Route::get('/request/api/listcustomerslight','Api\CustomersController@GetListCustomerslight');
+    Route::get('/request/api/findcustomer','Api\CustomersController@FindCustomer');
 
     Route::get('/request/api/getcustomerinfo','Api\CustomersController@GetCustomerInfo');
     Route::post('/request/api/savecustomer','Api\CustomersController@SaveCustomerInfo');

@@ -79,11 +79,10 @@
             </div>
             <div class="col-md-12">&nbsp;</div>
             <!--end: Search Form -->
-            <div class="col-md-12">
-
-                <table class="table table-bordered table-hover" width="100%">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-row-dashed table-row-gray-300 gy-7">
                     <thead>
-                    <tr>
+                    <tr class="fw-bold fs-6 text-gray-800">
                         <th style="width:4px;white-space: nowrap;"  title="Id"></th>
                         <th style="width:4px;white-space: nowrap;"  title="Id">ID</th>
                         <th title="Floor Name">Floor Name</th>

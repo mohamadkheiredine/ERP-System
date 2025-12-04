@@ -1,5 +1,4 @@
 <?php
-
 /***********************************************************
 CustomersController.php
 Product :
@@ -68,12 +67,13 @@ class CustomersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256', $c_hash);
+        $c_hash              =  hash('sha256',$c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if ($c_hash != $g_hash) {
+        if( $c_hash != $g_hash )
+        {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -82,15 +82,15 @@ class CustomersController extends Controller
 
 
         $nbr_rows_per_pages    = 10;
-        if ($current_page > 1)
-            $skip = ($current_page - 1) * $nbr_rows_per_pages;
+        if($current_page > 1)
+            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
         else
             $skip = 0;
 
 
         $customers_cond    = Customers::whereIcIsDeleted(0);
-        if (strlen($customer_search) > 0)
-            $customers_cond    = $customers_cond->where('ic_customer_name', 'LIKE', '%' . $customer_search . '%');
+        if(strlen($customer_search) > 0)
+            $customers_cond    = $customers_cond->where('ic_customer_name','LIKE','%' . $customer_search. '%');
 
 
         if ($customer_type && $customer_type !== "All") {
@@ -101,17 +101,18 @@ class CustomersController extends Controller
         $customers_count = $customers_cond->count();
 
 
-        $total_pages = ceil($customers_count / $nbr_rows_per_pages);
+        $total_pages = ceil( $customers_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
 
-        $lst_customers_obj = $customers_cond->get();
+        $lst_customers_obj = $customers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
 
         $result_array = array();
         $customers_array = array();
         $AccountingManager = new AccountingManager();
 
 
-        foreach ($lst_customers_obj as $index => $customer_info) {
+        foreach ($lst_customers_obj as $index => $customer_info)
+        {
             $customers_array[$index]['ic_id']                   = $customer_info->ic_id;
             $customers_array[$index]['ic_customer_code']        = $customer_info->ic_customer_code;
             $customers_array[$index]['ic_customer_name']        = $customer_info->ic_customer_name;
@@ -523,5 +524,30 @@ class CustomersController extends Controller
         $result_array['error_msg']  = "Operation Completed Successfully";
 
         return Response()->json($result_array);
+    }
+
+    public function FindCustomer(Request $request)
+    {
+        $name = $request->input('name');
+        $phone = $request->input('phone');
+
+        $customer = Customers::where('ic_customer_name', $name)
+            ->orWhere('ic_customer_phone', $phone)
+            ->where('ic_is_deleted', 0)
+            ->first();
+
+        if ($customer) {
+            return response()->json([
+                'is_error' => 0,
+                'exists' => true,
+                'customer_id' => $customer->ic_id
+            ]);
+        }
+
+        return response()->json([
+            'is_error' => 0,
+            'exists' => false,
+            'customer_id' => 0
+        ]);
     }
 }

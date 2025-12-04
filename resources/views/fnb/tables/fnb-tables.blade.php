@@ -75,9 +75,10 @@
     <!--end: Search Form -->
     <div class="col-md-12">
 
-      <table class="table table-bordered table-hover" width="100%">
-        <thead>
-          <tr>
+      <table class="table table-bordered table-hover table-responsive">
+          <table class="table table-row-dashed table-row-gray-300 gy-7">
+              <thead>
+              <tr class="fw-bold fs-6 text-gray-800">
             <th style="width:4px;white-space: nowrap;" title="Id"></th>
             <th style="width:4px;white-space: nowrap;" title="Id">ID</th>
             <th title="Table Label">Label</th>

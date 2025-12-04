@@ -82,13 +82,13 @@
             <p style="width:100%;font-weight:bold" align="center">code marchand: 590953</p>
         </div>
         @if(isset($delivery_id) && $delivery_id != 0)
-            <div id="mid">
-                <div class="info">
-                    <h2>Contact Info</h2>
-                    <p>
-                        Name : {{$customer_info->ic_customer_name}}</br>
-                        Address : {{$customer_info->ic_customer_address}}</br>
-                        Phone : {{$customer_info->ic_customer_phone}}</br>
+            <div id="mid" style="text-align: center; margin-top: 10px;">
+                <div class="info" style="display: inline-block; text-align: left;">
+                    <h2 style="margin-bottom: 8px;">Contact Info</h2>
+                    <p style="line-height: 1.6; font-size: 14px;">
+                        <strong>Name:</strong> {{ $customer_info->ic_customer_name }} <br>
+                        <strong>Address:</strong> {{ $customer_info->ic_customer_address }} <br>
+                        <strong>Phone:</strong> {{ $customer_info->ic_customer_phone }} <br>
                     </p>
                 </div>
             </div>
@@ -101,7 +101,8 @@
                     @foreach($lst_order_items as $index => $order_item)
                         <tr>
                             <td>
-                                {{ $order_item['item_id'] > 0 ? $order_item['item_name'] : '' }} x {{ $order_item['quantity'] }}
+                                {{ $order_item['item_id'] > 0 ? $order_item['item_name'] : '' }} x
+                                {{ $order_item['quantity'] }}
                             </td>
                             <td>{{ number_format($order_item['quantity'] * $order_item['price'], 2) }}
                                 <b>{{ $currency->cc_currency_code }}</b>
@@ -117,7 +118,8 @@
                 <tr>
                     <th align="left">Subtotal:</th>
                     <td align="left">
-                        {{ number_format($sub_total, 2) }}&nbsp;<b>{{ $currency->cc_currency_code }}</b></td>
+                        {{ number_format($sub_total, 2) }}&nbsp;<b>{{ $currency->cc_currency_code }}</b>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>
