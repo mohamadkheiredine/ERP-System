@@ -367,7 +367,7 @@ class CustomersController extends Controller
         );
 
         $result_array['is_error'] = 0;
-        $result_array['customer_data'] = json_encode($customer_data);
+        $result_array['customer_data'] = $customer_data;
         return Response()->json($result_array);
     }
 

@@ -77,6 +77,7 @@ class FnbController extends Controller
 
     public function CreateOrder(Request $request)
     {
+
         $g_hash   = $request->input('g_hash');
         $order_items = $request->input('order_items');
         $order_items = json_decode($order_items, true);
@@ -190,6 +191,7 @@ class FnbController extends Controller
                 "quantity"  => $item_order['quantity'],
                 "price"     => $item_order['price'],
                 "total"     => $item_order['quantity'] * $item_order['price'],
+                "modifiers" => isset($item_order['modifiers']) ? $item_order['modifiers'] : []
             ];
         }
 
@@ -216,6 +218,7 @@ class FnbController extends Controller
             "discount" => $discount,
             "cost_total" => $total,
             "currency" => $currency,
+
         );
 
         $receipt_html = view('templates.fnbreceipt', $data)->render();

@@ -98,17 +98,28 @@
                 <thead>
                 </thead>
                 <tbody>
-                    @foreach($lst_order_items as $index => $order_item)
+                    @foreach($lst_order_items as $order_item)
                         <tr>
                             <td>
-                                {{ $order_item['item_id'] > 0 ? $order_item['item_name'] : '' }} x
-                                {{ $order_item['quantity'] }}
+                                {{ $order_item['item_name'] }} x {{ $order_item['quantity'] }}
+
+                                @if(!empty($order_item['modifiers']))
+                                    <br>
+                                    <small>
+                                        @foreach($order_item['modifiers'] as $m)
+                                            - {{ $m['name'] }} ({{ number_format($m['price'], 2) }})<br>
+                                        @endforeach
+                                    </small>
+                                @endif
                             </td>
-                            <td>{{ number_format($order_item['quantity'] * $order_item['price'], 2) }}
-                                <b>{{ $currency->cc_currency_code }}</b>
+
+                            <td>
+                                {{ number_format($order_item['total'], 2) }}
+                                {{ $currency->cc_currency_code }}
                             </td>
                         </tr>
                     @endforeach
+
 
                 </tbody>
             </table>
