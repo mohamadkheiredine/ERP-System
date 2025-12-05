@@ -419,7 +419,7 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $lst_tables = FnbOrderTables::whereFtIsDeleted(0)->get();
+        $lst_tables = Tables::whereFtIsDeleted(0)->get();
 
         $tables_array = [];
         foreach ($lst_tables as $index => $table_info) {
