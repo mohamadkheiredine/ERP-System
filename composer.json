@@ -28,7 +28,8 @@
         "mikehaertl/php-pdftk": "^0.13.1",
         "milon/barcode": "*",
         "phpmailer/phpmailer": "^6.8",
-        "predis/predis": "^2.0"
+        "predis/predis": "^2.0",
+        "torann/geoip": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

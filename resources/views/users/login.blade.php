@@ -86,7 +86,7 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 									<!--end::Password-->
 								</div>
 								<!--end::Input group=-->
-						
+
 								<!--begin::Submit button-->
 								<div class="d-grid mb-10" style="text-align: left">
 									<button type="submit" id="kt_sign_in_submit" class="btn btnLogin">
@@ -111,7 +111,7 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 				<!--begin::Aside-->
 				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ url('images/titanerpbackground.jpg') }})">
 					<!--begin::Content-->
-					
+
 					<!--end::Content-->
 				</div>
 				<!--end::Aside-->
@@ -123,19 +123,8 @@ if(strlen($company_info[0]['cd_logo_base_src']) > 0 ){
 
 		<script src="{{ url('theme/style/src/assets/plugins/global/plugins.bundle.js') }}"></script>
 		<script src="{{ url('theme/style/src/assets/js/scripts.bundle.js') }}"></script>
-		    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"
-      integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8JpG/S0GUMZwebnVFLPd6SU5yg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer">
-    </script>
-
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"
-      integrity="sha512-XZEy8UQ9rngkxQVugAdOuBRDmJ5N4vCuNXCh8KlniZgDKTvf7zl75QBtaVG1lEhMFe2a2DuA22nZYY+qsI2/xA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+        <script src="{{ url('default/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url('default/assets/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
 <!-- 		<script src="{{ url('theme/style/src/assets/js/custom/authentication/sign-in/general.js') }}"></script> -->
