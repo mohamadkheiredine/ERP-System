@@ -544,8 +544,26 @@ CREATE TABLE `prod_farm_cycle_days` (
 
 ALTER TABLE  `callcenter_inbound_calls` ADD COLUMN `ic_is_paid` TINYINT NULL DEFAULT 0 AFTER `ic_currency_id`;
 ALTER TABLE  `callcenter_inbound_calls` ADD COLUMN `ic_comission_paid` TINYINT NULL DEFAULT 0 AFTER `ic_is_paid`;
-ALTER TABLE crm_accounts` ADD COLUMN `ca_location` VARCHAR(255) NULL DEFAULT NULL AFTER `ca_shipping_code`;
+ALTER TABLE `crm_accounts` ADD COLUMN `ca_location` VARCHAR(255) NULL DEFAULT NULL AFTER `ca_shipping_code`;
 ALTER TABLE `acc_transaction_movements` ADD COLUMN `tm_trans_code` VARCHAR(15) NULL DEFAULT NULL AFTER `tm_store_id`;
 
 
 ALTER TABLE  `prod_farm_cycles` ADD COLUMN `fc_company_id` INT NULL DEFAULT 0 AFTER `fc_id`;
+
+
+ALTER TABLE `prod_farm_cycles`
+ADD COLUMN `fc_closing_date` DATETIME NULL DEFAULT NULL AFTER `fc_is_closed`,
+ADD COLUMN `fc_cycle_total_time` SMALLINT NULL DEFAULT 0 AFTER `fc_closing_date`,
+ADD COLUMN `fc_closing_by` INT NULL DEFAULT 0 AFTER `fc_cycle_total_time`,
+ADD COLUMN `fc_cycle_total_quantity` DECIMAL NULL DEFAULT 0 AFTER `fc_closing_by`,
+ADD COLUMN `fc_quantity_unit` SMALLINT NULL DEFAULT 0 AFTER `fc_cycle_total_quantity`;
+ALTER TABLE `prod_farm_cycles` ADD COLUMN `fc_cycle_status` INT NULL DEFAULT 0 AFTER `fc_quantity_unit`;
+
+
+
+ALTER TABLE `prod_farm_cycles`
+    CHANGE COLUMN `fc_farm_name` `fc_farm_name` VARCHAR(150) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL ,
+    CHANGE COLUMN `fc_bird_type` `fc_bird_type` INT NULL DEFAULT 0 ;
+
+
+INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('234', 'erp_farm_cycles', 'Allow Users to Access to Farm Cycles Management', 'Allow Users to Access to Farm Cycles Management', 'Production Management');

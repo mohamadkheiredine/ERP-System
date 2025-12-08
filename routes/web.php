@@ -417,6 +417,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/production/plan/editform/{pp_id}','Production\ProductionPlanController@EditForm');
 
 
+    Route::get('/production/farmcycles','Production\FarmCyclesController@index');
+    Route::get('/production/farmcycles/addform','Production\FarmCyclesController@AddForm');
+    Route::get('/production/farmcycles/editform/{fc_id}','Production\FarmCyclesController@EditForm');
+
+
     Route::get('/maintenance/jobstatus','Maintenance\JobStatusController@index');
     Route::get('/maintenance/jobstatus/addform','Maintenance\JobStatusController@AddForm');
     Route::get('/maintenance/jobstatus/editform/{js_id}','Maintenance\JobStatusController@EditForm');

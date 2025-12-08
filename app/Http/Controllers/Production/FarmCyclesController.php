@@ -16,10 +16,14 @@
 namespace App\Http\Controllers\Production;
 
 use App\Http\Controllers\Controller;
+use App\library\FarmCycleManager;
 use App\models\Inventory\Products;
 use App\models\Inventory\WareHouses;
 use App\models\PMP\ProjectRoles;
+use App\models\Production\FarmCycleDays;
 use App\models\Production\FarmCycles;
+use App\models\System\Companies;
+use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Users\UserTypes;
 use Validator;
@@ -51,7 +55,12 @@ class FarmCyclesController extends Controller
      */
     public function index()
     {
-        $data = array();
+
+        $lst_companies = Companies::whereCdIsDeleted(0)->get();
+
+        $data = array(
+            'lst_companies' => $lst_companies,
+        );
         return Response()->view('farms.farmscycles',$data);
     }
 
@@ -102,7 +111,7 @@ class FarmCyclesController extends Controller
         $data = array(
             "lst_farm_cycles" => $lst_farm_cycles,
         );
-        $result_array['display'] = view("farms.listfarms",$data)->render();
+        $result_array['display'] = view("farms.listcycles",$data)->render();
 
         return Response()->json($result_array);
     }
@@ -118,15 +127,25 @@ class FarmCyclesController extends Controller
     public function AddForm()
     {
 
+        $cycle_manager = new FarmCycleManager();
+        $cycle_code = $cycle_manager->GenerateCycleCode();
+        $cycleDays =[];
         $default_company_id = session('default_company_id');
         $lst_users = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->get();
         $lst_warehouses   = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
-        $lst_products   = Products::wherePProductIsDeleted(0)->get();
-
+        $lst_bird_types   = Products::wherePProductIsDeleted(0)->wherePProductType(1)->get();
+        $lst_final_products   = Products::wherePProductIsDeleted(0)->wherePProductType(22)->get();
+        $lst_sys_units      = Units::whereSuIsDeleted(0)->get();
+        $cycle = new FarmCycles();
         $data = array(
             "lst_users" => $lst_users,
+            "cycle" => $cycle,
+            "cycle_code" => $cycle_code,
             "lst_warehouses" => $lst_warehouses,
-            "lst_products" => $lst_products,
+            "lst_sys_units" => $lst_sys_units,
+            "lst_bird_types" => $lst_bird_types,
+            "lst_final_products" => $lst_final_products,
+            "cycleDays" => $cycleDays,
         );
         return view('farms.addcycle',$data);
     }
@@ -148,8 +167,9 @@ class FarmCyclesController extends Controller
         $fc_bird_type                          = $request->input('fc_bird_type');
         $fc_birds_start                          = $request->input('fc_birds_start');
         $fc_start_date                          = $request->input('fc_start_date');
-        $fc_end_date                          = $request->input('fc_end_date');
-        $fc_notes                          = $request->input('fc_notes');
+        $fc_end_date                            = $request->input('fc_end_date');
+        $fc_notes                               = $request->input('fc_notes');
+        $days                                   = $request->input('days');
         $fc_is_closed                          = $request->has('fc_is_closed') ? 1 : 0;
 
         $result_array = array();
@@ -172,10 +192,36 @@ class FarmCyclesController extends Controller
         $farm_cycle->fc_end_date            = $fc_end_date;
         $farm_cycle->fc_notes            = $fc_notes;
         $farm_cycle->fc_is_closed            = $fc_is_closed;
-
-
-
         $farm_cycle->save();
+
+
+        foreach($days as $index => $day)
+        {
+            $id = $day['id'];
+            $cycle_day = new FarmCycleDays();
+            if( $id != null )
+                $cycle_day = FarmCycleDays::find($fc_id);
+
+            $cycle_day->fcd_cycle_id = $fc_id;
+            $cycle_day->fcd_date = $day['date'];
+            $cycle_day->fcd_age_days = $day['age_days'];
+            $cycle_day->fcd_feed_type = $day['feed_type'];
+            $cycle_day->fcd_feed_received_kg = $day['feed_received_kg'];
+            $cycle_day->fcd_feed_intake_day_kg = $day['feed_intake_day_kg'];
+            $cycle_day->fcd_feed_in_stock_kg = $day['feed_in_stock_kg'];
+            $cycle_day->fcd_mortality = $day['mortality'];
+            $cycle_day->fcd_closing_birds = $day['closing_birds'];
+            $cycle_day->fcd_body_weight_g = $day['body_weight_g'];
+            $cycle_day->fcd_daily_intake_g_per_bird = $day['daily_intake_g_per_bird'];
+            $cycle_day->fcd_cumulative_intake_g_per_bird = $day['cumulative_intake_g_per_bird'];
+            $cycle_day->fcd_fcr = $day['fcr'];
+            $cycle_day->fcd_medicine = $day['medicine'];
+            $cycle_day->fcd_water_liters = $day['water_liters'];
+            $cycle_day->fcd_diesel_liters = $day['diesel_liters'];
+            $cycle_day->save();
+
+        }
+
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Farm Cycle Information Has been saved';
@@ -196,14 +242,21 @@ class FarmCyclesController extends Controller
         $default_company_id = session('default_company_id');
         $lst_users = Users::whereUIsActive(1)->whereUIsDeleted(0)->whereFkCompanyId($default_company_id)->get();
         $lst_warehouses   = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
-        $lst_products   = Products::wherePProductIsDeleted(0)->get();
+        $lst_bird_types   = Products::wherePProductIsDeleted(0)->wherePProductType(1)->get();
+        $lst_final_products   = Products::wherePProductIsDeleted(0)->wherePProductType(22)->get();
+        $lst_sys_units      = Units::whereSuIsDeleted(0)->get();
         $cycle_info = FarmCycles::find($fc_id);
-
+        $cycleDays = FarmCycleDays::where('fcd_cycle_id', $fc_id)
+            ->orderBy('fcd_date')
+            ->get();
         $data = array(
             "lst_users" => $lst_users,
             "lst_warehouses" => $lst_warehouses,
-            "lst_products" => $lst_products,
-            "cycle_info" => $cycle_info,
+            "lst_bird_types" => $lst_bird_types,
+            "lst_final_products" => $lst_final_products,
+            "lst_sys_units" => $lst_sys_units,
+            "cycle" => $cycle_info,
+            "cycleDays" => $cycleDays,
         );
         return view('farms.editcycle',$data);
     }

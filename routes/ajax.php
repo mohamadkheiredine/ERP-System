@@ -574,6 +574,11 @@ Route::post('/request/productionplan/blockproduction','Production\ProductionPlan
 Route::post('/request/productionplan/createqualitycheck','Production\ProductionPlanController@CreateQualityCheck');
 Route::post('/request/plan/editqualitycheck','Production\ProductionPlanController@EditQualityCheck');
 
+
+Route::get('/request/farmcycles/displaylist','Production\FarmCyclesController@DisplayList');
+Route::post('/request/farmcycles/savefarmcycleinfo','Production\FarmCyclesController@SaveInfo');
+Route::delete('/request/farmcycles/deletefarmcycleinfo','Production\FarmCyclesController@DeleteFarmCycle');
+
 Route::post('/request/qualitycheck/displaylist','Production\QualityCheckController@DisplayList');
 
 

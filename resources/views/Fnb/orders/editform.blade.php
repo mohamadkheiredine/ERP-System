@@ -413,8 +413,8 @@
                                                             id="OI_ITEM_ID" name="oi_item_id">
                                                             <option value="0">-- Select Item --</option>
                                                             @foreach($lst_items as $item_info)
-                                                                <option value="{{ $item_info->fi_id }}">
-                                                                    {{ $item_info->fi_item_name }}
+                                                                <option value="{{ $item_info->mi_id }}">
+                                                                    {{ $item_info->mi_item_name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -486,7 +486,7 @@
 
                                                 <div class="col-md-4 col-xs-12">
                                                     <div class="form-group">
-                                                        <label class="control-label">Kitchen Stations <span
+                                                        <label class="control-label">Kitchen <span
                                                                 class="required"></span></label>
                                                         <select class="form-select form-control" data-control="select2"
                                                             id="OI_STATION_ID" name="oi_station_id" name="lead_category">

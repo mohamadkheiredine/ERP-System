@@ -85,9 +85,6 @@
               </select>
             </div>
           </div>
-        </div>
-
-        <div class="row">
 
           <div class="col-md-4 col-xs-12">
             <div class="form-group">
@@ -103,8 +100,8 @@
 
           <div class="col-md-4 col-xs-12">
             <div class="form-group">
-              <label class="control-label">Table <span class="required"></span></label>
-              <select class="form-select form-control" data-control="select2" id="FO_TABLE_ID" name="fo_table_id" name="lead_category">
+              <label class="control-label">Table</label>
+              <select class="form-select form-control" data-control="select2" id="FO_TABLE_ID" name="fo_table_id">
                 <option value="0">-- Select Table --</option>
                 @foreach($lst_tables as $index => $table_info)
                 <option value="{{ $table_info->ft_id }}">{{ $table_info->ft_label }}</option>
@@ -116,7 +113,7 @@
           <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Customers <span class="required"></span></label>
-              <select class="form-select form-control" data-control="select2" id="FO_CUSTOMER_ID" name="fo_customer_id" name="lead_category">
+              <select class="form-select form-control" data-control="select2" id="FO_CUSTOMER_ID" name="fo_customer_id">
                 <option value="0">-- Select Customer --</option>
                 @foreach($lst_customers as $index => $customer_info)
                 <option value="{{ $customer_info->ic_id }}">{{ $customer_info->ic_customer_name }}</option>
@@ -124,9 +121,6 @@
               </select>
             </div>
           </div>
-        </div>
-
-        <div class="row">
 
           <div class="col-md-4 col-xs-12">
             <div class="form-group">
@@ -140,97 +134,23 @@
             </div>
           </div>
 
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Subtotal <span class="required"></span></label>
-              <input type="number" name="fo_subtotal" id="FO_SUBTOTAL" class="form-control" required />
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order discount <span class="required"></span></label>
-              <input type="number" name="fo_discount" id="FO_DISCOUNT" class="form-control" required />
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Tax <span class="required"></span></label>
-              <input type="number" name="fo_tax" id="FO_TAX" class="form-control" required />
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Service Charge <span class="required"></span></label>
-              <input type="number" name="fo_service_charge" id="FO_SERVICE_CHARGE" class="form-control" required />
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Total Amount <span class="required"></span></label>
-              <input type="number" name="fo_total_amount" id="FO_TOTAL_AMOUNT" class="form-control" required />
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Paid Amount <span class="required"></span></label>
-              <input type="number" name="fo_paid_amount" id="FO_PAID_AMOUNT" class="form-control" required />
-            </div>
-          </div>
 
           <div class="col-md-4">
             <label class="control-label">Currency <span class="required"></span></label>
-            <select class="form-select form-control" data-control="select2" id="CC_ID" name="cc_id" name="lead_category">
+            <select class="form-select form-control" data-control="select2" id="CC_ID" name="cc_id">
               <option value="0">-- Select Currency --</option>
               @foreach($lst_currencies as $index => $currency_info)
-              <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }}</option>
+              <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
               @endforeach
             </select>
           </div>
-
-          <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Order Payment Status <span class="required"></span></label>
-              <select class="form-select form-control" data-control="select2" id="FO_PAYMENT_STATUS" name="fo_payment_status" name="lead_category">
-                <option value="0">-- Select payment status --</option>
-                <option value="unpaid">Unpaid</option>
-                <option value="partial">Partial</option>
-                <option value="paid">Paid</option>
-              </select>
-            </div>
-          </div>
-
         </div>
 
         <div class="row">
           <div class="col-md-12 col-xs-12">
             <div class="form-group">
-              <label class="control-label">Notes <span class="required"></span></label>
-              <textarea name="fo_notes" id="FO_NOTES" class="form-control" rows="3" placeholder="Enter orders notes..." required></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-3">
-            <div class="form-group">
-              <br />
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="fo_is_paid" id="FO_IS_PAID" value="1" />
-                <span class="form-check-label fw-semibold text-muted">
-                  Paid
-                </span>
-              </label>
+              <label class="control-label">Notes</label>
+              <textarea name="fo_notes" id="FO_NOTES" class="form-control" rows="3" placeholder="Enter orders notes..."></textarea>
             </div>
           </div>
         </div>

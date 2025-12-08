@@ -1778,6 +1778,19 @@ Page Description :
 										</div>
 
                                         @endif
+
+                                        @if(CheckPrivilage('erp_farm_cycles') == "allow")
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('production/farmcycles') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Farm Cycles Module</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+                                        @endif
 									</div>
 									<!--end:Menu sub-->
 								</div>

@@ -347,8 +347,22 @@ class OrdersController extends Controller
         }
         $stock_id = $orderProduct->so_stock_id;
         $quantity = $orderProduct->so_product_quantity;
+
+
+
+
+        // decrease the total amount
+        $orderInfo = Orders::find($order_id);
+        $sub_total = $orderInfo->so_total_cost - $orderProduct->so_product_price;
+
+        $orderInfo->so_sub_total = $sub_total;
+        $orderInfo->so_total_cost = $sub_total ;
+        $orderInfo->save();
+
         $isDeleted = OrderProducts::where('fk_order_id', $order_id)->where('so_stock_id', $stock_id)->delete();
         Stocks::where('is_id', $stock_id)->increment('is_quanity', $quantity);
+
+
         return response()->json([
             'success' => (bool)$isDeleted,
             'message' => $isDeleted ? 'Product deleted successfully!' : 'Failed to delete product.'

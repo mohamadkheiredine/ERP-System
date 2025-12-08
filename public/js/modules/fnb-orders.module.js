@@ -61,18 +61,8 @@ orders_module = {
                 ps_company_id: { required: true, min: 1 },
                 fo_order_type: { required: true },
                 fo_store_id: { required: true, min: 1 },
-                fo_table_id: { required: true, min: 1 },
-                fo_customer_id: { required: true, min: 1 },
-                fo_order_status: { required: true, min: 1 },
-                fo_subtotal: { required: true, number: true, min: 0 },
-                fo_discount: { required: true, number: true, min: 0 },
-                fo_tax: { required: true, number: true, min: 0 },
-                fo_service_charge: { required: true, number: true, min: 0 },
-                fo_total_amount: { required: true, number: true, min: 0 },
-                fo_paid_amount: { required: true, number: true, min: 0 },
                 cc_id: { required: true, min: 1 },
-                fo_payment_status: { required: true },
-                fo_notes: { required: true },
+                fo_payment_status: { required: true }
             },
 
             messages: {
