@@ -317,8 +317,7 @@
                             <button type="submit" name="btn_save_order" id="BTN_SAVE_ORDER"
                                 class="btn btn-info">Save</button>
                             @if($order_info->fo_is_paid == 0)
-                                <button type="button" name="btn_pay_order" id="BTN_PAY_ORDER" class="btn btn-danger">Pay
-                                    Order</button>
+                                <button type="button" id="BTN_PAY_ORDER" class="btn btn-danger">Pay Order</button>
                             @endif
                             <button type="button" id="BACK_FORM" name="back_form" class="btn btn-secondary">Back</button>
                             <button type="button" id="BTN_CLOSE_PAGE" name="btn_close_page"
