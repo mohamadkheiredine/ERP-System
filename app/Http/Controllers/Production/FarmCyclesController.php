@@ -158,6 +158,7 @@ class FarmCyclesController extends Controller
      */
     public function SaveInfo(Request $request)
     {
+        $default_company_id = session('default_company_id');
         $fc_id                          = $request->input('fc_id');
         $fc_assign_to                          = $request->input('fc_assign_to');
         $fc_warehouse_id                          = $request->input('fc_warehouse_id');
@@ -181,6 +182,7 @@ class FarmCyclesController extends Controller
             $farm_cycle = FarmCycles::find($fc_id);
         }
 
+        $farm_cycle->fc_company_id            = $default_company_id;
         $farm_cycle->fc_assign_to            = $fc_assign_to;
         $farm_cycle->fc_warehouse_id            = $fc_warehouse_id;
         $farm_cycle->fc_product_id            = $fc_product_id;
@@ -200,10 +202,10 @@ class FarmCyclesController extends Controller
             $id = $day['id'];
             $cycle_day = new FarmCycleDays();
             if( $id != null )
-                $cycle_day = FarmCycleDays::find($fc_id);
+                $cycle_day = FarmCycleDays::find($id);
 
             $cycle_day->fcd_cycle_id = $fc_id;
-            $cycle_day->fcd_date = $day['date'];
+            $cycle_day->fcd_date = date("Y-m-d",strtotime($day['date']));
             $cycle_day->fcd_age_days = $day['age_days'];
             $cycle_day->fcd_feed_type = $day['feed_type'];
             $cycle_day->fcd_feed_received_kg = $day['feed_received_kg'];
@@ -247,7 +249,7 @@ class FarmCyclesController extends Controller
         $lst_sys_units      = Units::whereSuIsDeleted(0)->get();
         $cycle_info = FarmCycles::find($fc_id);
         $cycleDays = FarmCycleDays::where('fcd_cycle_id', $fc_id)
-            ->orderBy('fcd_date')
+            ->orderBy('fcd_id','ASC')
             ->get();
         $data = array(
             "lst_users" => $lst_users,

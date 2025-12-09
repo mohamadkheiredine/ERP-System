@@ -32,6 +32,53 @@
     </style>
 @endsection
 @section('plugins')
+    <script type="text/javascript">
+$(function(){
+    new tempusDominus.TempusDominus(document.getElementById('TA_START_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+
+    new tempusDominus.TempusDominus(document.getElementById('TA_END_DATE'),{
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                month: true,
+                year: true,
+                decades: true,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
+                useTwentyfourHour: undefined
+            }
+        },
+        localization: {
+            format : "yyyy-MM-dd"
+
+        }
+    });
+
+})
+    </script>
 @endsection
 
 @section('content')
@@ -49,6 +96,25 @@
         </div>
         <div class="card-body">
             <div class="container py-4">
+                <form name="frm_search_telemarketing" method="get" id="FORM_SEARCH_TELEMARKETING" action="{{ url('callcenter/reports/telemarketing') }}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Start Date</label>
+                        <input type="text" name="from" id="TA_START_DATE" class="form-control" value="" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>End Date</label>
+                        <input type="text" name="to" id="TA_END_DATE" class="form-control" value="" />
+                    </div>
+                    <div class="col-md-4">
+                        <br/>
+                        <button type="submit" class="btn btn-info" name="btn_search" id="BTN_SEARCH">Submit</button>
+                    </div>
+                </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-12" style="height:20px">&nbsp;</div>
+                </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="mb-0">📞 Telemarketer Appointment Report</h4>
                 </div>

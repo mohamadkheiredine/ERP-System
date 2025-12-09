@@ -336,6 +336,7 @@ class AppointmentsController extends Controller
             WHERE lapp.ca_apt_date BETWEEN ? AND ?
         ";
 
+
         $results = DB::select($sql, [$from, $to, $from, $to]);
         return view('reports.telemarketer-appointments', compact('results', 'from', 'to'));
     }

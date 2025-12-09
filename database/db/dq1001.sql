@@ -567,3 +567,47 @@ ALTER TABLE `prod_farm_cycles`
 
 
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('234', 'erp_farm_cycles', 'Allow Users to Access to Farm Cycles Management', 'Allow Users to Access to Farm Cycles Management', 'Production Management');
+
+
+
+ALTER TABLE `prod_farm_cycles`
+ADD COLUMN `fc_total_expenses` DECIMAL NULL DEFAULT 0 AFTER `fc_quantity_unit`,
+ADD COLUMN `fc_total_selling_price` DECIMAL NULL AFTER `fc_total_expenses`,
+ADD COLUMN `fc_currency_id` INT NULL DEFAULT 0 AFTER `fc_total_selling_price`;
+
+
+
+CREATE TABLE `prod_cycle_expenses` (
+`ce_id` INT NOT NULL AUTO_INCREMENT,
+`ce_company_id` INT NULL DEFAULT 0,
+`ce_cycle_id` INT NULL DEFAULT 0,
+`ce_voucher_id` INT NULL DEFAULT 0,
+`ce_voucher_amount` DECIMAL NULL DEFAULT 0,
+`ce_voucher_currency` SMALLINT NULL DEFAULT 0,
+`ce_created_by` INT NULL DEFAULT 0,
+`ce_creation_date` DATE NULL DEFAULT NULL,
+`ce_is_deleted` TINYINT NULL DEFAULT 0,
+`ce_deleted_by` INT NULL DEFAULT 0,
+PRIMARY KEY (`ce_id`),
+INDEX `fk_ce_company_id_idx` (`ce_company_id` ASC) VISIBLE,
+INDEX `fk_ce_cycle_id_idx` (`ce_cycle_id` ASC) VISIBLE,
+INDEX `fk_ce_voucher_id_idx` (`ce_voucher_id` ASC) VISIBLE,
+CONSTRAINT `fk_ce_company_id`
+FOREIGN KEY (`ce_company_id`)
+  REFERENCES `retailerp_db`.`company_details` (`cd_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+CONSTRAINT `fk_ce_cycle_id`
+FOREIGN KEY (`ce_cycle_id`)
+  REFERENCES `retailerp_db`.`prod_farm_cycles` (`fc_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+CONSTRAINT `fk_ce_voucher_id`
+FOREIGN KEY (`ce_voucher_id`)
+  REFERENCES `retailerp_db`.`billing_payment_vouchers` (`pv_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE)
+    ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
