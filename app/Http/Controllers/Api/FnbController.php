@@ -48,9 +48,11 @@ use App\models\Inventory\Vendors;
 use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
+use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
+use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrderKitchen;
 use App\models\FnB\FnbOrders;
@@ -75,12 +77,56 @@ class FnbController extends Controller
         return $order_code;
     }
 
+    private function reduceStock($product_id, $warehouse_id, $qty_to_reduce)
+    {
+        if ($qty_to_reduce <= 0) {
+            return;
+        }
+
+        DB::transaction(function () use ($product_id, $warehouse_id, &$qty_to_reduce) {
+
+            $available_stock = Stocks::where('fk_product_id', $product_id)
+                ->where('fk_warehouse_id', $warehouse_id)
+                ->where('is_quanity', '>', 0)
+                ->orderBy('is_id', 'asc')
+                ->lockForUpdate()
+                ->get();
+
+            $total_stock = $available_stock->sum('is_quanity');
+            if ($total_stock < $qty_to_reduce) {
+                throw new \Exception("Not enough stock for product ID $product_id. Need $qty_to_reduce but only $total_stock available.");
+            }
+
+            foreach ($available_stock as $batch) {
+                if ($qty_to_reduce <= 0) {
+                    break;
+                }
+
+                $take = min($batch->is_quanity, $qty_to_reduce);
+
+                $batch->decrement('is_quanity', $take);
+                $qty_to_reduce -= $take;
+            }
+        });
+    }
+
     public function CreateOrder(Request $request)
     {
 
         $g_hash   = $request->input('g_hash');
         $order_items = $request->input('order_items');
-        $order_items = json_decode($order_items, true);
+        $order_items = $request->input('order_items');
+
+        // If POSTMAN sends array → use it as is
+        if (is_array($order_items)) {
+            // do nothing
+        }
+        // If POS sends JSON string → decode it
+        else if (is_string($order_items)) {
+            $order_items = json_decode($order_items, true);
+        }
+
+
         $store_id = $request->input('store_id');
         $warehouse_id = $request->input('warehouse_id');
         $user_id = $request->input('user_id');
@@ -185,13 +231,33 @@ class FnbController extends Controller
 
             $item_db = FnbMenuItem::find($item_order['item_id']);
 
+            $mods = [];
+
+            if (!empty($item_order['modifiers'])) {
+                foreach ($item_order['modifiers'] as $m) {
+
+                    $order_mod = FnbOrderItemModifiers::find($m['id']);
+                    if (!$order_mod) continue;
+
+                    $modifier = Modifier::find($order_mod->im_modifier_id);
+                    if (!$modifier) continue;
+
+                    $mods[] = [
+                        "id"    => $m['id'],
+                        "name"  => $modifier->m_modifier_name,
+                        "price" => $modifier->m_modifier_cost,
+                        "qty"   => $modifier->m_quantity,
+                    ];
+                }
+            }
+
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
                 "item_name" => $item_db ? $item_db->mi_item_name : "",
                 "quantity"  => $item_order['quantity'],
                 "price"     => $item_order['price'],
                 "total"     => $item_order['quantity'] * $item_order['price'],
-                "modifiers" => isset($item_order['modifiers']) ? $item_order['modifiers'] : []
+                "modifiers" => $mods,
             ];
         }
 
@@ -204,6 +270,42 @@ class FnbController extends Controller
 
         $order_info->fo_order_structure = json_encode($structure);
         $order_info->save();
+
+        foreach ($order_items as $item_order) {
+
+            $item_id = $item_order['item_id'];
+
+            $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                ->where('in_is_deleted', 0)
+                ->get();
+
+            foreach ($ingredients as $ing) {
+                $product_id = $ing->in_product_id;
+                $qty_per_unit = $ing->in_stock_quantity;
+
+                // dd($qty_per_unit, $product_id);
+
+                $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+            }
+
+            if (isset($item_order['modifiers'])) {
+                foreach ($item_order['modifiers'] as $mod) {
+
+                    $order_mod = FnbOrderItemModifiers::find($mod['id']);
+                    if (!$order_mod) continue;
+
+                    $modifier = Modifier::find($order_mod->im_modifier_id);
+                    if (!$modifier) continue;
+
+                    $product_id = $modifier->m_item_id;
+                    $qty_per_unit = $modifier->m_quantity;
+
+                    $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+                }
+            }
+        }
+
+
         $currency = Currency::find($order_info->fo_currency_id);
 
         $data = array(
