@@ -18,6 +18,12 @@ $(function () {
     $("button[id*=BTN_SAVE_ORDER]").on("click", orders_module.SaveOrderInfo);
     $("button[name=back_form]").on("click", orders_module.backToPreviousPage);
 
+    $(document).on("click", "#BTN_PAY_ORDER", function () {
+        $("#FO_IS_PAID").prop("checked", true);
+
+        orders_module.SaveOrderInfo();
+    });
+
     orders_module.DisplayListItemsOrder();
     orders_module.DisplayListDeliveries();
 

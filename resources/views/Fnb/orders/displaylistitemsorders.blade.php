@@ -4,7 +4,7 @@
             <input type="checkbox" name="ck_item_order_{{ $item_order_info->oi_id }}"
                 id="CK_ITEM_order_{{ $item_order_info->oi_id }}" class="checkboxes" value="{{ $item_order_info->oi_id }}" />
         </td>
-        <td>{{ $item_order_info->Item->fi_item_name }}</td>
+        <td>{{ $item_order_info->Item->mi_item_name }}</td>
         <td>{{ $item_order_info->oi_quantity }}</td>
         <td>{{ $item_order_info->oi_unit_price }}</td>
         <td>{{ $item_order_info->oi_item_discount }}</td>

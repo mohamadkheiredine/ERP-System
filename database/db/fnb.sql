@@ -135,4 +135,6 @@ CREATE TABLE fnb_order_audit_log (
 ALTER TABLE fnb_menu_items
     ADD COLUMN mi_kitchen_status_id SMALLINT DEFAULT '0';
 
-alter table fnb_kitchen_orders add column ko_kitchen_id smallint DEFAULT '0'
+alter table fnb_kitchen_orders add column ko_kitchen_id smallint DEFAULT '0';
+
+

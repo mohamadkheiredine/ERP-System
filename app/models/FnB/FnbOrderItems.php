@@ -34,7 +34,7 @@ class FnbOrderItems extends Model
 
     public function Item()
     {
-        return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'oi_item_id');
+        return $this->hasOne('App\models\FnB\FnbMenuItem', 'mi_id', 'oi_item_id');
     }
 
     public function Station()
