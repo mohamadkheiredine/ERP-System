@@ -263,6 +263,169 @@ class FnbOrdersController extends Controller
 
             $warehouse_id = $storeWarehouse->sw_warehouse_id;
 
+            $customer_info  = Customers::find($fo_customer_id);
+            $AccountingManager = new AccountingManager();
+            $default_company_id = session('default_company_id');
+
+            $invoice_code = $AccountingManager->GenerateInvoiceCode();
+
+            $invoice_info = new Invoices();
+            $invoice_info->bi_invoice_ref   = $invoice_code;
+            $invoice_info->bi_invoice_code  = $invoice_code;
+            $invoice_info->fk_account_id    = $customer_info->ic_account_number;
+            $invoice_info->fk_customer_id   = $fo_customer_id;
+            $invoice_info->bi_invoice_date  = $order_info->fo_creation_date;
+            $invoice_info->bi_due_date      = $order_info->fo_order_datetime;
+            $invoice_info->bi_payment_terms = 1;
+            $invoice_info->bi_invoice_items_type = 1;
+            $invoice_info->bi_invoice_type = 1;
+            $invoice_info->bi_payment_type  = 2;
+            $invoice_info->bi_invoice_note  = $order_info->fo_notes;
+            $invoice_info->bi_total_cost    = $order_info->fo_total_amount;
+            $invoice_info->bi_vat_id        = $order_info->fo_tax;
+            $invoice_info->bi_discount      = 0;
+            $invoice_info->bi_total_price    = $order_info->fo_total_amount;
+            $invoice_info->bi_invoice_currency = $order_info->fo_currency_id;
+            $invoice_info->bi_invoice_paid = 1;
+            $invoice_info->bi_invoice_status = 1;
+            $invoice_info->bi_number_payments = 1;
+            $invoice_info->bi_company_id = $default_company_id;
+            $invoice_info->save();
+
+            $bi_id = $invoice_info->bi_id;
+
+            // create receipt for this order
+
+            $receipt_code = $AccountingManager->generateReceiptCode();
+
+            $receipt_info = new Receipts();
+            $receipt_info->fk_invoice_id = $bi_id;
+            $receipt_info->br_company_id = $default_company_id;
+            $receipt_info->br_customer_id = $customer_info->ic_id;
+            $receipt_info->br_account_from = $customer_info->ic_account_number;
+            $receipt_info->br_receipt_number = $receipt_code;
+            $receipt_info->br_receipt_date = date("Y-m-d");
+            $receipt_info->br_creation_date = date("Y-m-d");
+            $receipt_info->br_receipt_label = "Receipt from customer " . $customer_info->ic_customer_name . " of order #" .  $order_info->fo_order_code;
+            $receipt_info->br_payment_value = $order_info->fo_total_amount;
+            $receipt_info->br_receipt_currency = $order_info->fo_currency_id;
+            $receipt_info->br_receipt_paid = 1;
+            $receipt_info->br_company_id = session('company_id');
+            $receipt_info->br_receipt_note = $order_info->fo_notes;
+            $receipt_info->save();
+
+            $lst_order_items = FnbOrderItems::whereOiOrderId($fo_id)->get();
+            foreach ($lst_order_items as $key => $oi_info) {
+                $invoice_items = new InvoiceProducts();
+                foreach ($order_info_structure['items'] as $item) {
+                    foreach ($item['ingredients'] as $ing) {
+
+                        $ingredient = FnbIngredients::find($ing['id']);
+                        if (!$ingredient) continue;
+
+                        $product_id   = $ingredient->in_product_id;
+                        $product_info = Products::find($product_id);
+
+                        $invoice_items->ii_item_id = $product_id;
+                        $invoice_items->ii_item_label        = $product_info->p_product_name;
+
+                        $invoice_items->fk_invoice_id = $bi_id;
+                        $invoice_items->ii_item_type         = 1;
+                        $invoice_items->ii_cost_price        = $oi_info->oi_unit_price;
+                        $invoice_items->ii_item_price        = $oi_info->oi_unit_price;
+                        $invoice_items->ii_total_price        = $oi_info->oi_total_price;
+                        $invoice_items->ii_item_qyt          = $oi_info->oi_quantity;
+                        $invoice_items->ii_price_currency    = $oi_info->oi_currency_id;
+                        $invoice_items->save();
+                    }
+
+                    foreach ($item['modifiers'] as $mod) {
+
+                        $order_mod = FnbOrderItemModifiers::find($mod['id']);
+                        if (!$order_mod) continue;
+
+                        $modifier = Modifier::find($order_mod->im_modifier_id);
+                        if (!$modifier) continue;
+
+                        $product_id   = $modifier->m_item_id;
+
+                        $product_info = Products::find($product_id);
+
+                        $invoice_items->ii_item_id = $product_id;
+                        $invoice_items->ii_item_label        = $product_info->p_product_name;
+                        $invoice_items->fk_invoice_id = $bi_id;
+                        $invoice_items->ii_item_type         = 1;
+                        $invoice_items->ii_cost_price        = $oi_info->oi_unit_price;
+                        $invoice_items->ii_item_price        = $oi_info->oi_unit_price;
+                        $invoice_items->ii_total_price        = $oi_info->oi_total_price;
+                        $invoice_items->ii_item_qyt          = $oi_info->oi_quantity;
+                        $invoice_items->ii_price_currency    = $oi_info->oi_currency_id;
+                        $invoice_items->save();
+                    }
+                }
+            }
+
+
+            $payment_type_info      = PaymentTypes::find(2);
+            $pt_payment_account     = $payment_type_info->pt_payment_account;
+
+            $AccTransaction = new Transactions();
+            $AccTransaction->at_transaction_date    = $invoice_info->bi_invoice_date;
+            $AccTransaction->at_creation_date       = date("Y-m-d");
+            $AccTransaction->at_accounting_doc      = $invoice_info->bi_invoice_code;
+            $AccTransaction->fk_acc_journal_id      = 3;
+            $AccTransaction->save();
+            $at_id = $AccTransaction->at_id;
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+            $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+            $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+            $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+            $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+            $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+            $trans_mov = new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = 701;
+            $trans_mov->tm_sub_ledger_account   = 701;
+            $trans_mov->tm_debit                = 0;
+            $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+            $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
+            $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+            $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
+            $trans_mov->save();
+
+
+
             foreach ($order_info_structure['items'] as $item) {
 
                 foreach ($item['ingredients'] as $ing) {

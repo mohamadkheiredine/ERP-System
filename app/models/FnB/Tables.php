@@ -23,13 +23,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tables extends Model
 {
-    protected $table = 'fnb_order_tables';
+    protected $table = 'fnb_table';
     public $timestamps = false;
     protected $primaryKey = "ft_id";
-
-    public function Floor()
-    {
-        return $this->hasOne('App\models\FnB\Floor', 'fl_id', 'ft_floor_id');
-    }
 
 }
