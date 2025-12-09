@@ -17,6 +17,7 @@ Page Description :
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\models\Billing\Receipts;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -457,17 +458,40 @@ class OrdersController extends Controller
         $invoice_info->bi_due_date          = $creation_date;
         $invoice_info->bi_payment_terms     = 1;
         $invoice_info->bi_payment_type      = 2;
+        $invoice_info->bi_created_by         = $user_id;
         $invoice_info->bi_invoice_note      = $order_info->so_order_note;
         $invoice_info->bi_total_cost        = $order_info->so_sub_total;
         $invoice_info->bi_vat_id            = 1;
         $invoice_info->bi_discount          = $pos_discount;
         $invoice_info->bi_total_price       = $order_info->so_total_cost;
         $invoice_info->bi_invoice_currency  = $order_info->so_order_currency;
+        $invoice_info->bi_company_id  = $company_id;
         $invoice_info->bi_invoice_note      = "New Invoice For Order #" . $so_order_code;
         $invoice_info->bi_invoice_paid      = 1;
         $invoice_info->bi_number_payments   = 1;
         $invoice_info->save();
         $bi_id = $invoice_info->bi_id;
+
+
+        $receipt_code = $AccountingManager->generateReceiptCode();
+
+        $receipt_info = new Receipts();
+        $receipt_info->fk_invoice_id = $bi_id;
+        $receipt_info->br_company_id = $company_id;
+        $receipt_info->br_customer_id = $customer_info->ic_id;
+        $receipt_info->br_account_from = $customer_info->ic_account_number;
+        $receipt_info->br_receipt_number = $receipt_code;
+        $receipt_info->br_receipt_date = date("Y-m-d");
+        $receipt_info->br_creation_date = date("Y-m-d");
+        $receipt_info->br_receipt_label = "Receipt from customer " . $customer_info->ic_customer_name . " of order #" .  $order_info->so_order_code;
+        $receipt_info->br_payment_value = $order_info->so_total_cost;
+        $receipt_info->br_receipt_currency = $order_info->so_order_currency;
+        $receipt_info->br_receipt_paid = 1;
+        $receipt_info->br_created_by = session('user_id');
+        $receipt_info->br_company_id = session('company_id');
+        $receipt_info->br_receipt_note = $order_info->so_order_note;
+        $receipt_info->save();
+
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
         foreach ($lst_order_items as $key => $oi_info )

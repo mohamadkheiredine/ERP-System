@@ -810,7 +810,7 @@ class ReceiptsController extends Controller
         $display = str_replace("%payment_method%",$receipt_info->PaymentType ? $receipt_info->PaymentType->pt_payment_type : "-", $display);
 
 
-        $display = str_replace("%CREATED_BY%",$receipt_info->CreatedUser->u_fullname, $display);
+        $display = str_replace("%CREATED_BY%",$receipt_info->CreatedUser ? $receipt_info->CreatedUser->u_fullname :Session('user_fullname') , $display);
         $display = str_replace("%PRINTED_BY%",Session('user_fullname'), $display);
         $display = str_replace("%PRINT_DATE%",date('d-m-Y H:i:s'), $display);
 

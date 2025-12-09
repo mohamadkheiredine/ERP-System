@@ -754,11 +754,12 @@ class OrdersController extends Controller
         $invoice_info->bi_total_cost    = $order_info->so_total_cost;
         $invoice_info->bi_vat_id        = $order_info->so_vat_id;
         $invoice_info->bi_discount      = 0;
-        $invoice_info->bi_total_price    = $order_info->so_total_cost;
-        $invoice_info->bi_invoice_currency = $order_info->so_order_currency;
-        $invoice_info->bi_invoice_paid = 1;
-        $invoice_info->bi_invoice_status = 1;
-        $invoice_info->bi_number_payments = 1;
+        $invoice_info->bi_total_price       = $order_info->so_total_cost;
+        $invoice_info->bi_invoice_currency  = $order_info->so_order_currency;
+        $invoice_info->bi_invoice_paid      = 1;
+        $invoice_info->bi_invoice_status    = 1;
+        $invoice_info->bi_number_payments   = 1;
+        $invoice_info->bi_created_by   = session('user_id');
         $invoice_info->bi_company_id = $default_company_id;
         $invoice_info->save();
 
@@ -781,6 +782,7 @@ class OrdersController extends Controller
         $receipt_info->br_payment_value = $order_info->so_total_cost;
         $receipt_info->br_receipt_currency = $order_info->so_order_currency;
         $receipt_info->br_receipt_paid = 1;
+        $receipt_info->br_created_by = session('user_id');
         $receipt_info->br_company_id = session('company_id');
         $receipt_info->br_receipt_note = $order_info->so_order_note;
         $receipt_info->save();
