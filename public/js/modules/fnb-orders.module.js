@@ -58,7 +58,7 @@ orders_module = {
 
             rules: {
                 fo_order_code: { required: true, maxlength: 255 },
-                ps_company_id: { required: true, min: 1 },
+                fo_branch_id: { required: true, min: 1 },
                 fo_order_type: { required: true },
                 fo_store_id: { required: true, min: 1 },
                 cc_id: { required: true, min: 1 },
@@ -70,7 +70,7 @@ orders_module = {
                     required: "Order code is required",
                     maxlength: "Order code cannot exceed 255 characters",
                 },
-                ps_company_id: {
+                fo_branch_id: {
                     required: "Please select a company",
                     min: "Please select a company",
                 },
@@ -150,6 +150,7 @@ orders_module = {
 
                 var base_url = $("#BASE_URL").val();
                 var str_params = OrderForm.serialize();
+                console.log("here ==================")
 
                 $.ajax({
                     url: base_url + "/request/fnb-orders/saveinfo",

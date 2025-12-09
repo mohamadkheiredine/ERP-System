@@ -48,15 +48,19 @@ use App\models\Inventory\Vendors;
 use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
+use App\models\Billing\Receipts;
+use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
+use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrderKitchen;
 use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbOrderTables;
 use App\models\FnB\MenuCategories;
 use App\models\FnB\Modifier;
+use App\models\Sales\StoreWarehouses;
 use App\models\System\SystemStatus;
 
 class FnbController extends Controller
@@ -75,12 +79,56 @@ class FnbController extends Controller
         return $order_code;
     }
 
+    private function reduceStock($product_id, $warehouse_id, $qty_to_reduce)
+    {
+        if ($qty_to_reduce <= 0) {
+            return;
+        }
+
+        DB::transaction(function () use ($product_id, $warehouse_id, &$qty_to_reduce) {
+
+            $available_stock = Stocks::where('fk_product_id', $product_id)
+                ->where('fk_warehouse_id', $warehouse_id)
+                ->where('is_quanity', '>', 0)
+                ->orderBy('is_id', 'asc')
+                ->lockForUpdate()
+                ->get();
+
+            $total_stock = $available_stock->sum('is_quanity');
+            if ($total_stock < $qty_to_reduce) {
+                throw new \Exception("Not enough stock for product ID $product_id. Need $qty_to_reduce but only $total_stock available.");
+            }
+
+            foreach ($available_stock as $batch) {
+                if ($qty_to_reduce <= 0) {
+                    break;
+                }
+
+                $take = min($batch->is_quanity, $qty_to_reduce);
+
+                $batch->decrement('is_quanity', $take);
+                $qty_to_reduce -= $take;
+            }
+        });
+    }
+
     public function CreateOrder(Request $request)
     {
 
         $g_hash   = $request->input('g_hash');
         $order_items = $request->input('order_items');
-        $order_items = json_decode($order_items, true);
+        $order_items = $request->input('order_items');
+
+        // If POSTMAN sends array → use it as is
+        if (is_array($order_items)) {
+            // do nothing
+        }
+        // If POS sends JSON string → decode it
+        else if (is_string($order_items)) {
+            $order_items = json_decode($order_items, true);
+        }
+
+
         $store_id = $request->input('store_id');
         $warehouse_id = $request->input('warehouse_id');
         $user_id = $request->input('user_id');
@@ -149,6 +197,7 @@ class FnbController extends Controller
         $company_id = $user_info->fk_company_id;
 
         $company_info   = Companies::find($company_id);
+        // dd($company_info);
 
         $creation_date = date("Y-m-d H:i:s");
 
@@ -185,13 +234,33 @@ class FnbController extends Controller
 
             $item_db = FnbMenuItem::find($item_order['item_id']);
 
+            $mods = [];
+
+            if (!empty($item_order['modifiers'])) {
+                foreach ($item_order['modifiers'] as $m) {
+
+                    $order_mod = FnbOrderItemModifiers::find($m['id']);
+                    if (!$order_mod) continue;
+
+                    $modifier = Modifier::find($order_mod->im_modifier_id);
+                    if (!$modifier) continue;
+
+                    $mods[] = [
+                        "id"    => $m['id'],
+                        "name"  => $modifier->m_modifier_name,
+                        "price" => $modifier->m_modifier_cost,
+                        "qty"   => $modifier->m_quantity,
+                    ];
+                }
+            }
+
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
                 "item_name" => $item_db ? $item_db->mi_item_name : "",
                 "quantity"  => $item_order['quantity'],
                 "price"     => $item_order['price'],
                 "total"     => $item_order['quantity'] * $item_order['price'],
-                "modifiers" => isset($item_order['modifiers']) ? $item_order['modifiers'] : []
+                "modifiers" => $mods,
             ];
         }
 
@@ -204,6 +273,229 @@ class FnbController extends Controller
 
         $order_info->fo_order_structure = json_encode($structure);
         $order_info->save();
+
+        $storeWarehouse = StoreWarehouses::where('sw_store_id', $store_id)->first();
+
+        $warehouse_id = $storeWarehouse->sw_warehouse_id;
+
+        $customer_info  = Customers::find($order_info->fo_customer_id);
+        // dd($customer_info);
+        $AccountingManager = new AccountingManager();
+        $default_company_id = session('default_company_id');
+
+        $invoice_code = $AccountingManager->GenerateInvoiceCode([
+            'company_id' => $user_info->fk_company_id
+        ]);
+
+
+        $invoice_info = new Invoices();
+        $invoice_info->bi_invoice_ref   = $invoice_code;
+        $invoice_info->bi_invoice_code  = $invoice_code;
+        $invoice_info->fk_account_id    = $customer_info->ic_account_number;
+        $invoice_info->fk_customer_id   = $customer_id;
+        $invoice_info->bi_invoice_date  = $order_info->fo_creation_date;
+        $invoice_info->bi_due_date      = $order_info->fo_order_datetime;
+        $invoice_info->bi_payment_terms = 1;
+        $invoice_info->bi_invoice_items_type = 1;
+        $invoice_info->bi_invoice_type = 1;
+        $invoice_info->bi_payment_type  = 2;
+        $invoice_info->bi_invoice_note  = $order_info->fo_notes;
+        $invoice_info->bi_total_cost    = $order_info->fo_total_amount;
+        $invoice_info->bi_vat_id        = $order_info->fo_tax;
+        $invoice_info->bi_discount      = 0;
+        $invoice_info->bi_total_price    = $order_info->fo_total_amount;
+        $invoice_info->bi_invoice_currency = $order_info->fo_currency_id;
+        $invoice_info->bi_invoice_paid = 1;
+        $invoice_info->bi_invoice_status = 1;
+        $invoice_info->bi_number_payments = 1;
+        $invoice_info->bi_company_id = $default_company_id;
+        $invoice_info->save();
+
+        $bi_id = $invoice_info->bi_id;
+
+        // create receipt for this order
+
+        $receipt_code = $AccountingManager->GenerateReceiptCode([
+            'company_id' => $user_info->fk_company_id
+        ]);
+
+
+        $receipt_info = new Receipts();
+        $receipt_info->fk_invoice_id = $bi_id;
+        $receipt_info->br_company_id = $default_company_id;
+        $receipt_info->br_customer_id = $customer_info->ic_id;
+        $receipt_info->br_account_from = $customer_info->ic_account_number;
+        $receipt_info->br_receipt_number = $receipt_code;
+        $receipt_info->br_receipt_date = date("Y-m-d");
+        $receipt_info->br_creation_date = date("Y-m-d");
+        $receipt_info->br_receipt_label = "Receipt from customer " . $customer_info->ic_customer_name . " of order #" .  $order_info->fo_order_code;
+        $receipt_info->br_payment_value = $order_info->fo_total_amount;
+        $receipt_info->br_receipt_currency = $order_info->fo_currency_id;
+        $receipt_info->br_receipt_paid = 1;
+        $receipt_info->br_company_id = session('company_id');
+        $receipt_info->br_receipt_note = $order_info->fo_notes;
+        $receipt_info->save();
+
+        $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
+
+        foreach ($lst_order_items as $oi_info) {
+
+            foreach ($structure['items'] as $item) {
+
+                if (!empty($item['ingredients'])) {
+                    foreach ($item['ingredients'] as $ing) {
+
+                        $ingredient = FnbIngredients::find($ing['id']);
+                        if (!$ingredient) continue;
+
+                        $product_id = $ingredient->in_product_id;
+                        $product_info = Products::find($product_id);
+                        if (!$product_info) continue;
+
+                        $invoice_item = new InvoiceProducts();
+                        $invoice_item->fk_invoice_id     = $bi_id;
+                        $invoice_item->ii_item_id        = $product_id;
+                        $invoice_item->ii_item_label     = $product_info->p_product_name;
+                        $invoice_item->ii_item_type      = 1;
+
+                        $invoice_item->ii_cost_price     = $oi_info->oi_unit_price;
+                        $invoice_item->ii_item_price     = $oi_info->oi_unit_price;
+                        $invoice_item->ii_total_price    = $oi_info->oi_total_price;
+                        $invoice_item->ii_item_qyt       = $oi_info->oi_quantity;
+                        $invoice_item->ii_price_currency = $oi_info->oi_currency_id;
+
+                        $invoice_item->save();
+                    }
+                }
+
+
+
+                foreach ($item['modifiers'] as $mod) {
+
+                    $order_mod = FnbOrderItemModifiers::find($mod['id']);
+                    if (!$order_mod) continue;
+
+                    $modifier = Modifier::find($order_mod->im_modifier_id);
+                    if (!$modifier) continue;
+
+                    $product_id = $modifier->m_item_id;
+                    $product_info = Products::find($product_id);
+                    if (!$product_info) continue;
+
+                    $invoice_item = new InvoiceProducts();
+                    $invoice_item->fk_invoice_id     = $bi_id;
+                    $invoice_item->ii_item_id        = $product_id;
+                    $invoice_item->ii_item_label     = $product_info->p_product_name;
+                    $invoice_item->ii_item_type      = 1;
+
+                    // SAME PRICE STRUCTURE
+                    $invoice_item->ii_cost_price     = $oi_info->oi_unit_price;
+                    $invoice_item->ii_item_price     = $oi_info->oi_unit_price;
+                    $invoice_item->ii_total_price    = $oi_info->oi_total_price;
+                    $invoice_item->ii_item_qyt       = $oi_info->oi_quantity;
+                    $invoice_item->ii_price_currency = $oi_info->oi_currency_id;
+
+                    $invoice_item->save();
+                }
+            }
+        }
+
+        $payment_type_info      = PaymentTypes::find(2);
+        $pt_payment_account     = $payment_type_info->pt_payment_account;
+
+        $AccTransaction = new Transactions();
+        $AccTransaction->at_transaction_date    = $invoice_info->bi_invoice_date;
+        $AccTransaction->at_creation_date       = date("Y-m-d");
+        $AccTransaction->at_accounting_doc      = $invoice_info->bi_invoice_code;
+        $AccTransaction->fk_acc_journal_id      = 3;
+        $AccTransaction->save();
+        $at_id = $AccTransaction->at_id;
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_credit             = 0;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_debit              = 0;
+        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+        $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_debit              = 0;
+        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+        $trans_mov = new TransactionMovements();
+        $trans_mov->fk_tran_id              = $at_id;
+        $trans_mov->tm_ledger_account       = 701;
+        $trans_mov->tm_sub_ledger_account   = 701;
+        $trans_mov->tm_debit                = 0;
+        $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+        $trans_mov->tm_creation_date        = date('Y-m-d');
+        $trans_mov->tm_transaction_date        = date('Y-m-d');
+        $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+        $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
+        $trans_mov->save();
+
+
+
+
+        foreach ($order_items as $item_order) {
+
+            $item_id = $item_order['item_id'];
+
+            $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                ->where('in_is_deleted', 0)
+                ->get();
+
+            foreach ($ingredients as $ing) {
+                $product_id = $ing->in_product_id;
+                $qty_per_unit = $ing->in_stock_quantity;
+
+                // dd($qty_per_unit, $product_id);
+
+                $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+            }
+
+            if (isset($item_order['modifiers'])) {
+                foreach ($item_order['modifiers'] as $mod) {
+
+                    $order_mod = FnbOrderItemModifiers::find($mod['id']);
+                    if (!$order_mod) continue;
+
+                    $modifier = Modifier::find($order_mod->im_modifier_id);
+                    if (!$modifier) continue;
+
+                    $product_id = $modifier->m_item_id;
+                    $qty_per_unit = $modifier->m_quantity;
+
+                    $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+                }
+            }
+        }
+
+
         $currency = Currency::find($order_info->fo_currency_id);
 
         $data = array(

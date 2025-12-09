@@ -27,9 +27,4 @@ class Tables extends Model
     public $timestamps = false;
     protected $primaryKey = "ft_id";
 
-    public function Floor()
-    {
-        return $this->hasOne('App\models\FnB\Floor', 'fl_id', 'ft_floor_id');
-    }
-
 }
