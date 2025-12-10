@@ -97,6 +97,8 @@ class FnbController extends Controller
         $customer_type         = $request->input('customer_type');
         $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
         $customer_info = null;
+        $table_ids = $request->input('table_id');
+        $table_ids = array_filter(explode(",", $table_ids));
 
         $user_info = Users::find($user_id);
 
@@ -168,6 +170,18 @@ class FnbController extends Controller
 
         $fo_id = $order_info->fo_id;
 
+        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links (if editing in future)
+
+        if (!empty($table_ids)) {
+            foreach ($table_ids as $tid) {
+                FnbOrderTables::create([
+                    'ot_order_id' => $fo_id,
+                    'ot_table_id' => intval($tid)
+                ]);
+            }
+        }
+
+
         $final_items = [];
 
         foreach ($order_items as $key => $item_order) {
@@ -229,6 +243,106 @@ class FnbController extends Controller
 
         return Response()->json($result_array);
     }
+
+    public function CreateEmptyOrder(Request $request)
+    {
+        $g_hash = $request->g_hash;
+        $user = Users::find($request->user_id);
+
+        $check_hash = "POS567{$user->u_username}{$user->u_fullname}{$user->u_email}POS567";
+        $check_hash = hash('sha256', $check_hash);
+
+        if ($g_hash !== $check_hash) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'Invalid hash']);
+        }
+
+        // Create new empty order
+        $order = new FnbOrders();
+        $order->fo_store_id = $request->store_id;
+        $order->fo_order_status = 1; // pending
+        $order->fo_order_type = "dine_in";
+        $order->save();
+
+        return response()->json([
+            'is_error' => 0,
+            'order_id' => $order->fo_id,
+        ]);
+    }
+
+
+    public function UpdateOrder(Request $request)
+    {
+        $order = FnbOrders::find($request->order_id);
+        if (!$order) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
+        }
+
+        $order->fo_order_type = $request->order_type;
+        $order->fo_customer_id = $request->customer_id;
+        $order->fo_subtotal = $request->sub_total;
+        $order->fo_discount = $request->discount;
+        $order->fo_total_amount = $request->total;
+        $order->fo_order_status = 2; // sent to kitchen
+        $order->save();
+
+        // TABLES
+        FnbOrderTables::where('ot_order_id', $order->fo_id)->delete();
+        $tids = explode(',', $request->table_ids);
+        foreach ($tids as $tid) {
+            FnbOrderTables::create([
+                'ot_order_id' => $order->fo_id,
+                'ot_table_id' => $tid
+            ]);
+        }
+
+        // ITEMS
+        FnbOrderItems::where('oi_order_id', $order->fo_id)->delete();
+        $items = json_decode($request->order_items, true);
+
+        foreach ($items as $it) {
+            FnbOrderItems::create([
+                'oi_order_id' => $order->fo_id,
+                'oi_item_id' => $it['item_id'],
+                'oi_quantity' => $it['quantity'],
+                'oi_unit_price' => $it['unit_price'],
+                'oi_item_discount' => $it['discount'],
+                'oi_notes' => $it['notes'],
+                'oi_station_id' => $it['station_id'],
+                'oi_kitchen_status' => 1,
+            ]);
+        }
+
+        return Response()->json(['is_error' => 0, 'order_id' => $order->fo_id]);
+    }
+
+
+
+    public function SyncPendingOrders(Request $request)
+    {
+        $orders = FnbOrders::where('fo_store_id', $request->store_id)
+            ->where('fo_order_status', 1)
+            ->get();
+
+        $data = [];
+
+        foreach ($orders as $order) {
+            $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
+                ->pluck('ot_table_id')
+                ->toArray();
+
+            $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
+
+            $data[] = [
+                'order_id' => $order->fo_id,
+                'tables' => $tables,
+                'items' => $items,
+            ];
+        }
+
+        return response()->json(['is_error' => 0, 'orders' => $data]);
+    }
+
+
 
     public function ListItemCategories(Request $request)
     {
