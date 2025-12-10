@@ -51,18 +51,30 @@ orders_module = {
         var success3 = $(".alert-success", OrderForm);
 
         OrderForm.validate({
+            ignore: "",
             errorElement: "span",
             errorClass: "help-block help-block-error",
             focusInvalid: false,
-            ignore: "",
 
             rules: {
                 fo_order_code: { required: true, maxlength: 255 },
                 fo_branch_id: { required: true, min: 1 },
                 fo_order_type: { required: true },
                 fo_store_id: { required: true, min: 1 },
+                "fo_table_id[]": {
+                    required: true,
+                },
+                fo_customer_id: { required: true, min: 1 },
+                fo_order_status: { required: true, min: 1 },
+                fo_subtotal: { required: true, number: true, min: 0 },
+                fo_discount: { required: true, number: true, min: 0 },
+                fo_tax: { required: true, number: true, min: 0 },
+                fo_service_charge: { required: true, number: true, min: 0 },
+                fo_total_amount: { required: true, number: true, min: 0 },
+                fo_paid_amount: { required: true, number: true, min: 0 },
                 cc_id: { required: true, min: 1 },
-                fo_payment_status: { required: true }
+                fo_payment_status: { required: true },
+                fo_notes: { required: true },
             },
 
             messages: {
@@ -70,7 +82,7 @@ orders_module = {
                     required: "Order code is required",
                     maxlength: "Order code cannot exceed 255 characters",
                 },
-                fo_branch_id: {
+                ps_company_id: {
                     required: "Please select a company",
                     min: "Please select a company",
                 },
@@ -79,7 +91,7 @@ orders_module = {
                     required: "Please select a store",
                     min: "Please select a store",
                 },
-                fo_table_id: {
+                "fo_table_id[]": {
                     required: "Please select a table",
                     min: "Please select a table",
                 },
@@ -150,7 +162,7 @@ orders_module = {
 
                 var base_url = $("#BASE_URL").val();
                 var str_params = OrderForm.serialize();
-                console.log("here ==================")
+                console.log("string paramss------", str_params);
 
                 $.ajax({
                     url: base_url + "/request/fnb-orders/saveinfo",
@@ -602,7 +614,7 @@ orders_module = {
         });
     },
 
-    DisplayListDeliveries: function() {
+    DisplayListDeliveries: function () {
         var base_url = $("input[name=base_url]").val();
         var _token = $("input[name=_token]").val();
 

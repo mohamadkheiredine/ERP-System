@@ -62,7 +62,7 @@
                                 <label class="control-label">Default Company</label>
                                 <select  name="default_company" id="DEFAULT_COMPANY" class="form-select" data-control="select2" data-placeholder="Select Default Company">
                                     @foreach( $lst_companies as $key => $cmp_info)
-                                        <option  {{ session('default_company_id') == $cmp_info->cd_id ? "selected" : "" }} value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }}</option>
+                                        <option  {{ session('default_company_id') == $cmp_info->cd_id ? "selected" : "" }} value="{{ $cmp_info->cd_id }}">{{ $cmp_info->cd_company_name }} - {{ $cmp_info->cd_company_name_translation }}</option>
                                     @endforeach
                                 </select>
                             </div>

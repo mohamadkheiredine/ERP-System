@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
  * Tables.php
  * Product :titanerp
@@ -28,6 +29,9 @@ class FnbOrderTables extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
+
+    protected $fillable = ["ot_order_id","ot_table_id"];
+
 
     public function Order()
     {

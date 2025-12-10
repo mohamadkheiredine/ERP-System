@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
  * Tables.php
  * Product :titanerp
@@ -27,6 +28,18 @@ class FnbOrderItems extends Model
     public $timestamps = false;
     protected $primaryKey = "oi_id";
 
+    protected $fillable = [
+        'oi_order_id',
+        'oi_item_id',
+        'oi_quantity',
+        'oi_unit_price',
+        'oi_station_id',
+        'oi_notes',
+        'oi_currency_id',
+        'oi_is_deleted',
+    ];
+
+
     public function Order()
     {
         return $this->hasOne('App\models\FnB\FnbOrders', 'fo_id', 'oi_order_id');
@@ -46,5 +59,4 @@ class FnbOrderItems extends Model
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id', 'oi_currency_id');
     }
-
 }

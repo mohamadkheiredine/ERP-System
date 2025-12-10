@@ -28,6 +28,8 @@
     <script src="{{ url('theme/style/src/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
     <script type="text/javascript" src="{{ url('js/modules/fnb-orders.module.js') }}"></script>
     <script type="text/javascript" src="{{ url('js/libraries/fnb/orders/saveorders.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 @endsection
 
 @section('content')
@@ -128,16 +130,18 @@
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
                                 <label class="control-label">Table <span class="required"></span></label>
-                                <select class="form-select form-control" data-control="select2" id="FO_TABLE_ID"
-                                    name="fo_table_id" name="lead_category">
-                                    <option value="0">-- Select Table --</option>
-                                    @foreach($lst_tables as $index => $table_info)
-                                        <option value="{{ $table_info->ft_id }}"
-                                            @if($table_info->ft_id == $order_info->fo_table_id) selected @endif>
-                                            {{ $table_info->ft_label }}
+                                <select id="FO_TABLE_ID" name="fo_table_id[]" class="form-control" multiple
+                                    data-control="select2">
+
+                                    @foreach($lst_tables as $table)
+                                        <option value="{{ $table->ft_id }}" @if(in_array($table->ft_id, $selected_table_ids))
+                                        selected @endif>
+                                            {{ $table->ft_label }}
                                         </option>
                                     @endforeach
+
                                 </select>
+
                             </div>
                         </div>
 

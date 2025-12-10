@@ -797,7 +797,7 @@ class ReceiptsController extends Controller
             $display = str_replace("%paied_account%","-", $display);
 
 
-        $display = str_replace("%account_from%",$receipt_info->AccountPayable->aa_id, $display);
+        $display = str_replace("%account_from%",$receipt_info->AccountPayable ? $receipt_info->AccountPayable->aa_id : "-", $display);
 
         $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
         $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
