@@ -10,6 +10,7 @@ use App\models\FnB\FnbMenuItem;
 use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrders;
+use App\models\FnB\FnbOrderTables;
 use Illuminate\Http\Request;
 use App\Models\System\Companies;
 use App\Models\FnB\KitchenStations;
@@ -114,7 +115,9 @@ class FnbOrdersController extends Controller
         $fo_branch_id = $request->input('fo_branch_id');
         $fo_order_type = $request->input('fo_order_type');
         $fo_store_id = $request->input('fo_store_id');
-        $fo_table_id = $request->input('fo_table_id');
+
+        $table_ids = $request->input('fo_table_id');
+
         $fo_customer_id = $request->input('fo_customer_id');
         $fo_order_status = $request->input('fo_order_status');
         $fo_subtotal = $request->input('fo_subtotal');
@@ -139,7 +142,7 @@ class FnbOrdersController extends Controller
         $order_info->fo_order_code = $fo_order_code;
         $order_info->fo_order_type = $fo_order_type;
         $order_info->fo_store_id = $fo_store_id;
-        $order_info->fo_table_id = $fo_table_id;
+
         $order_info->fo_customer_id = $fo_customer_id;
         $order_info->fo_order_status = $fo_order_status;
         $order_info->fo_subtotal = $fo_subtotal;
@@ -215,6 +218,19 @@ class FnbOrdersController extends Controller
         $order_info->fo_order_structure = json_encode($order_info_structure);
         $order_info->save();
 
+        // delete old table links
+        FnbOrderTables::where('ot_order_id', $order_info->fo_id)->delete();
+
+        // insert new selected tables
+        if (is_array($table_ids)) {
+            foreach ($table_ids as $table_id) {
+                FnbOrderTables::create([
+                    'ot_order_id' => $order_info->fo_id,
+                    'ot_table_id' => $table_id
+                ]);
+            }
+        }
+
         //update kitchen status for all order items and menu items
         $kitchen_status = $request->input('oi_kitchen_status');
 
@@ -255,7 +271,11 @@ class FnbOrdersController extends Controller
         $lst_customers = Customers::whereIcIsDeleted(0)->get();
         $lst_currencies = Currency::get();
         $lst_order_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('pos_order_statuses')->get();
-        $lst_tables = Tables::whereFtIsDeleted(0)->get();
+        $lst_tables         = Tables::whereFtIsDeleted(0)->get();   // FIXED
+        $selected_table_ids = FnbOrderTables::where('ot_order_id', $fo_id)
+            ->pluck('ot_table_id')
+            ->toArray();           // FIXED
+
         $lst_items = FnbMenuItem::whereMiIsDeleted(0)->get();
         $lst_stations = KitchenStations::whereKsIsDeleted(0)->get();
         $lst_kitchen_status = SystemStatus::whereSsIsDeleted(0)->whereSsStatusType('kitchen_order_statuses')->get();
@@ -284,6 +304,7 @@ class FnbOrdersController extends Controller
             "lst_modifiers" => $lst_modifiers,
             "order_code" => $order_code,
             "lst_statuses" => $lst_statuses,
+            "selected_table_ids" => $selected_table_ids,
         );
         return view('fnb.orders.editform', $data);
     }

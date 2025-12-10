@@ -51,17 +51,19 @@ orders_module = {
         var success3 = $(".alert-success", OrderForm);
 
         OrderForm.validate({
+            ignore: "",
             errorElement: "span",
             errorClass: "help-block help-block-error",
             focusInvalid: false,
-            ignore: "",
 
             rules: {
                 fo_order_code: { required: true, maxlength: 255 },
-                ps_company_id: { required: true, min: 1 },
+                fo_branch_id: { required: true, min: 1 },
                 fo_order_type: { required: true },
                 fo_store_id: { required: true, min: 1 },
-                fo_table_id: { required: true, min: 1 },
+                "fo_table_id[]": {
+                    required: true,
+                },
                 fo_customer_id: { required: true, min: 1 },
                 fo_order_status: { required: true, min: 1 },
                 fo_subtotal: { required: true, number: true, min: 0 },
@@ -89,7 +91,7 @@ orders_module = {
                     required: "Please select a store",
                     min: "Please select a store",
                 },
-                fo_table_id: {
+                "fo_table_id[]": {
                     required: "Please select a table",
                     min: "Please select a table",
                 },
@@ -160,6 +162,7 @@ orders_module = {
 
                 var base_url = $("#BASE_URL").val();
                 var str_params = OrderForm.serialize();
+                console.log("string paramss------", str_params);
 
                 $.ajax({
                     url: base_url + "/request/fnb-orders/saveinfo",
@@ -611,7 +614,7 @@ orders_module = {
         });
     },
 
-    DisplayListDeliveries: function() {
+    DisplayListDeliveries: function () {
         var base_url = $("input[name=base_url]").val();
         var _token = $("input[name=_token]").val();
 

@@ -87,4 +87,11 @@ $(function () {
     $(document).on("click", "a[id^='DELETE_DELIVERY_']", function () {
         orders_module.DeleteDelivery(this);
     });
+
+    $(document).ready(function () {
+        $('select[data-control="select2"]').select2({
+            placeholder: "Select an option",
+            width: "100%",
+        });
+    });
 });
