@@ -60,21 +60,10 @@
           <input type="text" name="ks_name" id="KS_KITCHEN_NAME" class="form-control" required maxlength="255" value="" />
         </div>
         </div>
-            <div class="col-md-4 col-xs-12">
-        <div class="form-group">
-          <label class="control-label">Company <span class="required"></span></label>
-          <select class="form-select form-control" data-control="select2" id="PS_COMPANY_ID" name="ps_company_id" name="lead_category">
-            <option value="0">-- Select Company --</option>
-            @foreach($lst_companies as $index => $company_info)
-            <option value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
-            @endforeach
-          </select>
-        </div>
-            </div>
             <div class="col-md-12 col-xs-12">
         <div class="form-group">
-          <label class="control-label">Description <span class="required"></span></label>
-          <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" required></textarea>
+          <label class="control-label">Description</label>
+          <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description"></textarea>
         </div>
             </div>
             <div class="col-md-4 col-xs-12">

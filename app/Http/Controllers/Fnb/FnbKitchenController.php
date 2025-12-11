@@ -33,7 +33,7 @@ class FnbKitchenController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        $ps_company_id = $request->input('ps_company_id');
+        $default_company_id = session('default_company_id');
 
         if ($page_number > 1)
             $skip = ($page_number - 1) * $nbr_rows_per_pages;
@@ -43,9 +43,7 @@ class FnbKitchenController extends Controller
 
         $kitchen_cond = KitchenStations::whereKsIsDeleted(0);
 
-        if (!empty($ps_company_id) && $ps_company_id != 0) {
-            $kitchen_cond = $kitchen_cond->where('ks_branch_id', $ps_company_id);
-        }
+        $kitchen_cond = $kitchen_cond->where('ks_branch_id', $default_company_id);
 
         if (!empty($general_search)) {
             $kitchen_cond->where('ks_name', 'LIKE', '%' . $general_search . '%');
@@ -75,7 +73,7 @@ class FnbKitchenController extends Controller
         $ks_name = $request->input('ks_name');
         $ks_description = $request->input('ks_description');
         $ks_active = $request->has('ks_active') ? 1 : 0;
-        $ps_company_id = $request->input('ps_company_id');
+        $default_company_id = session('default_company_id');
 
         $result_array = array();
 
@@ -86,7 +84,7 @@ class FnbKitchenController extends Controller
 
         $kitchen_info->ks_name = $ks_name;
         $kitchen_info->ks_description = $ks_description;
-        $kitchen_info->ks_branch_id = $ps_company_id;
+        $kitchen_info->ks_branch_id = $default_company_id;
         $kitchen_info->ks_is_active = $ks_active;
 
         $kitchen_info->save();
@@ -102,10 +100,8 @@ class FnbKitchenController extends Controller
     public function editKitchen($ks_id)
     {
         $kitchen_info = KitchenStations::find($ks_id);
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
 
         $data = array(
-            "lst_companies" => $lst_companies,
             "kitchen_info" => $kitchen_info,
         );
         return view('fnb.kitchen.editform', $data);

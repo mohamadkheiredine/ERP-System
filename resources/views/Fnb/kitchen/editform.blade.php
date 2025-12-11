@@ -52,24 +52,11 @@
               <input type="text" name="ks_name" id="KS_NAME" class="form-control" required maxlength="255" value="{{ $kitchen_info->ks_name }}">
             </div>
                   </div>
-                  <div class="col-md-4 col-xs-12">
-            <div class="form-group">
-              <label class="control-label">Company <span class="required">*</span></label>
-              <select class="form-select form-control" data-control="select2" id="KS_BRANCH_ID" name="ks_branch_id" required>
-                <option value="0">-- Select Company --</option>
-                @foreach($lst_companies as $company_info)
-                <option  {{ $kitchen_info->ks_branch_id == $company_info->cd_id  ? "selected" : "" }} value="{{ $company_info->cd_id }}" {{ $kitchen_info->ks_branch_id == $company_info->cd_id ? 'selected' : '' }}>
-                  {{ $company_info->cd_company_name }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-                  </div>
               <div class="col-md-12 col-xs-12">
 
             <div class="form-group">
-              <label class="control-label">Description <span class="required"></span></label>
-              <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" required >{{ $kitchen_info->ks_description }}</textarea>
+              <label class="control-label">Description</label>
+              <textarea name="ks_description" id="KS_DESCRIPTION" class="form-control" rows="3" placeholder="Enter kitchen description" >{{ $kitchen_info->ks_description }}</textarea>
             </div>
               </div>
               <div class="col-md-4 col-xs-12">

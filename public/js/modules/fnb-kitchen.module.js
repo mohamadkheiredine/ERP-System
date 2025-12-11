@@ -58,7 +58,6 @@ kitchen_module = {
 
             rules: {
                 ks_name: { required: true, maxlength: 255 }, // Kitchen Name
-                ks_description: { required: true },
             },
 
             messages: {
