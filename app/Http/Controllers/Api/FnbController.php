@@ -53,11 +53,13 @@ use App\Models\FnB\FnbIngredients;
 use App\models\FnB\FnbItem;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbMenuItemModifier;
+use App\models\FnB\FnbOrderAuditLog;
 use App\models\FnB\FnbOrderItemModifiers;
 use App\models\FnB\FnbOrderItems;
 use App\models\FnB\FnbOrderKitchen;
 use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbOrderTables;
+use App\models\FnB\KitchenStations;
 use App\models\FnB\MenuCategories;
 use App\models\FnB\Modifier;
 use App\models\Sales\StoreWarehouses;
@@ -208,7 +210,7 @@ class FnbController extends Controller
         $order_info->fo_order_type = $order_type;
         $order_info->fo_store_id = $store_id;
         $order_info->fo_customer_id = $customer_id;
-        $order_info->fo_order_status = 1;
+        $order_info->fo_order_status = 5;
         $order_info->fo_order_datetime = $creation_date;
         $order_info->fo_subtotal = $sub_total;
         $order_info->fo_discount = $discount;
@@ -776,6 +778,108 @@ class FnbController extends Controller
         return Response()->json($result_array);
     }
 
+    public function GetPendingOrders(Request $request)
+    {
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return response()->json([
+                "is_error" => 1,
+                "error_msg" => "hash sequence is not valid !!"
+            ]);
+        }
+
+        $orders = FnbOrders::where('fo_is_deleted', 0)
+            ->where('fo_order_status', 1)
+            ->get();
+
+        $result = [];
+
+        foreach ($orders as $order) {
+
+            $items = FnbOrderItems::where('oi_order_id', $order->fo_id)
+                ->where('oi_is_deleted', 0)
+                ->leftJoin('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
+                ->leftJoin('sys_status', 'sys_status.ss_id', '=', 'fnb_order_items.oi_kitchen_status')
+                ->select(
+                    'oi_id',
+                    'oi_item_id',
+                    'oi_quantity',
+                    'oi_unit_price',
+                    'oi_notes',
+                    'oi_kitchen_status',
+                    'oi_station_id',
+                    'fnb_menu_items.mi_item_name',
+                    'fnb_menu_items.mi_kitchen_station_id',
+                    'sys_status.ss_status_title',
+                    'sys_status.ss_status_color'
+                )
+                ->get();
+
+            $result[] = [
+                'fo_id' => $order->fo_id,
+                'fo_order_code' => $order->fo_order_code,
+                'fo_order_type' => $order->fo_order_type,
+                'fo_table_id' => $order->fo_table_id,
+                'items' => $items,
+                'fo_created_at' => $order->fo_creation_date,
+            ];
+        }
+
+        return response()->json([
+            "is_error" => 0,
+            "lst_pending_orders" => $result
+        ]);
+    }
+
+
+    public function UpdateKitchenStatus(Request $request)
+    {
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $oi_id   = $request->input('oi_id');
+        $new_status = $request->input('oi_kitchen_status');
+        $order_item = FnbOrderItems::find($oi_id);
+        if (!$order_item) {
+            return response()->json([
+                "is_error" => 1,
+                "error_msg" => "Order item not found."
+            ]);
+        }
+
+        $old_status = $order_item->oi_kitchen_status;
+
+        $order_item->oi_kitchen_status = $new_status;
+        $order_item->save();
+
+        return response()->json([
+            "is_error" => 0,
+            "error_msg" => "",
+            "message" => "Kitchen status updated successfully.",
+            "old_status" => $old_status,
+            "new_status" => $new_status
+        ]);
+    }
+
     public function GetListModifiers(Request $request)
     {
 
@@ -909,6 +1013,38 @@ class FnbController extends Controller
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = '';
         $result_array['lst_menu_items_by_kitchen'] = $menu_items_array;
+
+        return Response()->json($result_array);
+    }
+
+    public function GetStationsName(Request $request)
+    {
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $lst_kitchens = KitchenStations::whereKsIsDeleted(0)->get();
+
+        $kitchens_array = [];
+        foreach ($lst_kitchens as $index => $kitchen_info) {
+            $kitchens_array[$index]['ks_id']   = $kitchen_info->ks_id;
+            $kitchens_array[$index]['ks_name'] = $kitchen_info->ks_name;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_kitchens'] = $kitchens_array;
 
         return Response()->json($result_array);
     }
