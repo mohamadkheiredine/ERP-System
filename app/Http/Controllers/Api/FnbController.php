@@ -877,4 +877,39 @@ class FnbController extends Controller
 
         return Response()->json($result_array);
     }
+
+    public function GetListItemsByKitchen(Request $request)
+    {
+        $kitchen_id = $request->input('mi_kitchen_station_id');
+
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $lst_menu_items = FnbMenuItem::where('mi_kitchen_station_id', $kitchen_id)->where('mi_is_deleted', 0)->get();
+
+        $menu_items_array = [];
+        foreach ($lst_menu_items as $index => $item_info) {
+            $menu_items_array[$index]['mi_id']   = $item_info->mi_id;
+            $menu_items_array[$index]['mi_item_name'] = $item_info->mi_item_name;
+            $menu_items_array[$index]['mi_sku_code'] = $item_info->mi_sku_code;
+        }
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = '';
+        $result_array['lst_menu_items_by_kitchen'] = $menu_items_array;
+
+        return Response()->json($result_array);
+    }
 }

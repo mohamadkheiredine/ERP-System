@@ -139,6 +139,7 @@
     Route::post('/api/orders/createemptyorder', 'Api\FnbController@CreateEmptyOrder');
     Route::post('/api/orders/updateorder', 'Api\FnbController@UpdateOrder');
     Route::post('/api/orders/sync', 'Api\FnbController@SyncPendingOrders');
+    Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbController@GetListItemsByKitchen');
 
 
     Route::get('/api/inventory/listitemcategories', 'Api\FnbController@ListItemCategories');
