@@ -140,6 +140,10 @@
     Route::post('/api/orders/updateorder', 'Api\FnbController@UpdateOrder');
     Route::post('/api/orders/sync', 'Api\FnbController@SyncPendingOrders');
     Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbController@GetListItemsByKitchen');
+    Route::get('/api/orders/getstationsname', 'Api\FnbController@GetStationsName');
+    Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders');
+    Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
+
 
 
     Route::get('/api/inventory/listitemcategories', 'Api\FnbController@ListItemCategories');
