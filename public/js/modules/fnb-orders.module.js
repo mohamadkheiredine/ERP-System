@@ -73,8 +73,6 @@ orders_module = {
                 fo_total_amount: { required: true, number: true, min: 0 },
                 fo_paid_amount: { required: true, number: true, min: 0 },
                 cc_id: { required: true, min: 1 },
-                fo_payment_status: { required: true },
-                fo_notes: { required: true },
             },
 
             messages: {
@@ -131,8 +129,6 @@ orders_module = {
                     required: "Please select a currency",
                     min: "Please select a currency",
                 },
-                fo_payment_status: { required: "Please select payment status" },
-                fo_notes: { required: "Please enter notes" },
             },
 
             errorPlacement: function (error, element) {
@@ -162,7 +158,6 @@ orders_module = {
 
                 var base_url = $("#BASE_URL").val();
                 var str_params = OrderForm.serialize();
-                console.log("string paramss------", str_params);
 
                 $.ajax({
                     url: base_url + "/request/fnb-orders/saveinfo",
@@ -673,5 +668,24 @@ orders_module = {
                 });
             }
         });
+    },
+
+    AutoSelectKitchen: function () {
+        let item_id = $("#OI_ITEM_ID").val();
+        var base_url = $("#BASE_URL").val();
+        var _token = $("input[name=_token]").val();
+
+        $.ajax({
+        url: base_url + "/request/orders/getKitchen",
+        method: "GET",
+        data: { item_id, _token },
+        success: function (response) {
+            if (response.station_id) {
+                $("#OI_STATION_ID").val(response.station_id).trigger("change");
+            } else {
+                $("#OI_STATION_ID").val(0).trigger("change");
+            }
+        }
+    });
     },
 };

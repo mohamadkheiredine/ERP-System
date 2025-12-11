@@ -31,6 +31,10 @@ $(function () {
         orders_module.SaveItemOrderInfo();
     });
 
+    $(document).on("change", "#OI_ITEM_ID", function () {
+        orders_module.AutoSelectKitchen();
+    });
+
     $("#LstItemsOrders").on(
         "click",
         "a[id*=DELETE_ITEM_ORDER_]",
@@ -99,5 +103,34 @@ $(function () {
             placeholder: "Select an option",
             width: "100%",
         });
+    });
+
+    $(document).ready(function () {
+        function calculateOrderTotals() {
+            let subtotal = parseFloat($("#FO_SUBTOTAL").val()) || 0;
+            let discount = parseFloat($("#FO_DISCOUNT").val()) || 0;
+            let tax = parseFloat($("#FO_TAX").val()) || 0;
+            let service = parseFloat($("#FO_SERVICE_CHARGE").val()) || 0;
+
+            let total = subtotal - discount + tax + service;
+
+            $("#FO_TOTAL_AMOUNT").val(total.toFixed(2));
+
+            if (!$("#FO_PAID_AMOUNT").data("manually-edited")) {
+                $("#FO_PAID_AMOUNT").val(total.toFixed(2));
+            }
+        }
+
+        $("#FO_PAID_AMOUNT").on("input", function () {
+            $(this).data("manually-edited", true);
+        });
+
+        // Recalculate when user types
+        $("#FO_SUBTOTAL, #FO_DISCOUNT, #FO_TAX, #FO_SERVICE_CHARGE").on(
+            "input",
+            calculateOrderTotals
+        );
+
+        calculateOrderTotals();
     });
 });

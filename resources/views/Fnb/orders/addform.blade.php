@@ -219,7 +219,7 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Order Payment Status <span class="required"></span></label>
+                                <label class="control-label">Order Payment Status</label>
                                 <select class="form-select form-control" data-control="select2" id="FO_PAYMENT_STATUS"
                                     name="fo_payment_status" name="lead_category">
                                     <option value="0">-- Select payment status --</option>
@@ -235,9 +235,9 @@
                     <div class="row">
                         <div class="col-md-12 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Notes <span class="required"></span></label>
+                                <label class="control-label">Notes</label>
                                 <textarea name="fo_notes" id="FO_NOTES" class="form-control" rows="3"
-                                    placeholder="Enter orders notes..." required></textarea>
+                                    placeholder="Enter orders notes..."></textarea>
                             </div>
                         </div>
                     </div>

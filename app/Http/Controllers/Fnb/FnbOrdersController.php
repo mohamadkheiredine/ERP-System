@@ -566,4 +566,18 @@ class FnbOrdersController extends Controller
 
         return Response()->json($result_array);
     }
+
+    public function GetKicthen(Request $request)
+    {
+        $item_id = $request->input('item_id');
+
+        $item = FnbMenuItem::find($item_id);
+        if (!$item) {
+            return Response()->json(['station_id' => 0]);
+        }
+
+        return Response()->json([
+            'station_id' => $item->mi_kitchen_station_id ?? 0
+        ]);
+    }
 }
