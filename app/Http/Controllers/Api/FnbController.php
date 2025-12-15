@@ -455,18 +455,17 @@ class FnbController extends Controller
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
         }
 
-        $order->fo_order_type = $request->order_type;
-        $order->fo_customer_id = $request->customer_id;
-        $order->fo_subtotal = $request->sub_total;
-        $order->fo_discount = $request->discount;
+        $order->fo_order_type   = $request->order_type;
+        $order->fo_customer_id  = $request->customer_id ?? 0;
+        $order->fo_subtotal     = $request->sub_total;
+        $order->fo_discount     = $request->discount;
         $order->fo_total_amount = $request->total;
-        $order->fo_order_status = 2; // sent to kitchen
+        $order->fo_order_status = 2;
         $order->save();
 
         // TABLES
         FnbOrderTables::where('ot_order_id', $order->fo_id)->delete();
-        $tids = explode(',', $request->table_ids);
-        foreach ($tids as $tid) {
+        foreach (explode(',', $request->table_ids) as $tid) {
             FnbOrderTables::create([
                 'ot_order_id' => $order->fo_id,
                 'ot_table_id' => $tid
@@ -489,9 +488,73 @@ class FnbController extends Controller
                 'oi_kitchen_status' => 1,
             ]);
         }
+        // ======================
+        // CREATE PRINT JOBS
+        // ======================
 
-        return Response()->json(['is_error' => 0, 'order_id' => $order->fo_id]);
+        // 1️⃣ Get order items FROM DATABASE (NOT from request)
+        $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
+
+        // 2️⃣ Group items STRICTLY by oi_station_id
+        $grouped = [];
+
+        foreach ($orderItems as $it) {
+            $stationId = intval($it->oi_station_id ?? 1);
+
+            if (!isset($grouped[$stationId])) {
+                $grouped[$stationId] = [];
+            }
+
+            $menu = FnbMenuItem::find($it->oi_item_id);
+
+            $grouped[$stationId][] = [
+                'qty'   => $it->oi_quantity,
+                'name'  => $menu?->mi_item_name ?? 'Unknown',
+                'notes' => $it->oi_notes,
+            ];
+        }
+
+        // 3️⃣ SAFETY CHECK (VERY IMPORTANT)
+        if (count($grouped) === 0) {
+            throw new \Exception("No items grouped for printing");
+        }
+
+        // 4️⃣ DELETE OLD PENDING JOBS FOR THIS ORDER
+        DB::table('fnb_print_jobs')
+            ->where('order_id', $order->fo_id)
+            ->whereIn('status', ['pending', 'processing'])
+            ->delete();
+
+        // 5️⃣ INSERT ONE JOB PER STATION
+        foreach ($grouped as $stationId => $items) {
+
+            // 🚨 THIS MUST NEVER HAPPEN
+            if (empty($items)) {
+                continue;
+            }
+
+            DB::table('fnb_print_jobs')->insert([
+                'order_id' => $order->fo_id,
+                'kitchen_station_id' => $stationId,
+                'payload' => json_encode([
+                    'order' => [
+                        'id'       => $order->fo_id,
+                        'code'     => $order->fo_order_code,
+                        'type'     => $order->fo_order_type,
+                        'datetime' => $order->fo_order_datetime,
+                    ],
+                    'items' => $items, // ✅ ONLY THIS STATION ITEMS
+                ]),
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
+        return response()->json(['is_error' => 0]);
     }
+
 
 
 
