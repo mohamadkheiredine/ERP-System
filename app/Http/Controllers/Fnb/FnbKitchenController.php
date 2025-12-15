@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\System\Companies;
-use App\Models\FnB\KitchenStations;
+use App\models\System\Companies;
+use App\models\FnB\KitchenStations;
 use Config;
 
 class FnbKitchenController extends Controller

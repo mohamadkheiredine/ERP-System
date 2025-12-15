@@ -53,20 +53,6 @@
               <input type="text" name="fl_floor_name" id="PS_FLOOR_NAME" class="form-control" required maxlength="255" value="{{ $floor_info->fl_floor_name }}" />
             </div>
           </div>
-
-          <div class="col-6 mb-3">
-            <div class="form-group">
-              <label class="control-label">Company <span class="required"> * </span></label>
-              <select class="form-select form-control" data-control="select2" id="PS_BRANCH_ID" name="fl_branch_id">
-                <option value="0">-- Select Company --</option>
-                @foreach($lst_companies as $index => $company_info)
-                <option {{ $floor_info->fl_branch_id == $company_info->cd_id ? 'selected' : '' }} value="{{ $company_info->cd_id }}">
-                  {{ $company_info->cd_company_name }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-          </div>
         </div>
 
         <div class="row" style="height:5px;"></div>

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\System\Companies;
-use App\Models\Fnb\Floor;
+use App\models\System\Companies;
+use App\models\Fnb\Floor;
 use Config;
 
 class FnbFloorsController extends Controller
@@ -21,10 +21,7 @@ class FnbFloorsController extends Controller
 
     public function addFloor()
     {
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        $data = array(
-            "lst_companies" => $lst_companies
-        );
+        $data = array();
         return Response()->view('fnb.addform', $data);
     }
 
@@ -33,7 +30,7 @@ class FnbFloorsController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        $fl_branch_id = $request->input('fl_branch_id');
+        $default_company_id = session('default_company_id');
 
         if ($page_number > 1)
             $skip = ($page_number - 1) * $nbr_rows_per_pages;
@@ -41,11 +38,7 @@ class FnbFloorsController extends Controller
             $skip = 0;
 
 
-        $floors_cond = Floor::whereFlIsDeleted(0);
-
-        if (!empty($fl_branch_id) && $fl_branch_id != 0) {
-            $floors_cond = $floors_cond->where('fl_branch_id', $fl_branch_id);
-        }
+        $floors_cond = Floor::whereFlIsDeleted(0)->where('fl_branch_id', $default_company_id);
 
         if (!empty($general_search)) {
             $floors_cond->where('fl_floor_name', 'LIKE', '%' . $general_search . '%');
@@ -71,7 +64,7 @@ class FnbFloorsController extends Controller
     public function SaveFloorInfo(Request $request)
     {
         $fl_id                          = $request->input('fl_id');
-        $fl_branch_id                  = $request->input('fl_branch_id');
+        $default_company_id = session('default_company_id');
         $fl_floor_name                  = $request->input('fl_floor_name');
 
         $result_array = array();
@@ -82,7 +75,7 @@ class FnbFloorsController extends Controller
         }
 
 
-        $floor_info->fl_branch_id          = $fl_branch_id;
+        $floor_info->fl_branch_id          = $default_company_id;
         $floor_info->fl_floor_name          = $fl_floor_name;
 
         $floor_info->save();
@@ -90,7 +83,7 @@ class FnbFloorsController extends Controller
         $fl_id = $floor_info->fl_id;
 
         $result_array['is_error']  = 0;
-        $result_array['error_msg'] = 'Store information Information Has been saved';
+        $result_array['error_msg'] = 'Floor information Information Has been saved';
 
         return Response()->json($result_array);
     }
@@ -98,10 +91,8 @@ class FnbFloorsController extends Controller
     public function editFloor($fl_id)
     {
         $floor_info = Floor::find($fl_id);
-        $lst_companies = Companies::whereCdIsDeleted(0)->get();
 
         $data = array(
-            "lst_companies" => $lst_companies,
             "floor_info" => $floor_info,
         );
         return view('fnb.editform', $data);

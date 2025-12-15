@@ -651,6 +651,9 @@ Route::post('/phones/transactions/editform/{pt_id}','Phones\PhoneTransactionsCon
 Route::post('/crm/reports/leads','Reports\CRMReportsController@DisplayLeadReports');
 Route::post('/crm/reports/accounts','Reports\CRMReportsController@DisplayAccountsReport');
 
+Route::get('/accounting/reports/displaylisttrialbalance','Reports\AccountingReportsController@DisplayListTrialBalance');
+Route::get('/accounting/reports/displaylistbalancesheet','Reports\AccountingReportsController@DisplayListBalanceSheet');
+
 
 
 Route::post('/request/displaylistsorderstatus','Shipment\SOrderStatusController@DisplayList');

@@ -56,10 +56,10 @@
               <div class="col-md-4 col-xs-12">
             <div class="form-group">
               <label class="control-label">Floor <span class="required">*</span></label>
-              <select class="form-select form-control" data-control="select2" id="FL_ID" name="fl_id" required>
+              <select class="form-select form-control" data-control="select2" id="FL_ID" name="ft_floor_id" required>
                 <option value="0">-- Select Floor --</option>
                 @foreach($lst_floors as $floor_info)
-                <option value="{{ $floor_info->fl_id }}" {{ $table_info->fl_id == $floor_info->fl_id ? 'selected' : '' }}>
+                <option value="{{ $floor_info->fl_id }}" {{ $table_info->ft_floor_id == $floor_info->fl_id ? 'selected' : '' }}>
                   {{ $floor_info->fl_floor_name }}
                 </option>
                 @endforeach
@@ -112,7 +112,7 @@
             <div class="form-group">
               <br />
               <label class="form-check form-switch form-check-custom form-check-solid">
-                <input class="form-check-input" type="checkbox" name="ft_active" id="FT_ACTIVE" value="{{ $table_info->ft_active }}" />
+                <input class="form-check-input" type="checkbox" name="ft_active" id="FT_ACTIVE" {{ $table_info->ft_active == 1 ? "checked" : "" }} value="1" />
                 <span class="form-check-label fw-semibold text-muted">
                   Table Active
                 </span>

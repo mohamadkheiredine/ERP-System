@@ -58,18 +58,6 @@
                                   class="form-control" required maxlength="255" value="" />
                        </div>
                    </div>
-                   <div class="col-md-6 col-xs-12">
-                       <div class="form-group">
-                           <label class="control-label">Company <span class="required"> * </span></label>
-                           <select class="form-select form-control" data-control="select2"
-                                   id="FL_BRANCH_ID" name="fl_branch_id">
-                               <option value="0">-- Select Company --</option>
-                               @foreach($lst_companies as $index => $company_info)
-                                   <option value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
-                               @endforeach
-                           </select>
-                       </div>
-                   </div>
                    <div class="col-md-12">
                        <div class="d-flex justify-content-end">
                            <button type="submit" name="btn_save_floor" id="BTN_SAVE_FLOOR"

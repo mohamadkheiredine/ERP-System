@@ -18,9 +18,7 @@
 
 
 
-    Route::group([
-        "prefix" => "auth"
-    ], function () {});
+
 
 
 
@@ -126,11 +124,7 @@
 
 
 
-    Route::post('/web/api/createcustomer', 'Api\WebApiController@CreateWebCustomer');
-    Route::put('/web/api/updatecustomer', 'Api\WebApiController@UpdateWebCustomer');
-    Route::get('/web/api/getlistproducts', 'Api\WebApiController@GetListProducts');
-    Route::get('/web/api/getproductinfo', 'Api\WebApiController@Getproductinfo');
-    Route::post('/web/api/saveorder', 'Api\WebApiController@CreateOrder');
+
 
     Route::get(' /api/inventory/getlistrawmaterials', 'Api\ProductsController@GetListRawMaterials');
     Route::get(' /api/inventory/validatestock', 'Api\ProductsController@ValidateStock');
@@ -146,13 +140,24 @@
 
 
 
+
+
+    Route::group([
+        "prefix" => "auth"
+    ], function () {
+        Route::post('/web/api/createcustomer', 'Api\WebApiController@CreateWebCustomer');
+        Route::put('/web/api/updatecustomer', 'Api\WebApiController@UpdateWebCustomer');
+        Route::get('/web/api/getlistproducts', 'Api\WebApiController@GetListProducts');
+        Route::get('/web/api/getproductinfo', 'Api\WebApiController@Getproductinfo');
+        Route::post('/web/api/saveorder', 'Api\WebApiController@CreateOrder');
+    });
+
     Route::get('/api/inventory/listitemcategories', 'Api\FnbController@ListItemCategories');
     Route::get('/api/inventory/getlistofitems', 'Api\FnbController@GetListOfItems');
     Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders');
     Route::get('/api/inventory/getlistmodifiers', 'Api\FnbController@GetListModifiers');
     Route::get('/api/inventory/getlisttables', 'Api\FnbController@GetListTables');
     Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbController@GetListKitchenOrderStatus');
-
     Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
 

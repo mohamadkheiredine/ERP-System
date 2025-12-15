@@ -76,11 +76,10 @@
             <div class="col-md-12">&nbsp;</div>
 
             <!--end: Search Form -->
-            <div class="col-md-12">
-
-                <table class="table table-bordered table-hover" width="100%">
+            <div class="col-md-12  table-responsive">
+                <table class="table table-rounded table-striped border gy-7 gs-7">
                     <thead>
-                        <tr>
+                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                             <th style="width:4px;white-space: nowrap;" title="Id"></th>
                             <th style="width:4px;white-space: nowrap;" title="Id">ID</th>
                             <th title="orders Code">Code</th>

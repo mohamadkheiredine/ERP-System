@@ -82,7 +82,7 @@ class FnbTablesController extends Controller
     {
         $ft_id = $request->input('ft_id');
         $ft_label = $request->input('ft_label');
-        $ft_floor_id = $request->input('fl_id');
+        $ft_floor_id = $request->input('ft_floor_id');
         $ft_capacity = $request->input('ft_capacity');
         $ft_x_pos = $request->input('ft_x_pos');
         $ft_y_pos = $request->input('ft_y_pos');

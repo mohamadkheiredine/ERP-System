@@ -1469,6 +1469,27 @@ Page Description :
 											<!--end:Menu link-->
 										</div>
                                         @endif
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{{ url('accounting/reports/trialbalance') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">Trial Balance</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('accounting/reports/balancesheet') }}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                                <span class="menu-title">Balance Sheet</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+
 									</div>
 									<!--end:Menu sub-->
 								</div>

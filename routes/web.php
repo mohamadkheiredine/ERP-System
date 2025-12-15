@@ -567,6 +567,15 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/callcenter/reports/telemarketing','CallCenter\AppointmentsController@telemarketerAppointmentsReport');
 
 
+    Route::get('/accounting/reports/trialbalance','Reports\AccountingReportsController@TrialBalanceReport');
+    Route::get('/accounts/trial-balance/download','Reports\AccountingReportsController@DownloadTrialBalanceReport');
+
+
+    Route::get('/accounting/reports/balancesheet','Reports\AccountingReportsController@BalancesheetReport');
+    Route::get('/accounts/balancesheet/download','Reports\AccountingReportsController@DownloadBalancesheetReport');
+
+
+
 
 
     Route::get('/system/statuses','System\SystemStatusController@index');
