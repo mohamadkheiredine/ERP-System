@@ -116,9 +116,7 @@ class FnbController extends Controller
 
     public function CreateOrder(Request $request)
     {
-
         $g_hash   = $request->input('g_hash');
-        $order_items = $request->input('order_items');
         $order_items = $request->input('order_items');
 
         // If POSTMAN sends array → use it as is
@@ -198,9 +196,7 @@ class FnbController extends Controller
 
         $order_code = $this->GenerateOrdereCodeFNB();
 
-
         $company_info   = Companies::find($company_id);
-        // dd($company_info);
 
         $creation_date = date("Y-m-d H:i:s");
 
@@ -254,20 +250,31 @@ class FnbController extends Controller
 
             if (!empty($item_order['modifiers'])) {
                 foreach ($item_order['modifiers'] as $m) {
-                    $order_mod = FnbOrderItemModifiers::find($m['id']);
-                    if (!$order_mod) continue;
 
-                    $modifier = Modifier::find($order_mod->im_modifier_id);
-                    if (!$modifier) continue;
+                    if (!isset($m['id'])) {
+                        continue;
+                    }
+
+                    $modifier = Modifier::find($m['id']);
+                    if (!$modifier) {
+                        continue;
+                    }
+
+                    $order_mod = new FnbOrderItemModifiers();
+                    $order_mod->im_item_id = $item->oi_id;
+                    $order_mod->im_modifier_id  = $modifier->m_id;
+                    $order_mod->im_modifier_cost        = $modifier->m_cost_modifier;
+                    $order_mod->save();
 
                     $mods[] = [
-                        "id"    => $m['id'],
+                        "id"    => $modifier->m_id,
                         "name"  => $modifier->m_modifier_name,
-                        "price" => $modifier->m_modifier_cost,
-                        "qty"   => $modifier->m_quantity,
+                        "price" => $modifier->m_price_modifier,
+                        "qty"   => 1,
                     ];
                 }
             }
+
 
             $final_items[] = [
                 "item_id"   => $item_order['item_id'],
@@ -292,7 +299,6 @@ class FnbController extends Controller
 
 
         $customer_info  = Customers::find($order_info->fo_customer_id);
-        // dd($customer_info);
         $AccountingManager = new AccountingManager();
 
 
@@ -319,7 +325,7 @@ class FnbController extends Controller
         $TransactionMovement->tm_debit              = $total;
         $TransactionMovement->tm_credit             = 0;
         $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
 
 
@@ -327,11 +333,11 @@ class FnbController extends Controller
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
         $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
-        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
         $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
         $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
 
 
@@ -339,11 +345,11 @@ class FnbController extends Controller
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_ledger_account     = $pt_payment_account;
         $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
-        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
         $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
         $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
         $TransactionMovement->save();
 
         $trans_mov = new TransactionMovements();
@@ -351,10 +357,10 @@ class FnbController extends Controller
         $trans_mov->tm_ledger_account       = 701;
         $trans_mov->tm_sub_ledger_account   = 701;
         $trans_mov->tm_debit                = 0;
-        $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+        // $trans_mov->tm_credit               = $invoice_info->bi_total_price;
         $trans_mov->tm_creation_date        = date('Y-m-d');
         $trans_mov->tm_transaction_date        = date('Y-m-d');
-        $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+        // $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
         $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
         $trans_mov->save();
 
@@ -378,16 +384,19 @@ class FnbController extends Controller
                 $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
             }
 
-            if (isset($item_order['modifiers'])) {
+            if (!empty($item_order['modifiers'])) {
                 foreach ($item_order['modifiers'] as $mod) {
 
-                    $order_mod = FnbOrderItemModifiers::find($mod['id']);
-                    if (!$order_mod) continue;
+                    if (!isset($mod['id'])) {
+                        continue;
+                    }
 
-                    $modifier = Modifier::find($order_mod->im_modifier_id);
-                    if (!$modifier) continue;
+                    $modifier = Modifier::find($mod['id']);
+                    if (!$modifier) {
+                        continue;
+                    }
 
-                    $product_id = $modifier->m_item_id;
+                    $product_id   = $modifier->m_item_id;
                     $qty_per_unit = $modifier->m_quantity;
 
                     $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
