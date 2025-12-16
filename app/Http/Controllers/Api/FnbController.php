@@ -450,9 +450,14 @@ class FnbController extends Controller
 
     public function UpdateOrder(Request $request)
     {
+
         $order = FnbOrders::find($request->order_id);
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
+        }
+        if (empty($order->fo_order_code)) {
+            $order->fo_order_code = $this->GenerateOrdereCodeFNB();
+            $order->save();
         }
 
         $order->fo_order_type   = $request->order_type;
@@ -472,34 +477,40 @@ class FnbController extends Controller
             ]);
         }
 
-        // ITEMS
+        // ITEM
         FnbOrderItems::where('oi_order_id', $order->fo_id)->delete();
         $items = json_decode($request->order_items, true);
 
         foreach ($items as $it) {
+
+            $menuItem = FnbMenuItem::find($it['item_id']);
+
+            if (!$menuItem) {
+                throw new \Exception("Menu item not found: " . $it['item_id']);
+            }
+
             FnbOrderItems::create([
-                'oi_order_id' => $order->fo_id,
-                'oi_item_id' => $it['item_id'],
-                'oi_quantity' => $it['quantity'],
-                'oi_unit_price' => $it['unit_price'],
-                'oi_item_discount' => $it['discount'],
-                'oi_notes' => $it['notes'],
-                'oi_station_id' => $it['station_id'],
-                'oi_kitchen_status' => 1,
+                'oi_order_id'        => $order->fo_id,
+                'oi_item_id'         => $it['item_id'],
+                'oi_quantity'        => $it['quantity'],
+                'oi_unit_price'      => $it['unit_price'],
+                'oi_item_discount'   => $it['discount'],
+                'oi_notes'           => $it['notes'] ?? '',
+                'oi_station_id'      => $menuItem->mi_kitchen_station_id,
+                'oi_kitchen_status'  => 1,
             ]);
         }
-        // ======================
-        // CREATE PRINT JOBS
-        // ======================
 
-        // 1️⃣ Get order items FROM DATABASE (NOT from request)
         $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
 
-        // 2️⃣ Group items STRICTLY by oi_station_id
         $grouped = [];
 
         foreach ($orderItems as $it) {
-            $stationId = intval($it->oi_station_id ?? 1);
+            if (!$it->oi_station_id) {
+                throw new \Exception("Order item {$it->oi_id} has no kitchen station");
+            }
+
+            $stationId = (int) $it->oi_station_id;
 
             if (!isset($grouped[$stationId])) {
                 $grouped[$stationId] = [];
@@ -514,21 +525,19 @@ class FnbController extends Controller
             ];
         }
 
-        // 3️⃣ SAFETY CHECK (VERY IMPORTANT)
+        // SAFETY CHECK (VERY IMPORTANT)
         if (count($grouped) === 0) {
             throw new \Exception("No items grouped for printing");
         }
 
-        // 4️⃣ DELETE OLD PENDING JOBS FOR THIS ORDER
+        // DELETE OLD PENDING JOBS FOR THIS ORDER
         DB::table('fnb_print_jobs')
             ->where('order_id', $order->fo_id)
             ->whereIn('status', ['pending', 'processing'])
             ->delete();
 
-        // 5️⃣ INSERT ONE JOB PER STATION
+        // INSERT ONE JOB PER STATION
         foreach ($grouped as $stationId => $items) {
-
-            // 🚨 THIS MUST NEVER HAPPEN
             if (empty($items)) {
                 continue;
             }
@@ -543,7 +552,7 @@ class FnbController extends Controller
                         'type'     => $order->fo_order_type,
                         'datetime' => $order->fo_order_datetime,
                     ],
-                    'items' => $items, // ✅ ONLY THIS STATION ITEMS
+                    'items' => $items, // ONLY THIS STATION ITEMS
                 ]),
                 'status' => 'pending',
                 'created_at' => now(),
@@ -554,9 +563,6 @@ class FnbController extends Controller
 
         return response()->json(['is_error' => 0]);
     }
-
-
-
 
     public function SyncPendingOrders(Request $request)
     {
