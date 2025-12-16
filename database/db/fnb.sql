@@ -137,4 +137,52 @@ ALTER TABLE fnb_menu_items
 
 alter table fnb_kitchen_orders add column ko_kitchen_id smallint DEFAULT '0';
 
+ALTER TABLE fnb_kitchen_stations
+ADD COLUMN ks_printer_ip VARCHAR(45) NULL,
+ADD COLUMN ks_printer_port INT NULL,
+ADD COLUMN ks_printer_name VARCHAR(255) NULL,
+ADD COLUMN ks_print_enabled TINYINT(1) NOT NULL DEFAULT 1;
+
+CREATE TABLE fnb_print_jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  kitchen_station_id INT NOT NULL,
+  payload JSON NOT NULL,
+  status ENUM('pending','processing','printed','failed')
+    DEFAULT 'pending',
+  error_message TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX (order_id),
+  INDEX (kitchen_station_id),
+  INDEX (status)
+);
+
+ALTER TABLE fnb_print_jobs
+  ADD COLUMN attempts INT NOT NULL DEFAULT 0,
+  ADD COLUMN printed_at TIMESTAMP NULL,
+  ADD COLUMN next_retry_at TIMESTAMP NULL,
+  ADD INDEX (next_retry_at);
+
+
+ALTER TABLE fnb_kitchen_stations
+DROP COLUMN ks_printer_ip,
+DROP COLUMN ks_printer_port,
+DROP COLUMN ks_printer_name,
+DROP COLUMN ks_print_enabled;
+
+CREATE TABLE fnb_printers (
+  fp_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  ks_id SMALLINT NOT NULL,
+  printer_ip VARCHAR(50) NOT NULL,
+  printer_port INT NOT NULL DEFAULT 9100,
+  printer_name VARCHAR(100) NULL,
+  is_enabled TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_fnb_printer_station
+    FOREIGN KEY (ks_id)
+    REFERENCES fnb_kitchen_stations(ks_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
 
