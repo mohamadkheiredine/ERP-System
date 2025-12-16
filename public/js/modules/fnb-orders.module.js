@@ -60,12 +60,6 @@ orders_module = {
                 fo_order_code: { required: true, maxlength: 255 },
                 fo_branch_id: { required: true, min: 1 },
                 fo_order_type: { required: true },
-                fo_store_id: { required: true, min: 1 },
-                "fo_table_id[]": {
-                    required: true,
-                },
-                fo_customer_id: { required: true, min: 1 },
-                fo_order_status: { required: true, min: 1 },
                 fo_subtotal: { required: true, number: true, min: 0 },
                 fo_discount: { required: true, number: true, min: 0 },
                 fo_tax: { required: true, number: true, min: 0 },
@@ -85,22 +79,6 @@ orders_module = {
                     min: "Please select a company",
                 },
                 fo_order_type: { required: "Please select order type" },
-                fo_store_id: {
-                    required: "Please select a store",
-                    min: "Please select a store",
-                },
-                "fo_table_id[]": {
-                    required: "Please select a table",
-                    min: "Please select a table",
-                },
-                fo_customer_id: {
-                    required: "Please select customer",
-                    min: "Please select a customer",
-                },
-                fo_order_status: {
-                    required: "Please select a status",
-                    min: "Please select a status",
-                },
                 fo_subtotal: {
                     required: "Subtotal is required",
                     number: "Enter a valid number",

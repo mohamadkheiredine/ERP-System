@@ -160,37 +160,33 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        if ($order_type == 'takeaway') {
+        if ($order_type === 'takeaway') {
+
             if ($customer_id > 0) {
                 $customer_info = Customers::find($customer_id);
-                $customer_info->ic_customer_name = $delcustomername;
-                $customer_info->ic_customer_address = $delcustomeraddress;
-                $customer_info->ic_customer_phone = $delcustomerphone;
-                $customer_info->ic_customer_mobile = $delcustomerphone;
-                $customer_info->ic_customer_type = $customer_type;
-                $customer_info->save();
-            } else {
-                $customer_check = Customers::whereIcCustomerName($delcustomername)->get();
-
-                if (count($customer_check) == 0) {
-                    $customer_info = new Customers();
-                    $customer_info->ic_customer_name = $delcustomername;
+                if ($customer_info) {
+                    $customer_info->ic_customer_name    = $delcustomername;
                     $customer_info->ic_customer_address = $delcustomeraddress;
-                    $customer_info->ic_customer_phone = $delcustomerphone;
-                    $customer_info->ic_customer_mobile = $delcustomerphone;
-                    $customer_info->ic_customer_code = rand(10000, 99999);
-                    $customer_info->ic_customer_type = $customer_type;
-
-                    $customer_info->save();
-                    $customer_id = $customer_info->ic_id;
-                } else {
-                    $customer_id = $customer_check[0]->ic_id;
-                    $customer_info = Customers::find($customer_id);
-                    $customer_info->ic_customer_name = $delcustomername;
-                    $customer_info->ic_customer_address = $delcustomeraddress;
-                    $customer_info->ic_customer_phone = $delcustomerphone;
+                    $customer_info->ic_customer_phone   = $delcustomerphone;
+                    $customer_info->ic_customer_mobile  = $delcustomerphone;
+                    $customer_info->ic_customer_type    = $customer_type;
                     $customer_info->save();
                 }
+            }
+            else if (!empty(trim($delcustomername))) {
+                $customer_info = new Customers();
+                $customer_info->ic_customer_name    = $delcustomername;
+                $customer_info->ic_customer_address = $delcustomeraddress;
+                $customer_info->ic_customer_phone   = $delcustomerphone;
+                $customer_info->ic_customer_mobile  = $delcustomerphone;
+                $customer_info->ic_customer_code    = rand(10000, 99999);
+                $customer_info->ic_customer_type    = $customer_type;
+                $customer_info->save();
+                $customer_id = $customer_info->ic_id;
+            }
+            else {
+                $customer_id   = null;
+                $customer_info = null;
             }
         }
 
@@ -319,8 +315,8 @@ class FnbController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
         $TransactionMovement->tm_ledger_label       = $order_code;
         $TransactionMovement->tm_debit              = $total;
         $TransactionMovement->tm_credit             = 0;
@@ -331,8 +327,8 @@ class FnbController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
         // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
         $TransactionMovement->tm_debit              = 0;
         // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;

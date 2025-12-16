@@ -113,7 +113,7 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Store <span class="required"></span></label>
+                                <label class="control-label">Store<label>
                                 <select class="form-select form-control" data-control="select2" id="FO_STORE_ID"
                                     name="fo_store_id" name="lead_category">
                                     <option value="0">-- Select Store --</option>
@@ -129,7 +129,7 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Table <span class="required"></span></label>
+                                <label class="control-label">Table</label>
                                 <select id="FO_TABLE_ID" name="fo_table_id[]" class="form-control" multiple
                                     data-control="select2">
 
@@ -147,7 +147,7 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Customers <span class="required"></span></label>
+                                <label class="control-label">Customers</label>
                                 <select class="form-select form-control" data-control="select2" id="FO_CUSTOMER_ID"
                                     name="fo_customer_id" name="lead_category">
                                     <option value="0">-- Select Customer --</option>
@@ -166,7 +166,7 @@
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group">
-                                <label class="control-label">Status <span class="required"></span></label>
+                                <label class="control-label">Status</label>
                                 <select class="form-select form-control" data-control="select2" id="FO_ORDER_STATUS"
                                     name="fo_order_status" name="lead_category">
                                     <option value="0">-- Select Status --</option>
