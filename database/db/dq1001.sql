@@ -610,4 +610,3 @@ FOREIGN KEY (`ce_voucher_id`)
     ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
-
