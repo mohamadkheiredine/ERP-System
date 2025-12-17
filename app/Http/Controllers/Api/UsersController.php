@@ -43,6 +43,7 @@ use App\models\System\Currency;
 use App\models\System\CurrencyExchangeRates;
 use App\models\Users\UserTeam;
 use App\models\Users\TeamMembers;
+use Illuminate\Support\Facades\Http;
 
 class UsersController extends Controller
 {
@@ -61,6 +62,28 @@ class UsersController extends Controller
         $result_array = array();
         if (Auth::attempt(array('u_username' => $user_name, 'password' => $password))) {
             $user_info          = Auth::user();
+
+            $tokenResponse = Http::asForm()->post(url('/oauth/token'), [
+                'grant_type' => 'password',
+                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
+                'client_secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
+                'username' => $user_name,
+                'password' => $password,
+                'scope' => '*',
+            ]);
+
+            if (!$tokenResponse->ok()) {
+                return response()->json([
+                    'is_error' => 1,
+                    'error_message' => 'Token issue failed',
+                    'details' => $tokenResponse->json(),
+                ], 401);
+            }
+
+            $tokenData = $tokenResponse->json();
+
+
+
             $g_hash             = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
             $g_hash             =  hash('sha256', $g_hash);
 
@@ -84,6 +107,9 @@ class UsersController extends Controller
             $result_array['user_type']                  = $user_info->u_user_type;
             $result_array['u_department_id']            = $user_info->u_department_id;
             $result_array['company_id']                 = $company_id;
+            $result_array['token_type'] = $tokenData['token_type'];
+            $result_array['expires_in'] = $tokenData['expires_in'];
+            $result_array['access_token'] = $tokenData['access_token'];
 
             if ($company_id > 0) {
 
@@ -150,7 +176,18 @@ class UsersController extends Controller
 
 
 
-        return Response()->json($result_array);
+        return response()->json($result_array)
+            ->cookie(
+                'refresh_token',
+                $tokenData['refresh_token'],
+                60 * 24 * 30,
+                null,
+                null,
+                true,
+                true
+            );
+
+        return response()->json($result_array);
     }
 
     public function LoginPOSByPin(Request $request)
@@ -173,6 +210,10 @@ class UsersController extends Controller
             ]);
         }
         // Auth::login($user_info);
+
+        $tokenResult = $user_info->createToken('POS-PIN');
+        $accessToken = $tokenResult->accessToken;
+        $refreshToken = $tokenResult->token->refresh_token ?? null;
 
         $g_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $g_hash = hash('sha256', $g_hash);
@@ -199,6 +240,9 @@ class UsersController extends Controller
         $result_array['user_type'] = $user_info->u_user_type;
         $result_array['u_department_id'] = $user_info->u_department_id;
         $result_array['company_id'] = $company_id;
+        $result_array['token_type'] = 'Bearer';
+        $result_array['expires_in'] = 31536000;
+        $result_array['access_token'] = $accessToken;
 
         if ($company_id > 0) {
 
@@ -259,7 +303,16 @@ class UsersController extends Controller
                 $result_array['exchange_rate']             = 1;
         }
 
-        return response()->json($result_array);
+        return response()->json($result_array)
+            ->cookie(
+                'refresh_token',
+                $refreshToken,
+                60 * 24 * 30,
+                null,
+                null,
+                true,
+                true
+            );
     }
 
 
@@ -284,6 +337,7 @@ class UsersController extends Controller
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
         } else {
+            $request->user()->token()->revoke();
             Auth::logout($user_id);
             $result_array['is_error']       = 0;
         }
