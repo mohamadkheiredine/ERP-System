@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\library\EncryptionManager;
+use Laravel\Passport\Passport;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Passport::loadKeysFrom(app_path('secrets/oauth'));
+
 
         // get license information
         $path_filename= public_path() . '/.license';
