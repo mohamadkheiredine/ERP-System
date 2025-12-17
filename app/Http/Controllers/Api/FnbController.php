@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\models\FnB\FnbPosShift;
 use App\models\FnB\Tables;
 use Validator;
 use Input;
@@ -1003,6 +1004,98 @@ class FnbController extends Controller
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = '';
         $result_array['lst_kitchens'] = $kitchens_array;
+
+        return Response()->json($result_array);
+    }
+
+    public function OpenShift(Request $request)
+    {
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $terminal_id  = $request->input('terminal_id');
+        $currency_id  = $request->input('currency_id');
+        $opening_cash = $request->input('opening_cash', 0);
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $existingShift = FnbPosShift::where('ps_terminal_id', $terminal_id)
+            ->where('ps_status', 'OPEN')
+            ->first();
+
+        if ($existingShift) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'There is already an open shift for this terminal',
+                'shift_id' => $existingShift->ps_id
+            ]);
+        }
+
+        $shift = new FnbPosShift();
+        $shift->ps_cashier_id   = $user_id;
+        $shift->ps_terminal_id  = $terminal_id;
+        $shift->ps_currency_id  = $currency_id;
+        $shift->ps_opening_cash = $opening_cash;
+        $shift->ps_opened_at    = now();
+        $shift->ps_status       = 'OPEN';
+        $shift->save();
+
+
+        return Response()->json($result_array);
+    }
+
+    public function CloseShift(Request $request)
+    {
+        $g_hash       = $request->input('g_hash');
+        $user_id      = $request->input('user_id');
+        $terminal_id  = $request->input('terminal_id');
+        $closing_cash = $request->input('closing_cash', 0);
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $shift = FnbPosShift::where('ps_terminal_id', $terminal_id)
+            ->where('ps_status', 'OPEN')
+            ->first();
+
+        if (!$shift) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'No open shift found for this terminal';
+            return Response()->json($result_array);
+        }
+
+        $expected_cash = $shift->ps_opening_cash;
+        $difference    = $closing_cash - $expected_cash;
+
+        $shift->ps_closing_cash  = $closing_cash;
+        $shift->ps_expected_cash = $expected_cash;
+        $shift->ps_difference    = $difference;
+        $shift->ps_closed_at     = now();
+        $shift->ps_status        = 'CLOSED';
+        $shift->save();
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'shift closed successfully';
+        $result_array['shift_id'] = $shift->ps_id;
+        $result_array['difference'] = $difference;
 
         return Response()->json($result_array);
     }

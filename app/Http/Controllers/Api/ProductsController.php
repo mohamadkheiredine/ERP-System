@@ -616,26 +616,14 @@ class ProductsController extends Controller
         }
 
 
-        $stock_info = Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->get();
+        $count_product = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
+        $product_info = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
 
-        $count_stock =  Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->count();
+        if ($count_product == 0) {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'Product Not Exist in Our Stock';
 
-        if ($count_stock == 0) {
-            $count_product = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
-            $product_info = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
-
-            if ($count_product == 0) {
-                $result_array['is_error']       = 1;
-                $result_array['error_message']  = 'Product Not Exist in Our Stock';
-
-                return Response()->json($result_array);
-            }
-        } else {
-            $product_info = $stock_info->products;
-            $barcode_obj = new DNS1D();
-            $uid_bar_code_png = $barcode_obj->getBarcodePNG($stock_info->is_stock_uid, "C39+", 150, 50);
-            $stock_data['uid_bar_code_png']             = $uid_bar_code_png;
-            $stock_data['uid_bar_code_png']             = $stock_info->is_selling_price;
+            return Response()->json($result_array);
         }
 
 

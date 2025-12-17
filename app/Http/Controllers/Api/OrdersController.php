@@ -444,99 +444,11 @@ class OrdersController extends Controller
         $company_id = $user_info->fk_company_id;
 
         // save invoice information
-        $AccountingManager = new AccountingManager();
-        $params_array = array(
-            'company_id' => $company_id
-        );
-        $invoice_code = $AccountingManager->GenerateInvoiceCode($params_array);
-        $invoice_info = new Invoices();
-        $invoice_info->bi_invoice_ref       = $invoice_code;
-        $invoice_info->bi_invoice_code      = $invoice_code;
-        $invoice_info->fk_account_id        = $customer_info->ic_account_number;
-        $invoice_info->fk_customer_id       = $customer_id;
-        $invoice_info->bi_invoice_date      = $creation_date;
-        $invoice_info->bi_due_date          = $creation_date;
-        $invoice_info->bi_payment_terms     = 1;
-        $invoice_info->bi_payment_type      = 2;
-        $invoice_info->bi_created_by         = $user_id;
-        $invoice_info->bi_invoice_note      = $order_info->so_order_note;
-        $invoice_info->bi_total_cost        = $order_info->so_sub_total;
-        $invoice_info->bi_vat_id            = 1;
-        $invoice_info->bi_discount          = $pos_discount;
-        $invoice_info->bi_total_price       = $order_info->so_total_cost;
-        $invoice_info->bi_invoice_currency  = $order_info->so_order_currency;
-        $invoice_info->bi_company_id  = $company_id;
-        $invoice_info->bi_invoice_note      = "New Invoice For Order #" . $so_order_code;
-        $invoice_info->bi_invoice_paid      = 1;
-        $invoice_info->bi_number_payments   = 1;
-        $invoice_info->save();
-        $bi_id = $invoice_info->bi_id;
 
-
-        $receipt_code = $AccountingManager->generateReceiptCode();
-
-        $receipt_info = new Receipts();
-        $receipt_info->fk_invoice_id = $bi_id;
-        $receipt_info->br_company_id = $company_id;
-        $receipt_info->br_customer_id = $customer_info->ic_id;
-        $receipt_info->br_account_from = $customer_info->ic_account_number;
-        $receipt_info->br_receipt_number = $receipt_code;
-        $receipt_info->br_receipt_date = date("Y-m-d");
-        $receipt_info->br_creation_date = date("Y-m-d");
-        $receipt_info->br_receipt_label = "Receipt from customer " . $customer_info->ic_customer_name . " of order #" .  $order_info->so_order_code;
-        $receipt_info->br_payment_value = $order_info->so_total_cost;
-        $receipt_info->br_receipt_currency = $order_info->so_order_currency;
-        $receipt_info->br_receipt_paid = 1;
-        $receipt_info->br_created_by = session('user_id');
-        $receipt_info->br_company_id = session('company_id');
-        $receipt_info->br_receipt_note = $order_info->so_order_note;
-        $receipt_info->save();
 
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
-        foreach ($lst_order_items as $key => $oi_info )
-        {
-            $invoice_items = new InvoiceProducts();
 
-            if($item_order['is_id'] || $item_order['is_id'] == 0)
-            {
-                $invoice_items->fk_invoice_id        = $bi_id;
-                $invoice_items->ii_item_id           = -1;
-                $invoice_items->ii_stock_id          = -1;
-                $invoice_items->ii_item_type         = $order_info->so_product_type;
-                $invoice_items->ii_item_label        = $oi_info->so_unit_label;
-                $invoice_items->ii_item_price        = $oi_info->so_product_price;
-                $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
-                $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
-                $invoice_items->save();
-            }
-            else
-            {
-
-                $stock_id           = $oi_info->so_stock_id;
-                $stock_info         = Stocks::find($stock_id);
-                $invoice_items->fk_invoice_id        = $bi_id;
-
-                $invoice_items->ii_item_id           = $oi_info->fk_product_id;
-                $invoice_items->ii_stock_id          = $stock_id;
-                $invoice_items->ii_item_type         = $order_info->so_product_type;
-                $invoice_items->ii_item_label        = $stock_info->products ? $stock_info->products->p_product_name : '';
-                $invoice_items->ii_item_price        = $oi_info->so_product_price;
-                $invoice_items->ii_item_qyt          = $oi_info->so_product_quantity;
-                $invoice_items->ii_price_currency    = $oi_info->so_product_currency;
-                $invoice_items->save();
-
-                $product_id = $oi_info->fk_product_id;
-                $stock_id   = $oi_info->so_stock_id;
-
-                $stock_info = Stocks::find($stock_id);
-                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
-                $stock_info->is_quanity = $is_quanity;
-                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
-                $stock_info->save();
-
-            }
-        }
 
 
         // save transaction and movement to the accounting table
@@ -544,9 +456,9 @@ class OrdersController extends Controller
         $pt_payment_account     = $payment_type_info->pt_payment_account;
 
         $transaction_info = new Transactions();
-        $transaction_info->at_transaction_date    = $invoice_info->bi_invoice_date;
+        $transaction_info->at_transaction_date    = date("Y-m-d");
         $transaction_info->at_creation_date       = date("Y-m-d");
-        $transaction_info->at_accounting_doc      = $invoice_info->bi_invoice_code;
+        $transaction_info->at_accounting_doc      = $so_order_code;
         $transaction_info->fk_acc_journal_id      = 3;
         $transaction_info->save();
         $at_id = $transaction_info->at_id;
@@ -557,11 +469,11 @@ class OrdersController extends Controller
         $movement_info->fk_tran_id            = $at_id;
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
         $movement_info->tm_sub_ledger_account = $pt_payment_account;
-        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
-        $movement_info->tm_debit              = $invoice_info->bi_total_price;
+        $movement_info->tm_ledger_label       = $so_order_code;
+        $movement_info->tm_debit              = $pos_total;
         $movement_info->tm_credit             = 0;
         $movement_info->tm_creation_date      = date("Y-m-d");
-        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->tm_currency_id        = $company_currency;
         $movement_info->save();
 
 
@@ -569,11 +481,11 @@ class OrdersController extends Controller
         $movement_info->fk_tran_id            = $at_id;
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
         $movement_info->tm_sub_ledger_account = $pt_payment_account;
-        $movement_info->tm_ledger_label       = $invoice_info->bi_invoice_code;
+        $movement_info->tm_ledger_label       = $so_order_code;
         $movement_info->tm_debit              = 0;
-        $movement_info->tm_credit             = $invoice_info->bi_total_price;
+        $movement_info->tm_credit             = $pos_total;
         $movement_info->tm_creation_date      = date("Y-m-d");
-        $movement_info->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $movement_info->tm_currency_id        = $company_currency;
         $movement_info->save();
 
         $tax_info = VatAccounts::find(1);
