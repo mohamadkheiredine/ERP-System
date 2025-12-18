@@ -280,157 +280,164 @@ class OrdersController extends Controller
 
         $sub_total = 0;
 
-        $delete_items = OrderProducts::whereFkOrderId($so_id)->delete();
+        DB::beginTransaction();
 
-        // save order rproducts
-        foreach ( $order_items as $key => $item_order )
-        {
-            $discount_product = isset($item_order['product_discount']) ? $item_order['product_discount'] : 0;
+        try {
 
-            $sub_total = $sub_total + ($item_order['product_cost'] - ( $item_order['product_cost'] * $discount_product /100));
+            // delete old items if editing
+            OrderProducts::whereFkOrderId($so_id)->delete();
 
-           if($item_order['is_id'] == 'UNITS')
-           {
-               $orderitem = new OrderProducts();
-               $orderitem->fk_order_id          = $so_id;
-               $orderitem->fk_product_id        = -1;
-               $orderitem->so_stock_id          = -1;
-               $orderitem->so_product_cost      = $item_order['product_cost'];
-               $orderitem->so_product_price     = $item_order['product_cost'] - ( $item_order['product_cost'] * $discount_product /100);
-               $orderitem->so_product_quantity  = $item_order['product_quantity'];
-               $orderitem->so_unit_number       = $item_order['number_id'];
-               $orderitem->so_unit_label        = $item_order['product_name'];
-               $orderitem->save();
+            foreach ($order_items as $key => $item_order) {
 
-               // change the amount of numbers in the number stock
+                $discount_product = isset($item_order['product_discount']) ? (float)$item_order['product_discount'] : 0;
+                $item_cost        = (float)($item_order['product_cost'] ?? 0);
+                $qty_requested    = (float)($item_order['product_quantity'] ?? 0);
 
-               $number_info = PhoneLines::find($item_order['number_id']);
-               $units_amount = intval($item_order['units_amount']) + 0.45;
-               $pl_total_units = $number_info->pl_total_units - $units_amount;
-               $number_info->pl_total_units = $pl_total_units;
+                // subtotal (net line after discount)
+                $sub_total += ($item_cost - ($item_cost * $discount_product / 100));
 
-           }
-           else
-           {
-               $product_id          = $item_order['p_id'];
-               $product_quantity    = $item_order['product_quantity'];
+                // ✅ UNITS special case stays as you had it (no stock)
+                if (($item_order['is_id'] ?? '') === 'UNITS') {
 
-               DB::beginTransaction();
+                    $orderitem = new OrderProducts();
+                    $orderitem->fk_order_id         = $so_id;
+                    $orderitem->fk_product_id       = -1;
+                    $orderitem->so_stock_id         = -1;
+                    $orderitem->so_product_cost     = $item_cost;
+                    $orderitem->so_product_price    = $item_cost - ($item_cost * $discount_product / 100);
+                    $orderitem->so_product_quantity = $qty_requested;
+                    $orderitem->so_unit_number      = $item_order['number_id'] ?? 0;
+                    $orderitem->so_unit_label       = $item_order['product_name'] ?? '';
+                    $orderitem->save();
 
-               try {
+                    // update phone line units (keep your logic)
+                    $number_info = PhoneLines::find($item_order['number_id']);
+                    if ($number_info) {
+                        $units_amount = (float)($item_order['units_amount'] ?? 0) + 0.45;
+                        $number_info->pl_total_units = (float)$number_info->pl_total_units - $units_amount;
+                        $number_info->save();
+                    }
 
-                   $product_id       = $item_order['p_id'];
-                   $qty_requested    = $item_order['product_quantity'];
+                    continue;
+                }
 
-                   $stock_row = DB::table('inventory_stocks')
-                       ->where('fk_product_id', $product_id)
-                       ->where('fk_warehouse_id', $warehouse_id)
-                       ->where('is_is_deleted', 0)
-                       ->select(DB::raw("SUM(is_quanity) as total_quantity"))
-                       ->first();
+                // ✅ Normal stock product
+                $product_id = (int)($item_order['p_id'] ?? 0);
+                if ($product_id <= 0 || $qty_requested <= 0) continue;
 
-                   $qty_available = $stock_row->total_quantity ?? 0;
-                   if ($qty_available >= $qty_requested) {
+                // 1️⃣ total available (includes negatives, but we only consume positives)
+                $qty_available = (float) DB::table('inventory_stocks')
+                    ->where('fk_product_id', $product_id)
+                    ->where('fk_warehouse_id', $warehouse_id)
+                    ->where('is_is_deleted', 0)
+                    ->where('is_quanity', '>', 0)
+                    ->lockForUpdate()
+                    ->sum('is_quanity');
 
-                       // decrease from FIFO stock records
-                       $remaining = $qty_requested;
+                $remaining = $qty_requested;
 
-                       $stock_batches = DB::table('inventory_stocks')
-                           ->where('fk_product_id', $product_id)
-                           ->where('fk_warehouse_id', $warehouse_id)
-                           ->where('is_quanity', '>', 0)
-                           ->orderBy('is_id', 'ASC')  // FIFO
-                           ->get();
+                // 2️⃣ FIFO consume positive batches
+                if ($qty_available > 0) {
 
-                       foreach ($stock_batches as $batch) {
-                           if ($remaining <= 0) break;
+                    $stock_batches = DB::table('inventory_stocks')
+                        ->where('fk_product_id', $product_id)
+                        ->where('fk_warehouse_id', $warehouse_id)
+                        ->where('is_is_deleted', 0)
+                        ->where('is_quanity', '>', 0)
+                        ->orderBy('is_id', 'ASC')
+                        ->lockForUpdate()
+                        ->get();
 
-                           if ($batch->is_quanity >= $remaining) {
-                               // subtract from this batch only
-                               DB::table('inventory_stocks')
-                                   ->where('is_id', $batch->is_id)
-                                   ->update([
-                                       'is_quanity'   => $batch->is_quanity - $remaining,
-                                       'is_updated_at'=> now()
-                                   ]);
+                    foreach ($stock_batches as $batch) {
+                        if ($remaining <= 0) break;
 
-                               $remaining = 0;
-                           } else {
-                               // use full batch and continue
-                               $remaining -= $batch->is_quanity;
+                        $batchQty = (float)$batch->is_quanity;
 
-                               DB::table('inventory_stocks')
-                                   ->where('is_id', $batch->is_id)
-                                   ->update([
-                                       'is_quanity'   => 0,
-                                       'is_updated_at'=> now()
-                                   ]);
-                           }
-                       }
+                        if ($batchQty >= $remaining) {
+                            DB::table('inventory_stocks')
+                                ->where('is_id', $batch->is_id)
+                                ->update([
+                                    'is_quanity'    => $batchQty - $remaining,
+                                    'is_updated_at' => now(),
+                                ]);
+                            $remaining = 0;
+                        } else {
+                            DB::table('inventory_stocks')
+                                ->where('is_id', $batch->is_id)
+                                ->update([
+                                    'is_quanity'    => 0,
+                                    'is_updated_at' => now(),
+                                ]);
+                            $remaining -= $batchQty;
+                        }
+                    }
+                }
 
-                   }
-                   // -----------------------------------------------------
-                   // 3. ELSE → CREATE NEGATIVE STOCK RECORD
-                   // -----------------------------------------------------
-                   else {
+                // 3️⃣ If still remaining → merge into existing negative row OR create one
+                if ($remaining > 0) {
 
-                       $negative_qty = $qty_requested - $qty_available;
+                    $negative_stock = DB::table('inventory_stocks')
+                        ->where('fk_product_id', $product_id)
+                        ->where('fk_warehouse_id', $warehouse_id)
+                        ->where('is_is_deleted', 0)
+                        ->where('is_quanity', '<', 0)
+                        ->lockForUpdate()
+                        ->orderBy('is_id', 'ASC')
+                        ->first();
 
-                       // if product had stock, reduce to zero
-                       if ($qty_available > 0) {
-                           DB::table('inventory_stocks')
-                               ->where('fk_product_id', $product_id)
-                               ->where('fk_warehouse_id', $warehouse_id)
-                               ->update([
-                                   'is_quanity'   => 0,
-                                   'is_updated_at'=> now()
-                               ]);
-                       }
+                    if ($negative_stock) {
+                        DB::table('inventory_stocks')
+                            ->where('is_id', $negative_stock->is_id)
+                            ->update([
+                                'is_quanity'    => (float)$negative_stock->is_quanity - $remaining, // more negative
+                                'is_updated_at' => now(),
+                            ]);
+                    } else {
+                        DB::table('inventory_stocks')->insert([
+                            'fk_product_id'     => $product_id,
+                            'fk_warehouse_id'   => $warehouse_id,
+                            'is_quanity'        => -$remaining,
+                            'is_price_currency' => $company_currency,
+                            'is_stock_currency' => $company_currency,
+                            'is_stock_label'    => 'NEGATIVE STOCK AUTO-GENERATED',
+                            'is_created_by'     => auth()->id() ?? 0,
+                            'is_creation_date'  => now(),
+                        ]);
+                    }
+                }
 
+                // 4️⃣ Save order line
+                $orderitem = new OrderProducts();
+                $orderitem->fk_order_id         = $so_id;
+                $orderitem->fk_product_id       = $product_id;
+                $orderitem->so_stock_id         = $item_order['is_id'] ?? 0;
+                $orderitem->so_product_cost     = $item_cost;
+                $orderitem->so_discount         = $discount_product;
+                $orderitem->so_product_price    = $item_cost - ($item_cost * $discount_product / 100);
+                $orderitem->so_product_quantity = $qty_requested;
+                $orderitem->so_product_currency = $company_currency;
+                $orderitem->save();
+            }
 
-                       // create negative stock (backorder)
-                       DB::table('inventory_stocks')->insert([
-                           'fk_product_id'    => $product_id,
-                           'fk_warehouse_id'  => $warehouse_id,
-                           'is_quanity'       => -$negative_qty,
-                           'is_price_currency'       => $company_currency,
-                           'is_stock_currency'       => $company_currency,
-                           'is_stock_label'   => 'NEGATIVE STOCK AUTO-GENERATED',
-                           'is_created_by'    => auth()->id() ?? 0,
-                           'is_creation_date' => now()
-                       ]);
-                   }
+            // ✅ Update order totals from computed subtotal
+            $order_info = Orders::find($so_id);
+            $order_info->so_sub_total      = $sub_total;
+            $order_info->so_total_discount = $pos_discount;
+            $order_info->so_total_cost     = $pos_total; // keep what UI sent OR recompute if you want
+            $order_info->save();
 
+            DB::commit();
 
-                   $discount = $item_order['product_discount'] ?? 0;
-
-                   $orderitem = new OrderProducts();
-                   $orderitem->fk_order_id          = $so_id;
-                   $orderitem->fk_product_id        = $product_id;
-                   $orderitem->so_stock_id          = $item_order['is_id'];
-                   $orderitem->so_product_cost      = $item_order['product_cost'];
-                   $orderitem->so_discount          = $discount;
-                   $orderitem->so_product_price     = $item_order['product_cost'] - ($item_order['product_cost'] * $discount / 100);
-                   $orderitem->so_product_quantity  = $qty_requested;
-                   $orderitem->so_product_currency  = $company_currency;
-                   $orderitem->save();
-
-                   DB::commit();
-
-               } catch (\Exception $e) {
-
-                   DB::rollBack();
-                   return response()->json([
-                       'error' => 1,
-                       'message' => $e->getMessage()
-                   ]);
-               }
-           }
-
-
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'is_error' => 1,
+                'error_message' => $e->getMessage(),
+            ]);
         }
 
-	// update order
+
+        // update order
         if($order_info->so_sub_total == null)
         {
                 $order_info = Orders::find($so_id);
