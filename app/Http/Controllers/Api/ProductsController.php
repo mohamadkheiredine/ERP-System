@@ -300,7 +300,9 @@ class ProductsController extends Controller
 
         $products = array();
 
-        $products_cond = Products::wherePProductIsDeleted(0);
+        // $products_cond = Products::wherePProductIsDeleted(0);
+        $products_cond = Products::with('Currency')->wherePProductIsDeleted(0);
+
         if ($category_id != 0) {
             $products_cond = $products_cond->whereFkPcId($category_id);
         }
@@ -597,7 +599,7 @@ class ProductsController extends Controller
      */
     public function SearchProductByUID(Request $request)
     {
-        $product_uid         = $request->input('product_uid');
+        $product_uid         = $request->input('product_uid') ?? $request->input('pos_barcode');
         $warehouse_id        = $request->input('warehouse_id');
         $user_id             = $request->input('user_id');
         $g_hash              = $request->input('g_hash');
@@ -616,19 +618,20 @@ class ProductsController extends Controller
         }
 
 
-        $stock_info = Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->get();
+        $stock_info = Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->first();
 
         $count_stock =  Stocks::whereIsStockUid($product_uid)->whereFkWarehouseId($warehouse_id)->count();
 
         if ($count_stock == 0) {
-            $count_product = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
-            $product_info = Products::wherePProductIsDeleted(0)->where("p_barcode", $product_uid)->count();
+            $product_info = Products::wherePProductIsDeleted(0)
+                ->where("p_barcode", $product_uid)
+                ->first();
 
-            if ($count_product == 0) {
-                $result_array['is_error']       = 1;
-                $result_array['error_message']  = 'Product Not Exist in Our Stock';
-
-                return Response()->json($result_array);
+            if (!$product_info) {
+                return response()->json([
+                    'is_error' => 1,
+                    'error_message' => 'Product Not Exist in Our Stock',
+                ]);
             }
         } else {
             $product_info = $stock_info->products;
@@ -1084,20 +1087,26 @@ class ProductsController extends Controller
             return Response()->json($result_array);
         }
 
-        $product_data = Products::wherePProductName($selectedproduct)->get();
+        // $product_data = Products::wherePProductName($selectedproduct)->get();
+        $product_data = Products::where('p_id', $selectedproduct)->first();
 
-        if (count($product_data) == 0) {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = "Product Does not exist";
-            return Response()->json($result_array);
+
+
+        if (!$product_data) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'Product does not exist',
+            ]);
         }
-        $product_data = $product_data[0];
+        // dd($product_data[0]);
+        // $product_data = $product_data[0];
         $result_array['is_error'] = 0;
         $row_array['p_id'] = $product_data->p_id;
         $result_array['quantity'] = 1;
         $row_array['is_id'] = $product_data->p_id;
         $row_array['uid'] = $product_data->p_id;
         $row_array['product_name'] = $product_data->p_product_name;
+        // dd($row_array);
 
         $image_src_url  = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $product_data->p_product_profile_base_src . $product_data->p_product_profile_file_name . "." . $product_data->p_product_profile_extention;
         $image_src_path = public_path() . "/" . Config::get('constants.PRODUCTS_PATH') . $product_data->p_product_profile_base_src . $product_data->p_product_profile_file_name . "." . $product_data->p_product_profile_extention;
