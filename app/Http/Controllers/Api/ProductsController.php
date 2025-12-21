@@ -892,6 +892,7 @@ class ProductsController extends Controller
 
                 $row_array['image_url'] = url('images/NoImageAvailable.jpg');
                 $row_array['product_cost'] = $price_killo;
+                $row_array['product_price'] = $qyt_price;
 
                 $row_array['product_discount'] = 0;
                 $row_array['product_quantity'] = $weight;

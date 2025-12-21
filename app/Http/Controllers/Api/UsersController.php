@@ -63,24 +63,24 @@ class UsersController extends Controller
         if (Auth::attempt(array('u_username' => $user_name, 'password' => $password))) {
             $user_info          = Auth::user();
 
-            $tokenResponse = Http::asForm()->post(url('/oauth/token'), [
-                'grant_type' => 'password',
-                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-                'client_secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
-                'username' => $user_name,
-                'password' => $password,
-                'scope' => '*',
-            ]);
+//            $tokenResponse = Http::asForm()->post(url('/oauth/token'), [
+//                'grant_type' => 'password',
+//                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
+//                'client_secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
+//                'username' => $user_name,
+//                'password' => $password,
+//                'scope' => '*',
+//            ]);
+//
+//            if (!$tokenResponse->ok()) {
+//                return response()->json([
+//                    'is_error' => 1,
+//                    'error_message' => 'Token issue failed',
+//                    'details' => $tokenResponse->json(),
+//                ], 401);
+//            }
 
-            if (!$tokenResponse->ok()) {
-                return response()->json([
-                    'is_error' => 1,
-                    'error_message' => 'Token issue failed',
-                    'details' => $tokenResponse->json(),
-                ], 401);
-            }
-
-            $tokenData = $tokenResponse->json();
+            //$tokenData = $tokenResponse->json();
 
 
 
@@ -107,9 +107,9 @@ class UsersController extends Controller
             $result_array['user_type']                  = $user_info->u_user_type;
             $result_array['u_department_id']            = $user_info->u_department_id;
             $result_array['company_id']                 = $company_id;
-            $result_array['token_type'] = $tokenData['token_type'];
-            $result_array['expires_in'] = $tokenData['expires_in'];
-            $result_array['access_token'] = $tokenData['access_token'];
+//            $result_array['token_type'] = $tokenData['token_type'];
+//            $result_array['expires_in'] = $tokenData['expires_in'];
+//            $result_array['access_token'] = $tokenData['access_token'];
 
             if ($company_id > 0) {
 
@@ -175,17 +175,6 @@ class UsersController extends Controller
         }
 
 
-
-        return response()->json($result_array)
-            ->cookie(
-                'refresh_token',
-                $tokenData['refresh_token'],
-                60 * 24 * 30,
-                null,
-                null,
-                true,
-                true
-            );
 
         return response()->json($result_array);
     }

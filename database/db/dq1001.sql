@@ -594,19 +594,22 @@ INDEX `fk_ce_cycle_id_idx` (`ce_cycle_id` ASC) VISIBLE,
 INDEX `fk_ce_voucher_id_idx` (`ce_voucher_id` ASC) VISIBLE,
 CONSTRAINT `fk_ce_company_id`
 FOREIGN KEY (`ce_company_id`)
-  REFERENCES `retailerp_db`.`company_details` (`cd_id`)
+  REFERENCES `company_details` (`cd_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE,
 CONSTRAINT `fk_ce_cycle_id`
 FOREIGN KEY (`ce_cycle_id`)
-  REFERENCES `retailerp_db`.`prod_farm_cycles` (`fc_id`)
+  REFERENCES `prod_farm_cycles` (`fc_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE,
 CONSTRAINT `fk_ce_voucher_id`
 FOREIGN KEY (`ce_voucher_id`)
-  REFERENCES `retailerp_db`.`billing_payment_vouchers` (`pv_id`)
+  REFERENCES `billing_payment_vouchers` (`pv_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE)
     ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
+
+
+ALTER TABLE `users` CHANGE COLUMN `u_comission_account_id` `u_comission_account_id` INT NULL DEFAULT '0' ;
