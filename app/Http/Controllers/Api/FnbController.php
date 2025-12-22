@@ -173,8 +173,7 @@ class FnbController extends Controller
                     $customer_info->ic_customer_type    = $customer_type;
                     $customer_info->save();
                 }
-            }
-            else if (!empty(trim($delcustomername))) {
+            } else if (!empty(trim($delcustomername))) {
                 $customer_info = new Customers();
                 $customer_info->ic_customer_name    = $delcustomername;
                 $customer_info->ic_customer_address = $delcustomeraddress;
@@ -184,8 +183,7 @@ class FnbController extends Controller
                 $customer_info->ic_customer_type    = $customer_type;
                 $customer_info->save();
                 $customer_id = $customer_info->ic_id;
-            }
-            else {
+            } else {
                 $customer_id   = null;
                 $customer_info = null;
             }
@@ -1123,5 +1121,49 @@ class FnbController extends Controller
             'closing_cash'   => $closing_cash,
             'difference'     => $difference
         ]);
+    }
+
+    public function GetOrdersBetweenOpenCloseCash(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $user_info    = Users::find($user_id);
+
+        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $shift = FnbPosShift::where('ps_cashier_id', $user_id)
+            ->where('ps_status', 'CLOSED')
+            ->orderBy('ps_closed_at', 'DESC')
+            ->first();
+
+        if (!$shift) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'No closed shift found';
+            return Response()->json($result_array);
+        }
+
+        $open_cash  = $shift->ps_opened_at;
+        $close_cash = $shift->ps_closed_at;
+
+        $lst_orders = FnbOrders::whereBetween('fo_order_datetime', [
+            $open_cash,
+            $close_cash
+        ])->get();
+
+        $result_array['is_error']   = 0;
+        $result_array['open_cash'] = $open_cash;
+        $result_array['close_cash'] = $close_cash;
+        $result_array['orders']    = $lst_orders;
+
+        return Response()->json($result_array);
     }
 }

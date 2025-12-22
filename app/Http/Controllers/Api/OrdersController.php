@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
 OrdersController.php
 Product :
@@ -10,7 +11,7 @@ All Rights Reserved ,   itm Solutions COPYRIGHT 2020
 
 Page Description :
 
-***********************************************************/
+ ***********************************************************/
 
 
 
@@ -62,6 +63,7 @@ use App\models\Inventory\Vendors;
 use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
+use App\models\FnB\FnbPosShift;
 
 class OrdersController extends Controller
 {
@@ -82,7 +84,7 @@ class OrdersController extends Controller
         $warehouse_id       = $request->input('warehouse_id');
         $company_currency   = $request->input('company_currency');
         $order_items        = $request->input('order_items');
-        $order_items        = json_decode( $order_items , true );
+        $order_items        = json_decode($order_items, true);
         $pos_sub_total      = $request->input('pos_sub_total');
         $pos_discount       = $request->input('pos_discount');
         $pos_total          = $request->input('pos_total');
@@ -98,90 +100,79 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
             return Response()->json($result_array);
         }
 
-        if($delivery_id != 0)
-        {
+        if ($delivery_id != 0) {
 
-            if($customer_id > 0)
-            {
-               $customer_info = Customers::find($customer_id);
-               $customer_info->ic_customer_name = $delcustomername;
-               $customer_info->ic_customer_address = $delcustomeraddress;
-               $customer_info->ic_customer_phone = $delcustomerphone;
-               $customer_info->ic_customer_mobile = $delcustomerphone;
-               $customer_info->save();
-
-
-            }
-            else
-            {
-                 // check if the customer exist
+            if ($customer_id > 0) {
+                $customer_info = Customers::find($customer_id);
+                $customer_info->ic_customer_name = $delcustomername;
+                $customer_info->ic_customer_address = $delcustomeraddress;
+                $customer_info->ic_customer_phone = $delcustomerphone;
+                $customer_info->ic_customer_mobile = $delcustomerphone;
+                $customer_info->save();
+            } else {
+                // check if the customer exist
                 $customer_check = Customers::whereIcCustomerName($delcustomername)->get();
 
                 $customer_id = 0;
 
-                if(count($customer_check) == 0)
-                {
-                     $customer_manager = new CustomersManager();
-                        $params = array(
-                           'company_id' => $user_info->fk_company_id
-                       );
-                       $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
+                if (count($customer_check) == 0) {
+                    $customer_manager = new CustomersManager();
+                    $params = array(
+                        'company_id' => $user_info->fk_company_id
+                    );
+                    $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
 
 
-                       $customer_info = new Customers();
-                       $customer_info->ic_customer_name = $delcustomername;
-                       $customer_info->ic_customer_address = $delcustomeraddress;
-                       $customer_info->ic_customer_phone = $delcustomerphone;
-                       $customer_info->ic_customer_mobile = $delcustomerphone;
-                       $customer_info->ic_customer_code = $ic_customer_code;
+                    $customer_info = new Customers();
+                    $customer_info->ic_customer_name = $delcustomername;
+                    $customer_info->ic_customer_address = $delcustomeraddress;
+                    $customer_info->ic_customer_phone = $delcustomerphone;
+                    $customer_info->ic_customer_mobile = $delcustomerphone;
+                    $customer_info->ic_customer_code = $ic_customer_code;
 
-                    $account_info   = ChartAccounts::where("aa_account_ref","=","4111")->get();
+                    $account_info   = ChartAccounts::where("aa_account_ref", "=", "4111")->get();
                     $account_info = $account_info[0];
 
-                    $count   = ChartAccounts::where("aa_account_ref","LIKE","4111%")->count();
+                    $count   = ChartAccounts::where("aa_account_ref", "LIKE", "4111%")->count();
 
                     $new_count      = $count + 1;
-                    $aa_account_ref = $account_info->aa_account . (String)sprintf('%05d', $new_count);
+                    $aa_account_ref = $account_info->aa_account . (string)sprintf('%05d', $new_count);
 
-                       $AccAccounting = new ChartAccounts();
-                       $AccAccounting->aa_parent_account   = $account_info->aa_id;
-                       $AccAccounting->aa_account_ref      = $aa_account_ref;
-                       $AccAccounting->aa_account          = $aa_account_ref;
-                       $AccAccounting->aa_sub_account      = $account_info->aa_id;
-                       $AccAccounting->aa_account_label    = $delcustomername;
-                       $AccAccounting->fk_country_id       = 0;
-                       $AccAccounting->save();
+                    $AccAccounting = new ChartAccounts();
+                    $AccAccounting->aa_parent_account   = $account_info->aa_id;
+                    $AccAccounting->aa_account_ref      = $aa_account_ref;
+                    $AccAccounting->aa_account          = $aa_account_ref;
+                    $AccAccounting->aa_sub_account      = $account_info->aa_id;
+                    $AccAccounting->aa_account_label    = $delcustomername;
+                    $AccAccounting->fk_country_id       = 0;
+                    $AccAccounting->save();
 
-                       $aa_id = $AccAccounting->aa_id;
-                       $customer_info->ic_account_number = $aa_id;
+                    $aa_id = $AccAccounting->aa_id;
+                    $customer_info->ic_account_number = $aa_id;
 
 
-                       $customer_info->save();
-                       $customer_id = $customer_info->ic_id;
-                }
-                else
-                {
+                    $customer_info->save();
+                    $customer_id = $customer_info->ic_id;
+                } else {
                     $customer_id = $customer_check[0]->ic_id;
-                     $customer_info = Customers::find($customer_id);
-                       $customer_info->ic_customer_name = $delcustomername;
-                       $customer_info->ic_customer_address = $delcustomeraddress;
-                       $customer_info->ic_customer_phone = $delcustomerphone;
-                       $customer_info->save();
+                    $customer_info = Customers::find($customer_id);
+                    $customer_info->ic_customer_name = $delcustomername;
+                    $customer_info->ic_customer_address = $delcustomeraddress;
+                    $customer_info->ic_customer_phone = $delcustomerphone;
+                    $customer_info->save();
                 }
             }
-
         }
 
 
@@ -192,19 +183,14 @@ class OrdersController extends Controller
 
         $vendor_info = new Vendors();
 
-        if($customer_id == 0)
-        {
+        if ($customer_id == 0) {
             // check if we select a vendor we get info of it
-            if($vendor_id != 0)
-            {
+            if ($vendor_id != 0) {
                 $vendor_info = Vendors::find($vendor_id);
                 $vendor_account_id = $vendor_info->iv_vendor_account_id;
-            }
-            else
-            {
+            } else {
                 $customer_info = Customers::whereIcDefaultCustomer(0)->get();
-                if(count($customer_info) == 0)
-                {
+                if (count($customer_info) == 0) {
                     $result_array['is_error']       = 1;
                     $result_array['error_message']  = 'Please Select A Customer Or Create a Default Custromer to Save all order there';
 
@@ -214,11 +200,7 @@ class OrdersController extends Controller
                 $customer_info = $customer_info[0];
                 $customer_id = $customer_info->ic_id;
             }
-
-
-        }
-        else
-        {
+        } else {
             $customer_info = Customers::find($customer_id);
         }
 
@@ -232,23 +214,22 @@ class OrdersController extends Controller
         $params_array = array(
             'company_id' => $user_info->fk_company_id
         );
-        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
 
-        $so_order_barcode = rand(100000000,999999999);
+        $so_order_barcode = rand(100000000, 999999999);
 
         $creation_date      = date("Y-m-d");
-		$creation_time      = date("H:i:s");
+        $creation_time      = date("H:i:s");
         $so_vat_id = 0;
 
         // create a new order
         $order_info = new Orders();
 
-        if($order_id != 0)
+        if ($order_id != 0)
             $order_info = Orders::find($order_id);
 
-        if($order_id == 0)
-        {
+        if ($order_id == 0) {
             $order_info->so_order_code       = $so_order_code;
             $order_info->so_order_barcode    = $so_order_barcode;
             $order_info->fk_user_id          = $user_id;
@@ -427,7 +408,6 @@ class OrdersController extends Controller
             $order_info->save();
 
             DB::commit();
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -438,13 +418,12 @@ class OrdersController extends Controller
 
 
         // update order
-        if($order_info->so_sub_total == null)
-        {
-                $order_info = Orders::find($so_id);
-                $order_info->so_sub_total = $sub_total;
-                $order_info->so_total_discount   = $pos_discount;
-                $order_info->so_total_cost       = $sub_total - (( $pos_total * $pos_discount ) /100) ;
-                $order_info->save();
+        if ($order_info->so_sub_total == null) {
+            $order_info = Orders::find($so_id);
+            $order_info->so_sub_total = $sub_total;
+            $order_info->so_total_discount   = $pos_discount;
+            $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100);
+            $order_info->save();
         }
 
 
@@ -505,25 +484,24 @@ class OrdersController extends Controller
             "lst_order_items"   => $lst_order_items,
             "order_info"        => $order_info,
             "user_info"         => $user_info,
-			"pos_sub_total" => $pos_sub_total,
+            "pos_sub_total" => $pos_sub_total,
             "cost_total"        => $total,
             "pos_discount"         => $pos_discount,
             "creation_date"     => $creation_date,
             "so_order_code" => $so_order_code,
-			"creation_time" => $creation_time
+            "creation_time" => $creation_time
         );
 
-        if( $delivery_id != 0 )
-        {
+        if ($delivery_id != 0) {
             $customer_info = Customers::find($customer_id);
             $data['delivery_id'] = $delivery_id;
             $data['customer_info'] = $customer_info;
         }
 
-        if($big_invoice == 1)
-            $pos_receipt = view('templates.posa5invoices',$data)->render();
+        if ($big_invoice == 1)
+            $pos_receipt = view('templates.posa5invoices', $data)->render();
         else
-            $pos_receipt = view('templates.posinvoices',$data)->render();
+            $pos_receipt = view('templates.posinvoices', $data)->render();
 
         $result_array['receipt_link']           = url('/order/posreceipt/' . $so_id . "?company_id=" . $company_id . "&user_id=" . $user_id . "&cost_total=" . $total);
         $result_array['is_error']           = 0;
@@ -548,12 +526,11 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -563,7 +540,7 @@ class OrdersController extends Controller
 
         $order_info = new Orders();
 
-        $order_data = $order_info->orderby('so_id','DESC')->first();
+        $order_data = $order_info->orderby('so_id', 'DESC')->first();
 
 
         $so_id = $order_data->so_id;
@@ -613,12 +590,11 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -697,13 +673,12 @@ class OrdersController extends Controller
 
         $user_info           = Users::find($user_id);
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -721,122 +696,110 @@ class OrdersController extends Controller
         $params_array = array(
             'company_id' => $user_info->fk_company_id
         );
-        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
 
-        $so_order_barcode = rand(100000000,999999999);
+        $so_order_barcode = rand(100000000, 999999999);
 
         $creation_date    = date("Y-m-d H:i");
         $so_vat_id = 0;
 
         // create a new order
-        if($order_id == 0)
+        if ($order_id == 0)
             $order_info = new Orders();
         else
             $order_info = Orders::find($order_id);
 
-            if($order_id == 0)
-            {
-                $order_info->so_order_code       = $so_order_code;
-                $order_info->so_order_barcode    = $so_order_barcode;
-                $order_info->fk_user_id          = $user_id;
-                $order_info->so_assign_to        = $user_id;
-                $order_info->fk_warehouse_id     = 0;
-                $order_info->so_order_status     = 1;
-                $order_info->so_order_customer   = 0;
-                $order_info->so_vendor_id        = 0;
-                $order_info->so_creation_date    = date("Y-m-d");
-                $order_info->so_product_type     = 1;
-                $order_info->so_payment_type     = 1;
-                $order_info->so_order_label      = $so_order_label;
-                $order_info->so_order_note       = "";
-                $order_info->so_order_date       = $creation_date;
-                $order_info->so_delivery_date    = $creation_date;
-                $order_info->so_vat_id           = $so_vat_id;
-                $order_info->so_pos_order        = 1;
-            }
+        if ($order_id == 0) {
+            $order_info->so_order_code       = $so_order_code;
+            $order_info->so_order_barcode    = $so_order_barcode;
+            $order_info->fk_user_id          = $user_id;
+            $order_info->so_assign_to        = $user_id;
+            $order_info->fk_warehouse_id     = 0;
+            $order_info->so_order_status     = 1;
+            $order_info->so_order_customer   = 0;
+            $order_info->so_vendor_id        = 0;
+            $order_info->so_creation_date    = date("Y-m-d");
+            $order_info->so_product_type     = 1;
+            $order_info->so_payment_type     = 1;
+            $order_info->so_order_label      = $so_order_label;
+            $order_info->so_order_note       = "";
+            $order_info->so_order_date       = $creation_date;
+            $order_info->so_delivery_date    = $creation_date;
+            $order_info->so_vat_id           = $so_vat_id;
+            $order_info->so_pos_order        = 1;
+        }
 
-            $order_info->so_sub_total        = $sub_total;
-            $order_info->so_total_discount   = $discount;
-            $order_info->so_total_cost       = $total;
-            $order_info->so_order_currency   = $company_currency;
-            $order_info->so_order_customer   = 1;
-            $order_info->so_payment_type   = $payment_method;
-            $order_info->so_delivery_fees   = $delivery_fees;
-            $order_info->so_extra_charges   = $extra_charges;
-            $order_info->so_assign_to   = $assignto;
+        $order_info->so_sub_total        = $sub_total;
+        $order_info->so_total_discount   = $discount;
+        $order_info->so_total_cost       = $total;
+        $order_info->so_order_currency   = $company_currency;
+        $order_info->so_order_customer   = 1;
+        $order_info->so_payment_type   = $payment_method;
+        $order_info->so_delivery_fees   = $delivery_fees;
+        $order_info->so_extra_charges   = $extra_charges;
+        $order_info->so_assign_to   = $assignto;
 
-            $order_info->save();
+        $order_info->save();
 
-            $so_id = $order_info->so_id;
+        $so_id = $order_info->so_id;
 
-            // save order rproducts
-            foreach ( $order_items as $key => $item_order )
-            {
-                if( $item_order != null )
-                {
-                    //p_product_cost_price
-                    $product_id = $item_order->product_id;
-                    $product_info = Products::find($product_id);
-                    if($product_info != null)
-                    {
-                        $product_cost = $product_info->p_product_cost_price;
-                    }
-                    else
-                    {
-                        $product_cost = 0;
-                    }
-
-                    $orderitem = new OrderProducts();
-                    $orderitem->fk_order_id          = $so_id;
-                    $orderitem->fk_product_id        = $item_order->product_id;
-                    $orderitem->so_stock_id          = -1;
-                    $orderitem->so_product_cost      = $product_cost;
-                    $orderitem->so_product_price     = $item_order->product_selling_price;
-                    $orderitem->so_product_quantity  = $item_order->quantity;
-                    $orderitem->save();
+        // save order rproducts
+        foreach ($order_items as $key => $item_order) {
+            if ($item_order != null) {
+                //p_product_cost_price
+                $product_id = $item_order->product_id;
+                $product_info = Products::find($product_id);
+                if ($product_info != null) {
+                    $product_cost = $product_info->p_product_cost_price;
+                } else {
+                    $product_cost = 0;
                 }
 
-
+                $orderitem = new OrderProducts();
+                $orderitem->fk_order_id          = $so_id;
+                $orderitem->fk_product_id        = $item_order->product_id;
+                $orderitem->so_stock_id          = -1;
+                $orderitem->so_product_cost      = $product_cost;
+                $orderitem->so_product_price     = $item_order->product_selling_price;
+                $orderitem->so_product_quantity  = $item_order->quantity;
+                $orderitem->save();
             }
+        }
 
-            $customer_exist = Customers::where("ic_customer_mobile",$customer_mobile)->count();
+        $customer_exist = Customers::where("ic_customer_mobile", $customer_mobile)->count();
 
-            $customer_info = new Customers();
+        $customer_info = new Customers();
 
-            if($customer_exist == 0)
-            {
-                $customer_info->ic_customer_name = $customer_name;
-                $customer_info->ic_customer_mobile = $customer_mobile;
-                $customer_info->save();
-            }
-            else
-            {
-                $customer_info = Customers::where("ic_customer_mobile",$customer_mobile)->get();
+        if ($customer_exist == 0) {
+            $customer_info->ic_customer_name = $customer_name;
+            $customer_info->ic_customer_mobile = $customer_mobile;
+            $customer_info->save();
+        } else {
+            $customer_info = Customers::where("ic_customer_mobile", $customer_mobile)->get();
 
-                $customer_info = $customer_info[0];
-            }
+            $customer_info = $customer_info[0];
+        }
 
 
-            // generate the POS Receipt
-            $data = array(
-                "company_info"      => $company_info,
-                "lst_order_items"   => $order_items,
-                "order_info"        => $order_info,
-                "user_info"         => $user_info,
-                "customer_info"         => $customer_info,
-                "cost_total"        => $total,
-                "tax_total"         => 0
-            );
+        // generate the POS Receipt
+        $data = array(
+            "company_info"      => $company_info,
+            "lst_order_items"   => $order_items,
+            "order_info"        => $order_info,
+            "user_info"         => $user_info,
+            "customer_info"         => $customer_info,
+            "cost_total"        => $total,
+            "tax_total"         => 0
+        );
 
-           $pos_receipt = view('templates.posrestaurantinvoices',$data)->render();
+        $pos_receipt = view('templates.posrestaurantinvoices', $data)->render();
 
-            $result_array['is_error']           = 0;
-            $result_array['error_msg']          = "Order has been completed";
-            $result_array['pos_receipt']        = $pos_receipt;
+        $result_array['is_error']           = 0;
+        $result_array['error_msg']          = "Order has been completed";
+        $result_array['pos_receipt']        = $pos_receipt;
 
-            return Response()->json($result_array);
-
+        return Response()->json($result_array);
     }
 
     public function PrintOrder(Request $request)
@@ -850,12 +813,11 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -864,7 +826,7 @@ class OrdersController extends Controller
 
         $result_array        = array();
 
-           $order_manager = new OrdersManager();
+        $order_manager = new OrdersManager();
 
         $company_id = $user_info->fk_company_id;
 
@@ -873,14 +835,14 @@ class OrdersController extends Controller
         $params_array = array(
             'company_id' => $user_info->fk_company_id
         );
-        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
 
-        $so_order_barcode = rand(100000000,999999999);
-        $lst_order_items = OrderProducts::where('fk_order_id',$order_id)->get();
+        $so_order_barcode = rand(100000000, 999999999);
+        $lst_order_items = OrderProducts::where('fk_order_id', $order_id)->get();
 
         $creation_date    = date("Y-m-d");
-	$creation_time = date("H:i:s");
+        $creation_time = date("H:i:s");
         $so_vat_id = 0;
 
         $order_info = Orders::find($order_id);
@@ -895,19 +857,19 @@ class OrdersController extends Controller
             "pos_discount"         => $order_info->so_total_discount,
             "creation_date"     => $order_info->so_creation_date,
             "so_order_code" => $order_info->so_order_code,
-	    "creation_time" => $creation_time
+            "creation_time" => $creation_time
         );
 
-         if($big_invoice == 1)
-            $pos_receipt = view('templates.posa5invoices',$data)->render();
+        if ($big_invoice == 1)
+            $pos_receipt = view('templates.posa5invoices', $data)->render();
         else
-            $pos_receipt = view('templates.posinvoices',$data)->render();
+            $pos_receipt = view('templates.posinvoices', $data)->render();
 
 
-         $result_array['is_error']           = 0;
-         $result_array['display']           = $pos_receipt;
+        $result_array['is_error']           = 0;
+        $result_array['display']           = $pos_receipt;
 
-       return Response()->json($result_array);
+        return Response()->json($result_array);
     }
 
 
@@ -921,13 +883,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -942,11 +903,9 @@ class OrdersController extends Controller
 
 
         $result_array['is_error']           = 0;
-       $result_array['error_msg']          = "Order has been deleted";
+        $result_array['error_msg']          = "Order has been deleted";
 
-       return Response()->json($result_array);
-
-
+        return Response()->json($result_array);
     }
 
 
@@ -965,13 +924,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -980,8 +938,7 @@ class OrdersController extends Controller
 
         $order_info = Orders::whereSoOrderCode($order_code)->get();
 
-        if(count($order_info) == 0)
-        {
+        if (count($order_info) == 0) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'Invalid Order Code Try Again !!';
         }
@@ -991,20 +948,18 @@ class OrdersController extends Controller
 
         $order_id = $order_info->so_id;
 
-        $lst_order_items = OrderProducts::where('fk_order_id',$order_id)->get();
+        $lst_order_items = OrderProducts::where('fk_order_id', $order_id)->get();
         $pos_order = array();
-        foreach ($lst_order_items as $key => $itm_info)
-        {
+        foreach ($lst_order_items as $key => $itm_info) {
             $item_info = array(
                 "product_id" =>  $itm_info->fk_product_id,
                 "product_name" =>  $itm_info->Products->p_product_name,
                 "product_selling_price" =>  $itm_info->so_product_cost,
                 "quantity" =>  $itm_info->so_product_quantity,
-                "currency_code" => ( $order_info->Currency != null ?  $order_info->Currency->cc_currency_code : "" )
+                "currency_code" => ($order_info->Currency != null ?  $order_info->Currency->cc_currency_code : "")
             );
 
-            $pos_order[ $itm_info->fk_product_id ] = json_encode($item_info);
-
+            $pos_order[$itm_info->fk_product_id] = json_encode($item_info);
         }
 
 
@@ -1048,122 +1003,115 @@ class OrdersController extends Controller
 
 
         $nbr_rows_per_pages    = 10;
-        if($current_page > 1)
-            $skip = ( $current_page - 1 ) * $nbr_rows_per_pages ;
+        if ($current_page > 1)
+            $skip = ($current_page - 1) * $nbr_rows_per_pages;
         else
             $skip = 0;
 
-            $user_info           = Users::find($user_id);
+        $user_info           = Users::find($user_id);
 
-            $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-            $c_hash              =  hash('sha256',$c_hash);
-            $result_array        = array();
-
-
-            // validate hash sequence for loggedin user
-            if( $c_hash != $g_hash )
-            {
-                $result_array['is_error']       = 1;
-                $result_array['error_message']  = 'hash sequence is not valid !!';
-
-                return Response()->json($result_array);
-            }
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256', $c_hash);
+        $result_array        = array();
 
 
-
-            // get from to date based on daterange
-
-            switch($date_range)
-            {
-                case 1 ://today's order
-                    {
-                        $date_from = date("Y-m-d");
-                        $date_to = date("Y-m-d");
-                    }
-                break;
-                case 2 ://yesterday's order
-                {
-                    $date_from = date("Y-m-d",strtotime('yesterday'));
-                    $date_to = date("Y-m-d",strtotime('yesterday'));
-                }
-                break;
-                case 3 ://last week's order
-                {
-                    $date_from = date("Y-m-d",strtotime('-7 day'));
-                    $date_to = date("Y-m-d",strtotime('Today'));
-                }
-                break;
-                case 4 ://last week's order
-                {
-                    $date_from = date("Y-m-d",strtotime('-30 day'));
-                    $date_to = date("Y-m-d",strtotime('Today'));
-                }
-                break;
-                case 5 : // custom date range
-                {
-                    $date_from = date("Y-m-d",strtotime($date_from));
-                    $date_to = date("Y-m-d",strtotime($date_to));
-                }
-                break;
-
-            }
-
-
-            $orders = array();
-            $where_cond = "Where so_is_deleted=0 AND so_order_date BETWEEN '$date_from' AND '$date_to'";
-            $orders_cond = Orders::whereSoIsDeleted(0);
-            $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
-
-            if($payment_type != 0 && $payment_type != "")
-            {
-                $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
-                $where_cond .= " AND so_payment_type = " . $payment_type;
-            }
-           $results = DB::select("SELECT SUM(so_total_cost) as total_amount FROM sales_orders " .$where_cond);
-
-
-            $orders_count = $orders_cond->count();
-
-            $total_pages = ceil( $orders_count/$nbr_rows_per_pages );
-            $total_pages = intval($total_pages);
-
-            $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->get();
-            $total_cost = 0;
-
-            foreach ( $lst_orders as $key => $order_info )
-            {
-                $orders[ $order_info->so_id ]['so_id']                        = $order_info->so_id;
-                $orders[ $order_info->so_id ]['so_order_code']                        = $order_info->so_order_code;
-                $orders[ $order_info->so_id ]['so_payment_type']                        = $order_info->so_payment_type;
-                $orders[ $order_info->so_id ]['so_order_label']                        = $order_info->so_order_label;
-                $orders[ $order_info->so_id ]['so_order_date']                        = $order_info->so_order_date;
-                $orders[ $order_info->so_id ]['so_delivery_date']                        = $order_info->so_delivery_date;
-                $orders[ $order_info->so_id ]['so_total_cost']                        = $order_info->so_total_cost;
-                $orders[ $order_info->so_id ]['so_order_currency']                        = $order_info->so_order_currency;
-                $orders[ $order_info->so_id ]['currency_code']                        = ( $order_info->Currency != null ) ? $order_info->Currency->cc_currency_code : "";
-
-                $order_id = $order_info->so_id;
-
-                $list_order_products = OrderProducts::whereFkOrderId($order_id)->get();
-                $cost_price = 0;
-                foreach ($list_order_products as $key => $order_product)
-                {
-                    $cost_price = $cost_price + $order_product->so_product_cost;
-                    $total_cost = $total_cost + $order_product->so_product_cost;
-                }
-
-                $orders[ $order_info->so_id ]['cost_price']                        = $cost_price;
-
-            }
-
-            $result_array['is_error']       = 0;
-            $result_array['orders']       = $orders;
-            $result_array['total_amount'] = $results[0]->total_amount;
-            $result_array['total_cost'] = $total_cost;
-            $result_array['total_pages']       = $total_pages;
-
+        // validate hash sequence for loggedin user
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
 
             return Response()->json($result_array);
+        }
+
+
+
+        // get from to date based on daterange
+
+        switch ($date_range) {
+            case 1: //today's order
+                {
+                    $date_from = date("Y-m-d");
+                    $date_to = date("Y-m-d");
+                }
+                break;
+            case 2: //yesterday's order
+                {
+                    $date_from = date("Y-m-d", strtotime('yesterday'));
+                    $date_to = date("Y-m-d", strtotime('yesterday'));
+                }
+                break;
+            case 3: //last week's order
+                {
+                    $date_from = date("Y-m-d", strtotime('-7 day'));
+                    $date_to = date("Y-m-d", strtotime('Today'));
+                }
+                break;
+            case 4: //last week's order
+                {
+                    $date_from = date("Y-m-d", strtotime('-30 day'));
+                    $date_to = date("Y-m-d", strtotime('Today'));
+                }
+                break;
+            case 5: // custom date range
+                {
+                    $date_from = date("Y-m-d", strtotime($date_from));
+                    $date_to = date("Y-m-d", strtotime($date_to));
+                }
+                break;
+        }
+
+
+        $orders = array();
+        $where_cond = "Where so_is_deleted=0 AND so_order_date BETWEEN '$date_from' AND '$date_to'";
+        $orders_cond = Orders::whereSoIsDeleted(0);
+        $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
+
+        if ($payment_type != 0 && $payment_type != "") {
+            $orders_cond = $orders_cond->where('so_payment_type', $payment_type);
+            $where_cond .= " AND so_payment_type = " . $payment_type;
+        }
+        $results = DB::select("SELECT SUM(so_total_cost) as total_amount FROM sales_orders " . $where_cond);
+
+
+        $orders_count = $orders_cond->count();
+
+        $total_pages = ceil($orders_count / $nbr_rows_per_pages);
+        $total_pages = intval($total_pages);
+
+        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        $total_cost = 0;
+
+        foreach ($lst_orders as $key => $order_info) {
+            $orders[$order_info->so_id]['so_id']                        = $order_info->so_id;
+            $orders[$order_info->so_id]['so_order_code']                        = $order_info->so_order_code;
+            $orders[$order_info->so_id]['so_payment_type']                        = $order_info->so_payment_type;
+            $orders[$order_info->so_id]['so_order_label']                        = $order_info->so_order_label;
+            $orders[$order_info->so_id]['so_order_date']                        = $order_info->so_order_date;
+            $orders[$order_info->so_id]['so_delivery_date']                        = $order_info->so_delivery_date;
+            $orders[$order_info->so_id]['so_total_cost']                        = $order_info->so_total_cost;
+            $orders[$order_info->so_id]['so_order_currency']                        = $order_info->so_order_currency;
+            $orders[$order_info->so_id]['currency_code']                        = ($order_info->Currency != null) ? $order_info->Currency->cc_currency_code : "";
+
+            $order_id = $order_info->so_id;
+
+            $list_order_products = OrderProducts::whereFkOrderId($order_id)->get();
+            $cost_price = 0;
+            foreach ($list_order_products as $key => $order_product) {
+                $cost_price = $cost_price + $order_product->so_product_cost;
+                $total_cost = $total_cost + $order_product->so_product_cost;
+            }
+
+            $orders[$order_info->so_id]['cost_price']                        = $cost_price;
+        }
+
+        $result_array['is_error']       = 0;
+        $result_array['orders']       = $orders;
+        $result_array['total_amount'] = $results[0]->total_amount;
+        $result_array['total_cost'] = $total_cost;
+        $result_array['total_pages']       = $total_pages;
+
+
+        return Response()->json($result_array);
     }
 
 
@@ -1180,13 +1128,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -1197,50 +1144,47 @@ class OrdersController extends Controller
 
         // get from to date based on daterange
 
-        switch($date_range)
-        {
-            case 1 ://today's order
+        switch ($date_range) {
+            case 1: //today's order
                 {
                     $date_from = date("Y-m-d");
                     $date_to = date("Y-m-d");
                 }
                 break;
-            case 2 ://yesterday's order
+            case 2: //yesterday's order
                 {
-                    $date_from = date("Y-m-d",strtotime('yesterday'));
-                    $date_to = date("Y-m-d",strtotime('yesterday'));
+                    $date_from = date("Y-m-d", strtotime('yesterday'));
+                    $date_to = date("Y-m-d", strtotime('yesterday'));
                 }
                 break;
-            case 3 ://last week's order
+            case 3: //last week's order
                 {
-                    $date_from = date("Y-m-d",strtotime('-7 day'));
-                    $date_to = date("Y-m-d",strtotime('Today'));
+                    $date_from = date("Y-m-d", strtotime('-7 day'));
+                    $date_to = date("Y-m-d", strtotime('Today'));
                 }
                 break;
-            case 4 ://last week's order
+            case 4: //last week's order
                 {
-                    $date_from = date("Y-m-d",strtotime('-30 day'));
-                    $date_to = date("Y-m-d",strtotime('Today'));
+                    $date_from = date("Y-m-d", strtotime('-30 day'));
+                    $date_to = date("Y-m-d", strtotime('Today'));
                 }
                 break;
-            case 5 : // custom date range
+            case 5: // custom date range
                 {
-                    $date_from = date("Y-m-d",strtotime($date_from));
-                    $date_to = date("Y-m-d",strtotime($date_to));
+                    $date_from = date("Y-m-d", strtotime($date_from));
+                    $date_to = date("Y-m-d", strtotime($date_to));
                 }
                 break;
-
         }
 
 
         $orders = array();
         $orders_cond = Orders::whereSoIsDeleted(0);
-        if($date_from != null && $date_to != null)
+        if ($date_from != null && $date_to != null)
             $orders_cond = $orders_cond->whereBetween('so_order_date', [$date_from, $date_to]);
 
-        if($payment_type != 0 && $payment_type != "")
-        {
-            $orders_cond = $orders_cond->where('so_payment_type',$payment_type);
+        if ($payment_type != 0 && $payment_type != "") {
+            $orders_cond = $orders_cond->where('so_payment_type', $payment_type);
         }
 
 
@@ -1248,28 +1192,27 @@ class OrdersController extends Controller
         $lst_orders     = $orders_cond->get();
 
 
-            $data = array();
-            $data[] = ['Order Code', 'Order Date','Delivery Date','total Amount','total Cost','Extra Charge','Delivery Fees','Currency'];
+        $data = array();
+        $data[] = ['Order Code', 'Order Date', 'Delivery Date', 'total Amount', 'total Cost', 'Extra Charge', 'Delivery Fees', 'Currency'];
 
-            foreach ($lst_orders as $order_info) {
+        foreach ($lst_orders as $order_info) {
 
-                $order_id = $order_info->so_id;
+            $order_id = $order_info->so_id;
 
-                $list_order_products = OrderProducts::whereFkOrderId($order_id)->get();
-                $cost_price = 0;
-                foreach ($list_order_products as $key => $order_product)
-                {
-                    $cost_price = $cost_price + $order_product->so_product_cost;
-                }
-
-                $data[] =  [$order_info->so_order_code, $order_info->so_order_date, $order_info->so_delivery_date, $order_info->so_total_cost,$cost_price,$order_info->so_extra_charges,$order_info->so_delivery_fees, ( $order_info->Currency != null ? $order_info->Currency->cc_currency_code : "" ) ];
+            $list_order_products = OrderProducts::whereFkOrderId($order_id)->get();
+            $cost_price = 0;
+            foreach ($list_order_products as $key => $order_product) {
+                $cost_price = $cost_price + $order_product->so_product_cost;
             }
 
-            $csv = Writer::createFromFileObject(new \SplTempFileObject());
+            $data[] =  [$order_info->so_order_code, $order_info->so_order_date, $order_info->so_delivery_date, $order_info->so_total_cost, $cost_price, $order_info->so_extra_charges, $order_info->so_delivery_fees, ($order_info->Currency != null ? $order_info->Currency->cc_currency_code : "")];
+        }
 
-            $csv->insertAll($data);
+        $csv = Writer::createFromFileObject(new \SplTempFileObject());
 
-            $csv->output('data.csv');
+        $csv->insertAll($data);
+
+        $csv->output('data.csv');
     }
 
 
@@ -1290,7 +1233,7 @@ class OrdersController extends Controller
         $company_currency   = $request->input('company_currency');
         $customer_id        = $request->input('customer_id');
         $order_items        = $request->input('order_items');
-        $order_items        = json_decode( $order_items , true );
+        $order_items        = json_decode($order_items, true);
         $pos_sub_total      = $request->input('pos_sub_total');
         $pos_discount       = $request->input('pos_discount');
         $pos_total          = $request->input('pos_total');
@@ -1300,13 +1243,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -1315,15 +1257,11 @@ class OrdersController extends Controller
 
 
         // if customer id is 0 we  will link the order to the default customer id
-        if($customer_id == 0)
-        {
-            $customer_default = Customers::where('ic_customer_name' , 'LIKE' , '%POS%')->whereIcIsDeleted(0)->get();
-            if(count($customer_default) > 0)
-            {
+        if ($customer_id == 0) {
+            $customer_default = Customers::where('ic_customer_name', 'LIKE', '%POS%')->whereIcIsDeleted(0)->get();
+            if (count($customer_default) > 0) {
                 $customer_id = $customer_default[0]['ic_id'];
-            }
-            else
-            {
+            } else {
                 $customer_id = 1;
             }
         }
@@ -1336,20 +1274,19 @@ class OrdersController extends Controller
         $params_array = array(
             'company_id' => $user_info->fk_company_id
         );
-        $so_order_code      = $order_manager->GeneratePOSOrderCode( $params_array );
+        $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
-        $so_order_barcode = rand(100000000,999999999);
+        $so_order_barcode = rand(100000000, 999999999);
         $creation_date    = date("Y-m-d");
         $so_vat_id = 0;
 
         // create a new order
         $order_info = new Orders();
 
-        if($order_id != 0)
+        if ($order_id != 0)
             $order_info = Orders::find($order_id);
 
-        if($order_id == 0)
-        {
+        if ($order_id == 0) {
             $order_info->so_order_code       = $so_order_code;
             $order_info->so_order_barcode    = $so_order_barcode;
             $order_info->fk_user_id          = $user_id;
@@ -1381,8 +1318,7 @@ class OrdersController extends Controller
 
 
         // save order rproducts
-        foreach ( $order_items as $key => $item_order )
-        {
+        foreach ($order_items as $key => $item_order) {
             $orderitem = new OrderProducts();
             $orderitem->fk_order_id          = $so_id;
             $orderitem->fk_product_id        = $item_order['p_id'];
@@ -1404,12 +1340,9 @@ class OrdersController extends Controller
 
         $customer_account_id = 0;
 
-        if($customer_id == 0)
-        {
+        if ($customer_id == 0) {
             $customer_account_id = 41;
-        }
-        else
-        {
+        } else {
             $customer_account_id = $customer_info->ic_account_number;
         }
 
@@ -1443,8 +1376,7 @@ class OrdersController extends Controller
         $bi_id = $invoice_info->bi_id;
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
-        foreach ($lst_order_items as $key => $oi_info )
-        {
+        foreach ($lst_order_items as $key => $oi_info) {
             $invoice_items = new InvoiceProducts();
             $stock_id           = $oi_info->so_stock_id;
             $stock_info         = Stocks::find($stock_id);
@@ -1466,18 +1398,17 @@ class OrdersController extends Controller
             $stock_info->is_quanity = $is_quanity;
             $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
             $stock_info->save();
-
         }
 
         // add payment receipt  for paied payment
-        $payment_percentage =  ( 100 * $pos_payment_amount/$pos_total );
+        $payment_percentage =  (100 * $pos_payment_amount / $pos_total);
         $Paidinvoiceayment = new InvoicePayments();
         $Paidinvoiceayment->fk_invoice_id          = $bi_id;
         $Paidinvoiceayment->ip_payment_percentage  = $payment_percentage;
         $Paidinvoiceayment->ip_payment_label       = "";
         $Paidinvoiceayment->save();
 
-        $remaining_percentage =  ( 100 * $pos_remaining_amount/$pos_total );
+        $remaining_percentage =  (100 * $pos_remaining_amount / $pos_total);
         $reminvoiceayment = new InvoicePayments();
         $reminvoiceayment->fk_invoice_id          = $bi_id;
         $reminvoiceayment->ip_payment_percentage  = $payment_percentage;
@@ -1547,13 +1478,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -1562,8 +1492,7 @@ class OrdersController extends Controller
 
 
         $order_info = Orders::whereSoOrderCode($order_barcode)->get();
-        if(count($order_info) == 0)
-        {
+        if (count($order_info) == 0) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'Invalid Code Please Try again !!';
 
@@ -1577,8 +1506,7 @@ class OrdersController extends Controller
 
         $items_order = array();
         $index = 0;
-        foreach ( $lst_order_items as $key => $item_info )
-        {
+        foreach ($lst_order_items as $key => $item_info) {
             $items_order[$index]['p_id'] = $item_info->fk_product_id;
             $items_order[$index]['is_id'] = $item_info->so_stock_id;
             $items_order[$index]['product_name'] = $item_info->Products->p_product_name;
@@ -1589,17 +1517,16 @@ class OrdersController extends Controller
 
             $product_info = $item_info->Products;
 
-            $image_src_url  = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-            $image_src_path = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-            if(strlen($product_info->p_product_profile_base_src) > 0 ){
+            $image_src_url  = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+            $image_src_path = public_path() . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+            if (strlen($product_info->p_product_profile_base_src) > 0) {
                 $img_src = $image_src_url;
-            }else{
+            } else {
                 $img_src = url('images/NoImageAvailable.jpg');
             }
             $items_order[$index]['image_url'] = $img_src;
 
             $index++;
-
         }
 
 
@@ -1624,13 +1551,12 @@ class OrdersController extends Controller
         $user_info           = Users::find($user_id);
 
         $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash              =  hash('sha256',$c_hash);
+        $c_hash              =  hash('sha256', $c_hash);
         $result_array        = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -1647,9 +1573,7 @@ class OrdersController extends Controller
         $customer_info = Customers::find($order_info->so_order_customer);
         $lst_order_items = OrderProducts::whereFkOrderId($order_id)->get();
 
-        foreach ($lst_order_items as $key => $item_info)
-        {
-
+        foreach ($lst_order_items as $key => $item_info) {
         }
 
         /**
@@ -1666,26 +1590,25 @@ class OrdersController extends Controller
         $order_items = array();
 
 
-         // generate the POS Receipt
-            $data = array(
-                "company_info"      => $company_info,
-                "lst_order_items"   => $order_items,
-                "order_info"        => $order_info,
-                "user_info"         => $user_info,
-                "customer_info"         => $customer_info,
-                "cost_total"        => $order_info->so_total_cost,
-                "tax_total"         => 0
-            );
+        // generate the POS Receipt
+        $data = array(
+            "company_info"      => $company_info,
+            "lst_order_items"   => $order_items,
+            "order_info"        => $order_info,
+            "user_info"         => $user_info,
+            "customer_info"         => $customer_info,
+            "cost_total"        => $order_info->so_total_cost,
+            "tax_total"         => 0
+        );
 
-           $pos_receipt = view('templates.posrestaurantinvoices',$data)->render();
-
+        $pos_receipt = view('templates.posrestaurantinvoices', $data)->render();
     }
 
     /**
      * add product to order array
      * @param Request $request
      */
-    public function AddProductToOrder( Request $request )
+    public function AddProductToOrder(Request $request)
     {
         $g_hash             = $request->input('g_hash');
         $user_id            = $request->input('user_id');
@@ -1694,20 +1617,19 @@ class OrdersController extends Controller
         $warehouse_id       = $request->input('warehouse_id');
         $company_currency   = $request->input('company_currency');
         $pos_quantity       = $request->input('pos_quantity');
-        $sec_company_currency= $request->input('sec_company_currency');
+        $sec_company_currency = $request->input('sec_company_currency');
         $pos_quantity = floatval($pos_quantity);
-        if($pos_quantity == 0)
+        if ($pos_quantity == 0)
             $pos_quantity = 1;
         $user_info          = Users::find($user_id);
 
         $c_hash             = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash             =  hash('sha256',$c_hash);
+        $c_hash             =  hash('sha256', $c_hash);
         $result_array       = array();
 
 
         // validate hash sequence for loggedin user
-        if( $c_hash != $g_hash )
-        {
+        if ($c_hash != $g_hash) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'hash sequence is not valid !!';
 
@@ -1715,8 +1637,7 @@ class OrdersController extends Controller
         }
 
 
-        if($product_id != 0)
-        {
+        if ($product_id != 0) {
             $product_info = Products::find($product_id);
 
             $stock_data['p_id']                         = $product_info->p_id;
@@ -1728,14 +1649,11 @@ class OrdersController extends Controller
             $stock_data['product_discount']             = 0;
             $stock_data['is_id']                        = $product_id;
             $stock_data['uid']                          = $product_id;
-            $image_src_url              = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-            $image_src_path             = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-            if(strlen($product_info->p_product_profile_base_src) > 0 )
-            {
+            $image_src_url              = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+            $image_src_path             = public_path() . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+            if (strlen($product_info->p_product_profile_base_src) > 0) {
                 $img_src = $image_src_url;
-            }
-            else
-            {
+            } else {
                 $img_src = url('images/NoImageAvailable.jpg');
             }
             $stock_data['image_url'] = $img_src;
@@ -1766,17 +1684,12 @@ class OrdersController extends Controller
         $stock_id   = 0;
         $stock_data = array();
 
-        if( $stock_count > 0 )
-        {
+        if ($stock_count > 0) {
 
-            if($stock_ids[0]->si_stock_sold == 0)
-            {
+            if ($stock_ids[0]->si_stock_sold == 0) {
                 $stock_id   = $stock_ids[0]->fk_stock_id;
                 $stock_uid  = $stock_ids[0]->si_stock_uid;
-
-            }
-            else
-            {
+            } else {
                 $result_array['is_error']       = 1;
                 $result_array['error_message']  = 'This item is Already Sold Please Get Information about it from GET INFO Section';
 
@@ -1787,8 +1700,7 @@ class OrdersController extends Controller
             // get stock info to get product data
 
             $stock_info = Stocks::find($stock_id);
-            if($pos_quantity > $stock_info->is_quanity)
-            {
+            if ($pos_quantity > $stock_info->is_quanity) {
                 $result_array['is_error']       = 1;
                 $result_array['quantity']       = $stock_info->is_quanity;
                 $result_array['error_message']  = 'Quantity Not enough For this Product !!';
@@ -1802,24 +1714,20 @@ class OrdersController extends Controller
             $stock_data['p_id']                         = $product_info->p_id;
             $stock_data['product_name']                 = $product_info->p_product_name;
             $stock_data['barecode']                     = $product_info->p_barcode;
-            if($stock_uid != null)
+            if ($stock_uid != null)
                 $stock_data['uid']                          = $stock_uid;
             else
 
-            $stock_data['uid']                          = $product_id;
+                $stock_data['uid']                          = $product_id;
             $stock_data['product_cost']                = $stock_info->is_selling_price;
             $stock_data['product_currency']             = $stock_info->is_price_currency;
             $stock_data['is_id']                        = $stock_id;
-
-        }
-        else
-        {
+        } else {
             $product_info = Products::wherePBarcode($product_uid)->get();
             $product_count = Products::wherePBarcode($product_uid)->count();
 
 
-            if($product_count == 0)
-            {
+            if ($product_count == 0) {
                 $result_array['is_error']       = 1;
                 $result_array['error_message']  = 'This item is Not Exist ';
 
@@ -1836,17 +1744,13 @@ class OrdersController extends Controller
             $stock_data['product_cost']                = $product_info->p_product_selling_price;
             $stock_data['product_currency']             = $product_info->p_product_currency;
             $stock_data['is_id']                     = $product_info->p_id;
-
         }
 
-        $image_src_url              = url('/')."/".Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-        $image_src_path             = public_path(). "/" .Config::get('constants.PRODUCTS_PATH').$product_info->p_product_profile_base_src.$product_info->p_product_profile_file_name.".".$product_info->p_product_profile_extention;
-        if(strlen($product_info->p_product_profile_base_src) > 0 )
-        {
+        $image_src_url              = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+        $image_src_path             = public_path() . "/" . Config::get('constants.PRODUCTS_PATH') . $product_info->p_product_profile_base_src . $product_info->p_product_profile_file_name . "." . $product_info->p_product_profile_extention;
+        if (strlen($product_info->p_product_profile_base_src) > 0) {
             $img_src = $image_src_url;
-        }
-        else
-        {
+        } else {
             $img_src = url('images/NoImageAvailable.jpg');
         }
         $stock_data['image_url'] = $img_src;
@@ -1857,42 +1761,33 @@ class OrdersController extends Controller
         $op_product_cost    = 0;
 
         // if currrency id are differant
-        if( $stock_currency != $company_currency )
-        {
+        if ($stock_currency != $company_currency) {
             $today_date = date("Y-m-d");
-            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($company_currency)->where('er_date_exchange','=',$today_date)->get();
+            $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($company_currency)->where('er_date_exchange', '=', $today_date)->get();
             $op_product_cost = 0;
-            if(count($currency_exchange) == 0)
-            {
+            if (count($currency_exchange) == 0) {
                 $sc_currency        = Currency::find($stock_currency);
                 $cc_currency        = Currency::find($company_currency);
                 $op_product_cost    = convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
-            }
-            else
-            {
+            } else {
                 $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
                 $op_product_cost    = $price_item * $exchange_rate;
             }
-        }
-        else
-        {
+        } else {
             $op_product_cost = $price_item;
         }
 
 
         // get the second currency rate
-        $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($sec_company_currency)->orderBy('er_id','desc')->get();
+        $currency_exchange = CurrencyExchangeRates::whereErFromCurrency($stock_currency)->whereErToCurrency($sec_company_currency)->orderBy('er_id', 'desc')->get();
         $sec_cur_product_cost = 0;
-        if(count($currency_exchange) == 0)
-        {
+        if (count($currency_exchange) == 0) {
             $sc_currency        = Currency::find($stock_currency);
             $cc_currency        = Currency::find($sec_company_currency);
-            $sec_cur_product_cost= convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
-        }
-        else
-        {
+            $sec_cur_product_cost = convertCurrency($price_item, $sc_currency->cc_currency_code, $cc_currency->cc_currency_code);
+        } else {
             $exchange_rate      = $currency_exchange[0]['er_exchange_rate'];
-            $sec_cur_product_cost= $price_item * $exchange_rate;
+            $sec_cur_product_cost = $price_item * $exchange_rate;
         }
 
         $stock_data['product_cost']              = $op_product_cost;
@@ -1905,6 +1800,49 @@ class OrdersController extends Controller
         $result_array['is_error']           = 0;
         $result_array['row_data']           = $stock_data;
         $result_array['total_cost_row']     = $total_cost_row;
+        return Response()->json($result_array);
+    }
+
+    public function GetOrdersBetweenOpenCloseCash(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $user_info    = Users::find($user_id);
+
+        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $shift = FnbPosShift::where('ps_cashier_id', $user_id)
+            ->where('ps_status', 'CLOSED')
+            ->orderBy('ps_closed_at', 'DESC')
+            ->first();
+
+        if (!$shift) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'No closed shift found';
+            return Response()->json($result_array);
+        }
+
+        $open_cash  = $shift->ps_opened_at;
+        $close_cash = $shift->ps_closed_at;
+        $lst_orders = Orders::whereBetween('so_order_date', [
+            $open_cash,
+            $close_cash
+        ])->get();
+
+        $result_array['is_error']    = 0;
+        $result_array['open_cash']  = $open_cash;
+        $result_array['close_cash'] = $close_cash;
+        $result_array['orders']     = $lst_orders;
+
         return Response()->json($result_array);
     }
 }

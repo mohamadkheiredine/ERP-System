@@ -109,6 +109,7 @@ Route::get('/request/api/deleteorder', 'Api\OrdersController@DeleteOrder');
 Route::get('/request/api/getorderinvoice', 'Api\OrdersController@GetOrderInvoice');
 Route::get('/request/api/printinvoiceorder', 'Api\OrdersController@PrintOrder');
 Route::get('/request/api/getlastorderinfo', 'Api\OrdersController@GetLastOrderInfo');
+Route::get('/request/api/getordersbetweenopenclosecash', 'Api\OrdersController@GetOrdersBetweenOpenCloseCash');
 
 
 Route::post('/request/api/exportorderstoexcel', 'Api\OrdersController@ExportListOrdersToExcel');
@@ -160,7 +161,8 @@ Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders'
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbController@GetListModifiers');
 Route::get('/api/inventory/getlisttables', 'Api\FnbController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbController@GetListKitchenOrderStatus');
-Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
+Route::get('/api/inventory/getlastitemid', 'Api\FnbController@GetLastItemId');
+Route::get('/api/inventory/getordersbetweenopenclosecash', 'Api\FnbController@GetOrdersBetweenOpenCloseCash');
 
 
 Route::get('/api/accounts/getglaccounts', 'Api\AccountingController@GetGLAccounts');
