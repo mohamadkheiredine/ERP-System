@@ -163,6 +163,11 @@ Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbController@GetListKi
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
 
+Route::get('/api/accounts/getglaccounts', 'Api\AccountingController@GetGLAccounts');
+
+
+
+
 
 
 
