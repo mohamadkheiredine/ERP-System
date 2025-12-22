@@ -613,3 +613,6 @@ COLLATE = utf8_unicode_ci;
 
 
 ALTER TABLE `users` CHANGE COLUMN `u_comission_account_id` `u_comission_account_id` INT NULL DEFAULT '0' ;
+
+ALTER TABLE sales_orders
+MODIFY so_order_date DATETIME NOT NULL;
