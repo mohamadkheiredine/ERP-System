@@ -66,6 +66,7 @@ use App\models\FnB\Modifier;
 use App\models\System\SystemStatus;
 
 use App\library\OrdersExport;
+use App\models\FnB\FnbSessionFields;
 use Maatwebsite\Excel\Facades\Excel;
 
 class FnbController extends Controller
@@ -1012,9 +1013,13 @@ class FnbController extends Controller
     {
         $g_hash   = $request->input('g_hash');
         $user_id = $request->input('user_id');
-        // $terminal_id  = $request->input('terminal_id');
-        $currency_id  = $request->input('currency_id');
-        $opening_cash = $request->input('opening_cash', 0);
+        $currencies = $request->input('currencies');
+
+        // "currencies": [
+        //     { "currency_id": 1, "open_value": 1000 },
+        //     { "currency_id": 2, "open_value": 1220 },
+        //     { "currency_id": 3, "open_value": 10000 }
+        // ]
 
         $user_info = Users::find($user_id);
 
@@ -1028,17 +1033,6 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        // $existingShift = FnbPosShift::where('ps_terminal_id', $terminal_id)
-        //     ->where('ps_status', 'OPEN')
-        //     ->first();
-
-        // if ($existingShift) {
-        //     return response()->json([
-        //         'is_error' => 1,
-        //         'error_msg' => 'There is already an open shift for this terminal',
-        //         'shift_id' => $existingShift->ps_id
-        //     ]);
-        // }
         $openShift = FnbPosShift::where('ps_cashier_id', $user_id)
             ->where('ps_status', 'OPEN')
             ->first();
@@ -1051,48 +1045,75 @@ class FnbController extends Controller
             ]);
         }
 
-        $shift = new FnbPosShift();
-        $shift->ps_cashier_id   = $user_id;
-        // $shift->ps_terminal_id  = $terminal_id;
-        $shift->ps_currency_id  = $currency_id;
-        $shift->ps_opening_cash = $opening_cash;
-        $shift->ps_opened_at    = now();
-        $shift->ps_status       = 'OPEN';
-        $shift->save();
+        DB::beginTransaction();
 
+        try {
+            $shift = new FnbPosShift();
+            $shift->ps_cashier_id = $user_id;
+            $shift->ps_opened_at  = now();
+            $shift->ps_status     = 'OPEN';
+            $shift->save();
 
-        return Response()->json($result_array);
+            foreach ($currencies as $row) {
+
+                $cash = new FnbSessionFields();
+                $cash->sf_shift_id     = $shift->ps_id;
+                $cash->sf_cashier_id   = $user_id;
+                $cash->sf_currency_id  = $row['currency_id'];
+                $cash->sf_open_value   = $row['open_value'];
+                $cash->sf_expected_value = 0;
+                $cash->sf_close_value  = 0;
+                $cash->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'is_error' => 0,
+                'shift_id' => $shift->ps_id,
+                'message'  => 'Shift opened successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => $e->getMessage()
+            ]);
+        }
     }
 
     public function CloseShift(Request $request)
     {
-        $g_hash       = $request->input('g_hash');
-        $user_id      = $request->input('user_id');
-        $closing_cash = (float) $request->input('closing_cash', 0);
-        $notes        = $request->input('notes', '');
+        $g_hash        = $request->input('g_hash');
+        $user_id       = $request->input('user_id');
+        $closing_cash  = $request->input('closing_cash');
+        $notes         = $request->input('notes', '');
 
-        $user = Users::find($user_id);
-        if (!$user) {
+        $user_info = Users::find($user_id);
+        $result_array = array();
+
+        if (!$user_info) {
             return response()->json([
                 'is_error' => 1,
                 'error_msg' => 'Invalid user'
             ]);
         }
 
-        // hash validation
-        $c_hash = hash(
-            'sha256',
-            "POS567{$user->u_username}{$user->u_fullname}{$user->u_email}POS567"
-        );
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
 
-        if ($c_hash !== $g_hash) {
-            return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'Hash validation failed'
-            ]);
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
         }
 
-        // find open shift for cashier
         $shift = FnbPosShift::where('ps_cashier_id', $user_id)
             ->where('ps_status', 'OPEN')
             ->first();
@@ -1104,26 +1125,47 @@ class FnbController extends Controller
             ]);
         }
 
-        // expected cash (for now = opening cash only)
-        $expected_cash = (float) $shift->ps_opening_cash;
-        $difference    = $closing_cash - $expected_cash;
 
-        $shift->ps_closing_cash  = $closing_cash;
-        $shift->ps_expected_cash = $expected_cash;
-        $shift->ps_difference    = $difference;
-        $shift->ps_closed_at     = now();
-        $shift->ps_status        = 'CLOSED';
-        $shift->ps_notes         = $notes;
+        //   closing_cash example:
+        //   {
+        //     "1": 950.00,
+        //     "2": 1200.00,
+        //     "3": 10000000
+        //  }
+
+         $total_difference = 0;
+        foreach ($closing_cash as $currency_id => $close_value) {
+
+            $sessionField = FnbSessionFields::where('sf_shift_id', $shift->ps_id)
+                ->where('sf_currency_id', $currency_id)
+                ->first();
+
+            if (!$sessionField) {
+                continue;
+            }
+
+            $expected_value = $sessionField->sf_open_value;
+            $difference     = $close_value - $expected_value;
+
+            $sessionField->sf_expected_value = $expected_value;
+            $sessionField->sf_close_value    = (float) $close_value;
+            $sessionField->save();
+            $total_difference += $difference;
+        }
+
+        $shift->ps_closed_at = now();
+        $shift->ps_status    = 'CLOSED';
+        $shift->ps_notes     = $notes;
+        $shift->ps_difference = $total_difference;
         $shift->save();
 
         return response()->json([
-            'is_error'        => 0,
-            'shift_id'        => $shift->ps_id,
-            'expected_cash'  => $expected_cash,
-            'closing_cash'   => $closing_cash,
-            'difference'     => $difference
+            'is_error' => 0,
+            'shift_id' => $shift->ps_id,
+            'message'  => 'Shift closed successfully'
         ]);
     }
+
 
     public function GetOrdersBetweenOpenCloseCash(Request $request)
     {

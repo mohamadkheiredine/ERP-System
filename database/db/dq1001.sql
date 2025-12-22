@@ -616,3 +616,34 @@ ALTER TABLE `users` CHANGE COLUMN `u_comission_account_id` `u_comission_account_
 
 ALTER TABLE sales_orders
 MODIFY so_order_date DATETIME NOT NULL;
+
+
+CREATE TABLE fnb_session_fields (
+    sf_id INT AUTO_INCREMENT PRIMARY KEY,
+    sf_shift_id INT NOT NULL,
+    sf_cashier_id INT NOT NULL,
+    sf_currency_id SMALLINT NOT NULL,
+    sf_open_value DECIMAL(14,2) DEFAULT 0.00,
+    sf_expected_value DECIMAL(14,2) DEFAULT 0.00,
+    sf_close_value DECIMAL(14,2) DEFAULT 0.00,
+    sf_currency_code VARCHAR(10) NOT NULL,
+    INDEX idx_sf_shift (sf_shift_id),
+    INDEX idx_sf_cashier (sf_cashier_id),
+    INDEX idx_sf_currency (sf_currency_id),
+    CONSTRAINT fk_sf_shift
+        FOREIGN KEY (sf_shift_id)
+        REFERENCES fnb_pos_shifts(ps_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_sf_cashier
+        FOREIGN KEY (sf_cashier_id)
+        REFERENCES users(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_sf_currency
+        FOREIGN KEY (sf_currency_id)
+        REFERENCES currency(cc_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    UNIQUE KEY uq_shift_currency (sf_shift_id, sf_currency_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
