@@ -17,6 +17,8 @@ Page Description :
 
 namespace App\Http\Controllers\Api;
 
+use App\library\OrdersExport;
+
 use App\Http\Controllers\Controller;
 use App\models\Billing\Receipts;
 use Validator;
@@ -64,6 +66,8 @@ use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
 use App\models\FnB\FnbPosShift;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class OrdersController extends Controller
 {
@@ -1809,7 +1813,7 @@ class OrdersController extends Controller
         $g_hash       = $request->input('g_hash');
         $user_info    = Users::find($user_id);
 
-        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
         $result_array = array();
@@ -1844,5 +1848,55 @@ class OrdersController extends Controller
         $result_array['orders']     = $lst_orders;
 
         return Response()->json($result_array);
+    }
+
+
+    public function ExportSalesOrders(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $from         = $request->input('from');
+        $to           = $request->input('to');
+
+        $user_info    = Users::find($user_id);
+        $result_array = array();
+
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $orders = Orders::whereBetween('so_order_date', [$from, $to])
+            ->select([
+                'so_id',
+                'so_order_status',
+                'so_payment_type',
+                'so_product_type',
+                'so_order_date'
+            ])
+            ->orderBy('so_order_date', 'ASC')
+            ->get();
+
+        $headings = [
+            'Order ID',
+            'Order Status',
+            'Payment Type',
+            'Product Type',
+            'Order DateTime'
+        ];
+
+        return Excel::download(
+            new OrdersExport($orders, $headings),
+            'sales_orders_' . date('Ymd_His') . '.xlsx'
+        );
     }
 }

@@ -111,6 +111,10 @@ Route::get('/request/api/printinvoiceorder', 'Api\OrdersController@PrintOrder');
 Route::get('/request/api/getlastorderinfo', 'Api\OrdersController@GetLastOrderInfo');
 Route::get('/request/api/getordersbetweenopenclosecash', 'Api\OrdersController@GetOrdersBetweenOpenCloseCash');
 
+Route::get('/api/export/fnb-orders', 'Api\FnbController@ExportFnbOrders');
+Route::get('/api/export/sales-orders', 'Api\OrdersController@ExportSalesOrders');
+
+
 
 Route::post('/request/api/exportorderstoexcel', 'Api\OrdersController@ExportListOrdersToExcel');
 

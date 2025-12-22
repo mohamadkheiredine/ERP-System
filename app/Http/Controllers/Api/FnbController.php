@@ -63,8 +63,10 @@ use App\models\FnB\FnbOrderTables;
 use App\models\FnB\KitchenStations;
 use App\models\FnB\MenuCategories;
 use App\models\FnB\Modifier;
-use App\models\Sales\StoreWarehouses;
 use App\models\System\SystemStatus;
+
+use App\library\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FnbController extends Controller
 {
@@ -1129,7 +1131,7 @@ class FnbController extends Controller
         $g_hash       = $request->input('g_hash');
         $user_info    = Users::find($user_id);
 
-        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
         $result_array = array();
@@ -1165,5 +1167,50 @@ class FnbController extends Controller
         $result_array['orders']    = $lst_orders;
 
         return Response()->json($result_array);
+    }
+
+    public function ExportFnbOrders(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $from         = $request->input('from');
+        $to           = $request->input('to');
+
+        $user_info    = Users::find($user_id);
+        $result_array = array();
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']      = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $orders = FnbOrders::whereBetween('fo_order_datetime', [$from, $to])
+            ->select([
+                'fo_order_code',
+                'fo_order_type',
+                'fo_order_status',
+                'fo_subtotal',
+                'fo_order_datetime'
+            ])
+            ->orderBy('fo_order_datetime', 'ASC')
+            ->get();
+
+        $headings = [
+            'Order Code',
+            'Order Type',
+            'Order Status',
+            'Subtotal',
+            'Order DateTime'
+        ];
+
+        return Excel::download(
+            new OrdersExport($orders, $headings),
+            'fnb_orders_' . date('Ymd_His') . '.xlsx'
+        );
     }
 }
