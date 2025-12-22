@@ -1089,6 +1089,7 @@ class FnbController extends Controller
         $user_id       = $request->input('user_id');
         $closing_cash  = $request->input('closing_cash');
         $notes         = $request->input('notes', '');
+        $expected = $request->input('expected');
 
         $user_info = Users::find($user_id);
         $result_array = array();
@@ -1144,7 +1145,11 @@ class FnbController extends Controller
                 continue;
             }
 
-            $expected_value = $sessionField->sf_open_value;
+            $expected_value = isset($expected[$currency_id])
+                ? (float) $expected[$currency_id]
+                : $sessionField->sf_open_value;
+
+
             $difference     = $close_value - $expected_value;
 
             $sessionField->sf_expected_value = $expected_value;
