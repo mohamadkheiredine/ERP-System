@@ -82,6 +82,7 @@ class GeneralController extends Controller
         foreach ( $lst_currencies as  $index => $currency_info )
         {
             $currencies_array[ $currency_info->cc_id ] = array(
+                'currency_id' => $currency_info->cc_id,
                 'currency_code' => $currency_info->cc_currency_code ,
                 'currency_name' => $currency_info->cc_currency_name
             );

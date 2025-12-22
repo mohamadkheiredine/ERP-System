@@ -1133,7 +1133,7 @@ class FnbController extends Controller
         //     "3": 10000000
         //  }
 
-         $total_difference = 0;
+        $total_difference = 0;
         foreach ($closing_cash as $currency_id => $close_value) {
 
             $sessionField = FnbSessionFields::where('sf_shift_id', $shift->ps_id)
