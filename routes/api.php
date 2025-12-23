@@ -144,6 +144,7 @@ Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders')
 Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
 Route::post('api/shift/openshift', 'Api\FnbController@OpenShift');
 Route::post('api/shift/closeshift', 'Api\FnbController@CloseShift');
+Route::get('api/shift/getopencurrencies', 'Api\FnbController@GetOpenCurrencies');
 
 
 
