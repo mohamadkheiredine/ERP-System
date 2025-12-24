@@ -75,7 +75,7 @@
 <body>
     <div class="receipt">
         <div style="width:100%;text-align:center">
-            <p style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_name}}</p>
+            <p style="width:100%;font-weight:bold" align="center">{{ $customer_info->cd_company_name ?? 'Walk-in Customer' }}</p>
             <p style="width:100%;" align="center">{{ $creation_date }}&nbsp;&nbsp;</p>
             <p style="width:100%;" align="center">FACTURE N:<b>{{ $fo_order_code }}</b></p>
             <p style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_phone}}</p>
