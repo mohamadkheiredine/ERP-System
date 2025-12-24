@@ -144,7 +144,6 @@ Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders')
 Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
 Route::post('api/shift/openshift', 'Api\FnbController@OpenShift');
 Route::post('api/shift/closeshift', 'Api\FnbController@CloseShift');
-Route::get('api/shift/getopencurrencies', 'Api\FnbController@GetOpenCurrencies');
 
 
 
@@ -166,13 +165,7 @@ Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders'
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbController@GetListModifiers');
 Route::get('/api/inventory/getlisttables', 'Api\FnbController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbController@GetListKitchenOrderStatus');
-Route::get('/api/inventory/getlastitemid', 'Api\FnbController@GetLastItemId');
-Route::get('/api/inventory/getordersbetweenopenclosecash', 'Api\FnbController@GetOrdersBetweenOpenCloseCash');
-
-
-Route::get('/api/accounts/getglaccounts', 'Api\AccountingController@GetGLAccounts');
-
-
+Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
 
 

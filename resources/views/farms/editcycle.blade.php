@@ -147,6 +147,31 @@
                     </div>
                 </div>
 
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_expenses">Expenses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pharmacy">Pharmacy Stock</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_logs">Logs</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="kt_tab_expenses" role="tabpanel">
+                            ...
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_pharmacy" role="tabpanel">
+                            ...
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_logs" role="tabpanel">
+                            ...
+                        </div>
+                    </div>
+                </div>
                 {{-- KPI + IMPORT/EXPORT --}}
                 <div class="row mb-4">
                     <div class="col-md-8">
@@ -185,7 +210,6 @@
                             </div>
                         </div>
                     </div>
-
                     {{-- Import / Export --}}
                     <div class="col-md-4 text-end">
                             <input type="file" name="import_file" id="IMPORT_FILE" class="form-control form-control-sm mb-1">

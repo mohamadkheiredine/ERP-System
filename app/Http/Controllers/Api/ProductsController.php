@@ -1086,7 +1086,7 @@ class ProductsController extends Controller
             return Response()->json($result_array);
         }
 
-        $product_data = Products::wherePProductName($selectedproduct)->get();
+        $product_data = Products::wherePId($selectedproduct)->get();
 
         if (count($product_data) == 0) {
             $result_array['is_error'] = 1;
