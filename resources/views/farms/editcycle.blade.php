@@ -156,15 +156,46 @@
                             <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pharmacy">Pharmacy Stock</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_orders">Orders</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_logs">Logs</a>
                         </li>
                     </ul>
 
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="kt_tab_expenses" role="tabpanel">
-                            ...
+                            <div class="table-responsive">
+                                <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+                                    <thead>
+                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                        <th>PV Code</th>
+                                        <th>PV Description</th>
+                                        <th>PV Account</th>
+                                        <th>PV Amount </th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="lstExpenses">
+
+                                    </tbody>
+                            </table>
+                        </div>
+                            <div class="col-md-12" style="text-align: right">
+                                <button type="button" class="btn btn-info">Add Expenses</button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10" align="left">
+                                    <ul id="CycleExpensesPagination" class="pagination-sm"></ul>
+                                </div>
+                                <div class="col-md-2" align="right"></div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="kt_tab_pharmacy" role="tabpanel">
+                            ...
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_orders" role="tabpanel">
                             ...
                         </div>
                         <div class="tab-pane fade" id="kt_tab_logs" role="tabpanel">
@@ -172,6 +203,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12">&nbsp;</div>
                 {{-- KPI + IMPORT/EXPORT --}}
                 <div class="row mb-4">
                     <div class="col-md-8">

@@ -99,6 +99,7 @@ class OrdersController extends Controller
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
         $delcustomeraddress          = $request->input('delcustomeraddress');
+        $deliveryFee          = $request->input('deliveryFee');
         $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
 
         $user_info           = Users::find($user_id);
@@ -255,7 +256,7 @@ class OrdersController extends Controller
         $order_info->so_order_customer   = $customer_id;
         $order_info->so_sub_total        = $pos_sub_total;
         $order_info->so_total_discount   = $pos_discount;
-        $order_info->so_total_cost       = $pos_total;
+        $order_info->so_total_cost       = $pos_total + $deliveryFee;
         $order_info->so_order_currency   = $company_currency;
         $order_info->so_order_customer   = $customer_id;
 
@@ -408,7 +409,7 @@ class OrdersController extends Controller
             $order_info = Orders::find($so_id);
             $order_info->so_sub_total      = $sub_total;
             $order_info->so_total_discount = $pos_discount;
-            $order_info->so_total_cost     = $pos_total; // keep what UI sent OR recompute if you want
+            $order_info->so_total_cost     = $pos_total + $deliveryFee; // keep what UI sent OR recompute if you want
             $order_info->save();
 
             DB::commit();
@@ -426,7 +427,7 @@ class OrdersController extends Controller
             $order_info = Orders::find($so_id);
             $order_info->so_sub_total = $sub_total;
             $order_info->so_total_discount   = $pos_discount;
-            $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100);
+            $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100) + $deliveryFee;
             $order_info->save();
         }
 
@@ -458,9 +459,9 @@ class OrdersController extends Controller
         $movement_info = new TransactionMovements();
         $movement_info->fk_tran_id            = $at_id;
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
-        $movement_info->tm_sub_ledger_account = $pt_payment_account;
+        $movement_info->tm_sub_ledger_account = $customer_info->ic_account_number;
         $movement_info->tm_ledger_label       = $so_order_code;
-        $movement_info->tm_debit              = $pos_total;
+        $movement_info->tm_debit              = $pos_total +$deliveryFee;
         $movement_info->tm_credit             = 0;
         $movement_info->tm_creation_date      = date("Y-m-d");
         $movement_info->tm_currency_id        = $company_currency;
@@ -469,11 +470,11 @@ class OrdersController extends Controller
 
         $movement_info                        = new TransactionMovements();
         $movement_info->fk_tran_id            = $at_id;
-        $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
+        $movement_info->tm_ledger_account     = $pt_payment_account;
         $movement_info->tm_sub_ledger_account = $pt_payment_account;
         $movement_info->tm_ledger_label       = $so_order_code;
         $movement_info->tm_debit              = 0;
-        $movement_info->tm_credit             = $pos_total;
+        $movement_info->tm_credit             = $pos_total + $deliveryFee;
         $movement_info->tm_creation_date      = date("Y-m-d");
         $movement_info->tm_currency_id        = $company_currency;
         $movement_info->save();
@@ -493,7 +494,8 @@ class OrdersController extends Controller
             "pos_discount"         => $pos_discount,
             "creation_date"     => $creation_date,
             "so_order_code" => $so_order_code,
-            "creation_time" => $creation_time
+            "creation_time" => $creation_time,
+            "deliveryFee" => $deliveryFee
         );
 
         if ($delivery_id != 0) {
@@ -1074,6 +1076,8 @@ class OrdersController extends Controller
             $orders_cond = $orders_cond->where('so_payment_type', $payment_type);
             $where_cond .= " AND so_payment_type = " . $payment_type;
         }
+
+
         $results = DB::select("SELECT SUM(so_total_cost) as total_amount FROM sales_orders " . $where_cond);
 
 
@@ -1081,8 +1085,9 @@ class OrdersController extends Controller
 
         $total_pages = ceil($orders_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
+        $orders_cond = $orders_cond;
+        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code','DESC')->get();
 
-        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->get();
         $total_cost = 0;
 
         foreach ($lst_orders as $key => $order_info) {

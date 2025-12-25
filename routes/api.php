@@ -149,9 +149,7 @@ Route::post('api/shift/closeshift', 'Api\FnbController@CloseShift');
 
 
 
-Route::group([
-    "prefix" => "auth"
-], function () {
+Route::group(['middleware' => ['cors']], function() {
     Route::post('/web/api/createcustomer', 'Api\WebApiController@CreateWebCustomer');
     Route::put('/web/api/updatecustomer', 'Api\WebApiController@UpdateWebCustomer');
     Route::get('/web/api/getlistproducts', 'Api\WebApiController@GetListProducts');

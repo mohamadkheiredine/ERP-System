@@ -836,17 +836,6 @@ class OrdersController extends Controller
         $TransactionMovement->save();
 
 
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
-        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
-        $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;

@@ -31,6 +31,35 @@ farmcycles_module = {
 	        }
 	    });
 	},
+    DisplayListExpenses : function(){
+		var base_url 	= $('input[name=base_url]').val();
+	    var _token 		= $('input[name=_token]').val();
+	    var fc_id 		= $('input[name=fc_id]').val();
+	    var epage_number 		= $('input[name=epage_number]').val();
+	    $.ajax
+	    ({
+	        url : base_url + "/request/farmcycles/listexpenses",
+	        data : { _token : _token , fc_id : fc_id , page_number :epage_number },
+            method : 'get',
+            dataType : "json",
+            beforeSend : function(){
+            },
+	        success : function(response){
+	        	$('.lstExpenses').html(response.display);
+                if(response.total_pages > 1)
+                {
+                    $.pagination = $('#CycleExpensesPagination').twbsPagination({
+                        totalPages: response.total_pages,
+                        visiblePages: 7,
+                        onPageClick: function (event, page) {
+                            $('input[name=epage_number]').val(page);
+                            farmcycles_module.DisplayListExpenses();
+                        }
+                    });
+                }
+	        }
+	    });
+	},
 	SaveFarmCycleInfo : function(){
 		return farmcycles_module.SaveFarmCycleSubmitHandler();
 	},

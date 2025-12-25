@@ -26,17 +26,17 @@
             font-size: 24px;
         }
         .header p {
-          
+
         }
         .items {
-           
+
         }
         .items table {
             width: 100%;
             border-collapse: collapse;
         }
         .items table, .items th, .items td {
-     
+
         }
         .items th, .items td {
             padding: 8px;
@@ -73,7 +73,7 @@
             <div id="mid">
               <div class="info">
                 <h2>Contact Info</h2>
-                <p> 
+                <p>
                     Name   : {{$customer_info->ic_customer_name}}</br>
                     Address : {{$customer_info->ic_customer_address}}</br>
                     Phone   : {{$customer_info->ic_customer_phone}}</br>
@@ -83,7 +83,7 @@
             @endif
         <div class="items">
             <table border='0' style='width:100%;'>
-                <thead> 
+                <thead>
                 </thead>
                 <tbody>
                     @foreach($lst_order_items as $index => $order_item)
@@ -108,9 +108,19 @@
                     <td align="left">{{ $pos_discount }}</td>
                     <td></td>
                 </tr>
+                @if(isset($delivery_id) && $delivery_id != 0)
+                    <tr>
+                        <th align="left">Delivery :</th>
+                        <td align="left">{{ $deliveryFee }} <b>{{ $order_info->Currency->cc_currency_code }}</b></td>
+                        <td></td>
+                    </tr>
+
+                @endif
+
+
                 <tr>
                     <th align="left">Total:</th>
-                    <td align="left">{{ number_format(( $cost_total),2) }}</b>&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
+                    <td align="left">{{ number_format(( $cost_total + $deliveryFee),2) }}</b>&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
                     <td></td>
                 </tr>
             </table>
