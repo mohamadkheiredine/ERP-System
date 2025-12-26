@@ -66,6 +66,7 @@ use App\models\Phones\PhoneLines;
 use League\Csv\Writer;
 use App\library\CustomersManager;
 use App\models\FnB\FnbPosShift;
+use App\models\FnB\SalesPosShift;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -461,7 +462,7 @@ class OrdersController extends Controller
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
         $movement_info->tm_sub_ledger_account = $customer_info->ic_account_number;
         $movement_info->tm_ledger_label       = $so_order_code;
-        $movement_info->tm_debit              = $pos_total +$deliveryFee;
+        $movement_info->tm_debit              = $pos_total + $deliveryFee;
         $movement_info->tm_credit             = 0;
         $movement_info->tm_creation_date      = date("Y-m-d");
         $movement_info->tm_currency_id        = $company_currency;
@@ -1086,7 +1087,7 @@ class OrdersController extends Controller
         $total_pages = ceil($orders_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
         $orders_cond = $orders_cond;
-        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code','DESC')->get();
+        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code', 'DESC')->get();
 
         $total_cost = 0;
 
@@ -1860,8 +1861,6 @@ class OrdersController extends Controller
     {
         $user_id      = $request->input('user_id');
         $g_hash       = $request->input('g_hash');
-        $from         = $request->input('from');
-        $to           = $request->input('to');
 
         $user_info    = Users::find($user_id);
         $result_array = array();
@@ -1880,7 +1879,15 @@ class OrdersController extends Controller
             return Response()->json($result_array);
         }
 
-        $orders = Orders::whereBetween('so_order_date', [$from, $to])
+        $shift = SalesPosShift::where('sps_cashier_id', $user_id)
+            ->where('sps_status', 'CLOSED')
+            ->orderByDesc('sps_closed_at')
+            ->first();
+
+        $orders = Orders::whereBetween('so_order_date', [
+            $shift->sps_opened_at,
+            $shift->sps_closed_at
+        ])
             ->select([
                 'so_id',
                 'so_order_status',
@@ -1890,6 +1897,7 @@ class OrdersController extends Controller
             ])
             ->orderBy('so_order_date', 'ASC')
             ->get();
+
 
         $headings = [
             'Order ID',
@@ -1901,7 +1909,7 @@ class OrdersController extends Controller
 
         return Excel::download(
             new OrdersExport($orders, $headings),
-            'sales_orders_' . date('Ymd_His') . '.xlsx'
+            'sales_orders_shift_' . $shift->sps_id . '_' . now()->format('Ymd_His') . '.xlsx'
         );
     }
 }

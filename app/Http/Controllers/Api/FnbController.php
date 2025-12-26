@@ -1313,8 +1313,6 @@ class FnbController extends Controller
     {
         $user_id      = $request->input('user_id');
         $g_hash       = $request->input('g_hash');
-        $from         = $request->input('from');
-        $to           = $request->input('to');
 
         $user_info    = Users::find($user_id);
         $result_array = array();
@@ -1329,7 +1327,15 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $orders = FnbOrders::whereBetween('fo_order_datetime', [$from, $to])
+        $shift = FnbPosShift::where('ps_cashier_id', $user_id)
+            ->where('ps_status', 'CLOSED')
+            ->orderByDesc('ps_closed_at')
+            ->first();
+
+        $orders = FnbOrders::whereBetween('fo_order_datetime', [
+            $shift->ps_opened_at,
+            $shift->ps_closed_at
+        ])
             ->select([
                 'fo_order_code',
                 'fo_order_type',
@@ -1350,7 +1356,7 @@ class FnbController extends Controller
 
         return Excel::download(
             new OrdersExport($orders, $headings),
-            'fnb_orders_' . date('Ymd_His') . '.xlsx'
+            'fnb_orders_shift_' . $shift->ps_id . '_' . now()->format('Ymd_His') . '.xlsx'
         );
     }
 }
