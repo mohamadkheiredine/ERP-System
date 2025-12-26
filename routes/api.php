@@ -143,6 +143,8 @@ Route::post('/api/orders/createemptyorder', 'Api\FnbOrderController@CreateEmptyO
 Route::post('/api/orders/updateorder', 'Api\FnbOrderController@UpdateOrder');
 Route::post('/api/orders/sync', 'Api\FnbOrderController@SyncPendingOrders');
 Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbItemController@GetListItemsByKitchen');
+Route::post('/api/orders/savemenuitem', 'Api\FnbItemController@SaveMenuItem');
+
 Route::get('/api/orders/getstationsname', 'Api\FnbKitchenController@GetStationsName');
 Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders');
 Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
