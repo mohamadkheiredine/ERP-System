@@ -116,6 +116,10 @@ Route::get('/api/export/sales-orders', 'Api\OrdersController@ExportSalesOrders')
 
 
 
+Route::get('api/shift/getopencurrencies', 'Api\FnbController@GetOpenCurrencies');
+
+
+
 Route::post('/request/api/exportorderstoexcel', 'Api\OrdersController@ExportListOrdersToExcel');
 
 Route::post('/request/api/gettodaystotalordersamount', 'Api\DashboardController@GetTodaysTotalOrders');

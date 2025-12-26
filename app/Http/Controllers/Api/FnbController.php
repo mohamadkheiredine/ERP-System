@@ -701,6 +701,7 @@ class FnbController extends Controller
 
         $g_hash   = $request->input('g_hash');
         $user_id = $request->input('user_id');
+        $filter = $request->input('filter', 'today');
 
         $user_info = Users::find($user_id);
 
@@ -714,96 +715,83 @@ class FnbController extends Controller
             return Response()->json($result_array);
         }
 
-        $date_from    = $request->input('date_from');
-        $date_to      = $request->input('date_to');
-        $warehouse_id = $request->input('warehouse_id');
         $query = FnbOrders::where('fo_is_deleted', 0);
 
-        if (!empty($warehouse_id)) {
-            $query->where('warehouse_id', $warehouse_id);
+        switch ($filter) {
+            case 'currentdate':
+                $shift = FnbPosShift::where('ps_cashier_id', $user_id)
+                    ->where('ps_status', 'OPEN')
+                    ->orderByDesc('ps_opened_at')
+                    ->first();
+
+                if (!$shift) {
+                    // return empty result, NOT error
+                    $query->whereRaw('1 = 0');
+                    break;
+                }
+
+                $from = $shift->ps_opened_at;
+                $to   = $shift->ps_closed_at ?? now();
+
+                $query->whereBetween('fo_order_datetime', [$from, $to]);
+                break;
+
+
+            case 'today':
+                $query->whereDate('fo_order_datetime', today());
+                break;
+
+            case 'yesterday':
+                $query->whereDate('fo_order_datetime', today()->subDay());
+                break;
+
+            case 'lastweek':
+                $query->whereBetween('fo_order_datetime', [
+                    now()->subDays(7)->startOfDay(),
+                    now()
+                ]);
+                break;
+
+            case 'lastmonth':
+                $query->whereBetween('fo_order_datetime', [
+                    now()->subDays(30)->startOfDay(),
+                    now()
+                ]);
+                break;
+
+            case 'daterange':
+                $date_from = $request->input('date_from');
+                $date_to   = $request->input('date_to');
+
+                if ($date_from && $date_to) {
+                    $query->whereBetween('fo_order_datetime', [
+                        $date_from . ' 00:00:00',
+                        $date_to . ' 23:59:59'
+                    ]);
+                }
+                break;
+
+            default:
+                $query->whereDate('fo_order_datetime', today());
+                break;
         }
 
-        if (!empty($date_from)) {
-            $query->whereDate('fo_order_datetime', '>=', $date_from);
-        }
-
-        if (!empty($date_to)) {
-            $query->whereDate('fo_order_datetime', '<=', $date_to);
-        }
-        $lst_orders = $query->orderBy('fo_order_datetime', 'DESC')->get();
-
-        $orders_array = array();
-        foreach ($lst_orders as $index => $order) {
-            $orders_array[$index]['fo_id']            = $order->fo_id;
-            $orders_array[$index]['fo_order_code']          = $order->fo_order_code;
-            $orders_array[$index]['fo_total_amount']  = $order->fo_total_amount;
-            $orders_array[$index]['fo_order_datetime'] = $order->fo_order_datetime;
-            $orders_array[$index]['warehouse_id']  = $order->warehouse_id;
-        }
-
-        $result_array['is_error'] = 0;
-        $result_array['error_msg'] = '';
-        $result_array['lst_orders'] = $orders_array;
-        return Response()->json($result_array);
-    }
-
-    public function GetPendingOrders(Request $request)
-    {
-        $g_hash   = $request->input('g_hash');
-        $user_id = $request->input('user_id');
-
-        $user_info = Users::find($user_id);
-
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash = hash('sha256', $c_hash);
-
-        if ($c_hash != $g_hash) {
-            return response()->json([
-                "is_error" => 1,
-                "error_msg" => "hash sequence is not valid !!"
-            ]);
-        }
-
-        $orders = FnbOrders::where('fo_is_deleted', 0)
-            ->where('fo_order_status', 1)
+        $lst_orders = $query
+            ->orderBy('fo_order_datetime', 'DESC')
             ->get();
 
-        $result = [];
-
-        foreach ($orders as $order) {
-
-            $items = FnbOrderItems::where('oi_order_id', $order->fo_id)
-                ->where('oi_is_deleted', 0)
-                ->leftJoin('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
-                ->leftJoin('sys_status', 'sys_status.ss_id', '=', 'fnb_order_items.oi_kitchen_status')
-                ->select(
-                    'oi_id',
-                    'oi_item_id',
-                    'oi_quantity',
-                    'oi_unit_price',
-                    'oi_notes',
-                    'oi_kitchen_status',
-                    'oi_station_id',
-                    'fnb_menu_items.mi_item_name',
-                    'fnb_menu_items.mi_kitchen_station_id',
-                    'sys_status.ss_status_title',
-                    'sys_status.ss_status_color'
-                )
-                ->get();
-
-            $result[] = [
-                'fo_id' => $order->fo_id,
-                'fo_order_code' => $order->fo_order_code,
-                'fo_order_type' => $order->fo_order_type,
-                'fo_table_id' => $order->fo_table_id,
-                'items' => $items,
-                'fo_created_at' => $order->fo_creation_date,
-            ];
-        }
+        $orders = $lst_orders->map(fn($o) => [
+            'fo_id'             => $o->fo_id,
+            'fo_order_code'     => $o->fo_order_code,
+            'fo_total_amount'   => $o->fo_total_amount,
+            'fo_order_datetime' => $o->fo_order_datetime,
+            'warehouse_id'      => $o->warehouse_id,
+        ]);
 
         return response()->json([
-            "is_error" => 0,
-            "lst_pending_orders" => $result
+            'is_error'   => 0,
+            'error_msg' => '',
+            'lst_orders' => $orders
         ]);
     }
 
