@@ -142,11 +142,17 @@ class FnbController extends Controller
         $order_type = $request->input('order_type');
         $customer_id = $request->input('customer_id');
         $currency_id = $request->input('currency_id');
-        if (!$currency_id || !Currency::find($currency_id)) {
-            return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'Invalid or missing currency_id'
-            ]);
+        $customer_info = null;
+
+        if (empty($customer_id) || intval($customer_id) === 0) {
+
+            $defaultCustomer = Customers::where('ic_default_customer', 1)
+                ->where('ic_is_active', 1)
+                ->where('ic_is_deleted', 0)
+                ->first();
+
+            $customer_id   = $defaultCustomer->ic_id;
+            $customer_info = $defaultCustomer;
         }
 
         $delcustomername          = $request->input('delcustomername');
@@ -154,7 +160,6 @@ class FnbController extends Controller
         $delcustomeraddress          = $request->input('delcustomeraddress');
         $customer_type         = $request->input('customer_type');
         $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
-        $customer_info = null;
         $table_ids = $request->input('table_id');
         $table_ids = array_filter(explode(",", $table_ids));
 
@@ -192,9 +197,6 @@ class FnbController extends Controller
                 $customer_info->ic_customer_type    = $customer_type;
                 $customer_info->save();
                 $customer_id = $customer_info->ic_id;
-            } else {
-                $customer_id   = null;
-                $customer_info = null;
             }
         }
 
