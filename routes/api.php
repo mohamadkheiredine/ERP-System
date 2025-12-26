@@ -111,12 +111,12 @@ Route::get('/request/api/printinvoiceorder', 'Api\OrdersController@PrintOrder');
 Route::get('/request/api/getlastorderinfo', 'Api\OrdersController@GetLastOrderInfo');
 Route::get('/request/api/getordersbetweenopenclosecash', 'Api\OrdersController@GetOrdersBetweenOpenCloseCash');
 
-Route::get('/api/export/fnb-orders', 'Api\FnbController@ExportFnbOrders');
+Route::get('/api/export/fnb-orders', 'Api\FnbOrderController@ExportFnbOrders');
 Route::get('/api/export/sales-orders', 'Api\OrdersController@ExportSalesOrders');
 
 
 
-Route::get('api/shift/getopencurrencies', 'Api\FnbController@GetOpenCurrencies');
+Route::get('api/shift/getopencurrencies', 'Api\FnbShiftController@GetOpenCurrencies');
 
 
 
@@ -138,16 +138,16 @@ Route::get('/request/api/expense/list', 'Api\ExpensesController@GetListExpenses'
 Route::get(' /api/inventory/getlistrawmaterials', 'Api\ProductsController@GetListRawMaterials');
 Route::get(' /api/inventory/validatestock', 'Api\ProductsController@ValidateStock');
 
-Route::post('/api/orders/createorder', 'Api\FnbController@CreateOrder');
-Route::post('/api/orders/createemptyorder', 'Api\FnbController@CreateEmptyOrder');
-Route::post('/api/orders/updateorder', 'Api\FnbController@UpdateOrder');
-Route::post('/api/orders/sync', 'Api\FnbController@SyncPendingOrders');
-Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbController@GetListItemsByKitchen');
-Route::get('/api/orders/getstationsname', 'Api\FnbController@GetStationsName');
+Route::post('/api/orders/createorder', 'Api\FnbOrderController@CreateOrder');
+Route::post('/api/orders/createemptyorder', 'Api\FnbOrderController@CreateEmptyOrder');
+Route::post('/api/orders/updateorder', 'Api\FnbOrderController@UpdateOrder');
+Route::post('/api/orders/sync', 'Api\FnbOrderController@SyncPendingOrders');
+Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbItemController@GetListItemsByKitchen');
+Route::get('/api/orders/getstationsname', 'Api\FnbKitchenController@GetStationsName');
 Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders');
 Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
-Route::post('api/shift/openshift', 'Api\FnbController@OpenShift');
-Route::post('api/shift/closeshift', 'Api\FnbController@CloseShift');
+Route::post('api/shift/openshift', 'Api\FnShiftbController@OpenShift');
+Route::post('api/shift/closeshift', 'Api\FnbShiftController@CloseShift');
 
 
 
@@ -161,12 +161,12 @@ Route::group(['middleware' => ['cors']], function() {
     Route::post('/web/api/saveorder', 'Api\WebApiController@CreateOrder');
 });
 
-Route::get('/api/inventory/listitemcategories', 'Api\FnbController@ListItemCategories');
-Route::get('/api/inventory/getlistofitems', 'Api\FnbController@GetListOfItems');
+Route::get('/api/inventory/listitemcategories', 'Api\FnbCategoriesController@ListItemCategories');
+Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders');
-Route::get('/api/inventory/getlistmodifiers', 'Api\FnbController@GetListModifiers');
-Route::get('/api/inventory/getlisttables', 'Api\FnbController@GetListTables');
-Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbController@GetListKitchenOrderStatus');
+Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
+Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTables');
+Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
 
