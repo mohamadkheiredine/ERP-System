@@ -647,3 +647,23 @@ CREATE TABLE fnb_session_fields (
         ON UPDATE CASCADE,
     UNIQUE KEY uq_shift_currency (sf_shift_id, sf_currency_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `payrolls_salary_details`
+    ADD COLUMN `pd_description` TEXT NULL DEFAULT NULL AFTER `pd_company_id`;
+
+
+ALTER TABLE `sales_order_products`
+    CHANGE COLUMN `so_product_quantity` `so_product_quantity` FLOAT NULL DEFAULT '0' ;
+
+
+ALTER TABLE `billing_invoice_items`
+    CHANGE COLUMN `ii_item_qyt` `ii_item_qyt` FLOAT NULL DEFAULT '0' ;
+
+
+ALTER TABLE `sales_orders`
+    ADD COLUMN `so_company_id` INT NULL DEFAULT 0 AFTER `so_id`;
+
+
+
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('16', 'maintenance_lite', 'Allow Maintenance Lite', '0', '1', '1');

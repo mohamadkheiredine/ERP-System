@@ -100,6 +100,16 @@ leads_module = {
                     $("input[name=lr_lead_ids]").val($(this).find('input[type=checkbox]').val());
                     leads_module.DisplayListLeadResults();
                 },
+    SelectCBLeadRecord : function(){
+                    $('#LstCBLeadsContainers tr').each((index,item) => {
+                       $(item).find('input[type=checkbox]').removeAttr('checked');
+                       $(item).removeClass('SelectedRow');
+                    })
+                    $(this).find('input[type=checkbox]').attr('checked',true);
+                    $(this).addClass('SelectedRow');
+                    $("input[name=lr_lead_ids]").val($(this).find('input[type=checkbox]').val());
+                    leads_module.DisplayListLeadResults();
+                },
 		SaveLeadsInfo : function(){
 			return leads_module.SaveLeadsInfoSubmitHandler();
 		},
@@ -492,6 +502,48 @@ leads_module = {
 					{
 						leads_module.DisplayListLeadResults();
                         leads_module.DisplayListLeads();
+                        $("#LR_TEXT_RESULT").val(0);
+                        $("#LR_TEXT_NOTES").val('');
+                        $("#LR_NEXT_DATE").val('');
+                        var base_url = $('#BASE_URL').val();
+                        if(response.new_result == "1")
+                        {
+                            let url = base_url + "/leads/createappointment/" + response.lr_lead_id;
+                            window.open(url, '_blank');
+                        }
+
+
+
+                        $('#AddResultModel').modal('toggle');
+
+					}
+				}
+			});
+		},
+    SaveCBAddLeadResult : function(){
+			var base_url = $('#BASE_URL').val();
+			var frm_str = $("form[name=frm_add_result]").serialize();
+            let app_result = $("#LR_TEXT_RESULT").val();
+            if(app_result == 2)
+            {
+                let lr_next_date = $('input[name=lr_next_date]').val();
+                if( lr_next_date == '' )
+                {
+                    bootbox.alert('Next Callback Call is Required !');
+                    return false;
+                }
+            }
+
+			$.ajax
+			({
+				url : base_url + "/request/leads/addleadresult",
+				data : frm_str,
+				dataType : "Json",
+				type : "POST",
+				success : function(response){
+					if(response.is_error == 0)
+					{
+                        callapt_module.DisplayListCallbackLeads();
                         $("#LR_TEXT_RESULT").val(0);
                         $("#LR_TEXT_NOTES").val('');
                         $("#LR_NEXT_DATE").val('');

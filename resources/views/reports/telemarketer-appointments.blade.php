@@ -126,8 +126,6 @@ $(function(){
                             <th>Telemarketer</th>
                             <th>Average</th>
                             <th>App</th>
-                            <th>Confirmed App</th>
-                            <th>Pending App</th>
                             <th>Demo</th>
                             <th>Cancel</th>
                             <th>Sold</th>
@@ -141,8 +139,6 @@ $(function(){
                                 <td>{{ $row->telemarketer }}</td>
                                 <td>{{ number_format($row->average, 2) * 100 }}</td>
                                 <td>{{ $row->app }}</td>
-                                <td>{{ $row->confirmed_app }}</td>
-                                <td>{{ $row->pending_app }}</td>
                                 <td>{{ $row->demo }}</td>
                                 <td>{{ $row->cancel }}</td>
                                 <td>{{ $row->sold }}</td>

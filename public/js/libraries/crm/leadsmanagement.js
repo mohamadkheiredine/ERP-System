@@ -26,12 +26,12 @@ $(function(){
     });
 	 $(".dropdown-item").on("click",leads_module.QuickActionLead);
 	 $("#btnAddResult").on("click",leads_module.AddCallResult);
+    $("#BTN_ADD_RESULT").on("click",leads_module.SaveAddLeadResult);
+    $("button[name=btn_result_close]").on('click',function(){
+        $('#AddResultModel').modal('toggle');
+    });
 	 $("button[name=btn_change_status]").on("click",leads_module.SaveChangeLeadsStatus);
 	 $("button[name=btn_assign_lead_to]").on("click",leads_module.SaveAssignLeadTo);
-	 $("#BTN_ADD_RESULT").on("click",leads_module.SaveAddLeadResult);
-     $("button[name=btn_result_close]").on('click',function(){
-         $('#AddResultModel').modal('toggle');
-     });
     $("button[name=btn_close_changestatus]").on('click',function(){
         $('#ChangeStatusModel').modal('toggle');
     });

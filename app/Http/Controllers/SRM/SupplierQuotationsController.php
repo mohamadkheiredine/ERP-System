@@ -435,7 +435,7 @@ class SupplierQuotationsController extends Controller
         $supplier_info = Suppliers::find($fk_supplier_id);
 
         // delete old supplier product
-        //$supplier_products = SupplierProducts::whereFkQuotationId($sq_id)->delete();
+        $supplier_products = SupplierProducts::whereFkQuotationId($sq_id)->delete();
 
 
         $quotation_total_price = 0;
@@ -457,10 +457,12 @@ class SupplierQuotationsController extends Controller
             else
                 $quotation_product = new SupplierProducts();
 
+            if($quotation_product == null)
+                $quotation_product = new SupplierProducts();
 
 
-
-            $quotation_product->sp_product_serial           = $serial_numbers[$i] != null ? $serial_numbers[$i] : "";
+            if($serial_numbers != null)
+                $quotation_product->sp_product_serial           = $serial_numbers[$i] != null ? $serial_numbers[$i] : "";
             $quotation_product->fk_product_id               = $p_id;
             $quotation_product->fk_quotation_id             = $sq_id;
             $quotation_product->sp_product_name             = $pr_product_name[$i];
@@ -521,6 +523,13 @@ class SupplierQuotationsController extends Controller
 
                 $quotation_product->sp_stock_id = $is_id;
                 $quotation_product->save();
+
+                // update price selling price for this product based on new stock added
+                $product_info = Products::find($p_id);
+                $product_info->p_product_cost_price = $pr_pruchase_price[$i];
+                $product_info->p_product_selling_price = $pr_selling_price[$i];
+                $product_info->p_product_min_selling_price = $pr_wholesale_price[$i];
+                $product_info->save();
 
 
                 $stockids_delete =  StockIds::whereFkStockId($is_id)->delete();

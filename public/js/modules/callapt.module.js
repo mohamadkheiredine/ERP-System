@@ -70,6 +70,23 @@ callapt_module = {
 	            }
 	        });
     },
+    DisplayListCumulativeLeads : function(){
+        	var base_url 			= $('input[name=base_url]').val();
+                var _token	 			= $('input[name=_token]').val();
+                var ca_from_date	 			= $('input[name=ca_from_date]').val();
+                var ca_last_date	 			= $('input[name=ca_last_date]').val();
+                var params = { _token : _token , ca_from_date : ca_from_date , ca_last_date : ca_last_date};
+		$.ajax
+	        ({
+	            url : base_url + "/request/callcenter/listcumulativereports",
+	            data : params,
+	            dataType : "json",
+	            type : "get",
+	            success : function(response){
+	            	$('#LstCumulativeLeads').html(response.display);
+	            }
+	        });
+    },
     GetLeadInformation : function(){
         let lead_id = $('select[name=lead_id]').val();
         var base_url 			= $('input[name=base_url]').val();

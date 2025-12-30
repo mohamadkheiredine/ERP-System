@@ -872,4 +872,35 @@ class LeadsController extends Controller
         return Response()->view('leads.cumulativeleadsreport',$data);
 
     }
+
+
+    public function DisplayListCumilativeReport(Request $request)
+    {
+        $ca_from_date = $request->input('ca_from_date');
+        $ca_last_date = $request->input('ca_last_date');
+
+        $query_cond = " where cl_is_deleted = 0 ";
+
+        if(strlen($ca_from_date)>0)
+            $query_cond .= " AND cl_date_creation >= '$ca_from_date' ";
+
+        if(strlen($ca_last_date)>0)
+            $query_cond .= " AND cl_date_creation < '$ca_last_date' ";
+
+        $query = "SELECT DATE(cl_date_creation) AS lead_date, COUNT(*) AS daily_leads, SUM(COUNT(*)) OVER (ORDER BY DATE(cl_date_creation)) AS cumulative_total FROM crm_leads " . $query_cond . " AND cl_is_deleted = 0 GROUP BY DATE(cl_date_creation) ORDER BY lead_date;";
+
+        $cumulative_results = DB::select($query);
+
+        $data = array(
+            'cumulative_results' => $cumulative_results
+        );
+
+        $result_array = array();
+
+        $result_array['is_error']   = 0;
+        $result_array['display'] = view('leads.listcumulativeleadsreport',$data)->render();
+
+
+        return Response()->json($result_array);
+    }
 }

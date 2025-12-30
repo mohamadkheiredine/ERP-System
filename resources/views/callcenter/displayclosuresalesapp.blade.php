@@ -19,15 +19,25 @@ Page Description :
             <thead class="table-light">
             <tr>
                 @foreach(array_keys((array)$lst_closing_res[0]) as $column)
+                    <?php
+                            if($column == 'APP')
+                                continue;
+                        ?>
                     <th>{{ ucwords(str_replace('_', ' ', $column)) }}</th>
                 @endforeach
             </tr>
             </thead>
             <tbody>
             @foreach($lst_closing_res as $row)
+
                 <tr>
-                    @foreach((array)$row as $value)
+                    @foreach((array)$row as $index => $value)
+                            <?php
+                        if($index == "APP")
+                            continue;
+                            ?>
                         <td>
+
                             @if(is_numeric($value))
                                 {{ $value }}
                             @else

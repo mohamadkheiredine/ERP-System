@@ -1,5 +1,6 @@
 inboundcalls_module = {
 	DisplayListInboundCalls : function(){
+
 	    var base_url 	= $('input[name=base_url]').val();
 	    var _token 		= $('input[name=_token]').val()
 	    var page_number = $('input[name=page_number]').val();

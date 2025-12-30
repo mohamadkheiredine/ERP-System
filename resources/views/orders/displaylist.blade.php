@@ -23,6 +23,7 @@ Display List of orders
    <td>{{ $order_info->so_order_code }}</td>
    <td>{{ $order_info->so_order_label }}</td>
    <td>{{ $order_info->Customer->ic_customer_name }}</td>
+   <td>{{ $order_info->so_order_date }}</td>
    <td>{{ $order_info->Warehouse ? $order_info->Warehouse->w_warehouse_name : "-" }}</td>
    <td>{{ $order_info->Customer->ic_customer_mobile }}</td>
    <td>{{  number_format($order_info->so_total_cost , 2) }}&nbsp;&nbsp;<b>{{ $order_info->Currency ? $order_info->Currency->cc_currency_code : "" }}</b></td>

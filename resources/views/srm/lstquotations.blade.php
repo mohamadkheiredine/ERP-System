@@ -20,6 +20,7 @@ Page Description :
    <td>{{ $quot_info->sq_invoice_number }}</td>
    <td>{{ $quot_info->sq_container_number }}</td>
    <td>{{ $quot_info->Supplier ? $quot_info->Supplier->ss_supplier_name : "-" }}</td>
+   <td>{{ $quot_info->Warehouse ? $quot_info->Warehouse->w_warehouse_name : "-" }}</td>
    <td>{{ $quot_info->sq_date_submit }}</td>
    <td>{{ $quot_info->sq_total_price }}</td>
    <td>{{ $currencies_array[ $quot_info->sq_currency_id ]['cc_currency_code'] }}</td>

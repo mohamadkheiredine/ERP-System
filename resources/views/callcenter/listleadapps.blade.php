@@ -16,7 +16,6 @@ Page Description :
 
 @foreach($lst_lead_apps as $index => $app_info)
 <tr  class="odd gradeX" data-ca_id="{{ $app_info->ca_id }}">
-   <td>{{ ( $index + 1 )  }}</td>
    <td>{{ $app_info->ca_apt_date }}</td>
    <td>{{ $app_info->ca_apt_time }}</td>
    <td>{{ $app_info->Lead->cl_first_name }}&nbsp;{{ $app_info->Lead->cl_last_name }}</td>

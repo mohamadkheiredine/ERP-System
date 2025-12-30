@@ -28,7 +28,8 @@
     </style>
 @endsection
 @section('plugins')
-
+    <script type="text/javascript" src="{{ url('js/modules/callapt.module.js') }}"></script>
+    <script type="text/javascript" src="{{ url('js/libraries/callcenter/cumulativereport.js') }}"></script>
 @endsection
 
 @section('content')
@@ -53,11 +54,17 @@
 
                 </div>
                 <div class="col-md-4">
-
+                    <div class="form-group">
+                        <label>From </label>
+                        <input type="text" class="form-control" readonly="readonly" name="ca_from_date" id="CA_FROM_DATE" value="{{ date("Y-m-01") }}" />
+                    </div>
                 </div>
 
                 <div class="col-md-4">
-
+                    <div class="form-group">
+                        <label>To </label>
+                        <input type="text" class="form-control" readonly="readonly" name="ca_last_date" id="CA_LAST_DATE" value="{{ date("Y-m-t") }}" />
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -74,14 +81,7 @@
                         </tr>
                         </thead>
                         <tbody  id="LstCumulativeLeads">
-                            @foreach($cumulative_results as $index => $record_info)
-                                <tr>
-                                    <td title="Date"> {{ $record_info->lead_date }} </td>
-                                    <td title="Daily Count"> {{ $record_info->daily_leads }} </td>
-                                    <td title="Cumulative Number of Leads"> {{ $record_info->cumulative_total }}  </td>
-                                </tr>
 
-                            @endforeach
                         </tbody>
                     </table>
                 </div>

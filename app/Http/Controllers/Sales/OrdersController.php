@@ -460,9 +460,11 @@ class OrdersController extends Controller
             $is_new = 0;
         } else {
             $so_creation_date           = date("Y-m-d");
+            $so_order_date           = date("Y-m-d H:i:s");
             $fk_user_id                 = session('user_id');
             $Orders->fk_user_id          = $fk_user_id;
             $Orders->so_creation_date    = $so_creation_date;
+            $Orders->so_order_date    = $so_order_date;
         }
 
         $Orders->so_order_code       = $so_order_code;

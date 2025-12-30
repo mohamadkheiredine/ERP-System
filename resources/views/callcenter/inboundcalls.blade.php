@@ -167,7 +167,6 @@
                     <thead class="bg-light">
                     <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
                         <th class="min-w-50px">#</th>
-                        <th class="min-w-50px">ID</th>
                         <th class="min-w-100px">Date</th>
                         <th>Time</th>
                         <th>Client</th>

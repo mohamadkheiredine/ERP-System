@@ -121,7 +121,6 @@ th{
             		<thead>
             			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
             				<th style="width:2%" title="#">#</th>
-            				<th style="width:2%" title="Id"> ID </th>
             				<th  style="width:5%" title="Invoice Ref"> Invoice Ref </th>
             				<th  style="width:5%" title="Date"> Date </th>
             				<th  style="width:20%" title="Description"> Description </th>

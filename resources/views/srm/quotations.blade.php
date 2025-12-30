@@ -108,6 +108,7 @@ th{
                 				<th title="Invoice Number"> Invoice Number </th>
                 				<th title="Container Number"> Container Number </th>
                 				<th title="Supplier"> Supplier </th>
+                				<th title="Warehouse"> Warehouse </th>
                 				<th title="Date Submit"> Date Submit </th>
                 				<th title="Total Price"> Total Price </th>
                 				<th title="Currency"> Currency </th>

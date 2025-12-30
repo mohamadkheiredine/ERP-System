@@ -78,7 +78,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Supplier  <span class="required"> * </span></label>
-                                     <select class="bs-select form-control" name="fk_supplier_id" id="FK_SUPPLIER_ID" required="required" data-actions-box="true">
+                                     <select   class="form-control form-select" required="required" data-control="select2" data-placeholder="Select Supplier"  name="fk_supplier_id" id="FK_SUPPLIER_ID" required="required" >
                                         <option value=""> Select Supplier </option>
                                         @foreach ( $lst_suppliers as $key => $supp_info )
                                                 <option value="{{ $supp_info->ss_id }}">{{ $supp_info->ss_supplier_name }}</option>
@@ -89,7 +89,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> User Applied  <span class="required"> * </span></label>
-                                     <select class="bs-select form-control" name="sq_user_id" id="SQ_USER_ID" required="required" data-actions-box="true">
+                                     <select   class="form-control form-select" required="required" data-control="select2" data-placeholder="Select User"  name="sq_user_id" id="SQ_USER_ID" required="required" data-actions-box="true">
                                         <option value=""> Select User </option>
                                         @foreach ( $lst_users as $key => $user_info )
                                                 <option  <?php echo ( $user_info->id == session('user_id') ? "selected" : ""); ?> value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
@@ -160,7 +160,7 @@ th{
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label"> Tax  <span class="required"> * </span></label>
+                                <label class="control-label"> Tax</label>
                                 <select  name="sq_tva_id" id="SQ_TVA_ID" class="form-control form-select"  data-control="select2" data-placeholder="Select Tax">
                                     <option value=""> Select TVA </option>
                                     @foreach ( $lst_vat as $key => $vat_info )

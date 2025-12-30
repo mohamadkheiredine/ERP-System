@@ -18,7 +18,6 @@ Page Description :
 @foreach($lst_invoices as $index => $invoice_info)
 <tr  class="odd gradeX" data-bi_id="{{ $invoice_info->bi_id }}">
 	<td><input type="checkbox" name="ck_bi_{{ $invoice_info->bi_id }}" id="CK_BI_{{ $invoice_info->bi_id }}" class="checkboxes" value="{{ $invoice_info->bi_id }}" /></td>
-   <td>{{ $invoice_info->bi_id }}</td>
    <td>{{ $invoice_info->bi_invoice_ref }}</td>
     <td>{{ $invoice_info->bi_invoice_date }}</td>
     <td><span style=" display: inline-block;width: 180px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;">{{ strip_tags($invoice_info->bi_invoice_note) }}</span></td>

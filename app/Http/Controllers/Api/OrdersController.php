@@ -96,6 +96,8 @@ class OrdersController extends Controller
         $vendor_id          = $request->input('vendor_id');
         $customer_id          = $request->input('customer_id');
         $big_invoice          = $request->input('big_invoice');
+        $store_id          = $request->input('store_id');
+        $company_id          = $request->input('company_id');
 
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
@@ -226,6 +228,7 @@ class OrdersController extends Controller
         $so_order_barcode = rand(100000000, 999999999);
 
         $creation_date      = date("Y-m-d");
+        $full_date      = date("Y-m-d H:i:s");
         $creation_time      = date("H:i:s");
         $so_vat_id = 0;
 
@@ -242,24 +245,26 @@ class OrdersController extends Controller
             $order_info->so_assign_to        = $delivery_id;
             $order_info->fk_warehouse_id     = $warehouse_id;
             $order_info->so_order_status     = 1;
-
             $order_info->so_vendor_id        = $vendor_id;
             $order_info->so_creation_date    = $creation_date;
             $order_info->so_product_type     = 1;
             $order_info->so_payment_type     = 1;
             $order_info->so_order_label      = $so_order_label;
             $order_info->so_order_note       = "";
-            $order_info->so_order_date       = $creation_date;
+            $order_info->so_order_date       = $full_date;
             $order_info->so_delivery_date    = $creation_date;
             $order_info->so_vat_id           = $so_vat_id;
             $order_info->so_pos_order        = 1;
         }
+
+        $order_info->so_company_id        = $company_id;
         $order_info->so_order_customer   = $customer_id;
         $order_info->so_sub_total        = $pos_sub_total;
         $order_info->so_total_discount   = $pos_discount;
         $order_info->so_total_cost       = $pos_total + $deliveryFee;
         $order_info->so_order_currency   = $company_currency;
         $order_info->so_order_customer   = $customer_id;
+        $order_info->so_delivery_fees   = $deliveryFee;
 
         $order_info->save();
 
@@ -400,7 +405,7 @@ class OrdersController extends Controller
                 $orderitem->so_stock_id         = $item_order['is_id'] ?? 0;
                 $orderitem->so_product_cost     = $item_cost;
                 $orderitem->so_discount         = $discount_product;
-                $orderitem->so_product_price    = $item_cost - ($item_cost * $discount_product / 100);
+                $orderitem->so_product_price    = ( $item_cost - ($item_cost * $discount_product / 100)) * $qty_requested;
                 $orderitem->so_product_quantity = $qty_requested;
                 $orderitem->so_product_currency = $company_currency;
                 $orderitem->save();
@@ -410,8 +415,9 @@ class OrdersController extends Controller
             $order_info = Orders::find($so_id);
             $order_info->so_sub_total      = $sub_total;
             $order_info->so_total_discount = $pos_discount;
-            $order_info->so_total_cost     = $pos_total + $deliveryFee; // keep what UI sent OR recompute if you want
+            $order_info->so_total_cost     = $pos_total; // keep what UI sent OR recompute if you want
             $order_info->save();
+
 
             DB::commit();
         } catch (\Exception $e) {
@@ -428,7 +434,7 @@ class OrdersController extends Controller
             $order_info = Orders::find($so_id);
             $order_info->so_sub_total = $sub_total;
             $order_info->so_total_discount   = $pos_discount;
-            $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100) + $deliveryFee;
+            $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100);
             $order_info->save();
         }
 
@@ -448,6 +454,8 @@ class OrdersController extends Controller
         $pt_payment_account     = $payment_type_info->pt_payment_account;
 
         $transaction_info = new Transactions();
+        $transaction_info->at_company_id    = $company_id;
+        $transaction_info->at_store_id    = $store_id;
         $transaction_info->at_transaction_date    = date("Y-m-d");
         $transaction_info->at_creation_date       = date("Y-m-d");
         $transaction_info->at_accounting_doc      = $so_order_code;
@@ -459,6 +467,8 @@ class OrdersController extends Controller
 
         $movement_info = new TransactionMovements();
         $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_company_id            = $company_id;
+        $movement_info->tm_store_id            = $store_id;
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
         $movement_info->tm_sub_ledger_account = $customer_info->ic_account_number;
         $movement_info->tm_ledger_label       = $so_order_code;
@@ -471,6 +481,8 @@ class OrdersController extends Controller
 
         $movement_info                        = new TransactionMovements();
         $movement_info->fk_tran_id            = $at_id;
+        $movement_info->tm_company_id            = $company_id;
+        $movement_info->tm_store_id            = $store_id;
         $movement_info->tm_ledger_account     = $pt_payment_account;
         $movement_info->tm_sub_ledger_account = $pt_payment_account;
         $movement_info->tm_ledger_label       = $so_order_code;
@@ -513,6 +525,7 @@ class OrdersController extends Controller
         $result_array['receipt_link']           = url('/order/posreceipt/' . $so_id . "?company_id=" . $company_id . "&user_id=" . $user_id . "&cost_total=" . $total);
         $result_array['is_error']           = 0;
         $result_array['order_id']           = $so_id;
+        $result_array['order_code']           = $so_order_code;
         $result_array['error_msg']          = "Order Saved";
         $result_array['pos_receipt']        = $pos_receipt;
 
@@ -574,7 +587,8 @@ class OrdersController extends Controller
         $result_array['is_error'] = 0;
         $result_array['order_items'] = $order_items;
         $result_array['order_id'] = $so_id;
-        $result_array['company_currency'] = $order_data->so_order_currency;
+        $result_array['order_id'] = $so_id;
+        $result_array['order_code'] = $order_data->so_order_code;
         $result_array['customer_id'] = $order_data->so_order_customer;
         $result_array['delivery_id'] = $order_data->so_assign_to;
         $result_array['delcustomername'] = "";
@@ -584,6 +598,7 @@ class OrdersController extends Controller
         $result_array['pos_sub_total'] = $order_data->so_sub_total;
         $result_array['pos_discount'] = $order_data->pos_discount;
         $result_array['pos_total'] = $order_data->so_total_cost;
+        $result_array['pos_delivery_fees'] = $order_data->so_delivery_fees;
         return Response()->json($result_array);
     }
 
@@ -646,6 +661,7 @@ class OrdersController extends Controller
         $result_array['pos_sub_total'] = $order_data->so_sub_total;
         $result_array['pos_discount'] = $order_data->pos_discount;
         $result_array['pos_total'] = $order_data->so_total_cost;
+        $result_array['delivery_fees'] = $order_data->so_delivery_fees;
         return Response()->json($result_array);
     }
 
@@ -854,24 +870,22 @@ class OrdersController extends Controller
 
         $order_info = Orders::find($order_id);
 
+
         $data = array(
             "company_info"      => $company_info,
             "lst_order_items"   => $lst_order_items,
             "order_info"        => $order_info,
             "user_info"         => $user_info,
-            "pos_sub_total" => $order_info->so_sub_total,
+            "pos_sub_total" => $order_info->so_total_cost,
             "cost_total"        => $order_info->so_total_cost,
             "pos_discount"         => $order_info->so_total_discount,
             "creation_date"     => $order_info->so_creation_date,
             "so_order_code" => $order_info->so_order_code,
+            "deliveryFee" => $order_info->so_delivery_fees,
             "creation_time" => $creation_time
         );
 
-        if ($big_invoice == 1)
-            $pos_receipt = view('templates.posa5invoices', $data)->render();
-        else
-            $pos_receipt = view('templates.posinvoices', $data)->render();
-
+        $pos_receipt = view('templates.posprint_receipt', $data)->render();
 
         $result_array['is_error']           = 0;
         $result_array['display']           = $pos_receipt;
@@ -1037,8 +1051,8 @@ class OrdersController extends Controller
         switch ($date_range) {
             case 1: //today's order
                 {
-                    $date_from = date("Y-m-d");
-                    $date_to = date("Y-m-d");
+                    $date_from = date("Y-m-d 00:00:00");
+                    $date_to = date("Y-m-d 23:59:59");
                 }
                 break;
             case 2: //yesterday's order
@@ -1087,7 +1101,7 @@ class OrdersController extends Controller
         $total_pages = ceil($orders_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
         $orders_cond = $orders_cond;
-        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code', 'DESC')->get();
+        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code', 'ASC')->get();
 
         $total_cost = 0;
 
@@ -1520,8 +1534,9 @@ class OrdersController extends Controller
             $items_order[$index]['p_id'] = $item_info->fk_product_id;
             $items_order[$index]['is_id'] = $item_info->so_stock_id;
             $items_order[$index]['product_name'] = $item_info->Products->p_product_name;
-            $items_order[$index]['uid'] = $item_info->stock ? $item_info->stock->is_stock_uid : "-";
+            $items_order[$index]['uid'] = $item_info->fk_product_id;
             $items_order[$index]['product_cost'] = $item_info->so_product_cost;
+            $items_order[$index]['product_price'] = $item_info->so_product_cost * $item_info->so_product_quantity;
             $items_order[$index]['product_quantity'] = $item_info->so_product_quantity;
             $items_order[$index]['product_currency'] = $item_info->so_product_currency;
 
@@ -1547,6 +1562,7 @@ class OrdersController extends Controller
         $result_array['sub_total']              = $order_info[0]['so_sub_total'];
         $result_array['total_discount']         = $order_info[0]['so_total_discount'];
         $result_array['total_cost']             = $order_info[0]['so_total_cost'];
+        $result_array['delivery_fees']             = $order_info[0]['so_delivery_fees'];
         $result_array['order_currency']         = $order_info[0]['so_order_currency'];
         return Response()->json($result_array);
     }

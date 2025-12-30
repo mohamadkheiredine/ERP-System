@@ -88,87 +88,98 @@ $(function(){
         $(this).parents('tr').remove();
     });
 
-             new tempusDominus.TempusDominus(document.getElementById('IC_CALL_DATE'),{
-                    display: {
-                             components: {
-                                 calendar: true,
-                                 date: true,
-                                 month: true,
-                                 year: true,
-                                 decades: true,
-                                 clock: false,
-                                 hours: false,
-                                 minutes: false,
-                                 seconds: false,
-                                 useTwentyfourHour: undefined
-                               }
-                    },
-                    localization: {
-                            format : "yyyy-MM-dd"
 
-                    }
-           });
-             new tempusDominus.TempusDominus(document.getElementById('IC_RESOLUTION_DATE'),{
-                    display: {
-                             components: {
-                                 calendar: true,
-                                 date: true,
-                                 month: true,
-                                 year: true,
-                                 decades: true,
-                                 clock: false,
-                                 hours: false,
-                                 minutes: false,
-                                 seconds: false,
-                                 useTwentyfourHour: undefined
-                               }
-                    },
-                    localization: {
-                            format : "yyyy-MM-dd"
+    if($('#IC_CALL_DATE').length > 0) {
+        new tempusDominus.TempusDominus(document.getElementById('IC_CALL_DATE'),{
+            display: {
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    useTwentyfourHour: undefined
+                }
+            },
+            localization: {
+                format : "yyyy-MM-dd"
 
-                    }
-           });
+            }
+        });
+    }
+
+    if($('#IC_RESOLUTION_DATE').length > 0) {
+        new tempusDominus.TempusDominus(document.getElementById('IC_RESOLUTION_DATE'),{
+            display: {
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    useTwentyfourHour: undefined
+                }
+            },
+            localization: {
+                format : "yyyy-MM-dd"
+
+            }
+        });
+    }
+
+    if($('#CW_CREATION_DATE').length > 0) {
+        new tempusDominus.TempusDominus(document.getElementById('CW_CREATION_DATE'),{
+            display: {
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    useTwentyfourHour: undefined
+                }
+            },
+            localization: {
+                format : "yyyy-MM-dd"
+
+            }
+        });
+    }
 
 
-            new tempusDominus.TempusDominus(document.getElementById('CW_CREATION_DATE'),{
-                    display: {
-                             components: {
-                                 calendar: true,
-                                 date: true,
-                                 month: true,
-                                 year: true,
-                                 decades: true,
-                                 clock: false,
-                                 hours: false,
-                                 minutes: false,
-                                 seconds: false,
-                                 useTwentyfourHour: undefined
-                               }
-                    },
-                    localization: {
-                            format : "yyyy-MM-dd"
+    if($('#CW_CALLBACK_DATE').length > 0) {
+        new tempusDominus.TempusDominus(document.getElementById('CW_CALLBACK_DATE'),{
+            display: {
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false,
+                    useTwentyfourHour: undefined
+                }
+            },
+            localization: {
+                format : "yyyy-MM-dd"
 
-                    }
-           });
+            }
+        });
+    }
 
-           new tempusDominus.TempusDominus(document.getElementById('CW_CALLBACK_DATE'),{
-                    display: {
-                             components: {
-                                 calendar: true,
-                                 date: true,
-                                 month: true,
-                                 year: true,
-                                 decades: true,
-                                 clock: false,
-                                 hours: false,
-                                 minutes: false,
-                                 seconds: false,
-                                 useTwentyfourHour: undefined
-                               }
-                    },
-                    localization: {
-                            format : "yyyy-MM-dd"
-
-                    }
-           });
 })

@@ -88,16 +88,15 @@ $(function(){
 		      .on("onDataRequestSuccess", function(e, result) {
 		      })
 		      .on("onSetSelectValue", function(e, keyword, data) {
+                  console.log(data);
+                  console.log($(this).parents('tr').find('.PurchasePrice'));
+                  console.log(data.selling_price);
 		    	 let use_serial_number = data.product_use_serial;
 		        let product_id = data.id;
-                if($(this).parents('tr').find('.ProductCode').val() == '')
-		            $(this).parents('tr').find('.ProductCode').val(data.barcode);
-                if($(this).parents('tr').find('.PurchasePrice').val() == '')
-                    $(this).parents('tr').find('.PurchasePrice').val(data.selling_price);
-                if($(this).parents('tr').find('.SellingPrice').val() == '')
-		            $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
-                if($(this).parents('tr').find('.WholeSalePrice').val() == '')
-                   $(this).parents('tr').find('.WholeSalePrice').val(data.selling_price);
+                $(this).parents('tr').find('.ProductCode').val(data.barcode);
+                $(this).parents('tr').find('.PurchasePrice').val(data.cost_price);
+                $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
+               $(this).parents('tr').find('.WholeSalePrice').val(data.min_selling_price);
                 $(this).parents('tr').find('.ProductId').val(product_id);
 
 
@@ -155,15 +154,16 @@ $(function(){
 		      keyField: "product_name",
 		      effectiveFields: ["product_name"],
 	            searchFields: [ "product_name"],
+            ignorecase: true  // Add this line
 	      })
 	      .on("onDataRequestSuccess", function(e, result) {
 	      })
 	      .on("onSetSelectValue", function(e, keyword, data) {
 	        let product_id = data.id;
 	        $(this).parents('tr').find('.ProductCode').val(data.barcode);
-	        $(this).parents('tr').find('.PurchasePrice').val(data.selling_price);
-	        $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
-	        $(this).parents('tr').find('.WholeSalePrice').val(data.selling_price);
+              $(this).parents('tr').find('.PurchasePrice').val(data.cost_price);
+              $(this).parents('tr').find('.SellingPrice').val(data.selling_price);
+              $(this).parents('tr').find('.WholeSalePrice').val(data.min_selling_price);
 	        $(this).parents('tr').find('.VendorPrice').val(data.selling_price);
 	        $(this).parents('tr').find('.ProductId').val(data.id);
 	        $(this).parents('tr').find('.CurrencyId').val(data.currency);

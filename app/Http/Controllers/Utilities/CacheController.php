@@ -65,6 +65,7 @@ class CacheController extends Controller
                    {
                        $products[$index]['id']                  = $product_info->p_id;
                        $products[$index]['product_name']        = $product_info->p_product_name;
+                       $products[$index]['cost_price']        = $product_info->p_product_cost_price;
                        $products[$index]['min_selling_price']   = $product_info->p_product_min_selling_price;
                        $products[$index]['selling_price']       = $product_info->p_product_selling_price;
                        $products[$index]['currency']            = $product_info->p_product_currency;

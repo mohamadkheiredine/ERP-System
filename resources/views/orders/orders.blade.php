@@ -118,6 +118,7 @@ th{
     				<th title="Order Code"> Order Code </th>
     				<th title="Order Name"> Order Name </th>
     				<th title="Customer Name"> Customer Name </th>
+    				<th title="Date"> Date </th>
     				<th title="Warehouse"> Warehouse </th>
     				<th title="Customer Mobile"> Customer Mobile </th>
     				<th title="Order total"> Order total </th>

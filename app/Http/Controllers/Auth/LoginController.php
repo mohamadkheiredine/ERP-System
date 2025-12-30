@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\models\Roles\RolePrivileges;
+use App\models\Sales\StoreEmployees;
+use App\models\Sales\Stores;
+use App\models\Sales\StoreWarehouses;
 use App\models\System\Countries;
 use App\models\Users\UserAllowedCompanies;
 use Validator;
@@ -146,6 +149,34 @@ class LoginController extends Controller
             $allowed_companies[] = $comp_info->ac_company_id;
         }
 
+
+        $store_employees = StoreEmployees::whereSeEmployeeId($user_id)->get();
+
+        if(count($store_employees) > 0)
+        {
+            $store_id = $store_employees[0]->se_store_id;
+
+            session()->put('store_id', $store_id);
+
+            $store_info = Stores::find($store_id);
+
+            $store_warehouses = StoreWarehouses::where('sw_store_id', $store_id)->get();
+
+
+            if (count($store_warehouses) > 0) {
+               $warehouse_id =  $store_warehouses[0]->sw_warehouse_id;
+                session()->put('warehouse_id', $warehouse_id);
+            }
+            else
+            {
+                session()->put('warehouse_id', 0);
+            }
+
+        }
+        else
+        {
+            session()->put('store_id', 0);
+        }
 
 
         session()->put('user_id', $user_id);

@@ -673,7 +673,7 @@ class DealsController extends Controller
             $call_info->ic_contract_code      = $account_deal->ad_deal_code;
             $call_info->ic_serial_number      = $ad_serial_number;
             $call_info->ic_company_id      = $default_company_id;
-            $call_info->ic_call_date            = $today;
+            $call_info->ic_call_date            = $ad_deal_date;
             $call_info->ic_call_start_time      = "00:00";
             $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;
             $call_info->save();

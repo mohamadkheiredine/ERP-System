@@ -1,14 +1,10 @@
 $(function(){
-    callapt_module.DisplayListCallbackLeads();
-    $('.DownloadLeads').on('click',callapt_module.DownloadListCallbackLeadsReports);
-    $('input[type=text]').on('keyup',callapt_module.DisplayListCallbackLeads);
-    $('input#CL_DATE').on('change',callapt_module.DisplayListCallbackLeads);
-    $('select').on('change',callapt_module.DisplayListCallbackLeads);
-    $("#LstCBLeadsContainers").on("click","tr",leads_module.SelectCBLeadRecord);
-    $("#btnAddResult").on("click",leads_module.AddCallResult);
-    $("#BTN_ADD_RESULT").on("click",leads_module.SaveAddLeadResult);
-    $("#BTN_ADD_RESULT").on("click",leads_module.SaveCBAddLeadResult);
-    new tempusDominus.TempusDominus(document.getElementById('CL_DATE'),{
+    callapt_module.DisplayListCumulativeLeads();
+    $('input[type=text]').on('keyup',callapt_module.DisplayListCumulativeLeads);
+    $('input#CA_FROM_DATE').on('change',callapt_module.DisplayListCumulativeLeads);
+    $('input#CA_LAST_DATE').on('change',callapt_module.DisplayListCumulativeLeads);
+
+    new tempusDominus.TempusDominus(document.getElementById('CA_FROM_DATE'),{
         display: {
             components: {
                 calendar: true,
@@ -28,7 +24,7 @@ $(function(){
 
         }
     });
-    new tempusDominus.TempusDominus(document.getElementById('LR_NEXT_DATE'),{
+    new tempusDominus.TempusDominus(document.getElementById('CA_LAST_DATE'),{
         display: {
             components: {
                 calendar: true,

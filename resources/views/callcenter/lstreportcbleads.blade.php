@@ -14,6 +14,7 @@
 ?>
 @foreach($lst_leads as $index => $lead_info)
     <tr  class="odd gradeX" data-cl_id="{{ $lead_info->cl_id }}">
+        <td><input type="checkbox" name="ck_cl_{{ $lead_info->cl_id }}" id="CK_CL_{{ $lead_info->cl_id }}" class="checkboxes" value="{{ $lead_info->cl_id }}" /></td>
         <td>{{ ( $index + 1 ) }}</td>
         <td>{{ $lead_info->cl_sheet_number }}</td>
         <td>{{ $lead_info->cl_first_name . " " . $lead_info->cl_last_name }}</td>

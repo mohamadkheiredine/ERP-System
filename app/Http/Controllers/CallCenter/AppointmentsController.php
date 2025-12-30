@@ -154,6 +154,9 @@ class AppointmentsController extends Controller
 
 
 
+
+
+
     public function DisplayClosureSalesmanApp(Request $request)
     {
         $default_company_id     = Session('default_company_id');
@@ -191,11 +194,10 @@ class AppointmentsController extends Controller
         // 🧾 Final dynamic SQL with number of leads
         $sql = "
         SELECT
-            u.id AS salesman_id,
             u.u_fullname AS salesman_name,
+            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2) * 100 AS closing_average,
             COUNT(lapp.ca_id) AS total_app,
             $cols,
-            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2) * 100 AS closing_average,
             SUM(lapp.ca_nbr_leads) AS number_of_leads
         FROM callcenter_lead_appointments AS lapp
         LEFT JOIN users AS u ON lapp.ca_salesman_id = u.id
@@ -257,11 +259,10 @@ class AppointmentsController extends Controller
         // 🧾 Final dynamic SQL with number of leads
         $sql = "
         SELECT
-            u.id AS salesman_id,
             u.u_fullname AS salesman_name,
+            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2) * 100 AS closing_average,
             COUNT(lapp.ca_id) AS total_app,
             $cols,
-            ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / COUNT(lapp.ca_id), 2)  * 100 AS closing_average,
             SUM(lapp.ca_nbr_leads) AS number_of_leads
         FROM callcenter_lead_appointments AS lapp
         LEFT JOIN users AS u ON lapp.ca_salesman_id = u.id
@@ -300,10 +301,8 @@ class AppointmentsController extends Controller
 
         $sql = "SELECT
                 u.u_fullname AS telemarketer,
-                ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) AS average,
+                ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) + SUM(CASE WHEN res.ar_app_result = 'DEMO' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) * 100 AS average,
                 COUNT(lapp.ca_id) AS app,
-                SUM(CASE WHEN lapp.ca_lead_confirm = 1 THEN 1 ELSE 0 END) AS confirmed_app,
-                SUM(CASE WHEN lapp.ca_lead_confirm = 0 THEN 1 ELSE 0 END) AS pending_app,
                 SUM(CASE WHEN res.ar_app_result = 'DEMO' THEN 1 ELSE 0 END) AS demo,
                 SUM(CASE WHEN res.ar_app_result = 'CANCEL' THEN 1 ELSE 0 END) AS cancel,
                 SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) AS sold,
@@ -323,8 +322,6 @@ class AppointmentsController extends Controller
                 'Total Marketing' AS telemarketer,
                 ROUND(SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) / NULLIF(COUNT(lapp.ca_id), 0), 2) AS average,
                 COUNT(lapp.ca_id) AS app,
-                SUM(CASE WHEN lapp.ca_lead_confirm = 1 THEN 1 ELSE 0 END) AS confirmed_app,
-                SUM(CASE WHEN lapp.ca_lead_confirm = 0 THEN 1 ELSE 0 END) AS pending_app,
                 SUM(CASE WHEN res.ar_app_result = 'DEMO' THEN 1 ELSE 0 END) AS demo,
                 SUM(CASE WHEN res.ar_app_result = 'CANCEL' THEN 1 ELSE 0 END) AS cancel,
                 SUM(CASE WHEN res.ar_app_result = 'SOLD' THEN 1 ELSE 0 END) AS sold,

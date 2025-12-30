@@ -279,6 +279,62 @@ Page Description :
                     </div>
                 </div>
             </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Product Stock Alert</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert-card">
+                            <div class="table-header">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h4 class="mb-1">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Low Stock Alert
+                                        </h4>
+                                        <p class="mb-0 opacity-75">Products requiring immediate attention</p>
+                                    </div>
+                                    <span class="badge bg-light text-dark alert-badge fs-5">
+                        <i class="fas fa-bell"></i> 5 Alerts
+                    </span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-hashtag me-1"></i> ID</th>
+                                        <th><i class="fas fa-box me-1"></i> Product Name</th>
+                                        <th><i class="fas fa-barcode me-1"></i> Barcode</th>
+                                        <th><i class="fas fa-tag me-1"></i> Reference</th>
+                                        <th class="text-center"><i class="fas fa-cubes me-1"></i> Current Stock</th>
+                                        <th class="text-center"><i class="fas fa-bell me-1"></i> Alert Level</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($lst_stock_alert as $index =>  $product_info )
+                                        <tr>
+                                            <td>{{ $product_info->p_id }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span>{{ $product_info->p_product_name }}</span>
+                                                </div>
+                                            </td>
+                                            <td><code>{{ $product_info->p_barcode }}</code></td>
+                                            <td>{{ $product_info->p_product_ref }}</td>
+                                            <td class="text-center stock-low fs-5">{{ $product_info->total_quantity }}</td>
+                                            <td class="text-center">{{ $product_info->p_product_stock_alert }}</td>
+                                        </tr>
+                                    @endforeach
+
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 	</div>

@@ -77,12 +77,29 @@ class DashboardController extends Controller
 
         $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
 
+
+        $stock_alert = 'SELECT
+    p_id,
+    inventory_products.p_product_name,
+    p_product_ref,
+    p_barcode,
+    p_product_stock_alert,
+    COALESCE(SUM(is_quanity), 0) as total_quantity
+FROM inventory_products
+LEFT JOIN inventory_stocks ON inventory_stocks.fk_product_id = inventory_products.p_id
+GROUP BY inventory_products.p_id
+HAVING COALESCE(SUM(is_quanity), 0) <= p_product_stock_alert
+ORDER BY total_quantity ASC
+LIMIT 10;';
+        $lst_stock_alert = DB::select($stock_alert);
+
         $data = array(
             "count_orders" => $count_orders,
             "count_customers" => $count_customers,
             "count_rates" => $count_rates,
             "lst_inboundcalls" => $lst_inboundcalls,
             "lst_bills" => $lst_bills,
+            "lst_stock_alert" => $lst_stock_alert,
             "count_invoices" => $count_invoices,
         );
 

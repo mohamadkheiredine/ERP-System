@@ -258,6 +258,7 @@ Route::get('/request/callcenter/downloadclosuresalesapp','CallCenter\Appointment
 Route::get('/request/deals/getdealinfo','CRM\DealsController@GetDealInfo');
 Route::get('/request/callcenter/getappointmentinformation','CallCenter\AppointmentsController@GetAppointmentInformation');
 Route::post('/request/appointments/generateappointmentsreport','CallCenter\AppointmentsController@GenerateAppointmentsReport');
+Route::get('/request/callcenter/listcumulativereports','CRM\LeadsController@DisplayListCumilativeReport');
 Route::get('/request/crm/getleadinfo','CRM\LeadsController@GetLeadInfo');
 
 Route::get('/generate-pdf', [App\Http\Controllers\CRM\DealsController::class, 'generatePDF']);
