@@ -102,6 +102,16 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label class="control-label">Store allowed currencies <span class="required"> * </span></label>
+                                <select class="form-select form-control" data-control="select2" multiple="multiple" id="PS_ALLOWED_CURRENCIES_ID" name="ps_allowed_currencies_id[]">
+                                    @foreach($lst_currencies as $index => $currency_info)
+                                        <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_name }} - {{ $currency_info->cc_currency_code }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <br/>
                                 <label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" name="ps_online_store" id="PS_ONLINE_STORE"   value="1"  />

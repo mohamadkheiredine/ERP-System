@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: POS Currency API
+  version: 1.0.0
+paths:
+  /api/allowedcurrencies/getallowedcurrencies:
+    get:
+      summary: Get allowed currencies for a store
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: g_hash
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: store_id
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: company_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: List of allowed currencies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_error:
+                    type: integer
+                  error_msg:
+                    type: string
+                  allowed_currencies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ac_id:
+                          type: integer
+                        ac_store_id:
+                          type: integer
+                        ac_currency_id:
+                          type: integer
+                        ac_company_id:
+                          type: integer
+                        ac_rate_to_original:
+                          type: number
+                          format: float
+                        cc_currency_code:
+                          type: string
+                        cc_currency_name:
+                          type: string
+        "401":
+          description: Invalid hash sequence
+        "404":
+          description: User not found
+
+  /api/allowedcurrencies/savecurrencyrate:
+    put:
+      summary: Update one or multiple currency rates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                g_hash:
+                  type: string
+                ac_id:
+                  type: array
+                  items:
+                    type: integer
+                  description: Array of currency IDs to update
+                ac_rate_to_original:
+                  type: array
+                  items:
+                    type: number
+                  description: Array of new rates corresponding to ac_id
+              required:
+                - user_id
+                - g_hash
+                - ac_id
+                - ac_rate_to_original
+      responses:
+        "200":
+          description: Currency rates updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_error:
+                    type: integer
+                  error_msg:
+                    type: string
+        "401":
+          description: Invalid hash sequence
+        "404":
+          description: User not found or currency not found

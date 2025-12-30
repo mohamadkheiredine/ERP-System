@@ -42,6 +42,7 @@ use App\models\Accounting\TransactionMovements;
 use App\models\Inventory\Vendors;
 use Milon\Barcode\DNS1D;
 use App\models\Inventory\StockIds;
+use App\models\Sales\PosAllowedCurrencies;
 use App\models\System\Companies;
 
 class StoresController extends Controller
@@ -61,7 +62,7 @@ class StoresController extends Controller
         $data = array(
             "lst_companies" => $lst_companies
         );
-        return Response()->view('stores.stores',$data);
+        return Response()->view('stores.stores', $data);
     }
 
 
@@ -79,25 +80,24 @@ class StoresController extends Controller
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
 
-        if($page_number > 1)
-            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+        if ($page_number > 1)
+            $skip = ($page_number - 1) * $nbr_rows_per_pages;
         else
             $skip = 0;
 
 
         $stores_cond = Stores::wherePsIsDeleted(0);
 
-        if( strlen($general_search)  > 0)
-        {
-            $stores_cond = $stores_cond->where('ps_store_name','LIKE','%' . $general_search . '%');
-            $stores_cond = $stores_cond->orWhere('ps_location','LIKE','%' . $general_search . '%');
+        if (strlen($general_search)  > 0) {
+            $stores_cond = $stores_cond->where('ps_store_name', 'LIKE', '%' . $general_search . '%');
+            $stores_cond = $stores_cond->orWhere('ps_location', 'LIKE', '%' . $general_search . '%');
         }
 
 
         $stores_count = $stores_cond->count();
 
 
-        $total_pages = ceil( $stores_count/$nbr_rows_per_pages );
+        $total_pages = ceil($stores_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
 
         $list_stores = $stores_cond->skip($skip)->take($nbr_rows_per_pages)->get();
@@ -106,7 +106,7 @@ class StoresController extends Controller
         );
 
         $result_array = array();
-        $result_array['display'] = view("stores.liststores",$data)->render();
+        $result_array['display'] = view("stores.liststores", $data)->render();
         $result_array['total_pages'] = $total_pages;
 
         return Response()->json($result_array);
@@ -127,13 +127,15 @@ class StoresController extends Controller
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $lst_currencies = Currency::get();
 
         $data = array(
             "lst_managers" => $lst_managers,
             "lst_warehouses" => $lst_warehouses,
             "lst_companies" => $lst_companies,
+            "lst_currencies" => $lst_currencies
         );
-        return view('stores.addstore',$data);
+        return view('stores.addstore', $data);
     }
 
 
@@ -153,6 +155,7 @@ class StoresController extends Controller
         $ps_manager_id                  = $request->input('ps_manager_id');
         $ps_employees_id                  = $request->input('ps_employees_id');
         $ps_warehouses_id                  = $request->input('ps_warehouses_id');
+        $ps_allowed_currencies_id = $request->input('ps_allowed_currencies_id');
         $ps_online_store                   = $request->has('ps_online_store') ? 1 : 0;
         $ps_is_active                   = $request->has('ps_is_active') ? 1 : 0;
 
@@ -160,9 +163,8 @@ class StoresController extends Controller
 
 
         $store_info = new Stores();
-        if($ps_id != null)
-        {
-            $store_info= Stores::find($ps_id);
+        if ($ps_id != null) {
+            $store_info = Stores::find($ps_id);
         }
 
 
@@ -171,7 +173,7 @@ class StoresController extends Controller
         $store_info->ps_location            = $ps_location;
         $store_info->ps_manager_id          = $ps_manager_id;
         $store_info->ps_is_active           = $ps_is_active;
-        $store_info->ps_online_store        = $ps_online_store;
+        // $store_info->ps_online_store        = $ps_online_store;
 
         $store_info->save();
 
@@ -179,8 +181,7 @@ class StoresController extends Controller
 
         $delete = StoreWarehouses::whereSwIsDeleted(0)->whereSwStoreId($ps_id)->delete();
 
-        foreach ($ps_warehouses_id as $index => $w_id)
-        {
+        foreach ($ps_warehouses_id as $index => $w_id) {
             $store_warehouses = new StoreWarehouses();
             $store_warehouses->sw_company_id = $ps_company_id;
             $store_warehouses->sw_store_id = $ps_id;
@@ -191,13 +192,22 @@ class StoresController extends Controller
 
         $delete = StoreEmployees::whereSeStoreId($ps_id)->delete();
 
-        foreach ($ps_employees_id as $index => $u_id)
-        {
+        foreach ($ps_employees_id as $index => $u_id) {
             $store_employees = new StoreEmployees();
             $store_employees->se_store_id = $ps_id;
             $store_employees->se_company_id = $ps_company_id;
             $store_employees->se_employee_id = $u_id;
             $store_employees->save();
+        }
+
+        PosAllowedCurrencies::whereAcStoreId($ps_id)->delete();
+
+        foreach ($ps_allowed_currencies_id as $index => $ac_id) {
+            $allowed_currency = new PosAllowedCurrencies();
+            $allowed_currency->ac_store_id = $ps_id;
+            $allowed_currency->ac_company_id = $ps_company_id;
+            $allowed_currency->ac_currency_id = $ac_id;
+            $allowed_currency->save();
         }
 
 
@@ -214,12 +224,13 @@ class StoresController extends Controller
      * @param unknown $ps_id
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
-    public function EditForm( $ps_id )
+    public function EditForm($ps_id)
     {
         $store_info = Stores::find($ps_id);
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $lst_currencies = Currency::get();
 
         $store_warehouses = StoreWarehouses::whereSwIsDeleted(0)->whereSwStoreId($ps_id)->get();
         $warehouse_ids = array();
@@ -233,16 +244,25 @@ class StoresController extends Controller
             $employees_ids[] = $employee->se_employee_id;
         }
 
+        $store_currencies = PosAllowedCurrencies::where('ac_store_id', $ps_id)->get();
+
+        $currency_ids = [];
+        foreach ($store_currencies as $currency) {
+            $currency_ids[] = $currency->ac_currency_id;
+        }
+
         $data = array(
             "lst_companies" => $lst_companies,
             "lst_managers" => $lst_managers,
             "lst_warehouses" => $lst_warehouses,
+            "lst_currencies" => $lst_currencies,
             "warehouse_ids" => $warehouse_ids,
             "employees_ids" => $employees_ids,
+            "currency_ids" => $currency_ids,
             "store_employees" => $store_employees,
             "store_info" => $store_info,
         );
-        return view('stores.editstore',$data);
+        return view('stores.editstore', $data);
     }
 
 
@@ -254,10 +274,7 @@ class StoresController extends Controller
      * @param Request $request
      * @return void
      */
-    public function GetListWarehouses(Request $request)
-    {
-
-    }
+    public function GetListWarehouses(Request $request) {}
 
 
     /**

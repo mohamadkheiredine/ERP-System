@@ -37,6 +37,7 @@ use App\models\System\JobRoles;
 use App\models\System\Departments;
 use App\models\System\Roles;
 use App\Library\UsersManager;
+use App\models\Sales\PosAllowedCurrencies;
 use App\models\System\Companies;
 use App\models\System\Languages;
 use App\models\System\Currency;
@@ -63,22 +64,22 @@ class UsersController extends Controller
         if (Auth::attempt(array('u_username' => $user_name, 'password' => $password))) {
             $user_info          = Auth::user();
 
-//            $tokenResponse = Http::asForm()->post(url('/oauth/token'), [
-//                'grant_type' => 'password',
-//                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-//                'client_secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
-//                'username' => $user_name,
-//                'password' => $password,
-//                'scope' => '*',
-//            ]);
-//
-//            if (!$tokenResponse->ok()) {
-//                return response()->json([
-//                    'is_error' => 1,
-//                    'error_message' => 'Token issue failed',
-//                    'details' => $tokenResponse->json(),
-//                ], 401);
-//            }
+            //            $tokenResponse = Http::asForm()->post(url('/oauth/token'), [
+            //                'grant_type' => 'password',
+            //                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
+            //                'client_secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
+            //                'username' => $user_name,
+            //                'password' => $password,
+            //                'scope' => '*',
+            //            ]);
+            //
+            //            if (!$tokenResponse->ok()) {
+            //                return response()->json([
+            //                    'is_error' => 1,
+            //                    'error_message' => 'Token issue failed',
+            //                    'details' => $tokenResponse->json(),
+            //                ], 401);
+            //            }
 
             //$tokenData = $tokenResponse->json();
 
@@ -107,9 +108,9 @@ class UsersController extends Controller
             $result_array['user_type']                  = $user_info->u_user_type;
             $result_array['u_department_id']            = $user_info->u_department_id;
             $result_array['company_id']                 = $company_id;
-//            $result_array['token_type'] = $tokenData['token_type'];
-//            $result_array['expires_in'] = $tokenData['expires_in'];
-//            $result_array['access_token'] = $tokenData['access_token'];
+            //            $result_array['token_type'] = $tokenData['token_type'];
+            //            $result_array['expires_in'] = $tokenData['expires_in'];
+            //            $result_array['access_token'] = $tokenData['access_token'];
 
             if ($company_id > 0) {
 
@@ -152,6 +153,16 @@ class UsersController extends Controller
                     return Response()->json($result_array);
                 }
 
+                $allowed_currencies = PosAllowedCurrencies::where('ac_store_id', $store_id)
+                ->join('currencies', 'currencies.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
+                ->select(
+                    'currencies.cc_id',
+                    'currencies.cc_currency_code',
+                    'currencies.cc_currency_name',
+                    'pos_allowed_currencies.ac_rate'
+                )
+                ->get();
+
                 $result_array['company_id']                     = $company_id;
                 $result_array['company_country']                = $company_info->cd_company_country;
                 $result_array['currency_symbol']                = $currency_info->cc_currency_code;
@@ -161,6 +172,7 @@ class UsersController extends Controller
                 $result_array['company_logo']                   = $company_logo;
                 $result_array['warehouse_id']                   = $store_warehouses[0]->sw_warehouse_id;
                 $result_array['store_id']                       = $store_id;
+                $result_array['allowed_currencies'] = $allowed_currencies;
 
                 // calculate exchange rate of primary and seconday
                 $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)->whereErToCurrency($sec_currency_id)->orderBy('er_date_exchange', 'DESC')->get();
