@@ -154,12 +154,12 @@ class UsersController extends Controller
                 }
 
                 $allowed_currencies = PosAllowedCurrencies::where('ac_store_id', $store_id)
-                ->join('currencies', 'currencies.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
+                ->join('currency', 'currency.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
                 ->select(
-                    'currencies.cc_id',
-                    'currencies.cc_currency_code',
-                    'currencies.cc_currency_name',
-                    'pos_allowed_currencies.ac_rate'
+                    'currency.cc_id',
+                    'currency.cc_currency_code',
+                    'currency.cc_currency_name',
+                    'pos_allowed_currencies.ac_rate_to_original'
                 )
                 ->get();
 
