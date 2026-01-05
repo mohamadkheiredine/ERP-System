@@ -33,8 +33,6 @@ class FnbOrderController extends Controller
     {
         return DB::transaction(function () {
             $year = date("Y");
-
-            // Lock the last order row for this year to avoid duplicates
             $last = FnbOrders::whereYear('fo_order_datetime', $year)
                 ->orderBy('fo_id', 'desc')
                 ->lockForUpdate()
@@ -43,7 +41,6 @@ class FnbOrderController extends Controller
             $lastNumber = 0;
 
             if ($last && !empty($last->fo_order_code)) {
-                // expecting "ORD0001"
                 $lastNumber = intval(substr($last->fo_order_code, 3));
             }
 
