@@ -455,21 +455,45 @@ inboundcalls_module = {
 
 
     },
+    getAccountInfo : function(){
+        var base_url 	= $('input[name=base_url]').val();
+        var _token 		= $('input[name=_token]').val();
+        var ic_client_id 	= $('#IC_CLIENT_ID').val();
+        $.ajax
+        ({
+            url : base_url + "/request/account/getaccountinfobyid",
+            data : { _token : _token , ca_id : ic_client_id },
+            method : 'get',
+            dataType : "json",
+            success : function(response){
+                $('#CA_ACCOUNT_NAME').val(response.account_info.ca_account_name);
+                $('#FK_CUSTOMER_ID').val(response.account_info.ca_id);
+                $('#IC_CLIENT_ID').val(response.account_info.ca_id);
+                $('#IC_CLIENT_CODE').val(response.account_info.ca_account_code);
+                $('#CA_ACCOUNT_ADDRESS').val(response.account_info.ca_billing_address);
+                if(response.account_info.ad_deal_code != undefined )
+                    $('#IC_CONTRACT_CODE').val(response.account_info.ad_deal_code);
+            }
+        });
+
+    },
     getAccountDealInfo : function(){
         var base_url 	= $('input[name=base_url]').val();
         var _token 		= $('input[name=_token]').val();
+        var ic_client_id 	= $('#IC_CLIENT_ID').val();
         var ad_account_code 	= $('#IC_CLIENT_CODE').val();
         if(ad_account_code.length > 0)
         {
             $.ajax
             ({
                 url : base_url + "/request/account/getaccountinfobycode",
-                data : { _token : _token , ad_account_code : ad_account_code },
+                data : { _token : _token , ad_account_code : ad_account_code , ic_client_id : ic_client_id },
                 method : 'get',
                 dataType : "json",
                 success : function(response){
                         $('#CA_ACCOUNT_NAME').val(response.account_info.ca_account_name);
                         $('#FK_CUSTOMER_ID').val(response.account_info.ca_id);
+                        $('#IC_CLIENT_ID').val(response.account_info.ca_id);
                         $('#CA_ACCOUNT_ADDRESS').val(response.account_info.ca_billing_address);
                         if(response.account_info.ad_deal_code != undefined )
                             $('#IC_CONTRACT_CODE').val(response.account_info.ad_deal_code);

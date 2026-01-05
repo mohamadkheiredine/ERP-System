@@ -98,10 +98,17 @@ $(function(){
 
 
 	$('#BTN_SAVE_CALL').on('click',inboundcalls_module.SaveInboundCallInfo);
+    $("#IC_CLIENT_ID").on('change',inboundcalls_module.getAccountInfo);
     $("#IC_CLIENT_CODE").on('keyup',inboundcalls_module.getAccountDealInfo);
     $("#IC_CLIENT_CODE").on('blur',inboundcalls_module.getAccountDealInfo);
     $("#IC_CONTRACT_CODE").on('blur',inboundcalls_module.getDealInfo);
     $("#IC_CONTRACT_CODE").on('keyup',inboundcalls_module.getDealInfo);
     inboundcalls_module.getAccountDealInfo();
     inboundcalls_module.getDealInfo();
+
+    if($("#IC_CLIENT_ID").length > 0)
+    {
+        inboundcalls_module.getAccountInfo();
+    }
+
 });

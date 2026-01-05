@@ -49,6 +49,8 @@ class DashboardController extends Controller
         $warehouse_id = session('warehouse_id');
         $monday = date( 'Y-m-d', strtotime( 'monday this week' ) );
         $friday = date( 'Y-m-d', strtotime( 'friday this week' ) );
+        $default_company_id = session('default_company_id');
+
 
 
         $count_orders = Orders::whereSoIsDeleted(0);
@@ -75,7 +77,7 @@ class DashboardController extends Controller
 
         $lst_inboundcalls = InboundCall::whereIcIsDeleted(0)->whereIcIsPaid(0)->whereIcClosedVoucher(0)->whereBetween('ic_call_date',[$first,$last])->limit(10)->orderBy('ic_call_date','DESC')->get();
 
-        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
+        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(2)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
 
 
         $stock_alert = 'SELECT

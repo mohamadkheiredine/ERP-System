@@ -44,6 +44,7 @@ use App\models\System\Languages;
 use App\models\Inventory\WareHouses;
 use App\models\Users\UserTeam;
 use App\models\Users\UserTypes;
+use Illuminate\Support\Facades\Cookie;
 
 class UsersController extends Controller
 {
@@ -176,10 +177,11 @@ class UsersController extends Controller
             $allowed_companies[] = $comp_info->ac_company_id;
         }
         $lst_companies = Companies::whereCdIsDeleted(0)->whereIn('cd_id', $allowed_companies)->get();
-
+        $fisical_year = $request->cookie('fisical_year');
 
         $data = array(
             "lst_companies" => $lst_companies,
+            "fisical_year" => $fisical_year,
             "allowed_companies" => $allowed_companies,
         );
         return Response()->view('users.accountsettings', $data);
@@ -190,6 +192,7 @@ class UsersController extends Controller
     {
         $user_id = session('user_id');
         $default_company = $request->input("default_company");
+        $fisical_year = $request->input("fisical_year");
         $result_array = array();
 
 
@@ -197,7 +200,17 @@ class UsersController extends Controller
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
-        return Response()->json($result_array);
+        return Response()->json($result_array)->cookie(
+            'fisical_year',
+            $fisical_year,
+            600000,
+            '/',
+            null,
+            true,   // Secure
+            false,   // HttpOnly
+            false,
+            'Lax'   // SameSite
+        );
     }
 
     /**
@@ -317,6 +330,53 @@ class UsersController extends Controller
         $Users = new Users();
         if ($user_id !== null) {
             $Users = Users::find($user_id);
+
+            if($Users->u_account_id == 0)
+            {
+                $account_info   = ChartAccounts::where("aa_account_ref", "=", "6311")->get();
+                $account_info = $account_info[0];
+
+                $count   = ChartAccounts::where("aa_account_ref", "LIKE", "6311%")->count();
+
+                $new_count      = $count + 1;
+                $aa_account_ref = $account_info->aa_account . (string)$new_count;
+
+
+                $AccAccounting = new ChartAccounts();
+                $AccAccounting->aa_parent_account   = $account_info->aa_id;
+                $AccAccounting->aa_account_ref      = $aa_account_ref;
+                $AccAccounting->aa_account          = $aa_account_ref;
+                $AccAccounting->aa_sub_account      = $account_info->aa_id;
+                $AccAccounting->aa_account_label    = $u_fullname;
+                $AccAccounting->fk_country_id       = 0;
+                $AccAccounting->save();
+                $aa_id = $AccAccounting->aa_id;
+
+                $Users->u_account_id = $aa_id;
+            }
+
+            if($Users->u_comission_account_id == 0)
+            {
+                $parent_account   = ChartAccounts::where("aa_account_ref", "=", "6314")->get();
+                $parent_account = $parent_account[0];
+
+                $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "6314%")->count();
+
+                $new_count_coms      = $count_coms + 1;
+                $aa_account_ref = $account_info->aa_account . (string)$new_count_coms;
+
+
+                $acc_accounting_info = new ChartAccounts();
+                $acc_accounting_info->aa_parent_account   = $parent_account->aa_id;
+                $acc_accounting_info->aa_account_ref      = $aa_account_ref;
+                $acc_accounting_info->aa_account          = $aa_account_ref;
+                $acc_accounting_info->aa_sub_account      = $parent_account->aa_id;
+                $acc_accounting_info->aa_account_label    = $u_fullname . " Fixed Comission";
+                $acc_accounting_info->fk_country_id       = 0;
+                $acc_accounting_info->save();
+                $Users->u_comission_account_id = $acc_accounting_info->aa_id;
+            }
+
         } else {
             $account_info   = ChartAccounts::where("aa_account_ref", "=", "6311")->get();
             $account_info = $account_info[0];

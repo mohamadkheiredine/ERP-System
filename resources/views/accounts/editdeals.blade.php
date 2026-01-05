@@ -277,16 +277,17 @@ th{
                                                     </div>
                                                 </div>
 
-
-
-                                                   <div class="col-md-4">
-                                                      <br/>
-                                                    <label class="form-check form-switch form-check-custom form-check-solid">
-                                                          <input class="form-check-input" type="checkbox" name="ad_is_approved" id="AD_IS_APPROVED" {{ $deal_info->ad_is_approved == 1 ? "checked" : "" }}  value="1"  />
-                                                          <span class="form-check-label fw-semibold text-muted">
-                                                            Contract Approved
-                                                          </span>
-                                                      </label>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label> Contract Status </label>
+                                                        <select name="ad_is_approved" id="AD_IS_APPROVED" class="form-control form-select" data-control="select2" data-placeholder="Select Contract Status">
+                                                            <option value=""> Select Contract Status </option>
+                                                            <option {{ $deal_info->ad_is_approved == 0 ? "checked" : "" }}  value="0"> Pending</option>
+                                                            <option {{ $deal_info->ad_is_approved == 1 ? "checked" : "" }}  value="1"> Delivered</option>
+                                                            <option {{ $deal_info->ad_is_approved == 2 ? "checked" : "" }}  value="2"> Approved</option>
+                                                            <option {{ $deal_info->ad_is_approved == 3 ? "checked" : "" }}  value="3"> Cancel</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                      <div class="form-group">

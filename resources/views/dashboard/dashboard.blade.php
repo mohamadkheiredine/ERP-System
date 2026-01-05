@@ -60,7 +60,7 @@ Page Description :
 						<a href="#" style="text-align: center" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
 							<i class="fa-solid fa-users fa-xl" style="font-size: 48px;margin-bottom: 3px;"></i>
 							<span class="fs-4 fw-bold">Customers</span><br/>
-							<span class="fs-4 fw-bold" id="CustomersCount"></span>
+							<span class="fs-4 fw-bold" id="CustomersCount">{{ $count_customers }}</span>
 						</a>
 						<!--end::Link-->
 					</div>
@@ -75,7 +75,7 @@ Page Description :
 						<a href="#" style="text-align: center" class="btn btn-flex btn-text-gray-800 btn-icon-gray-400 btn-active-color-primary bg-body flex-column justfiy-content-start align-items-start text-start w-100 p-10">
 							<i class="fa-solid fa-receipt fa-xl" style="font-size: 48px;margin-bottom: 3px;"></i>
 							<span class="fs-4 fw-bold">Orders</span><br/>
-							<span class="fs-4 fw-bold" id="OrdersCount"></span>
+							<span class="fs-4 fw-bold" id="OrdersCount">{{ $count_orders }}</span>
 						</a>
 						<!--end::Link-->
 					</div>

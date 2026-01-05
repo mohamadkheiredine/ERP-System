@@ -17,7 +17,6 @@ Page Description :
 @foreach($lst_accounts  as $index => $account_info)
 <tr  class="odd gradeX" data-ca_id="{{ $account_info->ca_id }}">
 	<td><input type="checkbox" name="ck_ca_{{ $account_info->ca_id }}" id="CK_CA_{{ $account_info->ca_id }}" class="checkboxes" value="{{ $account_info->ca_id }}" /></td>
-   <td>{{ $account_info->ca_id }}</td>
    <td>{{ $account_info->ca_account_code }}</td>
    <td>{{ $account_info->ca_account_name }}</td>
    <td>{{ $account_info->ca_account_mobile }}</td>

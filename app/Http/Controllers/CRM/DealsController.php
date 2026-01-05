@@ -19,6 +19,8 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App;
+use App\models\Accounting\TransactionMovements;
+use App\models\Accounting\Transactions;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -163,7 +165,6 @@ class DealsController extends Controller
         $deal_info = $deal_info[0];
 
         $ip_deal_id = $deal_info->ip_deal_id;
-        dd($ip_deal_id);
 
         $total_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->count();
         $paid_count = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($ip_deal_id)->where('ip_payment_status','=',2)->count();
@@ -375,38 +376,45 @@ class DealsController extends Controller
         $ad_deal_amount             = $request->input('ad_deal_amount');
         $ad_closing_date            = $request->input('ad_closing_date');
         $ad_closing_date            = date("Y-m-d",strtotime($ad_closing_date));
-        $ad_deal_stage              = $request->input('ad_deal_stage');
-        $ad_deal_type               = $request->input('ad_deal_type');
-        $ad_deal_probability        = $request->input('ad_deal_probability');
-        $ad_next_step               = $request->input('ad_next_step');
-        $ad_expected_revenue        = $request->input('ad_expected_revenue');
-        $fk_sales_id                = $request->input('fk_sales_id');
-        $ad_currency_id             = $request->input('ad_currency_id');
-        $ad_down_payment            = $request->input('ad_down_payment');
-        $ad_nbr_of_payments         = $request->input('ad_nbr_of_payments');
-        $ad_first_bill_date         = $request->input('ad_first_bill_date');
-        $ad_warranty_date         = $request->input('ad_warranty_date');
-        $ad_deal_date         = $request->input('ad_deal_date');
-        $ad_is_approved             = $request->has('ad_is_approved') ? 1 : 0;
-        $deals                      = $request->input('deals');
+        $ad_deal_stage                              = $request->input('ad_deal_stage');
+        $ad_deal_type                               = $request->input('ad_deal_type');
+        $ad_deal_probability                        = $request->input('ad_deal_probability');
+        $ad_next_step                               = $request->input('ad_next_step');
+        $ad_expected_revenue                        = $request->input('ad_expected_revenue');
+        $fk_sales_id                                = $request->input('fk_sales_id');
+        $ad_currency_id                             = $request->input('ad_currency_id');
+        $ad_down_payment                            = $request->input('ad_down_payment');
+        $ad_nbr_of_payments                         = $request->input('ad_nbr_of_payments');
+        $ad_first_bill_date                         = $request->input('ad_first_bill_date');
+        $ad_warranty_date                           = $request->input('ad_warranty_date');
+        $ad_deal_date                               = $request->input('ad_deal_date');
+        $ad_is_approved                             = $request->input('ad_is_approved');
+        $deals                                      = $request->input('deals');
         $fk_telemarketing_id                        = $request->input('fk_telemarketing_id');
         $fk_collector_id                            = $request->input('fk_collector_id');
         $fk_supervisor_id                           = $request->input('fk_supervisor_id');
         $ad_sales_comm                              = $request->input('ad_sales_comm');
         $ad_telemarketing_comm                      = $request->input('ad_telemarketing_comm');
         $ad_supervisor_comm                         = $request->input('ad_supervisor_comm');
-        $ad_account_code                        = $request->input('ad_account_code');
-        $ad_serial_number                        = $request->input('ad_serial_number');
-        $fk_technician_id                        = $request->input('fk_technician_id');
-        $ad_technician_comm                        = $request->input('ad_technician_comm');
-        $fk_manager_id                        = $request->input('fk_manager_id');
-        $ad_manager_comm                        = $request->input('ad_manager_comm');
-        $ad_contract_type                        = $request->input('ad_contract_type');
-        $bill_sales_commission                        = $request->input('bill_sales_commission');
+        $ad_account_code                            = $request->input('ad_account_code');
+        $ad_serial_number                           = $request->input('ad_serial_number');
+        $fk_technician_id                           = $request->input('fk_technician_id');
+        $ad_technician_comm                         = $request->input('ad_technician_comm');
+        $fk_manager_id                              = $request->input('fk_manager_id');
+        $ad_manager_comm                            = $request->input('ad_manager_comm');
+        $ad_contract_type                           = $request->input('ad_contract_type');
+        $bill_sales_commission                      = $request->input('bill_sales_commission');
         $bill_amount                                = $request->input('bill_amount');
-        $default_company_id = session('default_company_id');
+        $default_company_id                         = session('default_company_id');
 
         $result_array = array();
+
+        $is_approved = 0;
+        if($ad_is_approved == 2 )
+        {
+            $is_approved = 1;
+        }
+
 
 
         // validate that code exist
@@ -455,7 +463,7 @@ class DealsController extends Controller
         $account_deal->ad_is_approved        =   $ad_is_approved;
         $account_deal->ad_account_code       =   $ad_account_code;
         $account_deal->ad_serial_number      =   $ad_serial_number;
-        $account_deal->ad_deal_date      =   $ad_deal_date;
+        $account_deal->ad_deal_date          =   $ad_deal_date;
         $account_deal->ad_warranty_date      =   $ad_warranty_date;
 
         $account_deal->fk_technician_id   = $fk_technician_id;
@@ -484,10 +492,18 @@ class DealsController extends Controller
             }
         }
 
-
         // validate serial number of the product
-        if($ad_is_approved > 0)
+        if($is_approved > 0)
         {
+            $AccTransaction = new Transactions();
+            $AccTransaction->at_transaction_date    = $ad_deal_date;
+            $AccTransaction->at_creation_date       = date("Y-m-d");
+            $AccTransaction->at_accounting_doc      = $ad_deal_code;
+            $AccTransaction->fk_acc_journal_id      = 3;
+            $AccTransaction->save();
+            $at_id = $AccTransaction->at_id;
+
+
             $delete_old_comissions = PayrollsComissions::wherePcDealId($ad_id)->delete();
             // create comissions records
             $payroll_comissions = new PayrollsComissions();
@@ -499,6 +515,40 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->save();
+
+            $sales_info = Users::find($fk_sales_id);
+
+
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = $ad_sales_comm;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $sales_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $sales_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $ad_sales_comm;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+
 
 
             $payroll_comissions = new PayrollsComissions();
@@ -512,6 +562,37 @@ class DealsController extends Controller
             $payroll_comissions->save();
 
 
+            $tech_info = Users::find($fk_technician_id);
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = $ad_technician_comm;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $tech_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $tech_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $ad_technician_comm;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_telemarketing_id;
             $payroll_comissions->pc_company_id = $default_company_id;
@@ -523,6 +604,36 @@ class DealsController extends Controller
             $payroll_comissions->save();
 
 
+            $tele_info = Users::find($fk_telemarketing_id);
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = $ad_technician_comm;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $tech_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $tech_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $ad_technician_comm;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $fk_supervisor_id;
             $payroll_comissions->pc_company_id = $default_company_id;
@@ -532,6 +643,37 @@ class DealsController extends Controller
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
+
+
+            $sup_info = Users::find($fk_supervisor_id);
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = $ad_supervisor_comm;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $sup_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $sup_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $ad_supervisor_comm;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
 
 
 
@@ -545,14 +687,165 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
+
+            $manager_info = Users::find($fk_manager_id);
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = $ad_manager_comm;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $manager_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $manager_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $ad_manager_comm;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_currency_id        = $ad_currency_id;
+            $TransactionMovement->save();
+
         }
+
+
+
+        $remaining_amount = $ad_deal_amount - $ad_down_payment;
+
+        $payment_amount = $remaining_amount / $ad_nbr_of_payments;
+
+        $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
+
+        $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
+
+        $neareset_amount = ceil($payment_amount);
+        $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
+
+        $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payments - 1);
+        $last_payment = $payment_amount + $total;
+
+
+        if($action == "add")
+        {
+
+            // generate all bills for this deal
+            if($ad_contract_type == 2)
+            {
+                for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
+                {
+                    $invoice_payment = new InvoicePayments();
+                    $invoice_payment->fk_invoice_id = 0;
+                    $invoice_payment->ip_deal_id = $ad_id;
+                    $invoice_payment->ip_client_id = $fk_account_id;
+                    $invoice_payment->ip_payment_percentage = $percentage_near_amount;
+                    $invoice_payment->ip_payment_amount = $bill_amount[$index - 1] ;
+                    $invoice_payment->ip_remaining_amount =  $bill_amount[$index - 1] ;
+                    $invoice_payment->ip_client_code = $client_info->ca_account_code;
+                    $invoice_payment->ip_client_name = $client_info->ca_account_name;
+                    $invoice_payment->ip_currency_id = $ad_currency_id;
+                    $invoice_payment->ip_payment_type = 2;
+                    $invoice_payment->ip_is_live = $ad_is_approved;
+                    $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
+                    $invoice_payment->ip_billing_nbr = "00" . $index;
+                    $invoice_payment->ip_billing_status = 0;
+                    $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$index -1]) ? $bill_sales_commission[$index -1] : 0;
+                    $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
+                    $invoice_payment->save();
+                }
+
+                $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
+                $invoice_payment = new InvoicePayments();
+                $invoice_payment->fk_invoice_id = 0;
+                $invoice_payment->ip_deal_id = $ad_id;
+                $invoice_payment->ip_client_id = $fk_account_id;
+                $invoice_payment->ip_payment_percentage = $percentage_last_amount;
+                $invoice_payment->ip_payment_amount =$bill_amount[$ad_nbr_of_payments - 1];
+                $invoice_payment->ip_remaining_amount =$bill_amount[$ad_nbr_of_payments - 1];
+                $invoice_payment->ip_payment_type = 2;
+                $invoice_payment->ip_is_live = $ad_is_approved;
+                $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
+                $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
+                $invoice_payment->ip_billing_status = 0;
+                $invoice_payment->ip_client_code = $client_info->ca_account_code;
+                $invoice_payment->ip_client_name = $client_info->ca_account_name;
+                $invoice_payment->ip_currency_id = $ad_currency_id;
+                $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$ad_nbr_of_payments - 1]) ? $bill_sales_commission[$ad_nbr_of_payments - 1] : 0;
+                $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
+                $invoice_payment->save();
+            }
+        }
+        else
+        {
+
+            if($ad_contract_type == 2)
+            {
+                $delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
+                for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
+                {
+                    $invoice_payment = new InvoicePayments();
+                    $invoice_payment->fk_invoice_id = 0;
+                    $invoice_payment->ip_deal_id = $ad_id;
+                    $invoice_payment->ip_client_id = $fk_account_id;
+                    $invoice_payment->ip_payment_percentage = $percentage_near_amount;
+                    $invoice_payment->ip_payment_amount = $bill_amount[$index - 1] ;
+                    $invoice_payment->ip_remaining_amount =  $bill_amount[$index - 1] ;
+                    $invoice_payment->ip_client_code = $client_info->ca_account_code;
+                    $invoice_payment->ip_client_name = $client_info->ca_account_name;
+                    $invoice_payment->ip_currency_id = $ad_currency_id;
+                    $invoice_payment->ip_is_live = $ad_is_approved;
+                    $invoice_payment->ip_payment_type = 2;
+                    $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
+                    $invoice_payment->ip_billing_nbr = "00" . $index;
+                    $invoice_payment->ip_billing_status = 0;
+                    $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$index -1]) ? $bill_sales_commission[$index -1] : 0;
+                    $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
+                    $invoice_payment->save();
+                }
+
+                $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
+                $invoice_payment = new InvoicePayments();
+                $invoice_payment->fk_invoice_id = 0;
+                $invoice_payment->ip_deal_id = $ad_id;
+                $invoice_payment->ip_client_id = $fk_account_id;
+                $invoice_payment->ip_payment_percentage = $percentage_last_amount;
+                $invoice_payment->ip_payment_amount =$bill_amount[$ad_nbr_of_payments - 1];
+                $invoice_payment->ip_remaining_amount =$bill_amount[$ad_nbr_of_payments - 1];
+                $invoice_payment->ip_payment_type = 2;
+                $invoice_payment->ip_is_live = $ad_is_approved;
+                $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
+                $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
+                $invoice_payment->ip_billing_status = 0;
+                $invoice_payment->ip_client_code = $client_info->ca_account_code;
+                $invoice_payment->ip_client_name = $client_info->ca_account_name;
+                $invoice_payment->ip_currency_id = $ad_currency_id;
+                $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$ad_nbr_of_payments - 1]) ? $bill_sales_commission[$ad_nbr_of_payments - 1] : 0;
+                $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
+                $invoice_payment->save();
+            }
+
+
+        }
+
 
 
         // when approve create invoice and generate receipts and payment for all number of
         // payments
+        if($is_approved > 0)
         {
             // delete old invoice and payments exist
-            $delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
+            //$delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
 
 
             if($fk_account_id == 0)
@@ -564,94 +857,31 @@ class DealsController extends Controller
             }
 
             // Create Accounting Account
-            $crm_account = CRMAccounts::find($fk_account_id);
+             $crm_account = CRMAccounts::find($fk_account_id);
+//
+//
+//            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
+//            $account_info = $account_info[0];
+//
+//            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
+//
+//            $new_count      = $count + 1;
+//            $aa_account_ref = $account_info->aa_account . (String)$new_count;
+//
+//            $acc_accounting = new ChartAccounts();
+//            $acc_accounting->aa_parent_account   = $account_info->aa_id;
+//            $acc_accounting->aa_account_ref      = $aa_account_ref;
+//            $acc_accounting->aa_account          = $aa_account_ref;
+//            $acc_accounting->aa_sub_account      = $account_info->aa_id;
+//            $acc_accounting->aa_account_label    = $crm_account->ca_account_name;
+//            $acc_accounting->fk_country_id       = 0;
+//            $acc_accounting->save();
+//            $aa_id = $acc_accounting->aa_id;
 
 
-            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
-            $account_info = $account_info[0];
-
-            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
-
-            $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (String)$new_count;
-
-            $acc_accounting = new ChartAccounts();
-            $acc_accounting->aa_parent_account   = $account_info->aa_id;
-            $acc_accounting->aa_account_ref      = $aa_account_ref;
-            $acc_accounting->aa_account          = $aa_account_ref;
-            $acc_accounting->aa_sub_account      = $account_info->aa_id;
-            $acc_accounting->aa_account_label    = $crm_account->ca_account_name;
-            $acc_accounting->fk_country_id       = 0;
-            $acc_accounting->save();
-            $aa_id = $acc_accounting->aa_id;
 
 
-            $creation_date = date("Y-m-d H:i:s");
-            $company_id = Session('company_id');
 
-            $bi_id = 0;
-            // link deal to invoice
-            $deal_info = CRMDeals::find($ad_id);
-            $deal_info->ad_invoice_id = $bi_id;
-            $deal_info->save();
-            // Save invoice Payments
-            $remaining_amount = $ad_deal_amount - $ad_down_payment;
-
-            $payment_amount = $remaining_amount / $ad_nbr_of_payments;
-
-            $percentage_amount = ( $payment_amount/$ad_deal_amount ) * 100;
-
-            $downpayment_percentage = ($ad_down_payment/$ad_deal_amount ) * 100;
-
-            $neareset_amount = ceil($payment_amount);
-            $percentage_near_amount = ( $neareset_amount /$ad_deal_amount ) * 100;
-
-              $total = ($payment_amount - $neareset_amount) * ($ad_nbr_of_payments - 1);
-              $last_payment = $payment_amount + $total;
-
-              // generate all bills for this deal
-                if($ad_contract_type == 2)
-                {
-                    for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
-                    {
-                        $invoice_payment = new InvoicePayments();
-                        $invoice_payment->fk_invoice_id = $bi_id;
-                        $invoice_payment->ip_deal_id = $ad_id;
-                        $invoice_payment->ip_client_id = $fk_account_id;
-                        $invoice_payment->ip_payment_percentage = $percentage_near_amount;
-                        $invoice_payment->ip_payment_amount = $action == 'add' ? $bill_amount[$index - 1]  : $neareset_amount;
-                        $invoice_payment->ip_remaining_amount = $action == 'add' ? $bill_amount[$index - 1]  : $neareset_amount;
-                        $invoice_payment->ip_client_code = $client_info->ca_account_code;
-                        $invoice_payment->ip_client_name = $client_info->ca_account_name;
-                        $invoice_payment->ip_currency_id = $ad_currency_id;
-                        $invoice_payment->ip_payment_type = 2;
-                        $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
-                        $invoice_payment->ip_billing_nbr = "00" . $index;
-                        $invoice_payment->ip_billing_status = 0;
-                        $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$index -1]) ? $bill_sales_commission[$index -1] : 0;
-                        $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
-                        $invoice_payment->save();
-                    }
-
-                    $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
-                    $invoice_payment = new InvoicePayments();
-                    $invoice_payment->fk_invoice_id = $bi_id;
-                    $invoice_payment->ip_deal_id = $ad_id;
-                    $invoice_payment->ip_client_id = $fk_account_id;
-                    $invoice_payment->ip_payment_percentage = $percentage_last_amount;
-                    $invoice_payment->ip_payment_amount = $action == 'add' ? $bill_amount[$ad_nbr_of_payments - 1]  : $last_payment;;
-                    $invoice_payment->ip_remaining_amount = $action == 'add' ? $bill_amount[$ad_nbr_of_payments - 1]  : $last_payment;;
-                    $invoice_payment->ip_payment_type = 2;
-                    $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
-                    $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
-                    $invoice_payment->ip_billing_status = 0;
-                    $invoice_payment->ip_client_code = $client_info->ca_account_code;
-                    $invoice_payment->ip_client_name = $client_info->ca_account_name;
-                    $invoice_payment->ip_currency_id = $ad_currency_id;
-                    $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$ad_nbr_of_payments - 1]) ? $bill_sales_commission[$ad_nbr_of_payments - 1] : 0;
-                    $invoice_payment->ip_payment_label = "Payment of Deal Code #" . $ad_deal_code;
-                    $invoice_payment->save();
-                }
 
 
 
@@ -665,25 +895,31 @@ class DealsController extends Controller
             $call_index = "CC" . sprintf('%05d', $index);
             $today = $ad_deal_date;
             $call_info = new InboundCall();
-            $call_info->ic_call_index      = $call_index;
-            $call_info->ic_sales_id      = $fk_sales_id;
-            $call_info->fk_customer_id      = $fk_account_id;
-            $call_info->ic_telemarketing_id      = $fk_telemarketing_id;
-            $call_info->ic_client_code      = $account_deal->Account->ca_account_code;
-            $call_info->ic_contract_code      = $account_deal->ad_deal_code;
-            $call_info->ic_serial_number      = $ad_serial_number;
-            $call_info->ic_company_id      = $default_company_id;
-            $call_info->ic_call_date            = $ad_deal_date;
-            $call_info->ic_call_start_time      = "00:00";
-            $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_INSTALLATION;
+            $call_info->ic_call_index               = $call_index;
+            $call_info->ic_sales_id                 = $fk_sales_id;
+            $call_info->fk_customer_id              = $fk_account_id;
+            $call_info->ic_telemarketing_id         = $fk_telemarketing_id;
+            $call_info->ic_client_code              = $account_deal->Account->ca_account_code;
+            $call_info->ic_contract_code            = $account_deal->ad_deal_code;
+            $call_info->ic_serial_number            = $ad_serial_number;
+            $call_info->ic_company_id               = $default_company_id;
+            $call_info->ic_call_date                = $ad_deal_date;
+            $call_info->ic_call_start_time          = "00:00";
+            $call_info->ic_maintenance_type         = MaintenanceTypes::MAINTENANCE_INSTALLATION;
             $call_info->save();
         }
-
-
-
+        else
+        {
+            if($is_approved == 0)
+            {
+                $instalation_info = InboundCall::whereIcIsDeleted(0)->whereIcContractCode($account_deal->ad_deal_code)->whereIcMaintenanceType(MaintenanceTypes::MAINTENANCE_INSTALLATION)->first();
+                $instalation_info->ic_call_date = $ad_deal_date;
+                $instalation_info->save();
+            }
+        }
 
         // if deal approve create maintenance appointment next 3 month
-        if($ad_is_approved > 0)
+        if($is_approved > 0)
         {
                 $today = $ad_deal_date;
                 $three_maint_date = date('Y-m-d', strtotime('+3 month', strtotime($today)));
@@ -703,7 +939,7 @@ class DealsController extends Controller
                 $call_info->ic_contract_code      = $account_deal->ad_deal_code;
                 $call_info->ic_serial_number      = $ad_serial_number;
                 $call_info->ic_call_date      = $ro_date;
-            $call_info->ic_company_id      = $default_company_id;
+                $call_info->ic_company_id      = $default_company_id;
                 $call_info->ic_call_start_time      = "00:00";
                 $call_info->ic_maintenance_type      = MaintenanceTypes::MAINTENANCE_RO;
                 $call_info->save();
@@ -889,9 +1125,6 @@ class DealsController extends Controller
             );
 
 
-
-
-
             $result_array['is_error'] = 0;
             $data = array(
                 "payments_array"   => $payments_array
@@ -903,9 +1136,8 @@ class DealsController extends Controller
         {
             $deal_info = CRMDeals::find($ad_id);
             $lst_invoice_payment = InvoicePayments::whereIpDealId($ad_id)->get();
-            $payments_array = array();
 
-            if(count($lst_invoice_payment) > 0)
+            if($ad_nbr_of_payment == count($lst_invoice_payment))
             {
                 foreach ($lst_invoice_payment as $index => $payment_info) {
                     $payments_array[] =array(
@@ -919,6 +1151,8 @@ class DealsController extends Controller
             }
             else
             {
+
+                $delete = InvoicePayments::whereIpDealId($ad_id)->delete();
                 $remaining_amount = $ad_deal_amount - $ad_down_payment;
 
                 $payment_amount = $remaining_amount / $ad_nbr_of_payment;
@@ -952,15 +1186,18 @@ class DealsController extends Controller
                     'bill_amount' => $last_payment,
                     'bill_sales_commission' => 0
                 );
-
             }
+
+
+
+
 
 
             $result_array['is_error'] = 0;
             $data = array(
                 "payments_array"   => $payments_array
             );
-            $result_array['display'] = view('deals.rpaymentpreview',$data)->render();
+            $result_array['display'] = view('deals.paymentpreview',$data)->render();
             $result_array['billscoms'] = view('deals.billscoms',$data)->render();
 
         }

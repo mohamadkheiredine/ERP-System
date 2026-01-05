@@ -152,6 +152,8 @@ class UsersController extends Controller
                     return Response()->json($result_array);
                 }
 
+
+
                 $result_array['company_id']                     = $company_id;
                 $result_array['company_country']                = $company_info->cd_company_country;
                 $result_array['currency_symbol']                = $currency_info->cc_currency_code;

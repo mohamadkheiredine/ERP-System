@@ -89,14 +89,21 @@ class JournalVouchersController extends Controller
         $jv_currency_id             = $request->input('jv_currency_id');
         $page_number                = $request->input("page_number");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
 
-        $strfirstday = 'first day of January ' .$fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
-
-        $firstday = date("Y-m-d",strtotime($strfirstday));
-        $lastday = date("Y-m-d",strtotime($strlastday));
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -114,6 +121,11 @@ class JournalVouchersController extends Controller
         if(strlen($jv_end_date) > 0)
             $lst_journal_vouchers= $lst_journal_vouchers->where('pj_creation_date','<',$jv_end_date);
 
+        if(strlen($jv_start_date) ==  0 && strlen($jv_end_date) ==  0)
+        {
+            if($firstday != "" ||   $lastday != "")
+                $lst_journal_vouchers= $lst_journal_vouchers->whereBetween('pj_creation_date', [$firstday, $lastday]);
+        }
 
 
         $jv_count =     $lst_journal_vouchers->count();

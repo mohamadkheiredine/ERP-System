@@ -90,9 +90,22 @@ class InternalTransfersController extends Controller
         $in_end_date                = date("Y-m-d",strtotime($in_end_date));
         $in_currency_id             = $request->input('in_currency_id');
         $page_number                = $request->input("page_number");
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
+
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -116,7 +129,8 @@ class InternalTransfersController extends Controller
 
             if(strlen($in_start_date) ==  0 && strlen($in_end_date) ==  0)
             {
-                $lst_internal_notes= $lst_internal_notes->whereBetween('in_transfer_date', [$firstday, $lastday]);
+                if($firstday != "" || $lastday != "")
+                    $lst_internal_notes= $lst_internal_notes->whereBetween('in_transfer_date', [$firstday, $lastday]);
             }
 
         $in_count =     $lst_internal_notes->count();

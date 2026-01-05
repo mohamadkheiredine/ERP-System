@@ -128,7 +128,6 @@ th{
                 		<thead>
                 			<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                 				<th style="width:2px;white-space: nowrap;" title="#">#</th>
-                				<th style="width:2px;white-space: nowrap;" title="Id"> ID </th>
                 				<th title="Voucher Date"> Voucher Date </th>
                 				<th title="Voucher Ref"> Voucher Ref </th>
                 				<th title="Account Sender"> Account Sender </th>

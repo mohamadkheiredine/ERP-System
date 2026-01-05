@@ -177,6 +177,15 @@ Page Description :
                     <h4 class="card-section-title">Client Information</h4>
                     <div class="row g-5">
                         <div class="col-md-3">
+                            <label class="form-label">Client</label>
+                            <select name="ic_client_id" id="IC_CLIENT_ID" class="form-select form-select-solid" data-control="select2" data-placeholder="Select Client">
+                                <option value="">-- Select Client --</option>
+                                @foreach ($lst_clients as $client_info)
+                                    <option {{ $inboundcall_info->fk_customer_id == $client_info->ca_id ? "selected" : "" }} value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label required">Client Code</label>
                             <div class="input-group input-group-solid">
                                 <span class="input-group-text"><i class="ki-duotone ki-barcode fs-3"><span class="path1"></span><span class="path2"></span></i></span>
@@ -199,6 +208,10 @@ Page Description :
                     <h4 class="card-section-title">Assignment & Details</h4>
                     <div class="row g-5">
                         <div class="col-md-3">
+                            <label class="form-label">Appointment Title</label>
+                            <input type="text" name="ic_call_subject" id="IC_CALL_SUBJECT" class="form-control form-control-solid" value="{{ $inboundcall_info->ic_call_subject }}" />
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label required">Call Date</label>
                             <input type="text" name="ic_call_date" required="required" id="IC_CALL_DATE" class="form-control form-control-solid" value="{{ $inboundcall_info->ic_call_date }}" />
                         </div>
@@ -217,6 +230,38 @@ Page Description :
                                     <option {{ $inboundcall_info->ic_technician_id == $user_info->id ? "selected" : "" }} value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br />
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="ic_closed_voucher" id="IC_CLOSED_VOUCHER" value="1" />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                      Close Appointment
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Next Appointment</label>
+                                <input type="number" min="0" max="12" step="1" name="ic_next_appt" required="required" id="IC_NEXT_APPT" class="form-control form-control-solid" value="1" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br />
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="ic_issue_resolved" id="IC_ISSUE_RESOLVED" value="1" {{ $inboundcall_info->ic_issue_resolved == 1 ? "checked" : "" }} />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                      Issue Resolved
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Appointment Price</label>
+                            <input type="text" name="ic_visit_price" id="IC_VISIT_PRICE" class="form-control form-control-solid" value="{{ $inboundcall_info->ic_visit_price }}" />
                         </div>
                     </div>
                 </div>

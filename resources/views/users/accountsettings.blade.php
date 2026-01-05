@@ -67,6 +67,18 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Fisical Year</label>
+                                <select  name="fisical_year" id="FISICAL_YEAR" class="form-select" data-control="select2" data-placeholder="Select Fisical Year">
+                                     <option {{ $fisical_year == "0" ? "selected" : "" }} value="0">All</option>
+                                     <option {{ $fisical_year == (date('Y') - 3) ? "selected" : "" }} value="{{ date('Y') - 3 }}">{{ date('Y') - 3 }}</option>
+                                     <option {{ $fisical_year == (date('Y') - 2) ? "selected" : "" }} value="{{ date('Y') - 2 }}">{{ date('Y') - 2 }}</option>
+                                     <option  {{ $fisical_year == (date('Y') - 1) ? "selected" : "" }} value="{{ date('Y') - 1 }}">{{ date('Y') - 1 }}</option>
+                                     <option  {{ $fisical_year == date('Y') ? "selected" : "" }} value="{{ date('Y') }}">{{ date('Y') }}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-9"></div>

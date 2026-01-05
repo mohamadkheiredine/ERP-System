@@ -112,8 +112,33 @@ th{
 				</div>
 			</div>
 		</div>
-		<!--end: Search Form -->
-          <!--begin: Datatable -->
+        <div class="row">
+            <div class="col-md-12 order-1 order-xl-2 align-right">
+                <a href="{{ url('billing/invoices/addform') }}" class="btn btn-info">
+						<span>
+							<i class="flaticon-tabs"></i>
+							<span>
+								New Invoice
+							</span>
+						</span>
+                </a>
+                &nbsp;
+                <a href="{{ url('billing/invoices/addofform') }}" class="btn btn-info">
+						<span>
+							<i class="flaticon-tabs"></i>
+							<span>
+								New Official Invoice
+							</span>
+						</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row" style="height:15px;">
+            <div class="col-md-12" align="left">
+            </div>
+        </div>
+
           <div class="row">
 		<div class="col-md-12">
             <div class="table-responsive">
@@ -147,7 +172,7 @@ th{
          </div>
 		<!--end: Datatable -->
 		<div class="row">
-			<div class="col-md-12 order-1 order-xl-2 m--align-right">
+			<div class="col-md-12 order-1 order-xl-2 align-right">
 					<a href="{{ url('billing/invoices/addform') }}" class="btn btn-info">
 						<span>
 							<i class="flaticon-tabs"></i>

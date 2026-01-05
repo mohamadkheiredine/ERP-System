@@ -16,5 +16,5 @@
 "show_product_image"=>"0",
 "ability_edit_stock_price"=>"1",
 "quick_manage_client"=>"1",
-"maintenance_lite"=>"0"]; 
+"maintenance_lite"=>"1"]; 
 ?>

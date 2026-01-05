@@ -120,13 +120,12 @@ th{
     				<thead>
     					<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
     						<th style="width:2px;">#</th>
-    						<th style="width:2px;">ID</th>
     						<th>Invoice</th>
     						<th>Receipt Code</th>
     						<th>Receipt Label</th>
     						<th>Receipt Note</th>
     						<th>Receipt Date</th>
-    						<th>Receipt Amount</th> 
+    						<th>Receipt Amount</th>
     						<th style="width:4px;white-space: nowrap;text-align: center">Download</th>
     						<th style="width:4px;white-space: nowrap;text-align: center">edit</th>
     						<th style="width:4px;white-space: nowrap;text-align: center">Delete</th>
@@ -135,7 +134,7 @@ th{
     				<tbody  class="LstReceiptsGrid"></tbody>
     			</table>
     		 </div>
-    			
+
     		</div>
     	</div>
     	 <div class="row">
@@ -160,5 +159,5 @@ th{
     </div>
 </div>
 
- 
+
 @endsection

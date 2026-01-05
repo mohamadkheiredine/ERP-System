@@ -311,6 +311,7 @@ Route::post('/request/clients/saveaccountinfo','CRM\AccountsController@SaveAccou
 Route::post('/request/clients/deleteaccountinfo','CRM\AccountsController@DeleteAccountInfo');
 Route::put('/request/leads/converttoaccounts','CRM\AccountsController@ConvertLeadtoAccount');
 Route::get('/request/account/getaccountinfobycode','CRM\AccountsController@GetAccountInfoByCode');
+Route::get('/request/account/getaccountinfobyid','CRM\AccountsController@GetAccountInfoById');
 Route::post('/request/account/generatedealpaymentspreview','CRM\DealsController@GenerateDealPaymentsPreview');
 Route::post('/request/clients/getregionarea','CRM\AccountsController@GetRegionArea');
 Route::post('/request/leads/getregionarea','CRM\LeadsController@GetRegionArea');

@@ -320,10 +320,20 @@ class CustomersController extends Controller
      */
     public function SearchCustomer(Request $request)
     {
+
+
+
         $sc_customer_mobile = $request->input('sc_customer_mobile');
+        $result_array = array();
+        if(strlen($sc_customer_mobile) == 0) {
+            $result_array['is_error']       = 1;
+            $result_array['error_msg']       = 'no Customer Mobile Number Entered';
+            return Response()->json($result_array);
+        }
+
         $customer_info = Customers::where('ic_customer_mobile', 'LIKE', '%' . $sc_customer_mobile . '%')->get();
 
-        $result_array = array();
+
         $customer_name = "";
 
         if (count($customer_info) == 0) {

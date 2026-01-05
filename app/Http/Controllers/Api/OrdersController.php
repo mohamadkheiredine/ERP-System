@@ -98,6 +98,7 @@ class OrdersController extends Controller
         $big_invoice          = $request->input('big_invoice');
         $store_id          = $request->input('store_id');
         $company_id          = $request->input('company_id');
+        $payment_type          = $request->input('payment_type');
 
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
@@ -192,22 +193,15 @@ class OrdersController extends Controller
         $vendor_info = new Vendors();
 
         if ($customer_id == 0) {
-            // check if we select a vendor we get info of it
-            if ($vendor_id != 0) {
-                $vendor_info = Vendors::find($vendor_id);
-                $vendor_account_id = $vendor_info->iv_vendor_account_id;
-            } else {
-                $customer_info = Customers::whereIcDefaultCustomer(0)->get();
-                if (count($customer_info) == 0) {
-                    $result_array['is_error']       = 1;
-                    $result_array['error_message']  = 'Please Select A Customer Or Create a Default Custromer to Save all order there';
+            $customer_info = Customers::whereIcDefaultCustomer(1)->first();
 
-                    return Response()->json($result_array);
-                }
+            if ($customer_info == null) {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'Please Select A Customer Or Create a Default Custromer to Save all order there';
 
-                $customer_info = $customer_info[0];
-                $customer_id = $customer_info->ic_id;
+                return Response()->json($result_array);
             }
+            $customer_id = $customer_info->ic_id;
         } else {
             $customer_info = Customers::find($customer_id);
         }
@@ -215,12 +209,9 @@ class OrdersController extends Controller
 
         $order_manager = new OrdersManager();
 
-        $company_id = $user_info->fk_company_id;
-
-        $company_info   = Companies::find($company_id);
 
         $params_array = array(
-            'company_id' => $user_info->fk_company_id
+            'company_id' => $company_id
         );
         $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
@@ -414,6 +405,7 @@ class OrdersController extends Controller
             // ✅ Update order totals from computed subtotal
             $order_info = Orders::find($so_id);
             $order_info->so_sub_total      = $sub_total;
+            $order_info->so_store_id        = $store_id;
             $order_info->so_total_discount = $pos_discount;
             $order_info->so_total_cost     = $pos_total; // keep what UI sent OR recompute if you want
             $order_info->save();
@@ -439,14 +431,12 @@ class OrdersController extends Controller
         }
 
 
-        $company_id = $user_info->fk_company_id;
 
-        // save invoice information
 
 
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
-
+        $company_info = Companies::find($company_id);
 
 
         // save transaction and movement to the accounting table
@@ -469,6 +459,7 @@ class OrdersController extends Controller
         $movement_info->fk_tran_id            = $at_id;
         $movement_info->tm_company_id            = $company_id;
         $movement_info->tm_store_id            = $store_id;
+        $movement_info->tm_trans_code            = "SALES_ORDER";
         $movement_info->tm_ledger_account     = $customer_info->ic_account_number;
         $movement_info->tm_sub_ledger_account = $customer_info->ic_account_number;
         $movement_info->tm_ledger_label       = $so_order_code;
@@ -478,19 +469,27 @@ class OrdersController extends Controller
         $movement_info->tm_currency_id        = $company_currency;
         $movement_info->save();
 
+        if($payment_type != "credit")
+        {
+            $movement_info                        = new TransactionMovements();
+            $movement_info->fk_tran_id            = $at_id;
+            $movement_info->tm_company_id            = $company_id;
+            $movement_info->tm_store_id            = $store_id;
+            $movement_info->tm_trans_code            = "SALES_ORDER";
+            $movement_info->tm_ledger_account     = $pt_payment_account;
+            $movement_info->tm_sub_ledger_account = $pt_payment_account;
+            $movement_info->tm_ledger_label       = $so_order_code;
+            $movement_info->tm_debit              = 0;
+            $movement_info->tm_credit             = $pos_total + $deliveryFee;
+            $movement_info->tm_creation_date      = date("Y-m-d");
+            $movement_info->tm_currency_id        = $company_currency;
+            $movement_info->save();
+        }
 
-        $movement_info                        = new TransactionMovements();
-        $movement_info->fk_tran_id            = $at_id;
-        $movement_info->tm_company_id            = $company_id;
-        $movement_info->tm_store_id            = $store_id;
-        $movement_info->tm_ledger_account     = $pt_payment_account;
-        $movement_info->tm_sub_ledger_account = $pt_payment_account;
-        $movement_info->tm_ledger_label       = $so_order_code;
-        $movement_info->tm_debit              = 0;
-        $movement_info->tm_credit             = $pos_total + $deliveryFee;
-        $movement_info->tm_creation_date      = date("Y-m-d");
-        $movement_info->tm_currency_id        = $company_currency;
-        $movement_info->save();
+
+        $order_info = Orders::find($so_id);
+        $order_info->so_trans_id      = $at_id;
+        $order_info->save();
 
         $tax_info = VatAccounts::find(1);
 
@@ -1057,26 +1056,26 @@ class OrdersController extends Controller
                 break;
             case 2: //yesterday's order
                 {
-                    $date_from = date("Y-m-d", strtotime('yesterday'));
-                    $date_to = date("Y-m-d", strtotime('yesterday'));
+                    $date_from = date("Y-m-d 00:00:00", strtotime('yesterday'));
+                    $date_to = date("Y-m-d 23:59:59", strtotime('yesterday'));
                 }
                 break;
             case 3: //last week's order
                 {
-                    $date_from = date("Y-m-d", strtotime('-7 day'));
-                    $date_to = date("Y-m-d", strtotime('Today'));
+                    $date_from = date("Y-m-d 00:00:00", strtotime('-7 day'));
+                    $date_to = date("Y-m-d 23:59:59", strtotime('Today'));
                 }
                 break;
             case 4: //last week's order
                 {
-                    $date_from = date("Y-m-d", strtotime('-30 day'));
-                    $date_to = date("Y-m-d", strtotime('Today'));
+                    $date_from = date("Y-m-d 00:00:00", strtotime('-30 day'));
+                    $date_to = date("Y-m-d 23:59:59", strtotime('Today'));
                 }
                 break;
             case 5: // custom date range
                 {
-                    $date_from = date("Y-m-d", strtotime($date_from));
-                    $date_to = date("Y-m-d", strtotime($date_to));
+                    $date_from = date("Y-m-d 00:00:00", strtotime($date_from));
+                    $date_to = date("Y-m-d 23:59:59", strtotime($date_to));
                 }
                 break;
         }
@@ -1536,7 +1535,7 @@ class OrdersController extends Controller
             $items_order[$index]['product_name'] = $item_info->Products->p_product_name;
             $items_order[$index]['uid'] = $item_info->fk_product_id;
             $items_order[$index]['product_cost'] = $item_info->so_product_cost;
-            $items_order[$index]['product_price'] = $item_info->so_product_cost * $item_info->so_product_quantity;
+            $items_order[$index]['product_price'] = ceil($item_info->so_product_cost * $item_info->so_product_quantity);
             $items_order[$index]['product_quantity'] = $item_info->so_product_quantity;
             $items_order[$index]['product_currency'] = $item_info->so_product_currency;
 

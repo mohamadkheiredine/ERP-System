@@ -301,6 +301,13 @@ class PaymentsController extends Controller
 
             return Response()->json($result_array);
         }
+        if( $account_id == null )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'Invalid Account Number !!';
+
+            return Response()->json($result_array);
+        }
 
 
 
@@ -317,7 +324,7 @@ class PaymentsController extends Controller
         $lst_movements = TransactionMovements::where('tm_sub_ledger_account',$account_id);
 
 
-        $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
+       // $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
 
         $lst_movements = $lst_movements->where('tm_currency_id','=',$currency_id);
 
@@ -456,7 +463,8 @@ class PaymentsController extends Controller
             {
                 $movement_data_array[ $currency_id ][ $account_id ][ $index ]['balance'] = $total_balance + $movement_info->tm_debit - $movement_info->tm_credit;
             }
-            else {
+            else
+            {
 
 
                 if(isset( $movement_data_array[ $currency_id ][ $account_id ][ $index - 1 ] ))
@@ -466,8 +474,7 @@ class PaymentsController extends Controller
 
                         $movement_data_array[ $currency_id ][ $account_id ][ $index ]['balance'] = $prev_balance + $movement_info->tm_debit - $movement_info->tm_credit;
 
-             }
-
+            }
 
             $movement_data_array[ $currency_id ][ $account_id ][ $index ]['tm_id']                        = $tm_id;
             $movement_data_array[ $currency_id ][ $account_id ][ $index ]['trans_id']                     = $trans_id;
@@ -550,11 +557,66 @@ class PaymentsController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
         $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
         $TransactionMovement->tm_ledger_label       = $label;
         $TransactionMovement->tm_debit              = 0;
         $TransactionMovement->tm_credit             = $pos_total;
+        $TransactionMovement->tm_creation_date      = $date;
+        $TransactionMovement->tm_transaction_date   = $date;
+        $TransactionMovement->tm_currency_id        = $currency_id;
+        $TransactionMovement->save();
+
+        $result_array['is_error'] = 0;
+         return Response()->json($result_array);
+    }
+
+    public function DebitPaymentCustomer(Request $request)
+    {
+        $user_id             = $request->input('user_id');
+        $g_hash              = $request->input('g_hash');
+        $customer_id         = $request->input('customer_id');
+        $pos_total           = $request->input('pos_total');
+        $currency_id         = $request->input('currency_id');
+        $user_info           = Users::find($user_id);
+
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256',$c_hash);
+        $result_array        = array();
+
+        $date = date("Y-m-d");
+        // validate hash sequence for loggedin user
+        if( $c_hash != $g_hash )
+        {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+
+            return Response()->json($result_array);
+        }
+
+        $customer_info  = Customers::find($customer_id);
+        $payment_info   = PaymentTypes::find(2);
+        $label = "Payment For Order " . $customer_info->ic_customer_name . " On " . $date;
+
+        $AccTransaction = new Transactions();
+        $AccTransaction->at_transaction_date    = $date;
+        $AccTransaction->at_creation_date       = date("Y-m-d");
+        $AccTransaction->at_accounting_doc      = $label;
+        $AccTransaction->fk_acc_journal_id      = 3;
+        $AccTransaction->save();
+        $at_id = $AccTransaction->at_id;
+
+
+
+       $pt_payment_account = $payment_info->pt_payment_account;
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
+        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number;
+        $TransactionMovement->tm_ledger_label       = $label;
+        $TransactionMovement->tm_debit              = $pos_total;
+        $TransactionMovement->tm_credit             = 0;
         $TransactionMovement->tm_creation_date      = $date;
         $TransactionMovement->tm_transaction_date   = $date;
         $TransactionMovement->tm_currency_id        = $currency_id;

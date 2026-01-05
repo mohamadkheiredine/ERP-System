@@ -524,28 +524,43 @@ class AccountingController extends Controller
         $end_date           = $request->input("end_date");
 
         $currency_info = Currency::find($currency_id);
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
-
-        $strfirstday = 'first day of January ' . $fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
-
-        $firstday = date("Y-m-d", strtotime($strfirstday));
-        $lastday = date("Y-m-d", strtotime($strlastday));
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
 
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
+
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
+ 
         $lst_movements = TransactionMovements::where('tm_sub_ledger_account', $account_id);
 
         if (strlen($search_query) > 0) {
             $lst_movements = $lst_movements->where('tm_ledger_label', 'LIKE', "%" . $search_query . "%");
         }
-        if (strlen($start_date) == 0 && strlen($end_date) == 0)
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
-        else if ((strlen($start_date) > 0 && strlen($end_date) == 0))
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$start_date, $lastday]);
-        else if (strlen($start_date) == 0 && strlen($end_date) > 0)
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $end_date]);
-        else
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$start_date, $end_date]);
+
+        if(strlen($start_date) > 0)
+            $lst_movements = $lst_movements->where('tm_transaction_date','>=',$start_date);
+
+        if(strlen($end_date) > 0)
+            $lst_movements = $lst_movements->where('tm_transaction_date','<',$end_date);
+
+
+        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
+        {
+            if($firstday != '' || $lastday != '')
+                $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
+        }
+
+
 
         $lst_movements = $lst_movements->where('tm_currency_id', '=', $currency_id);
 
@@ -567,7 +582,6 @@ class AccountingController extends Controller
         // if including before checked we calculate the cumilative from start date to current date
         $inc_before_total = array();
         if ($ck_include_before == 1) {
-            DB::connection()->enableQueryLog();
             $lst_movement_incs = TransactionMovements::where('tm_sub_ledger_account', $account_id);
 
             if (strlen($search_query) > 0)
@@ -847,18 +861,22 @@ class AccountingController extends Controller
         $end_date       = $request->input("end_date");
         $include_before = $request->input("include_before");
         $search_query   = $request->input("search_query");
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         $acc_account = $request->input("acc_account");
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
-        $strfirstday = 'first day of January ' . $fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
 
-        $firstday = date("Y-m-d", strtotime($strfirstday));
-        $lastday = date("Y-m-d", strtotime($strlastday));
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
 
-        if ($start_date != "" && $end_date != "") {
-            $firstday = $start_date;
-            $lastday = $end_date;
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
         }
 
         $query = "SELECT cc_id,tm_sub_ledger_account,cc_currency_code,accounts.aa_account_ref,accounts.aa_account_label,SUM(tm_debit) as total_debit,SUM(tm_credit) as total_credit, SUM(tm_debit) - SUM(tm_credit) AS total_balance  FROM acc_transaction_movements tm left join acc_accounting_accounts accounts on tm.tm_sub_ledger_account = accounts.aa_id left join currency curr on tm.tm_currency_id = curr.cc_id where  1 ";
@@ -874,7 +892,8 @@ class AccountingController extends Controller
         } elseif ($end_date != "") {
             $query .= " AND tm.tm_transaction_date <= '$end_date' ";
         } else {
-            $query .= " AND ( tm.tm_transaction_date BETWEEN '$firstday' AND  '$lastday')";
+            if($firstday != "" || $lastday != "")
+                $query .= " AND ( tm.tm_transaction_date BETWEEN '$firstday' AND  '$lastday')";
         }
 
         if ($acc_account > 0) {

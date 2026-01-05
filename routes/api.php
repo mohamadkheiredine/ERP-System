@@ -85,6 +85,7 @@ Route::get('/request/api/searchcustomerbyname', 'Api\CustomersController@SearchC
 Route::post('/request/api/debitorder', 'Api\PaymentsController@DebitCustomerOrder');
 Route::post('/request/api/creditpaymentcustomer', 'Api\PaymentsController@CreditPaymentCustomer');
 Route::post('/request/api/getaccountstatment', 'Api\PaymentsController@Getaccountstatment');
+Route::post('/request/api/debitpaymentcustomer', 'Api\PaymentsController@DebitPaymentCustomer');
 
 
 

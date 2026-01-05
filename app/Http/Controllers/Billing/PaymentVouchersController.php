@@ -96,14 +96,22 @@ class PaymentVouchersController extends Controller
         $page_number                = $request->input("page_number");
         $general_search             = $request->input("general_search");
         $default_company_id = session('default_company_id');
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
         $nbr_rows_per_pages         = Config::get('appconfig.max_rows_per_page');
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
-        $strfirstday = 'first day of January ' . $fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
 
-        $firstday = date("Y-m-d",strtotime($strfirstday));
-        $lastday = date("Y-m-d",strtotime($strlastday));
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
 
 
         $voucher_cond   = PaymentVouchers::wherePvIsDeleted(0)->wherePvCompanyId($default_company_id);
@@ -120,7 +128,8 @@ class PaymentVouchersController extends Controller
 
         if(strlen($pv_start_date) ==  0 && strlen($pv_end_date) ==  0)
         {
-            $voucher_cond= $voucher_cond->whereBetween('pv_creation_date', [$firstday, $lastday]);
+            if($firstday != "" ||   $lastday != "")
+                $voucher_cond= $voucher_cond->whereBetween('pv_creation_date', [$firstday, $lastday]);
         }
 
         if(strlen($general_search) > 0)

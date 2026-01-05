@@ -606,13 +606,23 @@ class InvoicesController extends Controller
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
         $lst_customers    = Customers::whereIcIsDeleted(0)->get();
         $customers_array  = CreateDatabaseArrayByIndex($lst_customers, "ic_id");
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
-        $strfirstday = 'first day of January ' .$fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
 
-        $firstday = date("Y-m-d",strtotime($strfirstday));
-        $lastday = date("Y-m-d",strtotime($strlastday));
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
+
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
+
 
         if($page_number > 1)
             $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
@@ -638,7 +648,8 @@ class InvoicesController extends Controller
 
             if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
             {
-                $lst_invoices = $lst_invoices->whereBetween('bi_invoice_date', [$firstday, $lastday]);
+                if($firstday != '' || $lastday != '')
+                    $lst_invoices = $lst_invoices->whereBetween('bi_invoice_date', [$firstday, $lastday]);
             }
 
             if(strlen($general_search) > 0)
@@ -911,10 +922,24 @@ class InvoicesController extends Controller
         $invoice_info       = Invoices::find($invoice_id);
         $result_array       = array();
 
+        $warehouse_info = WareHouses::find($ii_warehouse_id);
+
         if($item_id == "")
             $invoice_product = new InvoiceProducts();
         else
             $invoice_product = InvoiceProducts::find($item_id);
+
+
+
+        $warehouse_movement = new WareHouseMovement();
+        $warehouse_movement->wm_warehouse_id = $ii_warehouse_id;
+        $warehouse_movement->wm_product_id = $bi_product;
+        $warehouse_movement->wm_quantity = $bi_quanity;
+        $warehouse_movement->wm_action_date = date('Y-m-d');
+        $warehouse_movement->wm_action_type = "STOCK_OUT";
+        $warehouse_movement->wm_action_description = "Stock Out " . $bi_quanity . " of " . $product_info->mp_product_name . " From " . $warehouse_info->w_warehouse_name . " using Invoice Number #" . $invoice_info->bi_invoice_code;
+        $warehouse_movement->save();
+
 
 
 
@@ -940,6 +965,17 @@ class InvoicesController extends Controller
             $invoice_product->ii_price_currency     = $currency_id;
             $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
             $invoice_product->save();
+
+
+            // update product for serial number to be 1
+            $stockid_obj = StockIds::whereSiStockUid($ii_product_serial_number)->first();
+            $stockid_obj->si_stock_sold = 1;
+            $fk_stock_id = $stockid_obj->fk_stock_id;
+            $stockid_obj->save();
+
+            $stock_info = Stocks::find($fk_stock_id);
+            $stock_info->is_quanity = $stock_info->is_quanity - $bi_quanity;
+            $stock_info->save();
         }
         else
         {
@@ -1092,6 +1128,18 @@ class InvoicesController extends Controller
                 $result_array['error_msg'] = "we dont have any stock for this product in warehouse";
                 return Response()->json($result_array);
             }
+
+            // check if serial number is is used
+            $stock_used = StockIds::where('si_stock_uid','=',$ii_product_serial_number)->where('si_stock_sold','=',1)->get();
+
+            if(count($stock_used) == 1)
+            {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "This product with this serial number is already used";
+                return Response()->json($result_array);
+            }
+
+
 
             $invoice_product = new InvoiceProducts();
             $invoice_product->fk_invoice_id     = $invoice_id;
@@ -1672,6 +1720,9 @@ class InvoicesController extends Controller
                 $invoice_info = Invoices::find($bi_id);
                 $invoice_info->bi_invoice_status = 1;
                 $invoice_info->save();
+
+                // get all serial numbers used for this stock and
+
             }
         }
         $result_array['is_error'] = 0;
@@ -1699,7 +1750,7 @@ class InvoicesController extends Controller
         $result_array = array();
         $bi_account_number = $request->input('bi_account_number');
 
-        $client_info = CRMAccounts::where('ca_account_code','LIKE','%' . $bi_account_number . '%')->where('ca_is_deleted',0)->get();
+        $client_info = CRMAccounts::where('ca_account_code','=', $bi_account_number)->where('ca_is_deleted',0)->get();
 
         if(count($client_info) == 0)
         {

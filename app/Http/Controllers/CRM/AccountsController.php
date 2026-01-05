@@ -131,7 +131,7 @@ class AccountsController extends Controller
     {
         $ad_account_code = $request->input('ad_account_code');
         $default_company_id = session('default_company_id');
-        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->where('ca_account_code','LIKE','%' . $ad_account_code . '%')->get();
+        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->where('ca_account_code','=',$ad_account_code)->get();
         $result_array = array();
 
         if(count($lst_account_info) == 0)
@@ -152,6 +152,43 @@ class AccountsController extends Controller
             'ca_id' => $lst_account_info[0]->ca_id,
             'ca_billing_address' => $lst_account_info[0]->ca_billing_address,
             'ct_contract_type' => $ct_info->ct_contract_type,
+        );
+
+        if(count($deal_info) > 0)
+        {
+            $result_array['account_info']['ad_deal_code'] = $deal_info[0]->ad_deal_code;
+        }
+
+        return Response()->json($result_array);
+    }
+
+
+    public function GetAccountInfoById(Request $request)
+    {
+        $ca_id = $request->input('ca_id');
+        $default_company_id = session('default_company_id');
+        $lst_account_info = CRMAccounts::whereCaIsDeleted(0)->whereCaCompanyId($default_company_id)->where('ca_id',$ca_id)->get();
+        $result_array = array();
+
+        if(count($lst_account_info) == 0)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'No Account Exist for this Account Code';
+            return Response()->json($result_array);
+        }
+
+        $deal_info = CRMDeals::whereFkAccountId($lst_account_info[0]->ca_id)->whereAdIsDeleted(0)->get();
+
+        $contract_type = $lst_account_info[0]->ca_contract_type;
+        $ct_info = CRMContractTypes::find($contract_type);
+
+        $result_array['is_error'] = 0;
+        $result_array['account_info'] = array(
+            'ca_account_name' => $lst_account_info[0]->ca_account_name,
+            'ca_account_code' => $lst_account_info[0]->ca_account_code,
+            'ca_id' => $lst_account_info[0]->ca_id,
+            'ca_billing_address' => $lst_account_info[0]->ca_billing_address,
+            'ct_contract_type' => $ct_info ? $ct_info->ct_contract_type : null,
         );
 
         if(count($deal_info) > 0)
@@ -228,9 +265,9 @@ class AccountsController extends Controller
     public function ViewFile( $ca_id )
     {
         $client_info = CRMAccounts::find($ca_id);
-        $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(0)->get();
-        $lst_bills_partial_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(1)->get();
-        $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpClientId($ca_id)->whereIpPaymentStatus(2)->get();
+        $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(0)->get();
+        $lst_bills_partial_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(1)->get();
+        $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(2)->get();
         $lst_pendingcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(0)->whereIcClientCode($client_info->ca_account_code)->get();
         $lst_closedcalls = InboundCall::whereIcIsDeleted(0)->whereIcClosedVoucher(1)->whereIcClientCode($client_info->ca_account_code)->get();
         $lst_call_products = InboundCallProducts::whereCpClientId($client_info->ca_id)->get();

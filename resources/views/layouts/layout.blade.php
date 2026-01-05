@@ -41,6 +41,14 @@ Page Description :
 			 @yield("themes")
 		<!--end::Global Stylesheets Bundle-->
 		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll("input, textarea").forEach(el => {
+                    el.setAttribute("autocomplete", "off");
+                });
+            });
+        </script>
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->

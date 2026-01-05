@@ -667,3 +667,11 @@ ALTER TABLE `sales_orders`
 
 
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('16', 'maintenance_lite', 'Allow Maintenance Lite', '0', '1', '1');
+
+
+ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_is_live` TINYINT NULL DEFAULT 1 AFTER `ip_pay_date`;
+
+ALTER TABLE `sales_orders`
+    ADD COLUMN `so_store_id` INT NULL DEFAULT 0 AFTER `so_company_id`,
+ADD COLUMN `so_trans_id` INT NULL DEFAULT 0 AFTER `so_vendor_id`;
+

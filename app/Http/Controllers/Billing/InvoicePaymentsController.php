@@ -188,7 +188,7 @@ class InvoicePaymentsController extends Controller
             $skip = 0;
 
 
-        $bills_cond = InvoicePayments::whereIpIsDeleted(0);
+        $bills_cond = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1);
 
 
 
@@ -454,9 +454,12 @@ class InvoicePaymentsController extends Controller
         $ip_is_update                       = $request->has('ip_is_update') ? 1 : 0;
         $ip_billing_status                  = $request->has('ip_billing_status') ? 1 : 0;
         $ip_payment_status                  = 0;
+        $default_company_id                 = session('default_company_id');
 
         $bills_info     = new InvoicePayments();
         $is_new = true;
+
+        $collector_info = Users::find($ip_collector_id);
 
         //$ip_client_id = 0;
         if( $ip_id  > 0 )
@@ -545,6 +548,7 @@ class InvoicePaymentsController extends Controller
             $trans_mov->fk_tran_id              = $at_id;
             $trans_mov->tm_ledger_account       = $account_id;
             $trans_mov->tm_sub_ledger_account   = $account_id ;
+            $trans_mov->tm_trans_code   = "RVC" ;
             $trans_mov->tm_debit                = $ip_payment_amount;
             $trans_mov->tm_credit               = 0;
             $trans_mov->tm_creation_date        = date('Y-m-d');
@@ -580,6 +584,37 @@ class InvoicePaymentsController extends Controller
             $payroll_comissions->save();
 
 
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = 6314;
+            $TransactionMovement->tm_sub_ledger_account = 6314;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
+            $TransactionMovement->tm_debit              = 1;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date        = date('Y-m-d');
+            $TransactionMovement->tm_currency_id        = $ip_currency_id;
+            $TransactionMovement->save();
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->tm_company_id            = $default_company_id;
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $collector_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $collector_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = 1;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date   = date('Y-m-d');
+            $TransactionMovement->tm_currency_id        = $ip_currency_id;
+            $TransactionMovement->save();
+
+
+
+
             // check if we have comission in payment bill
             $ip_sales_comission = $bills_info->ip_sales_comission;
             if($ip_sales_comission > 0)
@@ -589,6 +624,8 @@ class InvoicePaymentsController extends Controller
                 $deal_info = CRMDeals::find($deal_id);
                 if($deal_info != null)
                 {
+                    $sales_info = Users::find($deal_info->fk_sales_id);
+
                     $payroll_comissions = new PayrollsComissions();
                     $payroll_comissions->pc_employee_id = $deal_info->fk_sales_id;
                     $payroll_comissions->pc_company_id = session('company_id');
@@ -598,6 +635,35 @@ class InvoicePaymentsController extends Controller
                     $payroll_comissions->pc_comission_label = "Commission on file # "  . $deal_info->Account->ca_account_code . " - " . $deal_info->Account->ca_account_name;
                     $payroll_comissions->pc_deal_id = $deal_id;
                     $payroll_comissions->save();
+
+
+                    $TransactionMovement = new TransactionMovements();
+                    $TransactionMovement->tm_company_id            = $default_company_id;
+                    $TransactionMovement->fk_tran_id            = $at_id;
+                    $TransactionMovement->tm_ledger_account     = 6314;
+                    $TransactionMovement->tm_sub_ledger_account = 6314;
+                    $TransactionMovement->tm_trans_code         = "COMMISSION";
+                    $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $deal_info->Account->ca_account_code . " - " . $deal_info->Account->ca_account_name;
+                    $TransactionMovement->tm_debit              = $deal_info->ad_sales_comm;
+                    $TransactionMovement->tm_credit             = 0;
+                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                    $TransactionMovement->tm_transaction_date   = date('Y-m-d');
+                    $TransactionMovement->tm_currency_id        = $deal_info->ad_currency_id;
+                    $TransactionMovement->save();
+
+                    $TransactionMovement = new TransactionMovements();
+                    $TransactionMovement->tm_company_id            = $default_company_id;
+                    $TransactionMovement->fk_tran_id            = $at_id;
+                    $TransactionMovement->tm_ledger_account     = $sales_info->u_account_id;
+                    $TransactionMovement->tm_sub_ledger_account = $sales_info->u_account_id;
+                    $TransactionMovement->tm_trans_code         = "COMMISSION";
+                    $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
+                    $TransactionMovement->tm_debit              = 0;
+                    $TransactionMovement->tm_credit             = $deal_info->ad_sales_comm;
+                    $TransactionMovement->tm_creation_date      = date("Y-m-d");
+                    $TransactionMovement->tm_transaction_date   = date('Y-m-d');
+                    $TransactionMovement->tm_currency_id        = $deal_info->ad_currency_id;
+                    $TransactionMovement->save();
 
                 }
             }

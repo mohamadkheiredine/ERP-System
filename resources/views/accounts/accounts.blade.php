@@ -91,7 +91,6 @@ Page Description :
                                                                     <thead>
                                                                             <tr class="fw-bold fs-6 text-gray-800">
                                                                                     <th title="#">#</th>
-                                                                                    <th title="Id"> ID </th>
                                                                                     <th title="Client name"> Client Code </th>
                                                                                     <th title="Client name"> Client Name </th>
                                                                                     <th title="Mobile"> Mobile </th>

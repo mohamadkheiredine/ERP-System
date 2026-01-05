@@ -20,6 +20,7 @@ namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
 use App\models\Billing\Receipts;
+use App\models\Inventory\WareHouseMovement;
 use Validator;
 use Input;
 use Illuminate\Http\Request;
@@ -648,6 +649,20 @@ class OrdersController extends Controller
 
                         // Update the remaining quantity we need to fulfill.
                         $quantity_to_fulfill -= $quantity_to_take;
+
+
+                        $warehouse_info = WareHouses::find($warehouse_id);
+                        $product_info = Products::find($order_product_id);
+                        $order_info = Orders::find($order_id);
+
+                        $warehouse_movement = new WareHouseMovement();
+                        $warehouse_movement->wm_warehouse_id = $warehouse_id;
+                        $warehouse_movement->wm_product_id = $order_product_id;
+                        $warehouse_movement->wm_quantity = $quantity_to_take;
+                        $warehouse_movement->wm_action_date = date('Y-m-d');
+                        $warehouse_movement->wm_action_type = "STOCK_OUT";
+                        $warehouse_movement->wm_action_description = "Stock Out " . $quantity_to_take . " of " . $product_info->mp_product_name . " From " . $warehouse_info->w_warehouse_name . " using Order Number #" . $order_info->so_order_code;
+                        $warehouse_movement->save();
                     }
                 });
             } catch (\Exception $e) {

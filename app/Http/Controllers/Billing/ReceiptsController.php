@@ -101,13 +101,21 @@ class ReceiptsController extends Controller
         $start_date             = $request->input('start_date');
         $end_date               = $request->input('end_date');
         $default_company_id = session('default_company_id');
-        $fisical_year =  $request->input('fisical_year')  !== null ? $request->input('fisical_year') : date("Y");
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
-        $strfirstday = 'first day of January ' . $fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
 
-        $firstday = date("Y-m-d",strtotime($strfirstday));
-        $lastday = date("Y-m-d",strtotime($strlastday));
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
+        else
+        {
+            $firstday = "";
+            $lastday = "";
+        }
 
 
         $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
@@ -122,6 +130,19 @@ class ReceiptsController extends Controller
         {
             $receipts_cond = $receipts_cond->where('br_receipt_label' , 'LIKE' , '%' . $search_query . '%');
             $receipts_cond = $receipts_cond->orWhere('br_receipt_note' , 'LIKE' , '%' . $search_query . '%');
+        }
+
+        if(strlen($start_date) > 0)
+            $receipts_cond = $receipts_cond->where('br_receipt_date','>=',$start_date);
+
+        if(strlen($end_date) > 0)
+            $receipts_cond = $receipts_cond->where('br_receipt_date','<',$end_date);
+
+
+        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
+        {
+            if($firstday != '' || $lastday != '')
+                $receipts_cond = $receipts_cond->whereBetween('br_receipt_date', [$firstday, $lastday]);
         }
 
         if( $receipt_customer > 0 )

@@ -156,6 +156,15 @@
                     <h4 class="card-section-title">Client Information</h4>
                     <div class="row g-5">
                         <div class="col-md-3">
+                            <label class="form-label">Client</label>
+                            <select name="ic_client_id" id="IC_CLIENT_ID" class="form-select form-select-solid" data-control="select2" data-placeholder="Select Client">
+                                <option value="">-- Select Client --</option>
+                                @foreach ($lst_clients as $client_info)
+                                    <option value="{{ $client_info->ca_id }}">{{ $client_info->ca_account_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label required">Client Code</label>
                             <div class="input-group input-group-solid">
                                 <span class="input-group-text"><i class="ki-duotone ki-barcode fs-3"><span class="path1"></span><span class="path2"></span></i></span>
@@ -178,6 +187,10 @@
                     <h4 class="card-section-title">Assignment & Details</h4>
                     <div class="row g-5">
                         <div class="col-md-3">
+                            <label class="form-label">Appointment Title</label>
+                            <input type="text" name="ic_call_subject" id="IC_CALL_SUBJECT" class="form-control form-control-solid" value="" />
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">Call Date</label>
                             <input type="text" name="ic_call_date" id="IC_CALL_DATE" class="form-control form-control-solid" value="{{ date('Y-m-d') }}" />
                         </div>
@@ -196,6 +209,10 @@
                                     <option value="{{ $user_info->id }}">{{ $user_info->u_fullname }}</option>
                                 @endforeach
                             </select>
+                            <div class="col-md-3">
+                                <label class="form-label">Appointment Price</label>
+                                <input type="text" name="ic_visit_price" id="IC_VISIT_PRICE" class="form-control form-control-solid" value="" />
+                            </div>
                         </div>
                     </div>
                 </div>
