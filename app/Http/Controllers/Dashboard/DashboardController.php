@@ -89,7 +89,12 @@ class DashboardController extends Controller
     COALESCE(SUM(is_quanity), 0) as total_quantity
 FROM inventory_products
 LEFT JOIN inventory_stocks ON inventory_stocks.fk_product_id = inventory_products.p_id
-GROUP BY inventory_products.p_id
+GROUP BY
+    inventory_products.p_id,
+    inventory_products.p_product_name,
+    inventory_products.p_product_ref,
+    inventory_products.p_barcode,
+    inventory_products.p_product_stock_alert
 HAVING COALESCE(SUM(is_quanity), 0) <= p_product_stock_alert
 ORDER BY total_quantity ASC
 LIMIT 10;';
