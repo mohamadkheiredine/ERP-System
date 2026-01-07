@@ -166,6 +166,7 @@ Route::group(['middleware' => ['cors']], function() {
 Route::get('/api/inventory/listitemcategories', 'Api\FnbCategoriesController@ListItemCategories');
 Route::get('/api/inventory/getlistmenucategories', 'Api\FnbCategoriesController@GetListMenuCategories');
 Route::post('/api/inventory/savemenucategory', 'Api\FnbCategoriesController@SaveMenuCategory');
+Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@DeleteMenuCategory');
 
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders');
