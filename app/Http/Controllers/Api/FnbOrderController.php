@@ -32,23 +32,29 @@ class FnbOrderController extends Controller
     public function GenerateOrdereCodeFNB()
     {
         return DB::transaction(function () {
-            $year = date("Y");
-            $last = FnbOrders::whereYear('fo_order_datetime', $year)
+
+            $yearSuffix = date('y'); // last 2 digits of year (e.g. 26)
+
+            $last = FnbOrders::lockForUpdate()
+                ->where('fo_order_code', 'like', 'ORD' . $yearSuffix . '%')
                 ->orderBy('fo_id', 'desc')
-                ->lockForUpdate()
                 ->first();
 
-            $lastNumber = 0;
-
-            if ($last && !empty($last->fo_order_code)) {
-                $lastNumber = intval(substr($last->fo_order_code, 3));
+            // If no orders for this year yet
+            if (!$last || empty($last->fo_order_code)) {
+                return 'ORD' . $yearSuffix . '0001';
             }
 
-            $next = $lastNumber + 1;
+            // Extract numeric part after ORDyy
+            // Example: ORD260045 → 45
+            $lastNumber = (int) substr($last->fo_order_code, 5);
 
-            return "ORD" . sprintf('%04d', $next);
+            $nextNumber = $lastNumber + 1;
+
+            return 'ORD' . $yearSuffix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
         });
     }
+
 
 
     private function reduceStock($product_id, $warehouse_id, $qty_to_reduce)
@@ -606,7 +612,24 @@ class FnbOrderController extends Controller
                 ->pluck('ot_table_id')
                 ->toArray() ?? [];
 
-            $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->get()->toArray();
+            $items = FnbOrderItems::join(
+                'fnb_menu_items',
+                'fnb_menu_items.mi_id',
+                '=',
+                'fnb_order_items.oi_item_id'
+            )
+                ->where('oi_order_id', $order->fo_id)
+                ->select([
+                    'fnb_order_items.oi_item_id',
+                    'fnb_menu_items.mi_item_name as item_name',
+                    'fnb_order_items.oi_quantity',
+                    'fnb_order_items.oi_unit_price',
+                    'fnb_order_items.oi_notes',
+                    'fnb_order_items.oi_station_id',
+                ])
+                ->get()
+                ->toArray();
+
 
             $data[] = [
                 'order_id' => $order->fo_id,

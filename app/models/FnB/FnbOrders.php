@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
  * Tables.php
  * Product :titanerp
@@ -26,6 +27,24 @@ class FnbOrders extends Model
     protected $table = 'fnb_orders';
     public $timestamps = false;
     protected $primaryKey = "fo_id";
+
+    protected $fillable = [
+        'fo_order_code',
+        'fo_order_type',
+        'fo_store_id',
+        'fo_branch_id',
+        'fo_customer_id',
+        'fo_order_status',
+        'fo_order_datetime',
+        'fo_subtotal',
+        'fo_discount',
+        'fo_created_by',
+        'fo_currency_id',
+        'fo_total_amount',
+        'fo_payment_status',
+        'fo_paid_amount',
+        'fo_order_structure',
+    ];
 
     public function Branch()
     {
