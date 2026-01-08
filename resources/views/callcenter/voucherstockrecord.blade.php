@@ -17,6 +17,7 @@
     <td>{{ $product_info->p_barcode }}</td>
     <td>{{ $product_info->p_product_name }}</td>
     <td>{{ $cp_quantity }}</td>
+    <td>{{ $cp_total_cost }}</td>
     <td>
         <a href="#"   id="DeleteProductCall" ><i class="fa-solid fa-trash"></i></a>
     </td>

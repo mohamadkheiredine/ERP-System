@@ -200,7 +200,9 @@
                 <div class="row g-3">
                     <div class="section-title">Client Description</div>
                     <div class="col-md-12">
-                        <textarea name="ca_account_description" class="form-control" style="height:200px;">{{ $account_info->ca_account_description }}</textarea>
+                        <div class="col-md-12">
+                            <textarea name="ca_account_description" id="CA_ACCOUNT_DESCRIPTION" class="form-control" style="height:200px;"></textarea>
+                        </div>
                     </div>
                 </div>
 

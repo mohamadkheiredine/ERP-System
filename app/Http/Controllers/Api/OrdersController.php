@@ -104,7 +104,7 @@ class OrdersController extends Controller
         $delcustomerphone          = $request->input('delcustomerphone');
         $delcustomeraddress          = $request->input('delcustomeraddress');
         $deliveryFee          = $request->input('deliveryFee');
-        $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
+        $delivery_id          = strlen($delcustomerphone) > 0 ? 1 : 0;
 
         $user_info           = Users::find($user_id);
 
@@ -122,66 +122,80 @@ class OrdersController extends Controller
 
         if ($delivery_id != 0) {
 
-            if ($customer_id > 0) {
-                $customer_info = Customers::find($customer_id);
-                $customer_info->ic_customer_name = $delcustomername;
-                $customer_info->ic_customer_address = $delcustomeraddress;
-                $customer_info->ic_customer_phone = $delcustomerphone;
-                $customer_info->ic_customer_mobile = $delcustomerphone;
-                $customer_info->save();
-            } else {
-                // check if the customer exist
-                $customer_check = Customers::whereIcCustomerName($delcustomername)->get();
-
-                $customer_id = 0;
-
-                if (count($customer_check) == 0) {
-                    $customer_manager = new CustomersManager();
-                    $params = array(
-                        'company_id' => $user_info->fk_company_id
-                    );
-                    $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
-
-
-                    $customer_info = new Customers();
-                    $customer_info->ic_customer_name = $delcustomername;
-                    $customer_info->ic_customer_address = $delcustomeraddress;
-                    $customer_info->ic_customer_phone = $delcustomerphone;
-                    $customer_info->ic_customer_mobile = $delcustomerphone;
-                    $customer_info->ic_customer_code = $ic_customer_code;
-
-                    $account_info   = ChartAccounts::where("aa_account_ref", "=", "4111")->get();
-                    $account_info = $account_info[0];
-
-                    $count   = ChartAccounts::where("aa_account_ref", "LIKE", "4111%")->count();
-
-                    $new_count      = $count + 1;
-                    $aa_account_ref = $account_info->aa_account . (string)sprintf('%05d', $new_count);
-
-                    $AccAccounting = new ChartAccounts();
-                    $AccAccounting->aa_parent_account   = $account_info->aa_id;
-                    $AccAccounting->aa_account_ref      = $aa_account_ref;
-                    $AccAccounting->aa_account          = $aa_account_ref;
-                    $AccAccounting->aa_sub_account      = $account_info->aa_id;
-                    $AccAccounting->aa_account_label    = $delcustomername;
-                    $AccAccounting->fk_country_id       = 0;
-                    $AccAccounting->save();
-
-                    $aa_id = $AccAccounting->aa_id;
-                    $customer_info->ic_account_number = $aa_id;
-
-
-                    $customer_info->save();
-                    $customer_id = $customer_info->ic_id;
-                } else {
-                    $customer_id = $customer_check[0]->ic_id;
+            if(strlen($delcustomername) > 0  && strlen($delcustomerphone) > 0)
+            {
+                if ($customer_id > 0)
+                {
                     $customer_info = Customers::find($customer_id);
                     $customer_info->ic_customer_name = $delcustomername;
                     $customer_info->ic_customer_address = $delcustomeraddress;
                     $customer_info->ic_customer_phone = $delcustomerphone;
+                    $customer_info->ic_customer_mobile = $delcustomerphone;
                     $customer_info->save();
                 }
+                else
+                {
+                    // check if the customer exist
+                    $customer_check = Customers::whereIcCustomerName($delcustomername)->get();
+
+                    $customer_id = 0;
+
+                    if (count($customer_check) == 0) {
+                        $customer_manager = new CustomersManager();
+                        $params = array(
+                            'company_id' => $user_info->fk_company_id
+                        );
+                        $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
+
+
+                        $customer_info = new Customers();
+                        $customer_info->ic_customer_name = $delcustomername;
+                        $customer_info->ic_customer_address = $delcustomeraddress;
+                        $customer_info->ic_customer_phone = $delcustomerphone;
+                        $customer_info->ic_customer_mobile = $delcustomerphone;
+                        $customer_info->ic_customer_code = $ic_customer_code;
+
+                        $account_info   = ChartAccounts::where("aa_account_ref", "=", "4111")->get();
+                        $account_info = $account_info[0];
+
+                        $count   = ChartAccounts::where("aa_account_ref", "LIKE", "4111%")->count();
+
+                        $new_count      = $count + 1;
+                        $aa_account_ref = $account_info->aa_account . (string)sprintf('%05d', $new_count);
+
+                        $AccAccounting = new ChartAccounts();
+                        $AccAccounting->aa_parent_account   = $account_info->aa_id;
+                        $AccAccounting->aa_account_ref      = $aa_account_ref;
+                        $AccAccounting->aa_account          = $aa_account_ref;
+                        $AccAccounting->aa_sub_account      = $account_info->aa_id;
+                        $AccAccounting->aa_account_label    = $delcustomername;
+                        $AccAccounting->fk_country_id       = 0;
+                        $AccAccounting->save();
+
+                        $aa_id = $AccAccounting->aa_id;
+                        $customer_info->ic_account_number = $aa_id;
+
+
+                        $customer_info->save();
+                        $customer_id = $customer_info->ic_id;
+                    } else {
+                        $customer_id = $customer_check[0]->ic_id;
+                        $customer_info = Customers::find($customer_id);
+                        $customer_info->ic_customer_name = $delcustomername;
+                        $customer_info->ic_customer_address = $delcustomeraddress;
+                        $customer_info->ic_customer_phone = $delcustomerphone;
+                        $customer_info->save();
+                    }
+                }
             }
+            else
+            {
+                // if phone only exist show it in receipt
+                $customer_info = Customers::whereIcDefaultCustomer(1)->first();
+                $customer_id = $customer_info->ic_id;
+            }
+
+
         }
 
 
@@ -249,7 +263,6 @@ class OrdersController extends Controller
         }
 
         $order_info->so_company_id        = $company_id;
-        $order_info->so_order_customer   = $customer_id;
         $order_info->so_sub_total        = $pos_sub_total;
         $order_info->so_total_discount   = $pos_discount;
         $order_info->so_total_cost       = $pos_total + $deliveryFee;
@@ -313,7 +326,6 @@ class OrdersController extends Controller
                     ->where('fk_product_id', $product_id)
                     ->where('fk_warehouse_id', $warehouse_id)
                     ->where('is_is_deleted', 0)
-                    ->where('is_quanity', '>', 0)
                     ->lockForUpdate()
                     ->sum('is_quanity');
 
@@ -466,6 +478,7 @@ class OrdersController extends Controller
         $movement_info->tm_debit              = $pos_total + $deliveryFee;
         $movement_info->tm_credit             = 0;
         $movement_info->tm_creation_date      = date("Y-m-d");
+        $movement_info->tm_transaction_date      = date("Y-m-d");
         $movement_info->tm_currency_id        = $company_currency;
         $movement_info->save();
 
@@ -482,6 +495,7 @@ class OrdersController extends Controller
             $movement_info->tm_debit              = 0;
             $movement_info->tm_credit             = $pos_total + $deliveryFee;
             $movement_info->tm_creation_date      = date("Y-m-d");
+            $movement_info->tm_transaction_date      = date("Y-m-d");
             $movement_info->tm_currency_id        = $company_currency;
             $movement_info->save();
         }
@@ -507,9 +521,11 @@ class OrdersController extends Controller
             "creation_date"     => $creation_date,
             "so_order_code" => $so_order_code,
             "creation_time" => $creation_time,
+            "delcustomername" => $delcustomername,
+            "delcustomerphone" => $delcustomerphone,
+            "delcustomeraddress" => $delcustomeraddress,
             "deliveryFee" => $deliveryFee
         );
-
         if ($delivery_id != 0) {
             $customer_info = Customers::find($customer_id);
             $data['delivery_id'] = $delivery_id;

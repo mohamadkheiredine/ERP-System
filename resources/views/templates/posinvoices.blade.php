@@ -74,9 +74,9 @@
               <div class="info">
                 <h2>Contact Info</h2>
                 <p>
-                    Name   : {{$customer_info->ic_customer_name}}</br>
-                    Address : {{$customer_info->ic_customer_address}}</br>
-                    Phone   : {{$customer_info->ic_customer_phone}}</br>
+                    Name   : {{$delcustomername}}</br>
+                    Address : {{$delcustomeraddress}}</br>
+                    Phone   : {{$delcustomerphone}}</br>
                 </p>
               </div>
             </div>
@@ -103,11 +103,13 @@
                     <td align="left">{{ number_format($pos_sub_total,2) }}&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b></td>
                     <td></td>
                 </tr>
+                @if($pos_discount > 0)
                 <tr>
                     <th align="left">Discount :</th>
                     <td align="left">{{ $pos_discount }}</td>
                     <td></td>
                 </tr>
+                @endif
                 @if(isset($delivery_id) && $delivery_id != 0)
                     <tr>
                         <th align="left">Delivery :</th>

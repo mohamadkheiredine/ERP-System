@@ -49,18 +49,19 @@ class OrdersManager
      * Generate order code to save in the order record
      * @return string
      */
-    public function GenerateOrdereCode()
+    public function GenerateOrdereCode($params = array())
     {
         $company_id     = session('company_id');
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
-        $year           = date("Y");
+        $year           = $params['fisical_year'];
+        $ORDY = date('y');
         $count_orders = Orders::whereYear('so_creation_date', $year)->count();
 
         $index = $count_orders + 1;
 
 
-        $invoice_code = "ORD" . sprintf('%04d', $index);
+        $invoice_code = "ORD" . $ORDY . sprintf('%04d', $index);
 
         return $invoice_code;
     }

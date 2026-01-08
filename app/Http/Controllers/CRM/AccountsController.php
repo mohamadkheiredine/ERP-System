@@ -265,6 +265,7 @@ class AccountsController extends Controller
     public function ViewFile( $ca_id )
     {
         $client_info = CRMAccounts::find($ca_id);
+        $lst_all_bills = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->get();
         $lst_bills_unpaid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(0)->get();
         $lst_bills_partial_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(1)->get();
         $lst_bills_paid = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereIpClientId($ca_id)->whereIpPaymentStatus(2)->get();
@@ -274,6 +275,7 @@ class AccountsController extends Controller
 
         $data = array(
            "client_info" => $client_info,
+           "lst_all_bills" => $lst_all_bills,
            "lst_bills_unpaid" => $lst_bills_unpaid,
            "lst_bills_partial_paid" => $lst_bills_partial_paid,
            "lst_pendingcalls" => $lst_pendingcalls,

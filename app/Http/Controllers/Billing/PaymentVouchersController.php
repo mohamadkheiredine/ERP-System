@@ -640,9 +640,11 @@ class PaymentVouchersController extends Controller
             // add debit record to the transaction
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_trans_code         = $pv_code;
             $TransactionMovement->tm_ledger_account     = $pv_account_payable;
             $TransactionMovement->tm_sub_ledger_account = $pv_account_payable;
             $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
+            $TransactionMovement->tm_trans_code         = $pv_code;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $payment_amount;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
@@ -687,6 +689,7 @@ class PaymentVouchersController extends Controller
                 $TransactionMovement = new TransactionMovements();
                 $TransactionMovement->fk_tran_id            = $at_id;
                 $TransactionMovement->tm_company_id            = $default_company_id;
+                $TransactionMovement->tm_trans_code         = $pv_code;
                 $TransactionMovement->tm_ledger_account     = $pv_account_payable;
                 $TransactionMovement->tm_sub_ledger_account = $pv_extension_account[$i];
                 $TransactionMovement->tm_ledger_label       = $pv_voucher_label;
@@ -709,6 +712,7 @@ class PaymentVouchersController extends Controller
 
                 $TransactionMovement = new TransactionMovements();
                 $TransactionMovement->fk_tran_id            = $at_id;
+                $TransactionMovement->tm_trans_code   = $pv_code;
                 $TransactionMovement->tm_ledger_account     = $pv_account_payable;
                 $TransactionMovement->tm_company_id            = $default_company_id;
                 $TransactionMovement->tm_sub_ledger_account =  $extension->ve_extention_account_id;
@@ -734,6 +738,7 @@ class PaymentVouchersController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_trans_code         = $pv_code;
         $TransactionMovement->tm_ledger_account     = $pv_account_receivable;
         $TransactionMovement->tm_sub_ledger_account = $pv_account_receivable;
         $TransactionMovement->tm_company_id            = $default_company_id;

@@ -362,7 +362,6 @@ Page Description :
                                                     <table class="table table-bordered table-apt">
                                                                 <thead class="table-header">
                                                                         <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                                                                                <th title="#"></th>
                                                                                 <th title="Date" data-sort="date"> Date </th>
                                                                                 <th title="Time" data-sort="time"> Time </th>
                                                                                 <th title="Full Name"  data-sort="string"> Lead Name </th>

@@ -250,6 +250,12 @@ Page Description :
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label class="form-label">Comission Value </label>
+                                <input type="text" name="ic_comission" required="required" id="IC_COMISSION" class="form-control form-control-solid" value="1" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <br />
                                 <label class="form-check form-switch form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" name="ic_issue_resolved" id="IC_ISSUE_RESOLVED" value="1" {{ $inboundcall_info->ic_issue_resolved == 1 ? "checked" : "" }} />

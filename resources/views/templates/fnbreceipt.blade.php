@@ -141,7 +141,7 @@
                 <tr>
                     <th align="left">Total:</th>
                     <td align="left">
-                        {{ number_format(($cost_total), 2) }}</b>&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;
+                        {{ number_format(($cost_total), 2) }}</b>&nbsp;<b>{{ $currency->cc_currency_code }}</b>&nbsp;
                     </td>
                     <td></td>
                 </tr>

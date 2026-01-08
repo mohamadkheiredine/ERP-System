@@ -756,7 +756,7 @@ class DealsController extends Controller
                     $invoice_payment->ip_client_name = $client_info->ca_account_name;
                     $invoice_payment->ip_currency_id = $ad_currency_id;
                     $invoice_payment->ip_payment_type = 2;
-                    $invoice_payment->ip_is_live = $ad_is_approved;
+                    $invoice_payment->ip_is_live = $is_approved;
                     $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
                     $invoice_payment->ip_billing_nbr = "00" . $index;
                     $invoice_payment->ip_billing_status = 0;
@@ -774,7 +774,7 @@ class DealsController extends Controller
                 $invoice_payment->ip_payment_amount =$bill_amount[$ad_nbr_of_payments - 1];
                 $invoice_payment->ip_remaining_amount =$bill_amount[$ad_nbr_of_payments - 1];
                 $invoice_payment->ip_payment_type = 2;
-                $invoice_payment->ip_is_live = $ad_is_approved;
+                $invoice_payment->ip_is_live = $is_approved;
                 $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
                 $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
                 $invoice_payment->ip_billing_status = 0;
@@ -804,7 +804,7 @@ class DealsController extends Controller
                     $invoice_payment->ip_client_code = $client_info->ca_account_code;
                     $invoice_payment->ip_client_name = $client_info->ca_account_name;
                     $invoice_payment->ip_currency_id = $ad_currency_id;
-                    $invoice_payment->ip_is_live = $ad_is_approved;
+                    $invoice_payment->ip_is_live = $is_approved;
                     $invoice_payment->ip_payment_type = 2;
                     $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ( $index - 1 )  . " Month"));
                     $invoice_payment->ip_billing_nbr = "00" . $index;
@@ -823,7 +823,7 @@ class DealsController extends Controller
                 $invoice_payment->ip_payment_amount =$bill_amount[$ad_nbr_of_payments - 1];
                 $invoice_payment->ip_remaining_amount =$bill_amount[$ad_nbr_of_payments - 1];
                 $invoice_payment->ip_payment_type = 2;
-                $invoice_payment->ip_is_live = $ad_is_approved;
+                $invoice_payment->ip_is_live = $is_approved;
                 $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
                 $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
                 $invoice_payment->ip_billing_status = 0;

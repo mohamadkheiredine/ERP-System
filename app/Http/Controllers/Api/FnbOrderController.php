@@ -31,15 +31,31 @@ class FnbOrderController extends Controller
 
     public function GenerateOrdereCodeFNB()
     {
-        $year = date("Y");
+        return DB::transaction(function () {
 
-        $count_orders = FnbOrders::whereYear('fo_order_datetime', $year)->count();
+            $yearSuffix = date('y'); // last 2 digits of year (e.g. 26)
 
-        $index = $count_orders + 1;
-        $order_code = "ORD" . sprintf('%04d', $index);
+            $last = FnbOrders::lockForUpdate()
+                ->where('fo_order_code', 'like', 'ORD' . $yearSuffix . '%')
+                ->orderBy('fo_id', 'desc')
+                ->first();
 
-        return $order_code;
+            // If no orders for this year yet
+            if (!$last || empty($last->fo_order_code)) {
+                return 'ORD' . $yearSuffix . '0001';
+            }
+
+            // Extract numeric part after ORDyy
+            // Example: ORD260045 → 45
+            $lastNumber = (int) substr($last->fo_order_code, 5);
+
+            $nextNumber = $lastNumber + 1;
+
+            return 'ORD' . $yearSuffix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        });
     }
+
+
 
     private function reduceStock($product_id, $warehouse_id, $qty_to_reduce)
     {
@@ -88,17 +104,28 @@ class FnbOrderController extends Controller
         }
 
 
+
+
         $store_id = $request->input('store_id');
         $company_id = $request->input('company_id');
         $warehouse_id = $request->input('warehouse_id');
         $user_id = $request->input('user_id');
         $sub_total = $request->input('sub_total');
-        $discount = $request->input('discount');
         $total = $request->input('total');
+
+        $sub_total_display = $request->input('sub_total_display', $sub_total);
+        $total_display     = $request->input('total_display', $total);
+
+        $discount = $request->input('discount');
+
+        $rate = (float) $request->input('currency_display_rate', 1);
+
+
         $order_type = $request->input('order_type');
         $customer_id = $request->input('customer_id');
-        $currency_id = $request->input('currency_id');
-        if (!$currency_id || !Currency::find($currency_id)) {
+        $display_currency_id = (int) $request->input('currency_display_id');
+
+        if (!$display_currency_id || !Currency::find($display_currency_id)) {
             return response()->json([
                 'is_error' => 1,
                 'error_msg' => 'Invalid or missing currency_id'
@@ -168,15 +195,14 @@ class FnbOrderController extends Controller
         $order_info->fo_customer_id = $customer_id;
         $order_info->fo_order_status = 5;
         $order_info->fo_order_datetime = $creation_date;
-        $order_info->fo_subtotal = $sub_total;
+        $order_info->fo_subtotal = $sub_total_display;
         $order_info->fo_discount = $discount;
         $order_info->fo_created_by = $user_id;
-        $order_info->fo_currency_id =  $currency_id;
-        $order_info->fo_total_amount   = $total;
+        $order_info->fo_currency_id = $display_currency_id;
+        $order_info->fo_total_amount = $total_display;
         $order_info->fo_payment_status = 'paid';
-        $order_info->fo_paid_amount    = (float) $total;
+        $order_info->fo_paid_amount  = (float) $total_display;
         $order_info->save();
-
 
         $fo_id = $order_info->fo_id;
 
@@ -191,6 +217,21 @@ class FnbOrderController extends Controller
             }
         }
 
+        $display_currency_code = $request->input('currency_display_code');
+        $display_rate          = floatval($request->input('currency_display_rate', 1));
+
+        $currency = null;
+        if ($display_currency_id) {
+            $currency = Currency::find($display_currency_id);
+        }
+        if (!$currency && $display_currency_code) {
+            $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
+        }
+        if (!$currency) {
+            $currency = Currency::find($order_info->fo_currency_id); // fallback
+        }
+
+
 
         $final_items = [];
 
@@ -204,7 +245,7 @@ class FnbOrderController extends Controller
             $item->oi_kitchen_status = 0;
             $item->oi_station_id = isset($item_order['station_id']) ? $item_order['station_id'] : 1;
             $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
-            $item->oi_currency_id = $currency_id;
+            $item->oi_currency_id = $display_currency_id;
             $item->save();
 
             $item_db = FnbMenuItem::find($item_order['item_id']);
@@ -232,20 +273,24 @@ class FnbOrderController extends Controller
                     $mods[] = [
                         "id"    => $modifier->m_id,
                         "name"  => $modifier->m_modifier_name,
-                        "price" => $modifier->m_price_modifier,
+                        "price" => $modifier->m_price_modifier * $display_rate,
                         "qty"   => 1,
                     ];
                 }
             }
 
 
+            $unit_price_display = floatval($item_order['price']);
+            $line_total_display = $unit_price_display * $item_order['quantity'];
+
             $final_items[] = [
-                "item_id"   => $item_order['item_id'],
-                "item_name" => $item_db ? $item_db->mi_item_name : "",
-                "quantity"  => $item_order['quantity'],
-                "price"     => $item_order['price'],
-                "total"     => $item_order['quantity'] * $item_order['price'],
-                "modifiers" => $mods,
+                'item_id'   => $item_order['item_id'],
+                'item_name' => $item_db ? $item_db->mi_item_name : '',
+                'quantity'  => $item_order['quantity'],
+                'price'     => $line_total_display,
+                'total'      => $line_total_display,
+                'unit_price' => $unit_price_display,
+                'modifiers' => $mods,
             ];
         }
 
@@ -368,7 +413,23 @@ class FnbOrderController extends Controller
         }
 
 
-        $currency = Currency::find($order_info->fo_currency_id);
+        $display_currency_code = $request->input('currency_display_code');
+        $display_rate          = (float) $request->input('currency_display_rate', 1);
+
+        $currency = null;
+
+        if ($display_currency_id) {
+            $currency = Currency::find($display_currency_id);
+        }
+
+        if (!$currency && $display_currency_code) {
+            $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
+        }
+
+        if (!$currency) {
+            $currency = Currency::find($order_info->fo_currency_id); // fallback only
+        }
+
 
         $data = array(
             "company_info" => $company_info,
@@ -378,10 +439,12 @@ class FnbOrderController extends Controller
             "customer_info" => $customer_info,
             "lst_order_items" => $final_items,
             "order_info" => $order_info,
-            "sub_total" => $sub_total,
+            "sub_total" => $sub_total_display,
+            "cost_total" => $total_display,
             "discount" => $discount,
-            "cost_total" => $total,
             "currency" => $currency,
+            "currency_display_code" => $request->input('currency_display_code'),
+            "currency_display_rate" => (float) $request->input('currency_display_rate', 1),
 
         );
 
@@ -547,9 +610,26 @@ class FnbOrderController extends Controller
         foreach ($orders as $order) {
             $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
                 ->pluck('ot_table_id')
+                ->toArray() ?? [];
+
+            $items = FnbOrderItems::join(
+                'fnb_menu_items',
+                'fnb_menu_items.mi_id',
+                '=',
+                'fnb_order_items.oi_item_id'
+            )
+                ->where('oi_order_id', $order->fo_id)
+                ->select([
+                    'fnb_order_items.oi_item_id',
+                    'fnb_menu_items.mi_item_name as item_name',
+                    'fnb_order_items.oi_quantity',
+                    'fnb_order_items.oi_unit_price',
+                    'fnb_order_items.oi_notes',
+                    'fnb_order_items.oi_station_id',
+                ])
+                ->get()
                 ->toArray();
 
-            $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
 
             $data[] = [
                 'order_id' => $order->fo_id,

@@ -104,7 +104,7 @@ class CustomersController extends Controller
         $total_pages = ceil( $customers_count/$nbr_rows_per_pages );
         $total_pages = intval($total_pages);
 
-        $lst_customers_obj = $customers_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        $lst_customers_obj = $customers_cond->get();
 
         $result_array = array();
         $customers_array = array();

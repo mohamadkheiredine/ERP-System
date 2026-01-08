@@ -384,7 +384,7 @@ class OrdersController extends Controller
     {
         $customer_id = $request->input('customer_id');
         $default_company_id = session('default_company_id');
-
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
         $rand_barcode       = rand(10000000, 99999999999);
         $barcode_obj = new DNS1D();
         $bar_code_png = $barcode_obj->getBarcodePNG($rand_barcode, "C39+", 150, 50);
@@ -398,7 +398,9 @@ class OrdersController extends Controller
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
 
         $OrderManager   = new OrdersManager();
-        $order_code     = $OrderManager->GenerateOrdereCode();
+        $order_code     = $OrderManager->GenerateOrdereCode(array(
+            'fisical_year' => $fisical_year
+        ));
         unset($OrderManager);
 
 
@@ -504,7 +506,7 @@ class OrdersController extends Controller
      * @access public
      * @param unknown $os_id
      */
-    public function EditForm($so_id)
+    public function EditForm($so_id,Request $request)
     {
         $default_company_id = session('default_company_id');
         $lst_order_status   = OrderStatus::whereOsIsDeleted(0)->get();
@@ -516,11 +518,15 @@ class OrdersController extends Controller
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $order_info         = Orders::find($so_id);
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
         $order_code = "";
         if ($order_info->so_order_code != null) {
             $OrderManager = new OrdersManager();
-            $order_code = $OrderManager->GenerateOrdereCode();
+            $order_code = $OrderManager   = new OrdersManager();
+            $order_code     = $OrderManager->GenerateOrdereCode(array(
+                'fisical_year' => $fisical_year
+            ));
             unset($OrderManager);
         }
 
@@ -594,13 +600,11 @@ class OrdersController extends Controller
             // Variable for the quantity we still need to fulfill.
             $quantity_to_fulfill = $so_product_quantity;
 
-            // Wrap the entire operation in a database transaction.
-            // This ensures that if any part fails, all database changes are rolled back.
             try {
                 DB::transaction(function () use (
                     $order_product_id,
                     $warehouse_id,
-                    &$quantity_to_fulfill, // Pass by reference to modify it
+                    &$quantity_to_fulfill,
                     $so_product_quantity,
                     $order_id,
                     $op_product_cost,
@@ -608,53 +612,83 @@ class OrdersController extends Controller
                     $exchange_rate
                 ) {
 
+                    // Get warehouse, product, and order info ONCE (outside the loop)
+                    $warehouse_info = WareHouses::findOrFail($warehouse_id);
+                    $product_info = Products::findOrFail($order_product_id);
+                    $order_info = Orders::findOrFail($order_id);
+
                     // 1. Get all available stock for the product, oldest first.
                     $available_stock = Stocks::where('fk_product_id', $order_product_id)
                         ->where('fk_warehouse_id', $warehouse_id)
-                        ->where('is_quanity', '>', 0) // Find any record with stock
                         ->orderBy('is_id', 'asc')
                         ->lockForUpdate() // Lock rows to prevent race conditions
                         ->get();
+                    $queries = DB::getQueryLog();
+                    // 2. Check if we have any stock records at all
+                    if ($available_stock->isEmpty()) {
+                        throw new \Exception("No stock available for this product in the selected warehouse.");
+                    }
 
-                    // 2. Check if the TOTAL available stock is sufficient.
+                    // 3. Check if the TOTAL available stock is sufficient.
                     $total_stock = $available_stock->sum('is_quanity');
+
+                    if ($total_stock <= 0) {
+                        throw new \Exception("No positive stock available for this product. Total stock: $total_stock");
+                    }
+
                     if ($total_stock < $so_product_quantity) {
-                        // Use an exception to automatically trigger the transaction rollback.
                         throw new \Exception("We don't have enough total stock for this product. Required: $so_product_quantity, Available: $total_stock");
                     }
 
-                    // 3. Loop through each stock record to fulfill the order.
+                    // 4. Loop through each stock record to fulfill the order.
                     foreach ($available_stock as $stock_batch) {
                         if ($quantity_to_fulfill <= 0) {
-                            break; // Stop if the order is already fulfilled.
+                            break;
+                        }
+
+                        // Skip this batch if it has no positive quantity
+                        if ($stock_batch->is_quanity <= 0) {
+                            continue;
                         }
 
                         // Determine how much to take from this specific batch.
                         $quantity_to_take = min($stock_batch->is_quanity, $quantity_to_fulfill);
 
+                        if ($quantity_to_take <= 0) {
+                            continue;
+                        }
+
+                        // IMPORTANT: Check if we would go negative
+                        if ($stock_batch->is_quanity < $quantity_to_take) {
+                            throw new \Exception("Stock batch {$stock_batch->is_id} has insufficient quantity. Available: {$stock_batch->is_quanity}, Requested: {$quantity_to_take}");
+                        }
+
                         // Create a new order product line for this specific stock withdrawal.
-                        $order_products = new OrderProducts(); // Assuming 'OrderProducts' is your model name
+                        $order_products = new OrderProducts();
                         $order_products->fk_order_id = $order_id;
                         $order_products->fk_product_id = $order_product_id;
-                        $order_products->so_product_quantity = $quantity_to_take; // Use the quantity from this batch
+                        $order_products->so_product_quantity = $quantity_to_take;
                         $order_products->so_product_cost = $op_product_cost;
-                        $order_products->so_product_price = $op_product_cost * $quantity_to_take; // Price for this portion
+                        $order_products->so_product_price = $op_product_cost * $quantity_to_take;
                         $order_products->so_product_currency = $so_order_currency_id;
                         $order_products->so_exchange_rate = $exchange_rate;
-                        $order_products->so_stock_id = $stock_batch->is_id; // Link to this specific stock batch
+                        $order_products->so_stock_id = $stock_batch->is_id;
                         $order_products->save();
 
-                        // Decrease the stock quantity for this batch.
-                        $stock_batch->decrement('is_quanity', $quantity_to_take);
+                        // Decrease the stock quantity - use direct update with where clause
+                        $affected = Stocks::where('is_id', $stock_batch->is_id)
+                            ->where('is_quanity', '>=', $quantity_to_take) // Safety check
+                            ->decrement('is_quanity', $quantity_to_take);
+
+                        // If no rows were affected, stock was already taken by another process
+                        if ($affected === 0) {
+                            throw new \Exception("Stock batch {$stock_batch->is_id} was modified by another process. Please retry.");
+                        }
 
                         // Update the remaining quantity we need to fulfill.
                         $quantity_to_fulfill -= $quantity_to_take;
 
-
-                        $warehouse_info = WareHouses::find($warehouse_id);
-                        $product_info = Products::find($order_product_id);
-                        $order_info = Orders::find($order_id);
-
+                        // Create warehouse movement record
                         $warehouse_movement = new WareHouseMovement();
                         $warehouse_movement->wm_warehouse_id = $warehouse_id;
                         $warehouse_movement->wm_product_id = $order_product_id;
@@ -664,7 +698,17 @@ class OrdersController extends Controller
                         $warehouse_movement->wm_action_description = "Stock Out " . $quantity_to_take . " of " . $product_info->mp_product_name . " From " . $warehouse_info->w_warehouse_name . " using Order Number #" . $order_info->so_order_code;
                         $warehouse_movement->save();
                     }
+
+                    // Final check: ensure we fulfilled the entire order
+                    if ($quantity_to_fulfill > 0) {
+                        throw new \Exception("Unable to fulfill complete order. Remaining quantity: $quantity_to_fulfill");
+                    }
                 });
+
+                // Success response
+                $result_array['is_error'] = 0;
+                $result_array['message'] = "Order fulfilled successfully";
+
             } catch (\Exception $e) {
                 // If the transaction failed, return the error message.
                 $result_array['is_error'] = 1;
@@ -878,36 +922,36 @@ class OrdersController extends Controller
         $trans_mov->save();
 
         // decrease the quantity of stock after the user pay to this order
-        foreach ($lst_order_items as $key => $oi_info) {
-            $product_id = $oi_info->fk_product_id;
-            $stock_id   = $oi_info->so_stock_id;
-            $so_stock_serial  = $oi_info->so_stock_serial;
-            $so_serial_number  = $oi_info->so_serial_number;
-
-            if ($so_stock_serial > 1) {
-                $stock_info = Stocks::find($stock_id);
-                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
-                $stock_info->is_quanity = $is_quanity;
-                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
-                $stock_info->save();
-
-                // get serial number sold
-
-                $serial_stock = StockIds::whereFkStockId($stock_id)->whereSiStockUid($so_serial_number)->get();
-
-                $serial_stock = $serial_stock[0];
-                $si_id = $serial_stock->si_id;
-                $stockid_info = StockIds::find($si_id);
-                $stockid_info->si_stock_sold = 1;
-                $stockid_info->save();
-            } else {
-                $stock_info = Stocks::find($stock_id);
-                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
-                $stock_info->is_quanity = $is_quanity;
-                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
-                $stock_info->save();
-            }
-        }
+//        foreach ($lst_order_items as $key => $oi_info) {
+//            $product_id = $oi_info->fk_product_id;
+//            $stock_id   = $oi_info->so_stock_id;
+//            $so_stock_serial  = $oi_info->so_stock_serial;
+//            $so_serial_number  = $oi_info->so_serial_number;
+//
+//            if ($so_stock_serial > 1) {
+//                $stock_info = Stocks::find($stock_id);
+//                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+//                $stock_info->is_quanity = $is_quanity;
+//                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+//                $stock_info->save();
+//
+//                // get serial number sold
+//
+//                $serial_stock = StockIds::whereFkStockId($stock_id)->whereSiStockUid($so_serial_number)->get();
+//
+//                $serial_stock = $serial_stock[0];
+//                $si_id = $serial_stock->si_id;
+//                $stockid_info = StockIds::find($si_id);
+//                $stockid_info->si_stock_sold = 1;
+//                $stockid_info->save();
+//            } else {
+//                $stock_info = Stocks::find($stock_id);
+//                $is_quanity = $stock_info->is_quanity - $oi_info->so_product_quantity;
+//                $stock_info->is_quanity = $is_quanity;
+//                $stock_info->is_price_stock = $is_quanity * $oi_info->is_price_item;
+//                $stock_info->save();
+//            }
+//        }
 
 
 

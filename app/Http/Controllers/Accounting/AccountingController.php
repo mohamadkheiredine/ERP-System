@@ -523,6 +523,7 @@ class AccountingController extends Controller
         $start_date         = $request->input("start_date");
         $end_date           = $request->input("end_date");
 
+
         $currency_info = Currency::find($currency_id);
         $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
@@ -532,7 +533,7 @@ class AccountingController extends Controller
             $strfirstday = 'first day of January ' .$fisical_year;
             $strlastday = 'last day of December ' . $fisical_year;
 
-            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $firstday = date("Y-M-d",strtotime($strfirstday));
             $lastday = date("Y-m-d",strtotime($strlastday));
         }
         else
@@ -540,7 +541,7 @@ class AccountingController extends Controller
             $firstday = "";
             $lastday = "";
         }
- 
+
         $lst_movements = TransactionMovements::where('tm_sub_ledger_account', $account_id);
 
         if (strlen($search_query) > 0) {
@@ -548,10 +549,18 @@ class AccountingController extends Controller
         }
 
         if(strlen($start_date) > 0)
+        {
+            $start_date = date('Y-m-d',strtotime($start_date));
             $lst_movements = $lst_movements->where('tm_transaction_date','>=',$start_date);
+        }
+
 
         if(strlen($end_date) > 0)
+        {
+            $end_date = date('Y-m-d',strtotime($end_date));
             $lst_movements = $lst_movements->where('tm_transaction_date','<',$end_date);
+        }
+
 
 
         if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
@@ -565,6 +574,7 @@ class AccountingController extends Controller
         $lst_movements = $lst_movements->where('tm_currency_id', '=', $currency_id);
 
         $lst_movements = $lst_movements->orderby('tm_sub_ledger_account', "ASC")->orderby('tm_transaction_date', "ASC")->get();
+
 
 
         $before_date = $start_date . " - 1 day";
@@ -640,6 +650,7 @@ class AccountingController extends Controller
                     $movement_data_array[$currency_id][0][0] = array();
                     $movement_data_array[$currency_id][0][0]['debit']                = $mv_incs_info->tm_debit;
                     $movement_data_array[$currency_id][0][0]['credit']              = $mv_incs_info->tm_credit;
+                    $movement_data_array[$currency_id][0][0]['trans_code']              = $mv_incs_info->tm_trans_code;
                     $movement_data_array[$currency_id][0][0]['balance']           = $mv_incs_info->tm_debit - $mv_incs_info->tm_credit;
                 }
 
@@ -650,7 +661,8 @@ class AccountingController extends Controller
                 $inc_before_total[$currency_id]['date_creation']                = "";
                 $inc_before_total[$currency_id]['account_payable']              = "";
                 $inc_before_total[$currency_id]['account_receivable']           = "";
-                $inc_before_total[$currency_id]['mov_desc']                     = "Revert Back " . $currency_code;
+                $inc_before_total[$currency_id]['trans_code']           = "";
+                $inc_before_total[$currency_id]['mov_desc']                     = $mv_incs_info->tm_ledger_label;
                 $inc_before_total[$currency_id]['code']                         = $currency_code;
 
                 $movement_data_array[$currency_id][0][0]['tm_id']                        = 0;
@@ -659,7 +671,8 @@ class AccountingController extends Controller
                 $movement_data_array[$currency_id][0][0]['date_creation']                = "";
                 $movement_data_array[$currency_id][0][0]['account_payable']              = "";
                 $movement_data_array[$currency_id][0][0]['account_receivable']           = "";
-                $movement_data_array[$currency_id][0][0]['mov_desc']                     =  "Revert Back " . $currency_code;
+                $movement_data_array[$currency_id][0][0]['trans_code']           = "";
+                $movement_data_array[$currency_id][0][0]['mov_desc']                     =  $mv_incs_info->tm_ledger_label;
                 $movement_data_array[$currency_id][0][0]['code']                         = $currency_code;
             }
         }
@@ -730,7 +743,7 @@ class AccountingController extends Controller
                 }
             } elseif (count($voucher_info) > 0) {
                 foreach ($voucher_info as $key => $voucher) {
-                    $transaction_description = strip_tags($voucher->pv_voucher_description);
+                    $transaction_description = strip_tags($voucher->pv_voucher_label);
                     $transaction_description = str_replace("&nbsp;", " ", $transaction_description);
                     $transaction_date           = $voucher->pv_creation_date;
                     $transaction_code           = $voucher->pv_code;
@@ -800,6 +813,7 @@ class AccountingController extends Controller
             $movement_data_array[$currency_id][$account_id][$index]['date_creation']                = $movement_info->tm_transaction_date;
             $movement_data_array[$currency_id][$account_id][$index]['account_payable']              = $movement_info->tm_ledger_account;
             $movement_data_array[$currency_id][$account_id][$index]['account_receivable']           = $movement_info->tm_sub_ledger_account;
+            $movement_data_array[$currency_id][$account_id][$index]['trans_code']           = $movement_info->tm_trans_code;
             $movement_data_array[$currency_id][$account_id][$index]['mov_desc']                     = $transaction_description;
             $movement_data_array[$currency_id][$account_id][$index]['code']                         = $transaction_code;
         }
@@ -937,31 +951,60 @@ class AccountingController extends Controller
         $end_date       = $request->input("end_date");
         $acc_account    = $request->input("acc_account");
         $currency_id    = $request->input("currency_id");
-        $fisical_year   = $request->input("fisical_year");
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
         $ck_include_before  = $request->input("ck_include_before");
-
-
-        $strfirstday = 'first day of January ' . $fisical_year;
-        $strlastday = 'last day of December ' . $fisical_year;
-
-        $firstday = date("Y-m-d", strtotime($strfirstday));
-        $lastday = date("Y-m-d", strtotime($strlastday));
 
         $before_date = $start_date . " - 1 day";
         $before_date = strtotime($before_date);
         $before_date = date("Y-m-d", $before_date);
 
+        if(strlen($start_date) > 0) {
+            $start_date = date('Y-m-d', strtotime($start_date));
+        }
+
+        if(strlen($end_date) > 0) {
+            $end_date = date('Y-m-d', strtotime($end_date));
+        }
 
         $lst_movements = TransactionMovements::whereRaw("1 = 1");
 
-        if (strlen($start_date) == 0 && strlen($end_date) == 0)
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
-        else if ((strlen($start_date) > 0 && strlen($end_date) == 0))
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$start_date, $lastday]);
-        else if (strlen($start_date) == 0 && strlen($end_date) > 0)
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $end_date]);
+
+
+
+        if($fisical_year != 0)
+        {
+            $strfirstday = 'first day of January ' .$fisical_year;
+            $strlastday = 'last day of December ' . $fisical_year;
+
+            $firstday = date("Y-m-d",strtotime($strfirstday));
+            $lastday = date("Y-m-d",strtotime($strlastday));
+        }
         else
-            $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$start_date, $end_date]);
+        {
+            $firstday = "";
+            $lastday = "";
+        }
+
+        if(strlen($start_date) > 0)
+        {
+            $start_date = date('Y-m-d',strtotime($start_date));
+            $lst_movements = $lst_movements->where('tm_transaction_date','>=',$start_date);
+        }
+
+
+        if(strlen($end_date) > 0)
+        {
+            $end_date = date('Y-m-d',strtotime($end_date));
+            $lst_movements = $lst_movements->where('tm_transaction_date','<',$end_date);
+        }
+
+
+
+        if(strlen($start_date) ==  0 && strlen($end_date) ==  0)
+        {
+            if($firstday != '' || $lastday != '')
+                $lst_movements = $lst_movements->whereBetween('tm_transaction_date', [$firstday, $lastday]);
+        }
 
 
 
@@ -975,13 +1018,9 @@ class AccountingController extends Controller
             $lst_movements = $lst_movements->where('tm_currency_id', $currency_id);
         }
 
-        if ($fisical_year == null) {
-            $fisical_year = date("Y");
-        }
+
 
         $lst_movements = $lst_movements->orderby('tm_transaction_date', "ASC")->orderby('tm_id', "ASC")->get();
-
-
 
         $movement_data_array = array();
 

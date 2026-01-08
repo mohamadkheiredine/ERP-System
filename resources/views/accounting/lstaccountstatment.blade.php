@@ -9,7 +9,7 @@ Developed By  : Mohamad Mantach   PHP Department itm Solutions
 All Rights Reserved ,   itm Solutions COPYRIGHT 2020
 
 Page Description :
-debit : + 
+debit : +
 credit : -
 ***********************************************************/
 
@@ -20,7 +20,7 @@ $total_data_debit   = array();
 $total_data_credit   = array();
 $total_income   = array();
 $total_balance  = array();
- 
+
 ?>
 @if($show_back == 1)
 <div class="row">
@@ -37,8 +37,8 @@ $total_balance  = array();
               	  <li><a class="dropdown-item" id="EXPORT_CURRENCY" href="#">Export <span class="CurrencyLabel"> Save </span> As PDF</a></li>
                     <li><a class="dropdown-item"  id="EXPORT_ALL" data-action_type="EXPORT_AS_CSV" href="#">Export All Currencies</a></li>
               </ul>
-            </div> 
-	 
+            </div>
+
 	</div>
 </div>
 <input type="hidden" name="account_id" value="{{ $account_id }}" />
@@ -47,52 +47,53 @@ $total_balance  = array();
 
 <table class="table table-bordered table-hover">
 	<thead>
-		<tr> 
+		<tr>
 			<th style="width:20%">Account</th>
-			<th style="width:10%">Account Code</th>
+			<th style="width:10%">Reference</th>
 			<th style="width:10%">Date</th>
 			<th style="width:30%">Label</th>
 			<th style="width:20%">Debit</th>
 			<th style="width:15%">Credit</th>
 			<th style="width:15%">Balance</th>		</tr>
 	</thead>
-	<tbody > 
+	<tbody >
 		@foreach($account_balance as $curremcy => $balance )
 		@foreach($balance as $account_id => $lst_balance )
 		@foreach($lst_balance as $index => $balance_info )
-		<?php  
+		<?php
 		$total_debit          = $balance_info['debit'];
-		$total_credit         = $balance_info['credit']; 
+		$total_credit         = $balance_info['credit'];
 		$account_payable      = $balance_info['account_payable'];
 		$account_receivable   = $balance_info['account_receivable'];
 		$date_creation        = $balance_info['date_creation'];
 		$code                 = $balance_info['code'];
+		$trans_code                 = $balance_info['trans_code'];
 		$mov_desc             = isset($balance_info['mov_desc']) ? $balance_info['mov_desc'] : "";
 		$balance              = $balance_info['balance'];
-		 
-		
-		
+
+
+
 		if(!isset($total_data_debit[ $balance_info['currency'] ] ))
 		{
 		    $total_data_debit[ $balance_info['currency'] ] = $balance_info['debit'];
 		}
-		else 
-		{ 
+		else
+		{
 		    $total_data_debit[ $balance_info['currency'] ] += $balance_info['debit'];
 		}
-		
+
 		if(!isset($total_data_credit[ $balance_info['currency'] ] ))
 		{
 		    $total_data_credit[ $balance_info['currency'] ] = $balance_info['credit'];
 		}
-		else 
+		else
 		{
 		    $total_data_credit[ $balance_info['currency'] ] += $balance_info['credit'];
 		}
-		
+
 		if(isset($total_income[ $balance_info['currency'] ] ) && isset($total_balance[ $balance_info['currency'] ]))
 		{
-		    
+
 		    $total_income[ $balance_info['currency'] ]    = $total_income[ $balance_info['currency'] ] + $balance_info['credit'];
 		    $total_balance[ $balance_info['currency'] ]    = $total_balance[ $balance_info['currency'] ] + $balance['balance'];
 		}
@@ -100,12 +101,12 @@ $total_balance  = array();
         {
            // $total_income[ $balance_info['currency'] ] = $balance_info['credit'];
            // $total_balance[ $balance_info['currency'] ] = $balance['balance'];
-        } 
-        
+        }
+
 		?>
 		<tr class="Transaction" data-tm_id="{{ $balance_info['tm_id'] }}" data-tran_id="{{ $balance_info['trans_id'] }}">
 			<td>{{ ( $account_receivable > 0  && isset( $accounts_array[ $account_receivable ] )  ) ? $accounts_array[ $account_receivable ]['aa_account_ref'] . " - " . $accounts_array[ $account_receivable ]['aa_account_label'] : "N/A" }}</td>
-			<td>{{ $code }}</td>
+			<td>{{ $trans_code }}</td>
 			<td>{{ $date_creation }}</td>
 			<td>{{ $mov_desc }}</td>
 			<td><span class="m--font-success">{{ number_format($balance_info['debit'],2) }}&nbsp;<b>{{ $balance_info['currency'] }}</b></span></td>

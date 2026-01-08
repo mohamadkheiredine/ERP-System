@@ -220,15 +220,16 @@ class ProductStocksController extends Controller
                 $query_cond .= " AND is_stock_currency = " . $stock_currency;
 
             $query = "SELECT
-    products.p_product_name,
+        products.p_product_name,
     warehouses.w_warehouse_name,
     SUM(stock.is_quanity) as total_stock,
-    SUM(stock.is_selling_price) as total_selling_price,
+    stock.is_price_item,
+    (stock.is_price_item * SUM(stock.is_quanity)) as total_selling_price,
     currency.cc_currency_code
 FROM inventory_stocks as stock
 LEFT JOIN inventory_products as products ON products.p_id = stock.fk_product_id
 LEFT JOIN inventory_warehouses as warehouses ON warehouses.w_id = stock.fk_warehouse_id
-LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY stock.fk_warehouse_id, stock.fk_product_id, stock.is_price_currency;";
+LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY fk_product_id,stock.fk_warehouse_id,stock.is_price_item,stock.is_price_currency;";
             $lst_stocks = DB::select($query);
             $total_stocks = count($lst_stocks);
 
@@ -237,16 +238,16 @@ LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $quer
 
 
             $query = "SELECT
-    products.p_id,
-    products.p_product_name,
+        products.p_product_name,
     warehouses.w_warehouse_name,
     SUM(stock.is_quanity) as total_stock,
-    SUM(stock.is_selling_price) as total_selling_price,
+     stock.is_price_item,
+    (stock.is_price_item * SUM(stock.is_quanity)) as total_selling_price,
     currency.cc_currency_code
 FROM inventory_stocks as stock
 LEFT JOIN inventory_products as products ON products.p_id = stock.fk_product_id
 LEFT JOIN inventory_warehouses as warehouses ON warehouses.w_id = stock.fk_warehouse_id
-LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY stock.fk_warehouse_id, stock.fk_product_id, stock.is_price_currency LIMIT " . $skip . "," . $nbr_rows_per_pages . ";";
+LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY fk_product_id,stock.fk_warehouse_id,stock.is_price_item,stock.is_price_currency LIMIT " . $skip . "," . $nbr_rows_per_pages . ";";
             $lst_stocks = DB::select($query);
 
             $data = array(

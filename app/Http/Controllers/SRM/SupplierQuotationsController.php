@@ -343,6 +343,7 @@ class SupplierQuotationsController extends Controller
      */
     public function SaveSupplierQuotationInfo(Request $request)
     {
+
         $sq_id                      = $request->input('sq_id');
         $sp_id                      = $request->input('sp_id');
         $fk_bid_id                  = $request->input('fk_bid_id');
@@ -447,9 +448,22 @@ class SupplierQuotationsController extends Controller
             $sup_p_id  = isset($sp_id[$i]) ? $sp_id[$i] : 0;
             $p_id   = isset($product_id[$i]) ? $product_id[$i] : 0;
 
-
+            // if product id is 0 create new Product
             if( $p_id == 0 )
-                continue;
+            {
+                $product_info = new Products();
+                $product_info->p_product_ref = $pr_product_code[$i];
+                $product_info->p_barcode = $pr_product_code[$i];
+                $product_info->p_product_name = $pr_product_name[$i];
+                $product_info->p_product_description = $pr_description[$i];
+                $product_info->p_product_cost_price = $pr_pruchase_price[$i];
+                $product_info->p_product_selling_price = $pr_selling_price[$i];
+                $product_info->p_product_min_selling_price = $pr_wholesale_price[$i];
+                $product_info->p_product_currency = session('company_currency');
+                $product_info->save();
+                $p_id = $product_info->p_id;
+            }
+
             $product_info       = Products::find($p_id);
             $product_currency   = $product_info->p_product_currency;
             if( $sup_p_id != 0 && $sup_p_id != null )

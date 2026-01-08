@@ -175,6 +175,7 @@ inboundcalls_module = {
         let p_id 				= $("#CP_PRODUCT_ID").val();
         let cp_quantity 				= $("input[name=cp_quantity]").val();
         let products_stock 				= $("input[name=products_stock]").val();
+        let cp_total_cost 				= $("input[name=cp_total_cost]").val();
         let ic_tech_id 				= $("select[name=ic_tech_id]").val();
 
         $.ajax
@@ -183,6 +184,7 @@ inboundcalls_module = {
             data : {
                 p_id : p_id ,
                 cp_quantity : cp_quantity ,
+                cp_total_cost : cp_total_cost,
                 products_stock : products_stock,
                 _token : _token,
                 ic_tech_id : ic_tech_id
@@ -198,9 +200,15 @@ inboundcalls_module = {
                     $('.LstMaintenanceProducts').html(products + response.display);
                     $('input[name=products_stock]').val(JSON.stringify(response.products_stock));
                     $("input[name=cp_quantity]").val('1');
+                    $("input[name=cp_total_cost]").val('1');
                     $("#CP_PRODUCT_ID").val(0).trigger('change.select2');
                     $("#CP_PRODUCT_NAME").val(0).trigger('change.select2');
                     $('.ProductName').html('');
+                    //cp_total_cost
+                    let visit_price = $("#IC_VISIT_PRICE").val();
+                    visit_price = parseFloat(visit_price) + parseFloat(cp_total_cost);
+                    $("#IC_VISIT_PRICE").val(visit_price);
+
                 }
                 else
                 {

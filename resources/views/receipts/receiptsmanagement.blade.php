@@ -128,7 +128,7 @@ th{
                         <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Receipt Date </label><br/>
-                                    <input type="text" name="br_receipt_date" id="BR_RECEIPT_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('d/m/Y') }}" />
+                                    <input type="text" name="br_receipt_date" id="BR_RECEIPT_DATE" class="form-control"  maxlength="50" readonly="readonly"  value="{{ date('Y-m-d') }}" />
                                 </div>
                         </div>
                         <div class="col-md-4">

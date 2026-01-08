@@ -314,6 +314,7 @@ class UsersController extends Controller
         $allowed_companies              = $request->input('allowed_companies');
         $pm_account_number  = $request->input('pm_account_number');
         $pm_payment_method  = $request->input('pm_payment_method');
+        $default_company_id = session('default_company_id');
 
         $result_array = array();
 
@@ -497,8 +498,11 @@ class UsersController extends Controller
 
 
         // if we add new warehouse
-        if ($user_id == null && ($u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES)) {
+        $user_info = Users::find($user_id);
+
+        if ($user_info->fk_warehouse_id == 0 && ($u_user_type == UserTypes::USER_TYPE_TECHNICIAN || $u_user_type == UserTypes::USER_TYPE_SALES)) {
             $warehouse_info = new WareHouses();
+            $warehouse_info->w_company_id = $default_company_id;
             $warehouse_info->w_warehouse_ref = $u_username;
             $warehouse_info->w_warehouse_name = $u_fullname;
             $warehouse_info->w_warehouse_adddress = $u_address;
@@ -506,6 +510,9 @@ class UsersController extends Controller
             $warehouse_info->w_linked_to = $Users->id;
             $warehouse_info->w_warehouse_status = 1;
             $warehouse_info->save();
+
+            $user_info->fk_warehouse_id = $warehouse_info->w_id;
+            $user_info->save();
         }
 
         $payroll_paymentmethod = new PayrollsPaymentMethods();

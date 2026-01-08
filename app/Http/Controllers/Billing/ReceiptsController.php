@@ -558,10 +558,11 @@ class ReceiptsController extends Controller
             $TransactionMovement->tm_sub_ledger_account = $account_number;
             $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
+            $TransactionMovement->tm_trans_code         = $br_receipt_number;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $br_payment_value;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date   = $br_receipt_date;
+            $TransactionMovement->tm_transaction_date   =date("Y-m-d",strtotime($br_receipt_date));
             $TransactionMovement->tm_currency_id        = $br_receipt_currency;
             $TransactionMovement->save();
 
@@ -570,6 +571,7 @@ class ReceiptsController extends Controller
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
             $TransactionMovement->tm_company_id         = $default_company_id;
+            $TransactionMovement->tm_trans_code         = $br_receipt_number;
             $TransactionMovement->tm_ledger_label       = $br_receipt_label;
             $TransactionMovement->tm_debit              = $br_payment_value;
             $TransactionMovement->tm_credit             = 0;

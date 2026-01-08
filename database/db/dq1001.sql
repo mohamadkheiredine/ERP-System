@@ -669,6 +669,39 @@ ALTER TABLE `sales_orders`
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('16', 'maintenance_lite', 'Allow Maintenance Lite', '0', '1', '1');
 
 
+CREATE TABLE pos_allowed_currencies (
+    ac_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+
+    ac_store_id INT NOT NULL,
+    ac_company_id INT NOT NULL,
+    ac_currency_id SMALLINT(6) NOT NULL,
+
+    ac_rate_to_original DECIMAL(15,6) NOT NULL,
+    ac_original_currency SMALLINT(6) NOT NULL DEFAULT 0,
+
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_pac_store
+        FOREIGN KEY (ac_store_id)
+        REFERENCES pos_stores(ps_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_pac_company
+        FOREIGN KEY (ac_company_id)
+        REFERENCES company_details(cd_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_pac_currency
+        FOREIGN KEY (ac_currency_id)
+        REFERENCES currency(cc_id)
+        ON DELETE RESTRICT
+);
+
+ALTER TABLE pos_allowed_currencies
+MODIFY COLUMN ac_rate_to_original DECIMAL(10,2) NOT NULL DEFAULT 1.0;
+
+
 ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_is_live` TINYINT NULL DEFAULT 1 AFTER `ip_pay_date`;
 
 ALTER TABLE `sales_orders`

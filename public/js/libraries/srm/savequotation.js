@@ -211,4 +211,24 @@ $(function(){
 	$('#ListProducts').on('click','.DeleteCode',function(){
 		$(this).parents('tr').remove();
 	});
+
+
+    $('.ProductCode').on('keydown', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    $('.ProductDescription').on('keydown', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    $('.ProductNameField').on('keydown', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
 })

@@ -1495,6 +1495,7 @@ class InvoicesController extends Controller
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
                         $TransactionMovement->tm_company_id            = $default_company_id;
+                        $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                         $TransactionMovement->tm_ledger_account     = 4427;
                         $TransactionMovement->tm_sub_ledger_account =  4427;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code;
@@ -1509,6 +1510,7 @@ class InvoicesController extends Controller
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
                         $TransactionMovement->tm_company_id            = $default_company_id;
+                        $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                         $TransactionMovement->tm_ledger_account     = 701;
                         $TransactionMovement->tm_sub_ledger_account =  701;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code;
@@ -1568,6 +1570,7 @@ class InvoicesController extends Controller
                                 $TransactionMovement = new TransactionMovements();
                                 $TransactionMovement->fk_tran_id            = $at_id;
                                 $TransactionMovement->tm_company_id            = $default_company_id;
+                                $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                                 $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number;
                                 $TransactionMovement->tm_sub_ledger_account =  $customer_info->ic_account_number;
                                 $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
@@ -1584,6 +1587,7 @@ class InvoicesController extends Controller
                                     $TransactionMovement = new TransactionMovements();
                                     $TransactionMovement->fk_tran_id            = $at_id;
                                     $TransactionMovement->tm_company_id            = $default_company_id;
+                                    $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                                     $TransactionMovement->tm_ledger_account     = $supplier_info->ss_sale_account_id;
                                     $TransactionMovement->tm_sub_ledger_account = $supplier_info->ss_sale_account_id;
                                     $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
@@ -1597,6 +1601,7 @@ class InvoicesController extends Controller
                                     $supplier_info = Suppliers::find($ii_supplier_id);
                                     $TransactionMovement = new TransactionMovements();
                                     $TransactionMovement->fk_tran_id            = $at_id;
+                                    $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                                     $TransactionMovement->tm_company_id            = $default_company_id;
                                     $TransactionMovement->tm_ledger_account     = 622;
                                     $TransactionMovement->tm_sub_ledger_account = 622;
@@ -1614,6 +1619,7 @@ class InvoicesController extends Controller
                                     $TransactionMovement = new TransactionMovements();
                                     $TransactionMovement->fk_tran_id            = $at_id;
                                     $TransactionMovement->tm_company_id            = $default_company_id;
+                                    $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                                     $TransactionMovement->tm_ledger_account     = $purchase_account_id;
                                     $TransactionMovement->tm_sub_ledger_account = $purchase_account_id;
                                     $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
@@ -1646,6 +1652,7 @@ class InvoicesController extends Controller
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
                         $TransactionMovement->tm_company_id            = $default_company_id;
+                        $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                         $TransactionMovement->tm_ledger_account     = $account_id;
                         $TransactionMovement->tm_sub_ledger_account = $account_id;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;
@@ -1660,6 +1667,7 @@ class InvoicesController extends Controller
                         $TransactionMovement = new TransactionMovements();
                         $TransactionMovement->fk_tran_id            = $at_id;
                         $TransactionMovement->tm_company_id            = $default_company_id;
+                        $TransactionMovement->tm_trans_code         = $bi_invoice_code;
                         $TransactionMovement->tm_ledger_account     = 701;
                         $TransactionMovement->tm_sub_ledger_account = 701;
                         $TransactionMovement->tm_ledger_label       = $bi_invoice_code . " " . $bi_invoice_note;

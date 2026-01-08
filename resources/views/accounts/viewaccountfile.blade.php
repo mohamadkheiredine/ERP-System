@@ -97,7 +97,10 @@ Page Description :
             <div style="width: 100%;height: 50px" class="col-md-12">&nbsp;</div>
             <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
                 <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="tab" href="#tab_not_paid">Bills Not Paid</a>
+                    <a class="nav-link active" data-bs-toggle="tab" href="#tab_bills">Bills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab_not_paid">Bills Not Paid</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="tab" href="#tab_ppaid">Bills Partial Paid</a>
@@ -117,7 +120,40 @@ Page Description :
             </ul>
 
             <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="tab_not_paid" role="tabpanel">
+                <div class="tab-pane fade show active" id="tab_bills" role="tabpanel">
+                    <div class="col-md-12 table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                <th style="width:2px;white-space: nowrap;" title="#">#</th>
+                                <th title="Voucher Ref"> Ref </th>
+                                <th title="Bill Nbr"> Bill Nbr </th>
+                                <th title="Voucher Date"> Date </th>
+                                <th title="Client Code"> Client Code </th>
+                                <th title="Client Name"> Client Name </th>
+                                <th title="Total Price"> Bill Amount </th>
+                                <th title="Status"> Status </th>
+                            </tr>
+                            </thead>
+                            <tbody id="LstUBills">
+                            @foreach($lst_all_bills as $index => $bill_info)
+                                <tr  class="odd gradeX" data-ip_id="{{ $bill_info->ip_id }}">
+                                    <td><input type="checkbox" name="ip_checkbox_{{ $bill_info->ip_id }}" id="IP_CHECKBOX_{{ $bill_info->ip_id }}" class="checkboxes" value="{{ $bill_info->ip_id }}" /></td>
+                                    <td>{{ $bill_info->ip_payment_doc }}</td>
+                                    <td>{{ $bill_info->ip_billing_nbr }}</td>
+                                    <td>{{ $bill_info->ip_billing_date }}</td>
+                                    <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_code : "-" }}</td>
+                                    <td>{{ $bill_info->Client ? $bill_info->Client->ca_account_name : "-" }}</td>
+                                    <td>{{ $bill_info->ip_payment_amount }}&nbsp;<b>{{ $bill_info->Currency ? $bill_info->Currency->cc_currency_code : "-" }}</b></td>
+                                    <td>{{ $bill_info->ip_payment_status == 1 ? "Partial Paid" : ( $bill_info->ip_payment_status == 2 ? "Paid" : "Not Paid" ) }}</b></td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_not_paid" role="tabpanel">
                     <div class="col-md-12 table-responsive">
                         <table class="table table-striped">
                             <thead>

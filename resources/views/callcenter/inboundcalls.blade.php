@@ -389,7 +389,7 @@
 
                         <h5 class="mb-4">Parts & Items</h5>
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fs-8 text-muted">Barcode</label>
                                 <select class="form-select form-select-solid" id="CP_PRODUCT_ID" name="cp_product_id" data-control="select2" style="width:100%">
                                     <option value="0">Select Code</option>
@@ -398,7 +398,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fs-8 text-muted">Product Name</label>
                                 <select name="cp_product_name" id="CP_PRODUCT_NAME" class="form-select form-select-solid" data-control="select2" style="width:100%">
                                     <option value="0">Select Product</option>
@@ -410,6 +410,10 @@
                             <div class="col-md-2">
                                 <label class="form-label fs-8 text-muted">Qty</label>
                                 <input type="text" name="cp_quantity" class="form-control form-control-solid" value="1" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fs-8 text-muted">Price</label>
+                                <input type="text" name="cp_total_cost" class="form-control form-control-solid" value="1" />
                             </div>
                             <div class="col-md-2">
                                 <button type="button" name="btn_add_stock" class="btn btn-info w-100">
@@ -425,6 +429,7 @@
                                     <th>Code</th>
                                     <th>Item</th>
                                     <th>Quantity</th>
+                                    <th>Price</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                                 </thead>

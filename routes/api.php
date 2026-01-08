@@ -167,6 +167,7 @@ Route::group(['middleware' => ['cors']], function() {
 Route::get('/api/inventory/listitemcategories', 'Api\FnbCategoriesController@ListItemCategories');
 Route::get('/api/inventory/getlistmenucategories', 'Api\FnbCategoriesController@GetListMenuCategories');
 Route::post('/api/inventory/savemenucategory', 'Api\FnbCategoriesController@SaveMenuCategory');
+Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@DeleteMenuCategory');
 
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders');
@@ -175,9 +176,8 @@ Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTable
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
-
-
-
+Route::get('/api/allowedcurrencies/getallowedcurrencies', 'Api\PosAllowedCurrenciesController@GetAllowedCurrencies');
+Route::put('/api/allowedcurrencies/savecurrencyrate', 'Api\PosAllowedCurrenciesController@SaveCurrencyRate');
 
 
 //});

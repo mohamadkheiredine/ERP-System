@@ -16,15 +16,16 @@
 
 
 ?>
-@extends('layouts.layout',['page_title' => "Stores Management"])
+@extends('layouts.layout', ['page_title' => "Stores Management"])
 
 @section('themes')
     <style>
-        th{
+        th {
             cursor: pointer;
         }
-        #ModelPopUp{
-            width:800px;
+
+        #ModelPopUp {
+            width: 800px;
         }
     </style>
 @endsection
@@ -40,7 +41,8 @@
             <h3 class="card-title">Edit Existing Store</h3>
             <div class="card-toolbar">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu">
@@ -51,8 +53,8 @@
         <div class="card-body">
             <form name="frm_save_store" id="FORM_SAVE_STORE">
                 <div class="form-body">
-                     <span id="hidden_fields">
-                         <input type="hidden" name="ps_id" value="{{ $store_info->ps_id }}" />
+                    <span id="hidden_fields">
+                        <input type="hidden" name="ps_id" value="{{ $store_info->ps_id }}" />
                         {!! csrf_field() !!}
                     </span>
                     <div class="alert alert-success" style="display:none">
@@ -65,31 +67,38 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Store Name <span class="required"> * </span></label>
-                                <input type="text" name="ps_store_name" id="PS_STORE_NAME" class="form-control" required="required" maxlength="255"  value="{{ $store_info->ps_store_name }}" />
+                                <input type="text" name="ps_store_name" id="PS_STORE_NAME" class="form-control"
+                                    required="required" maxlength="255" value="{{ $store_info->ps_store_name }}" />
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-select form-control" data-control="select2" id="PS_COMPANY_ID" name="ps_company_id">
+                            <select class="form-select form-control" data-control="select2" id="PS_COMPANY_ID"
+                                name="ps_company_id">
                                 <option value="0">-- Select Company --</option>
                                 @foreach($lst_companies as $index => $company_info)
-                                    <option {{ $store_info->ps_company_id == $company_info->cd_id ? "selected" : "" }} value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
+                                    <option {{ $store_info->ps_company_id == $company_info->cd_id ? "selected" : "" }}
+                                        value="{{ $company_info->cd_id }}">{{ $company_info->cd_company_name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-select form-control" data-control="select2" id="PS_MANAGER_ID" name="ps_manager_id">
+                            <select class="form-select form-control" data-control="select2" id="PS_MANAGER_ID"
+                                name="ps_manager_id">
                                 <option value="0">-- Select Manager --</option>
                                 @foreach($lst_managers as $index => $manager_info)
-                                    <option {{ $store_info->ps_company_id == $manager_info->id ? "selected" : "" }} value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
+                                    <option {{ $store_info->ps_company_id == $manager_info->id ? "selected" : "" }}
+                                        value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Store Employees <span class="required"> * </span></label>
-                                <select class="form-select form-control" data-control="select2" multiple="multiple" id="PS_EMPLOYEES_ID" name="ps_employees_id[]">
+                                <select class="form-select form-control" data-control="select2" multiple="multiple"
+                                    id="PS_EMPLOYEES_ID" name="ps_employees_id[]">
                                     @foreach($lst_managers as $index => $manager_info)
-                                        <option {{ array_search($manager_info->id,$employees_ids) !== false ? "selected" : "" }} value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
+                                        <option {{ array_search($manager_info->id, $employees_ids) !== false ? "selected" : "" }}
+                                            value="{{ $manager_info->id }}">{{ $manager_info->u_fullname }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -97,39 +106,58 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Store Warehouses <span class="required"> * </span></label>
-                                <select class="form-select form-control" data-control="select2" multiple="multiple" id="PS_WAREHOUSES_ID" name="ps_warehouses_id[]">
+                                <select class="form-select form-control" data-control="select2" multiple="multiple"
+                                    id="PS_WAREHOUSES_ID" name="ps_warehouses_id[]">
                                     @foreach($lst_warehouses as $index => $warehouse_info)
-                                        <option {{ array_search($warehouse_info->w_id,$warehouse_ids) !== false ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
+                                        <option {{ array_search($warehouse_info->w_id, $warehouse_ids) !== false ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Store Currencies <span class="required"> * </span></label>
+                                <select class="form-select form-control" data-control="select2" multiple="multiple"
+                                    id="PS_ALLOWED_CURRENCIES_ID" name="ps_allowed_currencies_id[]">
+                                    @foreach($lst_currencies as $index => $currency_info)
+                                        <option value="{{ $currency_info->cc_id }}" {{ in_array($currency_info->cc_id, $currency_ids) ? 'selected' : '' }}>
+                                            {{ $currency_info->cc_currency_name }} - {{ $currency_info->cc_currency_code }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <br/>
+                                <br />
                                 <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input" type="checkbox" name="ps_online_store" id="PS_ONLINE_STORE"  {{ $store_info->ps_online_store == 1 ? "checked" : "" }}  value="1"  />
+                                    <input class="form-check-input" type="checkbox" name="ps_online_store"
+                                        id="PS_ONLINE_STORE" {{ $store_info->ps_online_store == 1 ? "checked" : "" }}
+                                        value="1" />
                                     <span class="form-check-label fw-semibold text-muted">
-                                          Online Store
-                                        </span>
+                                        Online Store
+                                    </span>
                                 </label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <br/>
+                                <br />
                                 <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input" type="checkbox" name="ps_is_active" id="PS_IS_ACTIVE" {{ $store_info->ps_is_active == 1 ? "checked" : "" }}   value="1"  />
+                                    <input class="form-check-input" type="checkbox" name="ps_is_active" id="PS_IS_ACTIVE" {{ $store_info->ps_is_active == 1 ? "checked" : "" }} value="1" />
                                     <span class="form-check-label fw-semibold text-muted">
-                                         Is Active
-                                        </span>
+                                        Is Active
+                                    </span>
                                 </label>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="control-label"> Location <span class="required"> * </span></label><br/>
-                                <textarea style="width:100%;height:250px;resize:none" id="PS_LOCATION"  class="form-control" name="ps_location"  cols="">{{ $store_info->ps_location }}</textarea>
+                                <label class="control-label"> Location <span class="required"> * </span></label><br />
+                                <textarea style="width:100%;height:250px;resize:none" id="PS_LOCATION" class="form-control"
+                                    name="ps_location" cols="">{{ $store_info->ps_location }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -137,7 +165,8 @@
                     <div class="row">
                         <div class="col-md-9"></div>
                         <div class="col-md-3" align="right">
-                            <button type="submit" name="btn_save_store" id="BTN_SAVE_STORE"  class="btn btn-info">Save</button>
+                            <button type="submit" name="btn_save_store" id="BTN_SAVE_STORE"
+                                class="btn btn-info">Save</button>
                             <button type="button" id="BACK_FORM" name="back_form" class="btn default">Back</button>
                         </div>
                     </div>

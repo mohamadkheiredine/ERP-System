@@ -41,8 +41,10 @@ transactions_module = {
 			var acc_account 				= $('select[name=acc_account]').val() != undefined ?  $('select[name=acc_account]').val() :  $('input[name=detail_account_id]').val();
 			var base_url 				= $('input[name=base_url]').val();
 			var currency_id 				= $('input[name=currency_id]').val();
+			var start_date 				= $('input[name=start_date]').val();
+			var end_date 				= $('input[name=end_date]').val();
 		    var fisical_year 				= $('input[name=fisical_year]').val();
-			var url = base_url + "/accounting/printaccountstatment/?_token=" + _token + "&acc_account=" + acc_account + "&currency_id=" + currency_id + "&fisical_year=" + fisical_year;
+			var url = base_url + "/accounting/printaccountstatment/?_token=" + _token + "&acc_account=" + acc_account + "&currency_id=" + currency_id + "&start_date=" + start_date + "&end_date=" + end_date;
 			window.open(url, '_blank');
 		},
 		PrintAllAccountStatmentDetails : function(){

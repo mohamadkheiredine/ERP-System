@@ -548,13 +548,13 @@ class InvoicePaymentsController extends Controller
             $trans_mov->fk_tran_id              = $at_id;
             $trans_mov->tm_ledger_account       = $account_id;
             $trans_mov->tm_sub_ledger_account   = $account_id ;
-            $trans_mov->tm_trans_code   = "RVC" ;
-            $trans_mov->tm_debit                = $ip_payment_amount;
-            $trans_mov->tm_credit               = 0;
+            $trans_mov->tm_trans_code           = "RVC" . $ip_payment_doc;
+            $trans_mov->tm_debit                = 0;
+            $trans_mov->tm_credit               = $ip_payment_amount;
             $trans_mov->tm_creation_date        = date('Y-m-d');
             $trans_mov->tm_transaction_date        = date('Y-m-d');
             $trans_mov->tm_currency_id          = $ip_currency_id;
-            $trans_mov->tm_ledger_label         = "Debit For Client " . $client_info->ca_account_name;
+            $trans_mov->tm_ledger_label         = "Payment For Client " . $client_info->ca_account_name;
             $trans_mov->save();
             $mv_id = $trans_mov->tm_id;
 
