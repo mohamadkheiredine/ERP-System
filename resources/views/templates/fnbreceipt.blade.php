@@ -78,7 +78,7 @@
             <p style="width:100%;font-weight:bold" align="center">{{ $customer_info->cd_company_name ?? 'Walk-in Customer' }}</p>
             <p style="width:100%;" align="center">{{ $creation_date }}&nbsp;&nbsp;</p>
             <p style="width:100%;" align="center">FACTURE N:<b>{{ $fo_order_code }}</b></p>
-            <p style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_phone}}</p>
+            <p style="width:100%;font-weight:bold" align="center">{{ $company_info->cd_company_phone ?? '' }}</p>
             <p style="width:100%;font-weight:bold" align="center">code marchand: 590953</p>
         </div>
         @if(isset($delivery_id) && $delivery_id != 0)

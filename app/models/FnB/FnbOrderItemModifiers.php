@@ -27,6 +27,13 @@ class FnbOrderItemModifiers extends Model
     public $timestamps = false;
     protected $primaryKey = "im_id";
 
+      protected $fillable = [
+        'im_item_id',
+        'im_modifier_id',
+        'im_quantity',
+        'im_price',
+    ];
+
     public function Item()
     {
         return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'im_item_id');
