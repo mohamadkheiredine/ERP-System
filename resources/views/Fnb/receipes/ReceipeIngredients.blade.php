@@ -4,7 +4,7 @@
         <h4 class="fw-bold" style="padding-left:10px;" id="RECIPE_TITLE">{{ $item->mi_item_name }}</h4>
 
         <div>
-            <button class="btn btn-outline-secondary me-2">
+            <button class="btn btn-outline-secondary me-2" id="BTN_PRINT_RECIPE">
                 <i class="bi bi-printer"></i>
             </button>
             <button class="btn btn-outline-secondary me-2">

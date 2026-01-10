@@ -12,6 +12,8 @@ use App\models\Inventory\Products;
 use App\models\System\Currency;
 use App\models\System\Units;
 use Config;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class FnbReceipesController extends Controller
 {
@@ -163,5 +165,68 @@ class FnbReceipesController extends Controller
         $result_array['error_msg']  = "Operation Complete Successfully";
 
         return Response()->json($result_array);
+    }
+    public function PrintReceipePdf($mi_id)
+    {
+        $item = FnbMenuItem::where('mi_id', $mi_id)
+            ->where('mi_is_deleted', 0)
+            ->firstOrFail();
+
+        $ingredients = FnbIngredients::with(['Product', 'Unit'])
+            ->where('in_item_id', $mi_id)
+            ->where('in_is_deleted', 0)
+            ->get();
+
+        $company = Companies::first();
+
+        $logoSrc = null;
+
+        if (
+            $company &&
+            $company->cd_logo_base_src &&
+            $company->cd_logo_file_name &&
+            $company->cd_logo_file_extension
+        ) {
+            $logoSrc =
+                'resources/companies/' .
+                trim($company->cd_logo_base_src, '/\\') . '/' .
+                $company->cd_logo_file_name . '.' .
+                $company->cd_logo_file_extension;
+
+            $logoSrc = str_replace('\\', '/', $logoSrc);
+
+            if (!file_exists(public_path($logoSrc))) {
+                $logoSrc = null;
+            }
+        }
+
+        $currency = Currency::where('cc_id', $item->mi_currency_id)->first();
+
+        $currencyCode = $currency ? $currency->cc_currency_code : '';
+
+        $totalCost = $ingredients->sum('in_line_cost');
+
+        $data = [
+            'item'        => $item,
+            'ingredients' => $ingredients,
+            'logoSrc'     => $logoSrc ?? null,
+            'printedBy'   => session('user_fullname'),
+            'printedAt'   => now(),
+            'currency'    => $currencyCode,
+            'totalCost'   => $totalCost,
+        ];
+
+
+
+        $pdf = Pdf::loadView('fnb.receipes.receipe-print', $data)
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isRemoteEnabled' => false,
+                'chroot' => public_path(),
+                'isHtml5ParserEnabled' => true,
+                'defaultFont' => 'dejavu sans',
+            ]);
+
+        return $pdf->stream('Recipe_' . $item->mi_item_name . '.pdf');
     }
 }

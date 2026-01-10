@@ -46,6 +46,11 @@ class FnbOrders extends Model
         'fo_order_structure',
     ];
 
+    public function Items()
+    {
+        return $this->hasMany('App\models\FnB\FnbOrderItems', 'oi_order_id', 'fo_id');
+    }
+
     public function Branch()
     {
         return $this->hasOne('App\models\System\Companies', 'cd_id', 'fo_branch_id');
