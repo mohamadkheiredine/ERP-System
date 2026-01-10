@@ -90,7 +90,7 @@
                     <tr>
                         <td>{{ $order_item->fk_product_id > 0  ?  $order_item->Products->p_product_name : $order_item->so_unit_label }}</td>
                         <td>{{ $order_item->so_product_quantity }}</td>
-                        <td>{{ number_format($order_item->so_product_cost * $order_item->so_product_quantity,2) }}&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
+                        <td>{{ number_format($order_item->so_product_price,2) }}&nbsp;<b>{{ $order_info->Currency->cc_currency_code }}</b>&nbsp;</td>
                     </tr>
                     @endforeach
                 </tbody>

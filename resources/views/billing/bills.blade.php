@@ -129,7 +129,7 @@ th{
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"> Up To Date </label><br/>
-                                <input type="text" autocomplete="off" name="pi_upto_date" id="PI_UPTO_DATE" value="" class="form-control" />
+                                <input type="text" autocomplete="off" name="pi_upto_date" id="PI_UPTO_DATE" value="{{ session('pi_upto_date') ? session('pi_upto_date') : "" }}" class="form-control" />
                             </div>
                         </div>
                         <div class="col-md-4">

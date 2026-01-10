@@ -209,7 +209,11 @@ class InvoicePaymentsController extends Controller
             $bills_cond = $bills_cond->where('ip_billing_date','<',$pi_end_date);
 
         if(strlen($pi_upto_date) > 0)
+        {
             $bills_cond = $bills_cond->where('ip_billing_date','<=',$pi_upto_date);
+            session()->put('pi_upto_date', $pi_upto_date);
+        }
+
 
         if(strlen($ip_payment_status) > 0)
             $bills_cond = $bills_cond->where('ip_payment_status','=',$ip_payment_status);

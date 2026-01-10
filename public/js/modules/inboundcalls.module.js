@@ -690,14 +690,6 @@ inboundcalls_module = {
                var base_url = $('#BASE_URL').val();
               // var _token = $('input[name=_token]').val();
                var str_params = $("#FORM_SAVE_INBOUND").serialize();
-
-               const ic_call_outcome = $.outcome_desc.getData();
-               const ic_notes = $.notes_desc.getData();
-               const ic_item_problem = $.itemprob_desc.getData();
-
-               str_params = str_params + "&ic_call_outcome=" + ic_call_outcome;
-               str_params = str_params + "&ic_notes=" + ic_notes;
-               str_params = str_params + "&ic_item_problem=" + ic_item_problem;
                 $.ajax
                ({
                    url : base_url + "/request/inboundcall/saveinfo",

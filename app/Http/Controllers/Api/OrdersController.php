@@ -223,9 +223,11 @@ class OrdersController extends Controller
 
         $order_manager = new OrdersManager();
 
+        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
 
         $params_array = array(
-            'company_id' => $company_id
+            'company_id' => $company_id,
+            'fisical_year' => $fisical_year
         );
         $so_order_code      = $order_manager->GeneratePOSOrderCode($params_array);
         $so_order_label     = "";
@@ -287,6 +289,7 @@ class OrdersController extends Controller
 
                 $discount_product = isset($item_order['product_discount']) ? (float)$item_order['product_discount'] : 0;
                 $item_cost        = (float)($item_order['product_cost'] ?? 0);
+                $item_price        = (float)($item_order['product_price'] ?? 0);
                 $qty_requested    = (float)($item_order['product_quantity'] ?? 0);
 
                 // subtotal (net line after discount)
@@ -300,7 +303,7 @@ class OrdersController extends Controller
                     $orderitem->fk_product_id       = -1;
                     $orderitem->so_stock_id         = -1;
                     $orderitem->so_product_cost     = $item_cost;
-                    $orderitem->so_product_price    = $item_cost - ($item_cost * $discount_product / 100);
+                    $orderitem->so_product_price    = $item_price;
                     $orderitem->so_product_quantity = $qty_requested;
                     $orderitem->so_unit_number      = $item_order['number_id'] ?? 0;
                     $orderitem->so_unit_label       = $item_order['product_name'] ?? '';
@@ -408,7 +411,7 @@ class OrdersController extends Controller
                 $orderitem->so_stock_id         = $item_order['is_id'] ?? 0;
                 $orderitem->so_product_cost     = $item_cost;
                 $orderitem->so_discount         = $discount_product;
-                $orderitem->so_product_price    = ( $item_cost - ($item_cost * $discount_product / 100)) * $qty_requested;
+                $orderitem->so_product_price    = $item_price;
                 $orderitem->so_product_quantity = $qty_requested;
                 $orderitem->so_product_currency = $company_currency;
                 $orderitem->save();
@@ -449,7 +452,6 @@ class OrdersController extends Controller
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
         $company_info = Companies::find($company_id);
-
 
         // save transaction and movement to the accounting table
         $payment_type_info      = PaymentTypes::find(2);
@@ -1530,8 +1532,8 @@ class OrdersController extends Controller
         }
 
 
-        $order_info = Orders::whereSoOrderCode($order_barcode)->get();
-        if (count($order_info) == 0) {
+        $order_info = Orders::whereSoOrderCode($order_barcode)->first();
+        if (!$order_info) {
             $result_array['is_error']       = 1;
             $result_array['error_message']  = 'Invalid Code Please Try again !!';
 
@@ -1539,8 +1541,7 @@ class OrdersController extends Controller
         }
 
 
-        $so_id = $order_info[0]['so_id'];
-
+        $so_id = $order_info->so_id;
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();
 
         $items_order = array();
@@ -1572,13 +1573,13 @@ class OrdersController extends Controller
 
         $result_array['is_error']               = 0;
         $result_array['items_order']            = $items_order;
-        $result_array['customer_id']            = $order_info[0]['so_order_customer'];
+        $result_array['customer_id']            = $order_info->so_order_customer;
         $result_array['order_id']               = $so_id;
-        $result_array['sub_total']              = $order_info[0]['so_sub_total'];
-        $result_array['total_discount']         = $order_info[0]['so_total_discount'];
-        $result_array['total_cost']             = $order_info[0]['so_total_cost'];
-        $result_array['delivery_fees']             = $order_info[0]['so_delivery_fees'];
-        $result_array['order_currency']         = $order_info[0]['so_order_currency'];
+        $result_array['sub_total']              = $order_info->so_sub_total;
+        $result_array['total_discount']         = $order_info->so_total_discount;
+        $result_array['total_cost']             = $order_info->so_total_cost;
+        $result_array['delivery_fees']          = $order_info->so_delivery_fees;
+        $result_array['order_currency']         = $order_info->so_order_currency;
         return Response()->json($result_array);
     }
 

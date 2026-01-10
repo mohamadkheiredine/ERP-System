@@ -18,7 +18,8 @@
                 let _token = $('input[name=_token]').val();
                 let date_from = $('input[name=date_from]').val();
                 let date_to = $('input[name=date_to]').val();
-                let params =  {_token : _token ,date_from : date_from , date_to : date_to };
+                let account_id = $('select[name=account_id]').val();
+                let params =  {_token : _token ,date_from : date_from , date_to : date_to , account_id : account_id};
                 let base_url = $("#BASE_URL").val();
                 $.ajax({
                     url: base_url + "/accounting/reports/displaylisttrialbalance",
@@ -26,6 +27,7 @@
                         _token: _token,
                         date_from: date_from,
                         date_to: date_to,
+                        account_id: account_id,
                     },
                     method: "get",
                     dataType: "json",
@@ -84,6 +86,15 @@
                     <label>Date To</label>
                     <input type="date" name="date_to" class="form-control"
                            value="{{ request('date_to', date('Y-m-t')) }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Account</label>
+                    <select name="account_id" id="ACCOUNT_ID" class="form-select form-select-solid" data-control="select2" data-placeholder="Select Account">
+                        <option value="0">-- Select Account --</option>
+                        @foreach ($lst_accounts as $acc_info)
+                            <option value="{{ $acc_info->aa_id }}">{{ $acc_info->aa_account }} - {{ $acc_info->aa_account_label }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-2 align-self-end">
                     <button class="btn btn-primary w-100" name="btn_filter" id="BTN_FILTER" type="button">

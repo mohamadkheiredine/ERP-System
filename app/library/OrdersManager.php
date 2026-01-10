@@ -74,9 +74,10 @@ class OrdersManager
         $company_name = $company_info->cd_company_name;
 
         $year = date("Y");
+        $y = date('y');
         $count_orders = FnbOrders::whereYear('fo_order_datetime', $year)->count();
         $index = $count_orders + 1;
-        $order_code = "ORD" . sprintf('%04d', $index);
+        $order_code = "ORD" . sprintf('%04d', $y.$index);
 
         return $order_code;
     }
@@ -96,11 +97,11 @@ class OrdersManager
         $cd_company_name = $company_info->cd_company_name;
         $year           = date("Y");
         $count_orders = Orders::whereYear('so_creation_date', $year)->count();
-
+        $year = date('y');
         $index = $count_orders + 1;
 
 
-        $order_code = sprintf('%04d', $index);
+        $order_code = sprintf('%06d', $year . $index);
 
         return $order_code;
     }
@@ -117,7 +118,7 @@ class OrdersManager
         $index = $count_orders + 1;
 
 
-        $order_code = "W" . sprintf('%04d', $index);
+        $order_code = "W" . $year . sprintf('%04d', $index);
 
         return $order_code;
     }

@@ -206,10 +206,10 @@ class UsersController extends Controller
             600000,
             '/',
             null,
-            true,   // Secure
-            false,   // HttpOnly
+            false,      // ← Change to FALSE (not true)
             false,
-            'Lax'   // SameSite
+            false,
+            'Lax'
         );
     }
 
@@ -334,13 +334,13 @@ class UsersController extends Controller
 
             if($Users->u_account_id == 0)
             {
-                $account_info   = ChartAccounts::where("aa_account_ref", "=", "6311")->get();
+                $account_info   = ChartAccounts::where("aa_account_ref", "=", "421")->get();
                 $account_info = $account_info[0];
 
-                $count   = ChartAccounts::where("aa_account_ref", "LIKE", "6311%")->count();
+                $count   = ChartAccounts::where("aa_account_ref", "LIKE", "421%")->count();
 
                 $new_count      = $count + 1;
-                $aa_account_ref = $account_info->aa_account . (string)$new_count;
+                $aa_account_ref = $account_info->aa_account . sprintf('%03d', $new_count);
 
 
                 $AccAccounting = new ChartAccounts();
@@ -358,13 +358,13 @@ class UsersController extends Controller
 
             if($Users->u_comission_account_id == 0)
             {
-                $parent_account   = ChartAccounts::where("aa_account_ref", "=", "6314")->get();
+                $parent_account   = ChartAccounts::where("aa_account_ref", "=", "421")->get();
                 $parent_account = $parent_account[0];
 
-                $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "6314%")->count();
+                $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "421%")->count();
 
                 $new_count_coms      = $count_coms + 1;
-                $aa_account_ref = $account_info->aa_account . (string)$new_count_coms;
+                $aa_account_ref = $account_info->aa_account .  sprintf('%03d', $new_count_coms);
 
 
                 $acc_accounting_info = new ChartAccounts();
@@ -379,13 +379,13 @@ class UsersController extends Controller
             }
 
         } else {
-            $account_info   = ChartAccounts::where("aa_account_ref", "=", "6311")->get();
+            $account_info   = ChartAccounts::where("aa_account_ref", "=", "421")->get();
             $account_info = $account_info[0];
 
-            $count   = ChartAccounts::where("aa_account_ref", "LIKE", "6311%")->count();
+            $count   = ChartAccounts::where("aa_account_ref", "LIKE", "421%")->count();
 
             $new_count      = $count + 1;
-            $aa_account_ref = $account_info->aa_account . (string)$new_count;
+            $aa_account_ref = $account_info->aa_account . sprintf('%03d', $new_count);
 
 
             $AccAccounting = new ChartAccounts();
@@ -401,13 +401,13 @@ class UsersController extends Controller
             $Users->u_account_id = $aa_id;
 
 
-            $parent_account   = ChartAccounts::where("aa_account_ref", "=", "6314")->get();
+            $parent_account   = ChartAccounts::where("aa_account_ref", "=", "421")->get();
             $parent_account = $parent_account[0];
 
-            $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "6314%")->count();
+            $count_coms   = ChartAccounts::where("aa_account_ref", "LIKE", "421%")->count();
 
             $new_count_coms      = $count_coms + 1;
-            $aa_account_ref = $account_info->aa_account . (string)$new_count_coms;
+            $aa_account_ref = $account_info->aa_account . sprintf('%03d', $new_count_coms);
 
 
             $acc_accounting_info = new ChartAccounts();

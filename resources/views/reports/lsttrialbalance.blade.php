@@ -24,7 +24,6 @@
         <th>Closing Balance</th>
     </tr>
     </thead>
-
     <tbody>
     @php
         $total_opening = 0;

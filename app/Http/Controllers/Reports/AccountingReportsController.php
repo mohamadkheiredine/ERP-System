@@ -15,6 +15,7 @@ List Reports for CRM Module
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
+use App\models\Accounting\ChartAccounts;
 use App\models\Inventory\WareHouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use League\Csv\Writer;
@@ -45,8 +46,11 @@ class AccountingReportsController extends Controller
     {
         $date_from = $request->input('date_from') ?: date('Y-m-01');
         $date_to   = $request->input('date_to')   ?: date('Y-m-t');
+        $account_id   = $request->input('account_id')   ?: "";
 
         $company_id = session('default_company_id');
+
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
 
         $query = "
         SELECT
@@ -88,10 +92,16 @@ class AccountingReportsController extends Controller
             AND tm.tm_company_id = ?
 
         WHERE acc.aa_is_deleted = 0
-
-        GROUP BY acc.aa_id, acc.aa_account_ref, acc.aa_account, acc.aa_account_label
-        ORDER BY acc.aa_account ASC
     ";
+
+        if(strlen($account_id) > 0) {
+            $query .= " AND acc.aa_account_id = " . $account_id;
+        }
+
+
+        $query .="
+        GROUP BY acc.aa_id, acc.aa_account_ref, acc.aa_account, acc.aa_account_label
+        ORDER BY acc.aa_account ASC";
 
         $lst_trial_balance = DB::select($query, [
             $date_from,          // <
@@ -101,7 +111,8 @@ class AccountingReportsController extends Controller
         ]);
 
         return response()->view('reports.trialbalance', [
-            'lst_trial_balance' => $lst_trial_balance
+            'lst_trial_balance' => $lst_trial_balance,
+            'lst_accounts' => $lst_accounts
         ]);
 
     }
@@ -114,6 +125,7 @@ class AccountingReportsController extends Controller
            ============================ */
         $date_from = $request->input('date_from') ?: date('Y-m-01');
         $date_to   = $request->input('date_to')   ?: date('Y-m-t');
+        $account_id   = $request->input('account_id')   ?: "";
 
         $company_id = session('default_company_id');
 
@@ -157,14 +169,14 @@ class AccountingReportsController extends Controller
         FROM acc_accounting_accounts acc
         LEFT JOIN acc_transaction_movements tm
             ON tm.tm_ledger_account = acc.aa_id
-            AND tm.tm_company_id = ?
+            AND tm.tm_company_id = ?";
 
-        WHERE acc.aa_is_deleted = 0
-
+        if($account_id  > 0) {
+            $query .= " where acc.aa_account = " . $account_id;
+        }
+        $query .="
         GROUP BY acc.aa_id, acc.aa_account_ref, acc.aa_account, acc.aa_account_label
-        ORDER BY acc.aa_account ASC
-    ";
-
+        ORDER BY acc.aa_account ASC";
         $lst_trial_balance = DB::select($query, [
             $date_from,            // opening <
             $date_from, $date_to,  // debits BETWEEN
