@@ -518,7 +518,7 @@ class OrdersController extends Controller
         $lst_warehouses     = WareHouses::whereWIsDeleted(0)->whereWCompanyId($default_company_id)->get();
         $order_info         = Orders::find($so_id);
         $lst_products       = Products::wherePProductIsDeleted(0)->get();
-        $fisical_year =  $request->cookie('fisical_year')  !== null ? $request->cookie('fisical_year') : date("Y");
+        $fisical_year =  $request->cookie('fisical_year')  !== 0 ? $request->cookie('fisical_year') : date("Y");
 
         $order_code = "";
         if ($order_info->so_order_code != null) {

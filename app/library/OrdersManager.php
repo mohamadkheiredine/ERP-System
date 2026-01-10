@@ -55,8 +55,10 @@ class OrdersManager
         $company_info   = Companies::find($company_id);
         $cd_company_name = $company_info->cd_company_name;
         $year           = $params['fisical_year'];
+
         $ORDY = date('y');
-        $count_orders = Orders::whereYear('so_creation_date', $year)->count();
+
+        $count_orders = Orders::whereYear('so_creation_date', date('Y'))->count();
 
         $index = $count_orders + 1;
 
