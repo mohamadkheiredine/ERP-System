@@ -120,6 +120,18 @@ class OrdersController extends Controller
             return Response()->json($result_array);
         }
 
+        //
+        if($customer_id > 0 && $payment_type == 'credit')
+        {
+            $customer_info = Customers::find($customer_id);
+            if($customer_info->ic_allow_credit == 0)
+            {
+                $result_array['is_error']       = 1;
+                $result_array['error_message']  = 'customer account is not allowed  to credit !!';
+                return Response()->json($result_array);
+            }
+        }
+
         if ($delivery_id != 0) {
 
             if(strlen($delcustomername) > 0  && strlen($delcustomerphone) > 0)

@@ -449,7 +449,7 @@ class SupplierQuotationsController extends Controller
             $p_id   = isset($product_id[$i]) ? $product_id[$i] : 0;
 
             // if product id is 0 create new Product
-            if( $p_id == 0 && $pr_product_code[$i] == '' && $pr_product_name[$i] == '' && $pr_pruchase_price[$i] == 0 && $pr_selling_price[$i] == 0 )
+            if( $p_id == 0 && $pr_product_code[$i] != '' && $pr_product_name[$i] != '' && $pr_pruchase_price[$i] > 0 && $pr_selling_price[$i] > 0 )
             {
                 $product_info = new Products();
                 $product_info->p_product_ref = $pr_product_code[$i];

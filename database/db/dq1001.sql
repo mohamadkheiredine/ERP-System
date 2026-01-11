@@ -708,3 +708,5 @@ ALTER TABLE `sales_orders`
     ADD COLUMN `so_store_id` INT NULL DEFAULT 0 AFTER `so_company_id`,
 ADD COLUMN `so_trans_id` INT NULL DEFAULT 0 AFTER `so_vendor_id`;
 
+ALTER TABLE `inventory_customers`
+    ADD COLUMN `ic_allow_credit` TINYINT NULL DEFAULT 0 AFTER `ic_customer_type`;

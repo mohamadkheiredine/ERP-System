@@ -286,6 +286,7 @@ class CustomersController extends Controller
         $customer_array['ic_hobbies']       = $customer_info->ic_hobbies;
         $customer_array['ic_customer_type'] = $customer_info->ic_customer_type;
         $customer_array['ic_is_active'] = $customer_info->ic_is_active;
+        $customer_array['ic_allow_credit'] = $customer_info->ic_allow_credit;
         $customer_array['ic_loyality_point'] = $customer_info->ic_loyality_point;
 
 
@@ -350,6 +351,7 @@ class CustomersController extends Controller
         $result_array['customer']['address'] = $customer_info[0]->ic_customer_address;
         $result_array['customer']['ic_customer_phone'] = $customer_info[0]->ic_customer_phone;
         $result_array['customer']['ic_customer_email'] = $customer_info[0]->ic_customer_email;
+        $result_array['customer']['ic_allow_credit'] = $customer_info[0]->ic_allow_credit;
         return Response()->json($result_array);
     }
 
@@ -373,6 +375,7 @@ class CustomersController extends Controller
             'customer_id' => $customer_info[0]->ic_id,
             'customer_name' => $customer_info[0]->ic_customer_name,
             'customer_mobile' => $customer_info[0]->ic_customer_mobile,
+            'ic_allow_credit' => $customer_info[0]->ic_allow_credit,
             'customer_address' => $customer_info[0]->ic_customer_address,
         );
 
@@ -406,6 +409,7 @@ class CustomersController extends Controller
         $ic_is_active = $request->input('ic_is_active');
         $ic_customer_type = $request->input('ic_customer_type');
         $ic_loyality_point = $request->input('ic_loyality_point');
+        $ic_allow_credit = $request->has('ic_allow_credit') ? 1 : 0;
 
 
 
@@ -446,6 +450,7 @@ class CustomersController extends Controller
         $customer_info->ic_customer_website = $ic_customer_website;
         $customer_info->ic_customer_phone = $ic_customer_phone;
         $customer_info->ic_customer_mobile = $ic_customer_mobile;
+        $customer_info->ic_allow_credit = $ic_allow_credit;
         $customer_info->ic_hobbies = $ic_hobbies;
         $customer_info->ic_is_active = $ic_is_active;
         // $customer_info->ic_favorite_foods = $ic_favorite_foods;

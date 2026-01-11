@@ -65,9 +65,10 @@ farmcycles_module = {
     },
     SaveFarmCycleExpensesInfo : function(){
         return farmcycles_module.SaveFarmCycleExpensesSubmitHandler();
+
     },
     SaveFarmCycleExpensesSubmitHandler : function(){
-        var CycleForm = $('#FORM_SAVE_CYCLES');
+        var CycleForm = $('#FRM_CYCLE_EXPENSES');
         var error3 = $('.alert-danger', CycleForm);
         var success3 = $('.alert-success', CycleForm);
 
@@ -142,6 +143,7 @@ farmcycles_module = {
                     success : function(response){
                         if(response.is_error == 0)
                         {
+                            farmcycles_module.DisplayListExpenses();
                             $("#InsertExpenses").modal('toggle');
                         }
                     }

@@ -159,6 +159,17 @@ th{
 
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <br/>
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox"  name="ic_allow_credit" id="IC_ALLOW_CREDIT" {{ $customer_info->ic_allow_credit == 1  ? 'checked="checked"' : '' }}  value="1"  />
+                                    <span class="form-check-label fw-semibold text-muted">
+                                       Allow Credit
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="col-md-8">
                              <div class="form-group">
                                 <label class="control-label">Customer Address </label>

@@ -419,6 +419,17 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label class="control-label"> Source Account  </label><br/>
+                                        <select name="ce_source_account" id="CE_SOURCE_ACCOUNT"  class="form-control form-select" data-control="select2" data-placeholder="Select Source Account">
+                                        <option value=""> -- Source Account -- </option>
+                                        @foreach( $lst_chart_accounts as $key => $account_info )
+                                            <option value="{{ $account_info->aa_id }}">{{ $account_info->aa_account }} - {{ $account_info->aa_account_label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
                                     <label class="control-label"> Expenses Category  </label><br/>
                                         <select name="ce_category_id" id="CE_CATEGORY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Expense">
                                         <option value=""> -- Expenses Category -- </option>
@@ -707,6 +718,26 @@
                 }
             });
         });
+    </script>
+    <script>
+        $(function(){
+            $('#CE_SOURCE_ACCOUNT').select2({
+                dropdownParent: $('#InsertExpenses'),
+                placeholder: 'Select Item',
+                allowClear: true
+            });
+            $('#CE_CATEGORY_ID').select2({
+                dropdownParent: $('#InsertExpenses'),
+                placeholder: 'Select Item',
+                allowClear: true
+            });
+            $('#CE_CURRENCY_ID').select2({
+                dropdownParent: $('#InsertExpenses'),
+                placeholder: 'Select Item',
+                allowClear: true
+            });
+        })
+
     </script>
 @endsection
 

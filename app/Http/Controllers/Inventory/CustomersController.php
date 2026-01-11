@@ -346,6 +346,7 @@ class CustomersController extends Controller
         $ic_customer_sales_tax    = $request->input('ic_customer_sales_tax');
         $ic_customer_tax_id       = $request->input('ic_customer_tax_id');
         $ic_vendor_id               = $request->input('ic_vendor_id');
+        $ic_allow_credit               = $request->has('ic_allow_credit') ? 1 : 0;
         $ic_vendor_id               = ($ic_vendor_id == "null") ? 0 : $ic_vendor_id;
         $default_company_id = session('default_company_id');
 
@@ -404,7 +405,8 @@ class CustomersController extends Controller
         $CustomerInfo->ic_customer_sales_tax    = $ic_customer_sales_tax;
         $CustomerInfo->ic_vendor_id             = $ic_vendor_id;
         $CustomerInfo->ic_default_customer      = $ic_default_customer;
-        $CustomerInfo->ic_company_id      = $default_company_id;
+        $CustomerInfo->ic_company_id            = $default_company_id;
+        $CustomerInfo->ic_allow_credit          = $ic_allow_credit;
         $CustomerInfo->ic_created_by            = session('user_id');
 
 

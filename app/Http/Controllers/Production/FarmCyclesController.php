@@ -252,13 +252,12 @@ class FarmCyclesController extends Controller
 
         $lst_cycle_expenses = FarmCycleExpenses::whereCeCycleId($fc_id)->get();
         $result_array = array();
-
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = '';
         $data = array(
             'lst_cycle_expenses' => $lst_cycle_expenses
         );
-        $result_array['display'] = view('farms.listexpenses',$data);
+        $result_array['display'] = view('farms.listexpenses',$data)->render();
 
         return Response()->json($result_array);
     }
@@ -279,6 +278,7 @@ class FarmCyclesController extends Controller
         $lst_bird_types   = Products::wherePProductIsDeleted(0)->wherePProductType(1)->get();
         $lst_final_products   = Products::wherePProductIsDeleted(0)->wherePProductType(22)->get();
         $lst_sys_units      = Units::whereSuIsDeleted(0)->get();
+        $lst_chart_accounts      = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_currencies = Currency::all();
 
 
@@ -296,6 +296,7 @@ class FarmCyclesController extends Controller
             "lst_sys_units" => $lst_sys_units,
             "cycle" => $cycle_info,
             "lst_expenses_categories" => $lst_expenses_categories,
+            "lst_chart_accounts" => $lst_chart_accounts,
             "lst_currencies" => $lst_currencies,
             "cycleDays" => $cycleDays,
         );
@@ -315,10 +316,11 @@ class FarmCyclesController extends Controller
         $ce_category_id = $request->input('ce_category_id');
         $ce_expense_price = $request->input('ce_expense_price');
         $ce_currency_id = $request->input('ce_currency_id');
+        $ce_source_account = $request->input('ce_source_account');
         $default_company_id = session('default_company_id');
         $user_id = session('user_id');
 
-
+        $cycle_info = FarmCycles::find($fc_id);
         $account_management = new AccountingManager();
         $voucher_code       = $account_management->GetVoucherCode();
 
@@ -331,16 +333,28 @@ class FarmCyclesController extends Controller
         $payment_voucher->pv_company_id = $default_company_id;
         $payment_voucher->pv_user_id = $user_id;
         $payment_voucher->pv_code = $voucher_code;
-        $payment_voucher->pv_voucher_label = ""$voucher_code;
+        $payment_voucher->pv_account_payable = $ce_source_account;
+        $payment_voucher->pv_creation_date = date("Y-m-d");
+        $payment_voucher->pv_payment_amount = $ce_expense_price;
+        $payment_voucher->pv_currency_id = $ce_currency_id;
+        $payment_voucher->pv_account_receivable = $expense_category->ec_gl_account_id;
+        $payment_voucher->pv_voucher_label = " New Payment Voucher " . $voucher_code . " Created by " . session('user_fullname');
+        $payment_voucher->pv_voucher_description = " New Payment Voucher " . $voucher_code . " Created by " . session('user_fullname') . " on " . date('d-m-Y H:i:s') . " For Cycle " .$cycle_info->fc_farm_name;
         $payment_voucher->save();
 
         $cycle_expense = new FarmCycleExpenses();
         $cycle_expense->ce_company_id = $default_company_id;
         $cycle_expense->ce_cycle_id = $fc_id;
-        $cycle_expense->ce_cycle_id = $fc_id;
+        $cycle_expense->ce_expense_category_id = $ce_category_id;
+        $cycle_expense->ce_voucher_amount = $ce_expense_price;
+        $cycle_expense->ce_voucher_currency = $ce_currency_id;
+        $cycle_expense->ce_created_by = $user_id;
+        $cycle_expense->ce_creation_date = date('Y-m-d');
+        $cycle_expense->ce_voucher_id = $payment_voucher->pv_id;
         $cycle_expense->save();
 
-
+        $result_array['is_error']  = 0;
+        $result_array['error_msg']  = 'Operation Completed Successfully';
 
         return Response()->json($result_array);
     }
