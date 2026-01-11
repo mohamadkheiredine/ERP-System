@@ -183,7 +183,7 @@
                             </table>
                         </div>
                             <div class="col-md-12" style="text-align: right">
-                                <button type="button" class="btn btn-info">Add Expenses</button>
+                                <button type="button" class="btn btn-info" name="btn_add_expenses" id="BTN_ADD_EXPENSES">Add Expenses</button>
                             </div>
                             <div class="row">
                                 <div class="col-md-10" align="left">
@@ -397,6 +397,68 @@
             </form>
         </div>
     </div>
+
+
+    <div class="modal fade" id="InsertExpenses" tabindex="-1" role="dialog" aria-labelledby="InsertExpensesModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="InsertExpensesModalLabel">
+                        Insert Expenses
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">
+						&times;
+					</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form name="frm_cycle_expenses" id="FRM_CYCLE_EXPENSES" method="post"  enctype="multipart/form-data">
+                        {!! csrf_field() !!}
+                        <input type="hidden" name="fc_id" value="{{ $cycle->fc_id }}" />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label"> Expenses Category  </label><br/>
+                                        <select name="ce_category_id" id="CE_CATEGORY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Expense">
+                                        <option value=""> -- Expenses Category -- </option>
+                                        @foreach($lst_expenses_categories as $key => $category_info)
+                                            <option value="{{ $category_info->ec_id }}">{{ $category_info->ec_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="control-label">Expense Price</label></br>
+                                <input type="text"  autocomplete="off" class="form-control" name="ce_expense_price" id="CE_EXPENSE_PRICE"  required="required" value="" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="control-label">Currency</label></br>
+                                <select name="ce_currency_id" id="CE_CURRENCY_ID"  class="form-control form-select" data-control="select2" data-placeholder="Select Currency">
+                                    <option value=""> -- Currency -- </option>
+                                    @foreach($lst_currencies as $key => $currency_info)
+                                        <option value="{{ $currency_info->cc_id }}">{{ $currency_info->cc_currency_code }} - {{ $currency_info->cc_currency_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-12" align="right">
+                                <button id="BTN_CLOSE" name="btn_close" type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="submit" name="btn_save_expense" id="BTN_SAVE_EXPENSE" class="btn btn-primary">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('plugins')

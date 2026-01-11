@@ -466,8 +466,12 @@ class FnbOrderController extends Controller
 
     public function CreateEmptyOrder(Request $request)
     {
-        $g_hash = $request->g_hash;
-        $user = Users::find($request->user_id);
+
+        $g_hash = $request->input('g_hash');
+        $store_id = $request->input('store_id');
+        $user_id = $request->input('user_id');
+        $company_id = $request->input('company_id');
+        $user = Users::find($user_id);
 
         $check_hash = "POS567{$user->u_username}{$user->u_fullname}{$user->u_email}POS567";
         $check_hash = hash('sha256', $check_hash);
@@ -476,16 +480,20 @@ class FnbOrderController extends Controller
             return response()->json(['is_error' => 1, 'error_msg' => 'Invalid hash']);
         }
 
+
         // Create new empty order
         $order = new FnbOrders();
-        $order->fo_store_id = $request->input('store_id');
+        $order->fo_branch_id = $company_id;
+        $order->fo_store_id = $store_id;
         $order->fo_order_status = 1; // pending
         $order->fo_order_type = "dine_in";
         $order->save();
 
+        $order_id = $order->fo_id;
+
         return response()->json([
             'is_error' => 0,
-            'order_id' => $order->fo_id,
+            'order_id' => $order_id,
         ]);
     }
 

@@ -51,6 +51,7 @@ $(function(){
         }
     });
 	$("#BTN_SAVE_CYCLE").on('click',farmcycles_module.SaveFarmCycleInfo);
+	$("#BTN_ADD_EXPENSES").on('click',farmcycles_module.OpenCycleExpensesPopup);
 
     farmcycles_module.DisplayListExpenses();
 })

@@ -578,8 +578,10 @@ Route::post('/request/plan/editqualitycheck','Production\ProductionPlanControlle
 
 
 Route::get('/request/farmcycles/displaylist','Production\FarmCyclesController@DisplayList');
+Route::post('/request/farmcycles/savecycleexpenses','Production\FarmCyclesController@SaveCycleExpenses');
 Route::post('/request/farmcycles/savefarmcycleinfo','Production\FarmCyclesController@SaveInfo');
 Route::delete('/request/farmcycles/deletefarmcycleinfo','Production\FarmCyclesController@DeleteFarmCycle');
+Route::get('/request/farmcycles/listexpenses','Production\FarmCyclesController@GetListofExpenses');
 
 Route::post('/request/qualitycheck/displaylist','Production\QualityCheckController@DisplayList');
 

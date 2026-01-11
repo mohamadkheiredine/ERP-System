@@ -16,13 +16,19 @@
 namespace App\Http\Controllers\Production;
 
 use App\Http\Controllers\Controller;
+use App\library\AccountingManager;
 use App\library\FarmCycleManager;
+use App\models\Accounting\ChartAccounts;
+use App\models\Billing\PaymentVouchers;
+use App\models\Expenses\ExpensesCategories;
 use App\models\Inventory\Products;
 use App\models\Inventory\WareHouses;
 use App\models\PMP\ProjectRoles;
 use App\models\Production\FarmCycleDays;
+use App\models\Production\FarmCycleExpenses;
 use App\models\Production\FarmCycles;
 use App\models\System\Companies;
+use App\models\System\Currency;
 use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Users\UserTypes;
@@ -232,6 +238,32 @@ class FarmCyclesController extends Controller
     }
 
 
+    /**
+     * Get List of Expenses paied for this cycle
+     *
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return void
+     */
+    public function GetListOfExpenses(Request $request)
+    {
+        $fc_id = $request->input('fc_id');
+
+        $lst_cycle_expenses = FarmCycleExpenses::whereCeCycleId($fc_id)->get();
+        $result_array = array();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = '';
+        $data = array(
+            'lst_cycle_expenses' => $lst_cycle_expenses
+        );
+        $result_array['display'] = view('farms.listexpenses',$data);
+
+        return Response()->json($result_array);
+    }
+
+
 
     /**
      * Edit Form Page
@@ -247,6 +279,11 @@ class FarmCyclesController extends Controller
         $lst_bird_types   = Products::wherePProductIsDeleted(0)->wherePProductType(1)->get();
         $lst_final_products   = Products::wherePProductIsDeleted(0)->wherePProductType(22)->get();
         $lst_sys_units      = Units::whereSuIsDeleted(0)->get();
+        $lst_currencies = Currency::all();
+
+
+        $lst_expenses_categories = ExpensesCategories::whereEcIsDeleted(0)->get();
+
         $cycle_info = FarmCycles::find($fc_id);
         $cycleDays = FarmCycleDays::where('fcd_cycle_id', $fc_id)
             ->orderBy('fcd_id','ASC')
@@ -258,9 +295,54 @@ class FarmCyclesController extends Controller
             "lst_final_products" => $lst_final_products,
             "lst_sys_units" => $lst_sys_units,
             "cycle" => $cycle_info,
+            "lst_expenses_categories" => $lst_expenses_categories,
+            "lst_currencies" => $lst_currencies,
             "cycleDays" => $cycleDays,
         );
         return view('farms.editcycle',$data);
+    }
+
+
+    /**
+     *
+     * Save Cycle Expenses
+     * @param Request $request
+     * @return void
+     */
+    public function SaveCycleExpenses(Request $request)
+    {
+        $fc_id = $request->input('fc_id');
+        $ce_category_id = $request->input('ce_category_id');
+        $ce_expense_price = $request->input('ce_expense_price');
+        $ce_currency_id = $request->input('ce_currency_id');
+        $default_company_id = session('default_company_id');
+        $user_id = session('user_id');
+
+
+        $account_management = new AccountingManager();
+        $voucher_code       = $account_management->GetVoucherCode();
+
+        $result_array = array();
+
+        $expense_category = ExpensesCategories::find($ce_category_id);
+
+
+        $payment_voucher = new PaymentVouchers();
+        $payment_voucher->pv_company_id = $default_company_id;
+        $payment_voucher->pv_user_id = $user_id;
+        $payment_voucher->pv_code = $voucher_code;
+        $payment_voucher->pv_voucher_label = ""$voucher_code;
+        $payment_voucher->save();
+
+        $cycle_expense = new FarmCycleExpenses();
+        $cycle_expense->ce_company_id = $default_company_id;
+        $cycle_expense->ce_cycle_id = $fc_id;
+        $cycle_expense->ce_cycle_id = $fc_id;
+        $cycle_expense->save();
+
+
+
+        return Response()->json($result_array);
     }
 
 

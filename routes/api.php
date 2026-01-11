@@ -155,17 +155,6 @@ Route::post('api/shift/openshift', 'Api\FnbShiftController@OpenShift');
 Route::post('api/shift/closeshift', 'Api\FnbShiftController@CloseShift');
 
 
-
-
-
-Route::group(['middleware' => ['cors']], function() {
-    Route::post('/web/api/createcustomer', 'Api\WebApiController@CreateWebCustomer');
-    Route::put('/web/api/updatecustomer', 'Api\WebApiController@UpdateWebCustomer');
-    Route::get('/web/api/getlistproducts', 'Api\WebApiController@GetListProducts');
-    Route::get('/web/api/getproductinfo', 'Api\WebApiController@Getproductinfo');
-    Route::post('/web/api/saveorder', 'Api\WebApiController@CreateOrder');
-});
-
 Route::get('/api/inventory/listitemcategories', 'Api\FnbCategoriesController@ListItemCategories');
 Route::get('/api/inventory/getlistmenucategories', 'Api\FnbCategoriesController@GetListMenuCategories');
 Route::post('/api/inventory/savemenucategory', 'Api\FnbCategoriesController@SaveMenuCategory');
@@ -183,3 +172,14 @@ Route::put('/api/allowedcurrencies/savecurrencyrate', 'Api\PosAllowedCurrenciesC
 
 
 //});
+
+
+Route::group(['middleware' => ['cors']], function() {
+    Route::post('/web/api/createcustomer', 'Api\WebApiController@CreateWebCustomer');
+    Route::put('/web/api/updatecustomer', 'Api\WebApiController@UpdateWebCustomer');
+    Route::get('/web/api/getlistproducts', 'Api\WebApiController@GetListProducts');
+    Route::get('/web/api/getproductinfo', 'Api\WebApiController@Getproductinfo');
+    Route::post('/web/api/saveorder', 'Api\WebApiController@CreateOrder');
+});
+
+

@@ -36,3 +36,6 @@ CREATE TABLE `prod_cycle_orders` (
     ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
+
+
+ALTER TABLE `prod_cycle_expenses` ADD COLUMN `ce_expense_category_id` SMALLINT NULL DEFAULT 0 AFTER `ce_voucher_id`;

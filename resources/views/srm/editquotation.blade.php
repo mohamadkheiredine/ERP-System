@@ -303,7 +303,7 @@ th{
                                                         <?php  } ?>
                                                     </select>
                                                 </td>
-												<td><button class="btn ListSerialNumbers" style="{{ $qp_info->products->Category->pc_use_serial_number == 0 ? 'display:none' :'' }}" type="button" data-ids="{{ $qp_info->sp_product_serial }}" name="btn_list_serials[]" >...</button></td>
+												<td><button class="btn ListSerialNumbers" style="{{ ($qp_info != null && $qp_info->products != null && $qp_info->products->Category != null ) && $qp_info->products->Category->pc_use_serial_number == 0 ? 'display:none' :'' }}" type="button" data-ids="{{ $qp_info != null ? $qp_info->sp_product_serial : "" }}" name="btn_list_serials[]" >...</button></td>
 												<td><a href="#" class="DeleteCode"><i class="fa fa-minus-circle" aria-hidden="true" height="16" ></i></a></td>
 											</tr>
 											@endforeach
