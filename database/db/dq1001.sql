@@ -710,3 +710,6 @@ ADD COLUMN `so_trans_id` INT NULL DEFAULT 0 AFTER `so_vendor_id`;
 
 ALTER TABLE `inventory_customers`
     ADD COLUMN `ic_allow_credit` TINYINT NULL DEFAULT 0 AFTER `ic_customer_type`;
+
+ALTER TABLE `pos_stores`
+    ADD COLUMN `ps_cash_account` INT NULL DEFAULT 0 AFTER `ps_company_id`;

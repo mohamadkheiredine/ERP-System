@@ -125,8 +125,14 @@ class ExpensesController extends Controller
             return Response()->json($result_array);
         }
 
-        $expenses_obj = new ExpensesManager();
-        $res_data = $expenses_obj->UploadExtensesVoucher($expense_id);
+
+
+        if($attachment != null)
+        {
+            $expenses_obj = new ExpensesManager();
+            $res_data = $expenses_obj->UploadExtensesVoucher($expense_id);
+        }
+
         $expenses_category = ExpensesCategories::find($category_id);
         $payment_info = PaymentTypes::find($payment_type);
 
@@ -139,9 +145,13 @@ class ExpensesController extends Controller
         $expenses_info->ac_currency_id = $currency_id;
         $expenses_info->ac_description = $note;
         $expenses_info->ac_payment_id = $payment_type;
-        $expenses_info->ac_base_src = $res_data['data']['ac_base_src'];
-        $expenses_info->ac_file_name = $res_data['data']['ac_file_name'];
-        $expenses_info->ac_extension = $res_data['data']['ac_extension'];
+        if($attachment != null)
+        {
+            $expenses_info->ac_base_src = $res_data['data']['ac_base_src'];
+            $expenses_info->ac_file_name = $res_data['data']['ac_file_name'];
+            $expenses_info->ac_extension = $res_data['data']['ac_extension'];
+        }
+
         $expenses_info->save();
 
         $AccTransaction = new Transactions();
