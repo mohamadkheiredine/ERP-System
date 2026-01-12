@@ -681,6 +681,19 @@ class FnbController extends Controller
         $order_item->oi_kitchen_status = $new_status;
         $order_item->save();
 
+        $orderId = $order_item->oi_order_id;
+
+        $remaining = FnbOrderItems::where('oi_order_id', $orderId)
+            ->where('oi_is_deleted', 0)
+            ->where('oi_kitchen_status', '!=', $new_status)
+            ->count();
+
+        if ($remaining === 0) {
+            FnbOrders::where('fo_id', $orderId)
+                ->update(['fo_kitchen_status' => $new_status]);
+        }
+
+
         return response()->json([
             "is_error" => 0,
             "error_msg" => "",
@@ -1149,6 +1162,4 @@ class FnbController extends Controller
 
         return Response()->json($result_array);
     }
-
-
 }

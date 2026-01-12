@@ -145,11 +145,14 @@ Route::post('/api/orders/updateorder', 'Api\FnbOrderController@UpdateOrder');
 Route::post('/api/orders/sync', 'Api\FnbOrderController@SyncPendingOrders');
 Route::get('/api/orders/getbycode', 'Api\FnbOrderController@GetOrderByCode');
 Route::post('/api/orders/editorder', 'Api\FnbOrderController@EditOrder');
+Route::get('/api/orders/reprintreceipt', 'Api\FnbOrderController@ReprintOrderReceipt');
+
+
 Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbItemController@GetListItemsByKitchen');
 Route::post('/api/orders/savemenuitem', 'Api\FnbItemController@SaveMenuItem');
 
 Route::get('/api/orders/getstationsname', 'Api\FnbKitchenController@GetStationsName');
-Route::get('/api/orders/getpendingorders', 'Api\FnbController@GetPendingOrders');
+Route::get('/api/orders/getpendingorders', 'Api\FnbOrderController@GetPendingOrders');
 Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
 Route::post('api/shift/openshift', 'Api\FnbShiftController@OpenShift');
 Route::post('api/shift/closeshift', 'Api\FnbShiftController@CloseShift');
@@ -161,7 +164,7 @@ Route::post('/api/inventory/savemenucategory', 'Api\FnbCategoriesController@Save
 Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@DeleteMenuCategory');
 
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
-Route::get('/api/inventory/getlistoforders', 'Api\FnbController@GetListOfOrders');
+Route::get('/api/inventory/getlistoforders', 'Api\FnbOrderController@GetListOfOrders');
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
 Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');

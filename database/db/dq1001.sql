@@ -710,3 +710,13 @@ ADD COLUMN `so_trans_id` INT NULL DEFAULT 0 AFTER `so_vendor_id`;
 
 ALTER TABLE `inventory_customers`
     ADD COLUMN `ic_allow_credit` TINYINT NULL DEFAULT 0 AFTER `ic_customer_type`;
+
+ALTER TABLE fnb_orders
+ADD fo_kitchen_status mediumint(9) NOT NULL DEFAULT 1;
+
+ALTER TABLE fnb_orders
+ADD CONSTRAINT fk_orders_kitchen_status
+FOREIGN KEY (fo_kitchen_status)
+REFERENCES sys_status(ss_id)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
