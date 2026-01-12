@@ -72,6 +72,26 @@
     </style>
 </head>
 
+@php
+    $fmt = fn ($v) => number_format((float)($v ?? 0), 2);
+
+    $currencyCode = $currency->cc_currency_code ?? '';
+
+    $lineTotal = function ($item) {
+        if (isset($item['total'])) {
+            return (float) $item['total'];
+        }
+
+        if (isset($item['unit_price'], $item['quantity'])) {
+            return (float)$item['unit_price'] * (float)$item['quantity'];
+        }
+
+        return 0;
+    };
+@endphp
+
+
+
 <body>
     <div class="receipt">
         <div style="width:100%;text-align:center">
@@ -107,15 +127,14 @@
                                     <br>
                                     <small>
                                         @foreach($order_item['modifiers'] as $m)
-                                            - {{ $m['name'] }} ({{ number_format($m['price'], 2) }})<br>
+                                            - {{ $m['name'] }} ({{ $fmt($m['price']) }})<br>
                                         @endforeach
                                     </small>
                                 @endif
                             </td>
 
                             <td>
-                                {{ number_format($order_item['total'], 2) }}
-                                {{ $currency->cc_currency_code }}
+                                {{ $fmt($lineTotal($order_item)) }} {{ $currencyCode }}
                             </td>
                         </tr>
                     @endforeach
@@ -129,7 +148,7 @@
                 <tr>
                     <th align="left">Subtotal:</th>
                     <td align="left">
-                        {{ number_format($sub_total, 2) }}&nbsp;<b>{{ $currency->cc_currency_code }}</b>
+                        {{ $fmt($sub_total) }} <b>{{ $currencyCode }}</b>
                     </td>
                     <td></td>
                 </tr>
@@ -141,7 +160,7 @@
                 <tr>
                     <th align="left">Total:</th>
                     <td align="left">
-                        {{ number_format(($cost_total), 2) }}</b>&nbsp;<b>{{ $currency->cc_currency_code }}</b>&nbsp;
+                        {{ $fmt($cost_total) }} <b>{{ $currencyCode }}</b>
                     </td>
                     <td></td>
                 </tr>

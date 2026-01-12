@@ -713,3 +713,14 @@ ALTER TABLE `inventory_customers`
 
 ALTER TABLE `pos_stores`
     ADD COLUMN `ps_cash_account` INT NULL DEFAULT 0 AFTER `ps_company_id`;
+
+
+ALTER TABLE fnb_orders
+    ADD fo_kitchen_status mediumint(9) NOT NULL DEFAULT 1;
+
+ALTER TABLE fnb_orders
+    ADD CONSTRAINT fk_orders_kitchen_status
+        FOREIGN KEY (fo_kitchen_status)
+            REFERENCES sys_status(ss_id)
+            ON UPDATE CASCADE
+            ON DELETE RESTRICT;
