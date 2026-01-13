@@ -729,4 +729,11 @@ ALTER TABLE fnb_orders
 MODIFY fo_customer_id INT NULL;
 
 ALTER TABLE fnb_orders
-CHANGE warehouse_id fk_warehouse_id smallint(6) DEFAULT 0;
+CHANGE warehouse_id fk_warehouse_id smallint(6) NULL;
+
+ALTER TABLE fnb_orders
+ADD CONSTRAINT fk_fnb_orders_warehouse
+FOREIGN KEY (fk_warehouse_id)
+REFERENCES inventory_warehouses(w_id)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
