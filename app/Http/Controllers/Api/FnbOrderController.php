@@ -98,6 +98,14 @@ class FnbOrderController extends Controller
             ->increment('is_quanity', $qty);
     }
 
+    private function resolvePendingKitchenStatusId(): ?int
+    {
+        return SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+            ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+            ->value('ss_id');
+    }
+
+
 
     public function CreateOrder(Request $request)
     {
@@ -196,22 +204,15 @@ class FnbOrderController extends Controller
 
         $creation_date = date("Y-m-d H:i:s");
 
-        // kitchen status based on the order type
-        $requiredKitchenStatusCode =
-            ($order_type === 'dine_in')
-            ? 'Ready'
-            : 'Pending';
 
-        $kitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-            ->where('ss_status_title', $requiredKitchenStatusCode)
-            ->value('ss_id');
+        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
 
-        if (!$kitchenStatusId) {
-            return response()->json([
-                'is_error' => 1,
-                'error_msg' => "Kitchen status '{$requiredKitchenStatusCode}' is not configured"
-            ]);
-        }
+if (!$pendingKitchenStatusId) {
+    return response()->json([
+        'is_error' => 1,
+        'error_msg' => 'Kitchen Pending status is not configured'
+    ]);
+}
 
         $order_info = new FnbOrders();
         $order_info->fo_order_code = $order_code;
@@ -220,7 +221,7 @@ class FnbOrderController extends Controller
         $order_info->fo_branch_id = $company_id;
         $order_info->fo_customer_id = $customer_id;
         $order_info->fo_order_status = 5;
-        $order_info->fo_kitchen_status = $kitchenStatusId;
+        $order_info->fo_kitchen_status = $pendingKitchenStatusId;
         $order_info->fo_order_datetime = $creation_date;
         $order_info->fo_subtotal = $sub_total_display;
         $order_info->fo_discount = $discount;
@@ -271,7 +272,7 @@ class FnbOrderController extends Controller
             $item->oi_quantity = $item_order['quantity'];
             $item->oi_unit_price = $item_order['price'];
             $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
-            $item->oi_kitchen_status = $kitchenStatusId;
+            $item->oi_kitchen_status = $pendingKitchenStatusId;
             $item->oi_station_id = isset($item_order['station_id']) ? $item_order['station_id'] : 1;
             $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
             $item->oi_currency_id = $display_currency_id;
@@ -501,14 +502,12 @@ class FnbOrderController extends Controller
             return response()->json(['is_error' => 1, 'error_msg' => 'Invalid hash']);
         }
 
-        $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-            ->where('ss_status_title', 'Pending') // preferred
-            ->value('ss_id');
+        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
 
         if (!$pendingKitchenStatusId) {
             return response()->json([
                 'is_error' => 1,
-                'error_msg' => 'Kitchen pending status is not configured'
+                'error_msg' => 'Kitchen Pending status is not configured'
             ]);
         }
 
@@ -519,6 +518,7 @@ class FnbOrderController extends Controller
         $order->fo_order_status = 1; // pending
         $order->fo_kitchen_status = $pendingKitchenStatusId;
         $order->fo_order_type = "dine_in";
+        $order->fo_customer_id    = null;
         $order->save();
 
         $order_id = $order->fo_id;

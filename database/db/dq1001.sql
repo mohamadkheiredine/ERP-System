@@ -724,3 +724,6 @@ ALTER TABLE fnb_orders
             REFERENCES sys_status(ss_id)
             ON UPDATE CASCADE
             ON DELETE RESTRICT;
+
+ALTER TABLE fnb_orders
+MODIFY fo_customer_id INT NULL;
