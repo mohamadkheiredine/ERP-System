@@ -101,12 +101,20 @@ class FnbOrderController extends Controller
     private function resolvePendingKitchenStatusId(): ?int
     {
         return SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-            ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+            ->orderBy('ss_id')
             ->value('ss_id');
     }
 
 
 
+    /**
+     * Api to create order
+     *
+     * @author Mohamad Kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function CreateOrder(Request $request)
     {
         $g_hash   = $request->input('g_hash');
@@ -207,12 +215,12 @@ class FnbOrderController extends Controller
 
         $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
 
-if (!$pendingKitchenStatusId) {
-    return response()->json([
-        'is_error' => 1,
-        'error_msg' => 'Kitchen Pending status is not configured'
-    ]);
-}
+        if (!$pendingKitchenStatusId) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'Kitchen Pending status is not configured'
+            ]);
+        }
 
         $order_info = new FnbOrders();
         $order_info->fo_order_code = $order_code;
@@ -1288,7 +1296,7 @@ if (!$pendingKitchenStatusId) {
             ->where('fnb_orders.fo_is_deleted', 0);
 
         if (!empty($warehouse_id)) {
-            $query->where('fnb_orders.warehouse_id', $warehouse_id);
+            $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
         }
 
         if (!empty($date_from)) {
@@ -1306,7 +1314,7 @@ if (!$pendingKitchenStatusId) {
                 'fnb_orders.fo_order_code',
                 'fnb_orders.fo_total_amount',
                 'fnb_orders.fo_order_datetime',
-                'fnb_orders.warehouse_id',
+                'fnb_orders.fk_warehouse_id',
                 'fnb_orders.fo_currency_id',
                 'c.cc_currency_code'
             )
@@ -1320,7 +1328,7 @@ if (!$pendingKitchenStatusId) {
                 'fo_order_code'     => $order->fo_order_code,
                 'fo_total_amount'   => $order->fo_total_amount,
                 'fo_order_datetime' => $order->fo_order_datetime,
-                'warehouse_id'      => $order->warehouse_id,
+                'warehouse_id'      => $order->fk_warehouse_id,
                 'currency_code'     => $order->cc_currency_code == null ? 'USD' : $order->cc_currency_code,
             ];
         }

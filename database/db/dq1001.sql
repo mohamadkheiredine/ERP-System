@@ -727,3 +727,6 @@ ALTER TABLE fnb_orders
 
 ALTER TABLE fnb_orders
 MODIFY fo_customer_id INT NULL;
+
+ALTER TABLE fnb_orders
+CHANGE warehouse_id fk_warehouse_id smallint(6) DEFAULT 0;
