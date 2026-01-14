@@ -1360,4 +1360,153 @@ class ProductsController extends Controller
             'message'         => 'Stock available',
         ]);
     }
+
+    /**
+     * Api to get stocks(lots) by product id
+     * @author Mohammed kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetProductLotsByProductId(Request $request)
+    {
+        $user_id       = $request->input('user_id');
+        $product_id    = $request->input('product_id');
+        $warehouse_id  = $request->input('warehouse_id');
+        $g_hash        = $request->input('g_hash');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $stocks = Stocks::where('fk_product_id', $product_id)
+            ->where('fk_warehouse_id', $warehouse_id)
+            ->where('is_is_deleted', 0)
+            ->orderBy('is_creation_date', 'ASC')
+            ->get();
+
+        $lots = array();
+
+        foreach ($stocks as $stock) {
+
+            $lots[] = array(
+                'stock_id'          => $stock->is_id,
+                'lot_uid'           => $stock->is_stock_uid,
+                'lot_label'         => $stock->is_stock_label,
+                'quantity'          => $stock->is_quanity,
+                'price_item'        => $stock->is_price_item,
+                'price_stock'       => $stock->is_price_stock,
+                'currency_id'       => $stock->is_stock_currency,
+                'exchange_rate'     => $stock->is_stock_exchange_rate,
+                'production_date'   => $stock->is_production_date,
+                'expiry_date'       => $stock->is_expiry_date,
+                'created_at'        => $stock->is_creation_date,
+                'warehouse_id'      => $stock->fk_warehouse_id,
+                'zone_id'           => $stock->fk_zone_id,
+                'floor_id'          => $stock->fk_floor_id,
+                'supplier_id'       => $stock->is_supplier_id,
+            );
+        }
+
+        $result_array['is_error']   = 0;
+        $result_array['product_id'] = $product_id;
+        $result_array['lots']       = $lots;
+
+        return Response()->json($result_array);
+    }
+
+    /**
+     * Api to get the raw materials
+     * @author Mohammed kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetProducts(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $warehouse_id = $request->input('warehouse_id');
+        $g_hash       = $request->input('g_hash');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return response()->json([
+                'is_error' => 1,
+                'error_message' => 'hash sequence is not valid !!'
+            ]);
+        }
+
+
+        $products = DB::table('inventory_products as p')
+
+            ->leftJoin(
+                'inventory_product_categories as pc',
+                'pc.pc_id',
+                '=',
+                'p.fk_pc_id'
+            )
+
+            ->leftJoin('inventory_stocks as s', function ($join) use ($warehouse_id) {
+                $join->on('p.p_id', '=', 's.fk_product_id')
+                    ->where('s.fk_warehouse_id', '=', $warehouse_id)
+                    ->where('s.is_is_deleted', '=', 0);
+            })
+
+            ->where('p.p_product_is_deleted', 0)
+
+            ->groupBy(
+                'p.p_id',
+                'p.p_product_name',
+                'p.p_barcode',
+                'p.p_product_stock_alert',
+                'pc.pc_category'
+            )
+
+            ->select(
+                'p.p_id',
+                'p.p_product_name',
+                'p.p_barcode',
+                'p.p_product_stock_alert',
+                DB::raw('IFNULL(pc.pc_category, "Uncategorized") as category_name'),
+                DB::raw('IFNULL(SUM(s.is_quanity),0) as on_hand_qty'),
+                DB::raw('
+            IFNULL(
+                SUM(s.is_quanity * s.is_price_item)
+                / NULLIF(SUM(s.is_quanity),0),
+                0
+            ) as avg_cost
+        ')
+            )
+            ->get();
+
+
+
+        return response()->json([
+            'is_error' => 0,
+            'products' => $products
+        ]);
+    }
 }

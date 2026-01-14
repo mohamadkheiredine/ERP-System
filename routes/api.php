@@ -139,6 +139,11 @@ Route::get('/request/api/expense/list', 'Api\ExpensesController@GetListExpenses'
 Route::get(' /api/inventory/getlistrawmaterials', 'Api\ProductsController@GetListRawMaterials');
 Route::get(' /api/inventory/validatestock', 'Api\ProductsController@ValidateStock');
 
+Route::get('/api/products/getproductlotsbyproductid','Api\ProductsController@GetProductLotsByProductId');
+Route::get('/api/products/getproducts','Api\ProductsController@GetProducts');
+
+
+
 Route::post('/api/orders/createorder', 'Api\FnbOrderController@CreateOrder');
 Route::post('/api/orders/createemptyorder', 'Api\FnbOrderController@CreateEmptyOrder');
 Route::post('/api/orders/updateorder', 'Api\FnbOrderController@UpdateOrder');
