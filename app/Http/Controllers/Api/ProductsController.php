@@ -237,6 +237,7 @@ class ProductsController extends Controller
         $fk_pc_id       = $request->input("fk_pc_id") == NULL ? 0 :  $request->input("fk_pc_id");
         $pc_id          = $request->input("pc_id");
         $pc_show_on_pos = $request->input("pc_show_on_pos");
+        $pc_description = $request->input("pc_description", "");
 
         if ($pc_id != null)
             $category_info = ProductCategories::find($pc_id);
@@ -245,6 +246,7 @@ class ProductsController extends Controller
 
         $category_info->fk_pc_id = $fk_pc_id;
         $category_info->pc_category = $pc_category;
+        $category_info->pc_description = $pc_description;
         $category_info->pc_show_on_pos = $pc_show_on_pos;
         $category_info->save();
 
@@ -1441,6 +1443,8 @@ class ProductsController extends Controller
         $user_id      = $request->input('user_id');
         $warehouse_id = $request->input('warehouse_id');
         $g_hash       = $request->input('g_hash');
+        $fk_pc_id = $request->input('fk_pc_id');
+
 
         $user_info = Users::find($user_id);
 
@@ -1475,8 +1479,13 @@ class ProductsController extends Controller
                     ->where('s.is_is_deleted', '=', 0);
             })
 
-            ->where('p.p_product_is_deleted', 0)
+            ->where('p.p_product_is_deleted', 0);
 
+        if (!empty($fk_pc_id)) {
+            $products->where('p.fk_pc_id', $fk_pc_id);
+        }
+
+        $products = $products
             ->groupBy(
                 'p.p_id',
                 'p.p_product_name',
@@ -1493,16 +1502,14 @@ class ProductsController extends Controller
                 DB::raw('IFNULL(pc.pc_category, "Uncategorized") as category_name'),
                 DB::raw('IFNULL(SUM(s.is_quanity),0) as on_hand_qty'),
                 DB::raw('
-            IFNULL(
-                SUM(s.is_quanity * s.is_price_item)
-                / NULLIF(SUM(s.is_quanity),0),
-                0
-            ) as avg_cost
-        ')
+                IFNULL(
+                    SUM(s.is_quanity * s.is_price_item)
+                    / NULLIF(SUM(s.is_quanity),0),
+                    0
+                ) as avg_cost
+            ')
             )
             ->get();
-
-
 
         return response()->json([
             'is_error' => 0,
