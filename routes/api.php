@@ -173,6 +173,11 @@ Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 Route::get('/api/allowedcurrencies/getallowedcurrencies', 'Api\PosAllowedCurrenciesController@GetAllowedCurrencies');
 Route::put('/api/allowedcurrencies/savecurrencyrate', 'Api\PosAllowedCurrenciesController@SaveCurrencyRate');
 
+Route::post('/api/allowedcurrencies/add', 'Api\PosAllowedCurrenciesController@AddAllowedCurrency');
+Route::put('/api/allowedcurrencies/edit', 'Api\PosAllowedCurrenciesController@EditAllowedCurrency');
+Route::delete('/api/allowedcurrencies/delete', 'Api\PosAllowedCurrenciesController@DeleteAllowedCurrency');
+
+
 
 //});
 

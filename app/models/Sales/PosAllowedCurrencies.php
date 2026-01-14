@@ -10,20 +10,27 @@ class PosAllowedCurrencies extends Model
     public      $timestamps     = true;
     protected   $primaryKey     = "ac_id";
 
+    protected $fillable = [
+        'ac_store_id',
+        'ac_company_id',
+        'ac_currency_id',
+        'ac_rate_to_original',
+        'ac_original_currency',
+    ];
+
     public function Currency()
     {
-        return $this->belongsTo('App\models\System\Currency', 'ac_currency_id','cc_id');
+        return $this->belongsTo('App\models\System\Currency', 'ac_currency_id', 'cc_id');
     }
 
     public function Company()
     {
-        return $this->belongsTo('App\models\System\Companies', 'ac_company_id','cd_id');
+        return $this->belongsTo('App\models\System\Companies', 'ac_company_id', 'cd_id');
     }
 
 
     public function Store()
     {
-        return $this->belongsTo('App\models\Sales\Stores', 'ac_store_id','ps_id');
+        return $this->belongsTo('App\models\Sales\Stores', 'ac_store_id', 'ps_id');
     }
-
 }

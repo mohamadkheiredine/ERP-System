@@ -106,4 +106,129 @@ class PosAllowedCurrenciesController extends Controller
 
         return Response()->json($result_array);
     }
+    /**
+     * API to add allowed currency
+     * @author Mohamad Kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function AddAllowedCurrency(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash = $request->input('g_hash');
+        $store_id = $request->input('store_id');
+        $company_id = $request->input('company_id');
+        $currency_id = $request->input('ac_currency_id');
+        $rate = $request->input('ac_rate_to_original', 1);
+
+        $user_info = Users::find($user_id);
+
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256', $c_hash);
+        $result_array        = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+
+            return Response()->json($result_array, 401);
+        }
+
+        $exists = PosAllowedCurrencies::where('ac_store_id', $store_id)
+            ->where('ac_company_id', $company_id)
+            ->where('ac_currency_id', $currency_id)
+            ->first();
+
+        if ($exists) {
+            return response()->json([
+                'is_error' => 1,
+                'error_message' => 'Currency already allowed'
+            ]);
+        }
+
+        PosAllowedCurrencies::create([
+            'ac_store_id'          => $store_id,
+            'ac_company_id'        => $company_id,
+            'ac_currency_id'       => $currency_id,
+            'ac_rate_to_original'  => $rate
+        ]);
+
+        return response()->json([
+            'is_error' => 0,
+            'error_msg' => 'Currency added successfully'
+        ]);
+    }
+
+    /**
+     * API to edit allowed currency
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function EditAllowedCurrency(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash  = $request->input('g_hash');
+        $ac_id   = $request->input('ac_id');
+        $rate    = $request->input('ac_rate_to_original');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256', $c_hash);
+        $result_array        = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+
+            return Response()->json($result_array, 401);
+        }
+
+        $currency = PosAllowedCurrencies::find($ac_id);
+        if (!$currency) {
+            return response()->json(['is_error' => 1, 'error_message' => 'Currency not found']);
+        }
+
+        $currency->ac_rate_to_original = $rate;
+        $currency->save();
+
+        return response()->json([
+            'is_error' => 0,
+            'error_msg' => 'Currency updated successfully'
+        ]);
+    }
+
+    /**
+     * API to delete allowed currency
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function DeleteAllowedCurrency(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash  = $request->input('g_hash');
+        $ac_id   = $request->input('ac_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash              = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash              =  hash('sha256', $c_hash);
+        $result_array        = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error']       = 1;
+            $result_array['error_message']  = 'hash sequence is not valid !!';
+
+            return Response()->json($result_array, 401);
+        }
+
+        PosAllowedCurrencies::where('ac_id', $ac_id)->delete();
+
+        return response()->json([
+            'is_error' => 0,
+            'error_msg' => 'Currency deleted successfully'
+        ]);
+    }
 }
