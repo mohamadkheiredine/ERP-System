@@ -212,9 +212,9 @@ class UsersController extends Controller
         }
         // Auth::login($user_info);
 
-        $tokenResult = $user_info->createToken('POS-PIN');
-        $accessToken = $tokenResult->accessToken;
-        $refreshToken = $tokenResult->token->refresh_token ?? null;
+        // $tokenResult = $user_info->createToken('POS-PIN');
+        // $accessToken = $tokenResult->accessToken;
+        // $refreshToken = $tokenResult->token->refresh_token ?? null;
 
         $g_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $g_hash = hash('sha256', $g_hash);
@@ -241,9 +241,9 @@ class UsersController extends Controller
         $result_array['user_type'] = $user_info->u_user_type;
         $result_array['u_department_id'] = $user_info->u_department_id;
         $result_array['company_id'] = $company_id;
-        $result_array['token_type'] = 'Bearer';
-        $result_array['expires_in'] = 31536000;
-        $result_array['access_token'] = $accessToken;
+        // $result_array['token_type'] = 'Bearer';
+        // $result_array['expires_in'] = 31536000;
+        // $result_array['access_token'] = $accessToken;
 
         if ($company_id > 0) {
 
@@ -304,16 +304,17 @@ class UsersController extends Controller
                 $result_array['exchange_rate']             = 1;
         }
 
-        return response()->json($result_array)
-            ->cookie(
-                'refresh_token',
-                $refreshToken,
-                60 * 24 * 30,
-                null,
-                null,
-                true,
-                true
-            );
+        // return response()->json($result_array)
+        //     ->cookie(
+        //         'refresh_token',
+        //         $refreshToken,
+        //         60 * 24 * 30,
+        //         null,
+        //         null,
+        //         true,
+        //         true
+        //     );
+        return response()->json($result_array);
     }
 
 
