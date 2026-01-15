@@ -241,6 +241,8 @@ class ExpensesController extends Controller
 
         $expenses_data = array();
 
+        $total_amount = 0;
+
         foreach ($lst_expenses as $expense) {
             $expenses_data[] = array(
                 'ref' => $expense->ac_id,
@@ -250,11 +252,13 @@ class ExpensesController extends Controller
                 'Amount' => $expense->ac_amount,
                 'note' => $expense->ac_description,
             );
+
+            $total_amount = $total_amount + $expense->ac_amount;
         }
 
         $result_array['is_error'] = 0;
         $result_array['rows'] = $expenses_data;
-        $result_array['total'] = $count_expenses;
+        $result_array['total'] = $total_amount;
         $result_array['page'] = $page;
         $result_array['total_pages'] = $total_pages;
 

@@ -1050,6 +1050,7 @@ class OrdersController extends Controller
         $date_to             = $request->input('to_date');
         $date_range          = $request->input('date_range');
         $payment_type          = $request->input('payment_type');
+        $search_key         = $request->input('search_key');
 
 
         $nbr_rows_per_pages    = 10;
@@ -1121,6 +1122,12 @@ class OrdersController extends Controller
             $where_cond .= " AND so_payment_type = " . $payment_type;
         }
 
+        if(strlen($search_key) > 0)
+        {
+            $orders_cond = $orders_cond->where('so_order_code','LIKE',"%" . $search_key . "%");
+            $where_cond .= " AND so_order_code  LIKE '%" . $search_key . "%'";
+        }
+
 
         $results = DB::select("SELECT SUM(so_total_cost) as total_amount FROM sales_orders " . $where_cond);
 
@@ -1130,7 +1137,7 @@ class OrdersController extends Controller
         $total_pages = ceil($orders_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
         $orders_cond = $orders_cond;
-        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_order_code', 'ASC')->get();
+        $lst_orders = $orders_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('so_creation_date', 'DESC')->get();
 
         $total_cost = 0;
 
@@ -1564,7 +1571,7 @@ class OrdersController extends Controller
             $items_order[$index]['product_name'] = $item_info->Products->p_product_name;
             $items_order[$index]['uid'] = $item_info->fk_product_id;
             $items_order[$index]['product_cost'] = $item_info->so_product_cost;
-            $items_order[$index]['product_price'] = ceil($item_info->so_product_cost * $item_info->so_product_quantity);
+            $items_order[$index]['product_price'] = $item_info->so_product_price;
             $items_order[$index]['product_quantity'] = $item_info->so_product_quantity;
             $items_order[$index]['product_currency'] = $item_info->so_product_currency;
 

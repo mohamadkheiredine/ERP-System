@@ -516,6 +516,11 @@ class DealsController extends Controller
             $payroll_comissions->pc_deal_id = $ad_id;
             $payroll_comissions->save();
 
+            $comission_count = PayrollsComissions::wherePcIsDeleted(0)->count() + 1;
+
+
+            $code = sprintf('%07d', $comission_count);
+
             $sales_info = Users::find($fk_sales_id);
 
 
@@ -525,12 +530,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = $ad_sales_comm;
             $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -539,12 +544,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $sales_info->u_account_id;
             $TransactionMovement->tm_sub_ledger_account = $sales_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $ad_sales_comm;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -561,6 +566,8 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
+            $comission_count = $comission_count + 1;
+            $code = sprintf('%07d', $comission_count);
 
             $tech_info = Users::find($fk_technician_id);
 
@@ -569,12 +576,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = $ad_technician_comm;
             $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -583,12 +590,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $tech_info->u_account_id;
             $TransactionMovement->tm_sub_ledger_account = $tech_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $ad_technician_comm;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -603,6 +610,8 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
+            $comission_count = $comission_count + 1;
+            $code = sprintf('%07d', $comission_count);
 
             $tele_info = Users::find($fk_telemarketing_id);
 
@@ -611,26 +620,26 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" .$code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
-            $TransactionMovement->tm_debit              = $ad_technician_comm;
+            $TransactionMovement->tm_debit              = $ad_telemarketing_comm;
             $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $tech_info->u_account_id;
-            $TransactionMovement->tm_sub_ledger_account = $tech_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_ledger_account     = $tele_info->u_account_id;
+            $TransactionMovement->tm_sub_ledger_account = $tele_info->u_account_id;
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
-            $TransactionMovement->tm_credit             = $ad_technician_comm;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_credit             = $ad_telemarketing_comm;
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -644,6 +653,9 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
+            $comission_count = $comission_count + 1;
+            $code = sprintf('%07d', $comission_count);
+
 
             $sup_info = Users::find($fk_supervisor_id);
 
@@ -652,12 +664,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = $ad_supervisor_comm;
             $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -666,12 +678,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $sup_info->u_account_id;
             $TransactionMovement->tm_sub_ledger_account = $sup_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $ad_supervisor_comm;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -687,6 +699,8 @@ class DealsController extends Controller
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $payroll_comissions->save();
 
+            $comission_count = $comission_count + 1;
+            $code = sprintf('%07d', $comission_count);
 
             $manager_info = Users::find($fk_manager_id);
 
@@ -695,12 +709,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = $ad_manager_comm;
             $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -709,12 +723,12 @@ class DealsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $manager_info->u_account_id;
             $TransactionMovement->tm_sub_ledger_account = $manager_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $account_deal->Account->ca_account_code . " - " . $account_deal->Account->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = $ad_manager_comm;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date      = date("Y-m-d");
+            $TransactionMovement->tm_creation_date      = $ad_deal_date;
+            $TransactionMovement->tm_transaction_date      = $ad_deal_date;
             $TransactionMovement->tm_currency_id        = $ad_currency_id;
             $TransactionMovement->save();
 
@@ -739,7 +753,6 @@ class DealsController extends Controller
 
         if($action == "add")
         {
-
             // generate all bills for this deal
             if($ad_contract_type == 2)
             {

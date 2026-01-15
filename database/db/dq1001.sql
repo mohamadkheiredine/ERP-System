@@ -724,3 +724,7 @@ ALTER TABLE fnb_orders
             REFERENCES sys_status(ss_id)
             ON UPDATE CASCADE
             ON DELETE RESTRICT;
+
+
+ALTER TABLE `acc_transaction_movements`
+    CHANGE COLUMN `tm_trans_code` `tm_trans_code` VARCHAR(75) NULL DEFAULT NULL ;

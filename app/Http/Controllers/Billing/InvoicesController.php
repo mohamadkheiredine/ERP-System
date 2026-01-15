@@ -64,6 +64,7 @@ use App\models\Inventory\WareHouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use App\models\Inventory\WareHouseMovement;
 use App\models\SRM\SupplierQuotations;
+use App\models\CRM\CRMDeals;
 
 
 class InvoicesController extends Controller
@@ -1290,6 +1291,103 @@ class InvoicesController extends Controller
         $result_array['error_msg'] = "Operation Completed Successfully";
         return Response()->json($result_array);
     }
+
+
+    /**
+     * Return Invoice
+     * @param Request $request
+     * @return void
+     */
+    public function ReturnInvoice(Request $request)
+    {
+        $bi_id = $request->input('bi_id');
+        $result_array = array();
+        $invoice_info = Invoices::find($bi_id);
+        $default_company_id = session('default_company_id');
+
+        // get transaciton id and save accounting records
+        $trans_id = $invoice_info->bi_transaction_id;
+
+        $transaction_info = Transactions::find($trans_id);
+
+
+        $account_id = 0;
+        if($invoice_info->fk_customer_id != null)
+        {
+            $customer_info = Customers::find($invoice_info->fk_customer_id);
+            $account_id = $customer_info->ic_account_number;
+        }
+        else
+        {
+
+            $client_info = CRMAccounts::find($invoice_info->bi_client_id);
+            $account_id = $client_info->ca_accounting_id;
+        }
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $trans_id;
+        $TransactionMovement->tm_company_id            = $default_company_id;
+        $TransactionMovement->tm_trans_code         = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_ledger_account     = $account_id;
+        $TransactionMovement->tm_sub_ledger_account = $account_id;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
+        $TransactionMovement->tm_debit              = 0;
+        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
+        $TransactionMovement->tm_currency_id        =$invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $trans_id;
+        $TransactionMovement->tm_company_id            = $default_company_id;
+        $TransactionMovement->tm_trans_code         = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_ledger_account     = 701;
+        $TransactionMovement->tm_sub_ledger_account = 701;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
+        $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_credit             = 0;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
+        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+        // get deal info
+
+        $client_id  =  $invoice_info->bi_client_id;
+
+        $deal_info = CRMDeals::whereFkAccountId($client_id)->first();
+        $deal_id = $deal_info->ad_id;
+
+
+
+        // delete bills not paied
+        $bills_info = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($deal_id)->whereIpPaymentStatus(0)->delete();
+
+
+        // change status of deal to be cancel
+        $deal_info = CRMDeals::find($deal_id);
+        $deal_info->ad_is_approved = 3;
+        $deal_info->save();
+
+
+        $invoice_info->bi_invoice_status = 0;
+        $invoice_info->save();
+
+
+
+        // return stock to product stock management
+
+
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+
+        return Response()->json($result_array);
+    }
+
 
     /**
      * Save invoice info to the database

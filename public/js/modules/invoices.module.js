@@ -403,6 +403,11 @@ invoices_module = {
 					invoices_module.RevertBacktodraft();
 				}
 				break;
+                case "RETURN_INVOICE" :
+				{
+					invoices_module.ReturnInvoice();
+				}
+				break;
 				case "PRINT_INVOICE" :
 				{
 					invoices_module.DownloadpdfInvoice();
@@ -508,6 +513,22 @@ invoices_module = {
 	            	  {
 		            	  bootbox.alert(response.error_msg);
 	            	  }
+		            }
+		        });
+		},
+        ReturnInvoice : function(){
+			var bi_id = $('input[name=bi_id]').val();
+			 var base_url = $('#BASE_URL').val();
+		      var _token = $('input[name=_token]').val();
+		        var str_params ={bi_id : bi_id , _token : _token};
+		         $.ajax
+		        ({
+		            url : base_url + "/request/billing/returninvoice",
+		            data : str_params,
+		            dataType : "Json",
+		            type : "POST",
+		            success : function(response){
+                        bootbox.alert(response.error_msg);
 		            }
 		        });
 		},

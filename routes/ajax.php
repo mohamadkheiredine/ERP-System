@@ -412,6 +412,7 @@ Route::get('/request/bills/downloadbillsreport','Billing\InvoicePaymentsControll
 Route::get('/request/bills/getlistbillresults','Billing\InvoicePaymentsController@GetListBillResult');
 Route::post('/request/bills/savecallbillresult','Billing\InvoicePaymentsController@SaveBillResultInfo');
 Route::post('/request/bills/getregionarea','Billing\InvoicePaymentsController@GetRegionArea');
+Route::post('/request/billing/returninvoice','Billing\InvoicesController@ReturnInvoice');
 
 Route::get('/request/billing/getcompanysupplier','Billing\InvoicesController@GetCompanySupplier');
 
@@ -437,7 +438,7 @@ Route::get('/request/billing/displaylistinvoicetemplates','Billing\InvoiceTempla
 Route::post('/request/billing/saveinvoicetemplateinfo','Billing\InvoiceTemplatesController@SaveTemplateInfo');
 Route::put('/request/billing/saveinvtemplateitem','Billing\InvoiceTemplatesController@SaveInvoiceTemplateItemInfo');
 Route::delete('/request/billing/deleteinvoicetemplateinfo','Billing\InvoiceTemplatesController@DeleteTemplateInfo');
-Route::delete('/request/request/billing/deletetemplateitem','Billing\InvoiceTemplatesController@DeleteTemplateInvoiceItem');
+Route::delete('/request/billing/deletetemplateitem','Billing\InvoiceTemplatesController@DeleteTemplateInvoiceItem');
 
 
 Route::post('/request/journalvouchers/displaylist','Billing\JournalVouchersController@DisplayList');

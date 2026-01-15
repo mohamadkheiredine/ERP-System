@@ -203,7 +203,7 @@ class UsersController extends Controller
         return Response()->json($result_array)->cookie(
             'fisical_year',
             $fisical_year,
-            600000,
+            525600,
             '/',
             null,
             false,      // ← Change to FALSE (not true)

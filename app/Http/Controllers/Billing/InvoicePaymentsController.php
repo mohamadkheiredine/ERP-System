@@ -575,7 +575,6 @@ class InvoicePaymentsController extends Controller
 
             // add comission
 
-            $delete = PayrollsComissions::wherePcDealId($bills_info->ip_id)->delete();
 
             $payroll_comissions = new PayrollsComissions();
             $payroll_comissions->pc_employee_id = $ip_collector_id;
@@ -586,14 +585,15 @@ class InvoicePaymentsController extends Controller
             $payroll_comissions->pc_deal_id = $bills_info->ip_id;
             $payroll_comissions->pc_comission_label = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
             $payroll_comissions->save();
-
+            $comission_count = PayrollsComissions::wherePcIsDeleted(0)->count() + 1;
+            $code = sprintf('%07d', $comission_count);
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->tm_company_id            = $default_company_id;
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = 6314;
             $TransactionMovement->tm_sub_ledger_account = 6314;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
             $TransactionMovement->tm_debit              = 1;
             $TransactionMovement->tm_credit             = 0;
@@ -607,7 +607,7 @@ class InvoicePaymentsController extends Controller
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $collector_info->u_account_id;
             $TransactionMovement->tm_sub_ledger_account = $collector_info->u_account_id;
-            $TransactionMovement->tm_trans_code         = "COMMISSION";
+            $TransactionMovement->tm_trans_code         = "COMMISSION" . $code;
             $TransactionMovement->tm_ledger_label       = "Commission on file # "  . $client_info->ca_account_code . " - " . $client_info->ca_account_name;
             $TransactionMovement->tm_debit              = 0;
             $TransactionMovement->tm_credit             = 1;

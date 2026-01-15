@@ -58,6 +58,7 @@ th{
                     @if( $invoice_info->bi_invoice_status == 0 )
                         <li><a class="dropdown-item quickactions" data-action_type="CONVERT_TO_OFFICIAL" href="#">Convert to official Invoice</a></li>
                     @else
+                      <li><a class="dropdown-item quickactions" data-action_type="RETURN_INVOICE" href="#">Return Invoice</a></li>
                         <li><a class="dropdown-item quickactions" data-action_type="REVERT_TO_DRAFT" href="#">Refert Back to draft Invoice</a></li>
                     @endif
                     <li><a class="dropdown-item quickactions" data-action_type="CREATE_RECEIPT" href="#">Create Receipt</a></li>
