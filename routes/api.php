@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 
 
 Route::post('/request/api/login', 'Api\UsersController@LoginPOS');
+Route::post('/request/api/loginposbypin', 'Api\UsersController@LoginPOSByPin');
 Route::post('/request/api/logout', 'Api\UsersController@Logout');
 Route::post('/request/api/getlistcurrency', 'Api\GeneralController@getlistcurrency');
 Route::post('/request/api/getlistchartofaccounts', 'Api\GeneralController@GetListChartofAccounts');
