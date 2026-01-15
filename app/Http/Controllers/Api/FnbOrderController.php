@@ -98,7 +98,23 @@ class FnbOrderController extends Controller
             ->increment('is_quanity', $qty);
     }
 
+    private function resolvePendingKitchenStatusId(): ?int
+    {
+        return SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+            ->orderBy('ss_id')
+            ->value('ss_id');
+    }
 
+
+
+    /**
+     * Api to create order
+     *
+     * @author Mohamad Kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function CreateOrder(Request $request)
     {
         $g_hash   = $request->input('g_hash');
@@ -196,6 +212,16 @@ class FnbOrderController extends Controller
 
         $creation_date = date("Y-m-d H:i:s");
 
+
+        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
+
+        if (!$pendingKitchenStatusId) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'Kitchen Pending status is not configured'
+            ]);
+        }
+
         $order_info = new FnbOrders();
         $order_info->fo_order_code = $order_code;
         $order_info->fo_order_type = $order_type;
@@ -203,6 +229,7 @@ class FnbOrderController extends Controller
         $order_info->fo_branch_id = $company_id;
         $order_info->fo_customer_id = $customer_id;
         $order_info->fo_order_status = 5;
+        $order_info->fo_kitchen_status = $pendingKitchenStatusId;
         $order_info->fo_order_datetime = $creation_date;
         $order_info->fo_subtotal = $sub_total_display;
         $order_info->fo_discount = $discount;
@@ -240,10 +267,10 @@ class FnbOrderController extends Controller
             $currency = Currency::find($order_info->fo_currency_id); // fallback
         }
 
-        $pendingStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')->where('ss_status_title', 'Pending')->value('ss_id');
+        // $pendingStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')->where('ss_status_title', 'Pending')->value('ss_id');
 
-        $order_info->fo_kitchen_status = $pendingStatusId;
-        $order_info->save();
+        // $order_info->fo_kitchen_status = $pendingStatusId;
+        // $order_info->save();
         $final_items = [];
 
         foreach ($order_items as $key => $item_order) {
@@ -253,7 +280,7 @@ class FnbOrderController extends Controller
             $item->oi_quantity = $item_order['quantity'];
             $item->oi_unit_price = $item_order['price'];
             $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
-            $item->oi_kitchen_status = $pendingStatusId;
+            $item->oi_kitchen_status = $pendingKitchenStatusId;
             $item->oi_station_id = isset($item_order['station_id']) ? $item_order['station_id'] : 1;
             $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
             $item->oi_currency_id = $display_currency_id;
@@ -483,13 +510,23 @@ class FnbOrderController extends Controller
             return response()->json(['is_error' => 1, 'error_msg' => 'Invalid hash']);
         }
 
+        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
+
+        if (!$pendingKitchenStatusId) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'Kitchen Pending status is not configured'
+            ]);
+        }
 
         // Create new empty order
         $order = new FnbOrders();
         $order->fo_branch_id = $company_id;
         $order->fo_store_id = $store_id;
         $order->fo_order_status = 1; // pending
+        $order->fo_kitchen_status = $pendingKitchenStatusId;
         $order->fo_order_type = "dine_in";
+        $order->fo_customer_id    = null;
         $order->save();
 
         $order_id = $order->fo_id;
@@ -1259,7 +1296,7 @@ class FnbOrderController extends Controller
             ->where('fnb_orders.fo_is_deleted', 0);
 
         if (!empty($warehouse_id)) {
-            $query->where('fnb_orders.warehouse_id', $warehouse_id);
+            $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
         }
 
         if (!empty($date_from)) {
@@ -1277,7 +1314,7 @@ class FnbOrderController extends Controller
                 'fnb_orders.fo_order_code',
                 'fnb_orders.fo_total_amount',
                 'fnb_orders.fo_order_datetime',
-                'fnb_orders.warehouse_id',
+                'fnb_orders.fk_warehouse_id',
                 'fnb_orders.fo_currency_id',
                 'c.cc_currency_code'
             )
@@ -1291,7 +1328,7 @@ class FnbOrderController extends Controller
                 'fo_order_code'     => $order->fo_order_code,
                 'fo_total_amount'   => $order->fo_total_amount,
                 'fo_order_datetime' => $order->fo_order_datetime,
-                'warehouse_id'      => $order->warehouse_id,
+                'warehouse_id'      => $order->fk_warehouse_id,
                 'currency_code'     => $order->cc_currency_code == null ? 'USD' : $order->cc_currency_code,
             ];
         }
