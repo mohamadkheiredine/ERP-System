@@ -25,6 +25,10 @@ use App\models\FnB\Modifier;
 use App\library\OrdersExport;
 use App\models\System\SystemStatus;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+
+use App\Models\Fnb\FnbWasteStock;
+use App\models\Inventory\Products;
 
 class FnbOrderController extends Controller
 {
@@ -1408,5 +1412,211 @@ class FnbOrderController extends Controller
             "is_error" => 0,
             "lst_pending_orders" => $orders
         ]);
+    }
+
+    /**
+     * Api to return order
+     *
+     * @author Mohamad Kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ReturnOrder(Request $request)
+    {
+        $g_hash     = $request->input('g_hash');
+        $user_id    = (int) $request->input('user_id');
+        $order_code = trim((string) $request->input('order_code'));
+        $reason     = (string) $request->input('reason', '');
+
+        $user_info = Users::find($user_id);
+        if (!$user_info) {
+            return response()->json(["is_error" => 1, "error_msg" => "User not found"]);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash !== $g_hash) {
+            return response()->json(["is_error" => 1, "error_msg" => "hash sequence is not valid !!"]);
+        }
+
+        if ($order_code === '') {
+            return response()->json(["is_error" => 1, "error_msg" => "order_code is required"]);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $now = Carbon::now();
+
+            $order = FnbOrders::where('fo_order_code', $order_code)
+                ->where('fo_is_deleted', 0)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$order) {
+                DB::rollBack();
+                return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
+            }
+
+            if ((int) $order->fo_returned === 1) {
+                DB::rollBack();
+                return response()->json(['is_error' => 1, 'error_msg' => 'Order already returned']);
+            }
+
+            $warehouse_id = (int) $order->fk_warehouse_id;
+
+            // menu items
+            $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)
+                ->where('oi_is_deleted', 0)
+                ->get();
+
+            if ($orderItems->isEmpty()) {
+                DB::rollBack();
+                return response()->json(['is_error' => 1, 'error_msg' => 'Order has no items']);
+            }
+
+            // Build waste by product
+            $wasteByProduct = []; // product_id => total_waste_qty
+
+            foreach ($orderItems as $oi) {
+
+                $menuItemId = (int) $oi->oi_item_id;
+                $itemQty    = (float) $oi->oi_quantity;
+
+                // ingredients -> products
+                $ingredients = FnbIngredients::where('in_item_id', $menuItemId)
+                    ->where('in_is_deleted', 0)
+                    ->get();
+
+                foreach ($ingredients as $ing) {
+                    $productId  = (int) $ing->in_product_id;
+                    $perItemQty = (float) $ing->in_stock_quantity;
+
+                    $need = $itemQty * $perItemQty;
+                    if ($need <= 0) continue;
+
+                    $wasteByProduct[$productId] =
+                        ($wasteByProduct[$productId] ?? 0) + $need;
+                }
+
+                // jib l products mn l modifiers
+                $orderModifiers = DB::table('fnb_order_item_modifiers AS oim')
+                    ->join('fnb_menu_item_modifiers AS mim', function ($join) use ($menuItemId) {
+                        $join->on('mim.fk_modifier_id', '=', 'oim.im_modifier_id')
+                            ->where('mim.fk_menu_item_id', '=', $menuItemId);
+                    })
+                    ->where('oim.im_item_id', $oi->oi_id)
+                    ->where('oim.im_is_deleted', 0)
+                    ->where('mim.im_is_deleted', 0)
+                    ->where('oim.im_modifier_type', 'add')
+
+                    ->where('mim.im_product_id', '>', 0)
+
+                    ->select(
+                        'mim.im_product_id',
+                        DB::raw('COUNT(*) as modifier_qty')
+                    )
+                    ->groupBy('mim.im_product_id')
+                    ->get();
+
+
+                foreach ($orderModifiers as $mod) {
+
+                    $productId  = (int) $mod->im_product_id;
+                    $perItemQty = (float) $mod->modifier_qty;
+
+                    if ($perItemQty <= 0) {
+                        continue;
+                    }
+
+                    $need = $itemQty * $perItemQty;
+
+                    if ($need <= 0) {
+                        continue;
+                    }
+
+                    $wasteByProduct[$productId] =
+                        ($wasteByProduct[$productId] ?? 0) + $need;
+                }
+            }
+
+            if (empty($wasteByProduct)) {
+                DB::rollBack();
+                return response()->json([
+                    'is_error' => 1,
+                    'error_msg' => 'No product waste could be calculated'
+                ]);
+            }
+
+            // FIFO waste distribution
+            foreach ($wasteByProduct as $productId => $totalWasteQty) {
+
+                $remaining = (float) $totalWasteQty;
+
+                $stocks = Stocks::where('fk_product_id', $productId)
+                    ->where('fk_warehouse_id', $warehouse_id)
+                    ->where('is_is_deleted', 0)
+                    ->orderBy('is_id', 'asc')   // FIFO
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($stocks->isEmpty()) {
+                    throw new \Exception("No stock rows for product {$productId}");
+                }
+
+                foreach ($stocks as $stock) {
+                    if ($remaining <= 0) break;
+
+                    $available = (float) $stock->is_quanity;
+                    if ($available <= 0) continue;
+
+                    $consume = min($available, $remaining);
+
+                    FnbWasteStock::create([
+                        'fk_product_id'   => $productId,
+                        'fk_stock_id'     => $stock->is_id,
+                        'fk_warehouse_id' => $warehouse_id,
+                        'ws_quantity'     => $consume,
+                        'ws_date'         => $now->toDateString(),
+                        'ws_created_by'   => $user_id,
+                        'ws_created_at'   => $now,
+                    ]);
+
+                    $remaining -= $consume;
+                }
+
+                if ($remaining > 0) {
+                    throw new \Exception(
+                        "Insufficient stock to register waste for product {$productId}"
+                    );
+                }
+            }
+
+            // mark order as returned
+            $order->fo_returned        = 1;
+            $order->fo_returned_date   = $now;
+            $order->fo_returned_reason = $reason;
+            $order->save();
+
+            DB::commit();
+
+            return response()->json([
+                'is_error' => 0,
+                'message' => 'Order returned successfully (products wasted, stock not restored)',
+                'order_id' => $order->fo_id,
+                'order_code' => $order->fo_order_code,
+                'warehouse_id' => $warehouse_id,
+                'waste_products_count' => count($wasteByProduct),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'Return order failed',
+                'debug' => $e->getMessage(),
+            ]);
+        }
     }
 }

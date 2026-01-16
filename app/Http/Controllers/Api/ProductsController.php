@@ -45,6 +45,7 @@ use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Accounting\Transactions;
 use App\models\Accounting\TransactionMovements;
+use App\Models\Fnb\FnbWasteStock;
 use App\models\System\CurrencyExchangeRates;
 use App\models\Inventory\StockIds;
 use App\models\SRM\Suppliers;
@@ -52,6 +53,11 @@ use App\models\Sales\Orders;
 use App\models\Sales\OrderProducts;
 use App\models\Sales\Stores;
 use App\models\Sales\StoreWarehouses;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Maatwebsite\Excel\Facades\Excel;
+use App\library\WasteExport;
+
+
 
 class ProductsController extends Controller
 {
@@ -1515,5 +1521,207 @@ class ProductsController extends Controller
             'is_error' => 0,
             'products' => $products
         ]);
+    }
+
+    /**
+     * Api to get waste
+     * @author Mohammed kheiredine
+     * @access public
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetListOfWastes(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $warehouse_id = $request->input('warehouse_id');
+        $product_id   = $request->input('product_id');
+        $date_from    = $request->input('date_from');
+        $date_to      = $request->input('date_to');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash !== $g_hash) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'hash sequence is not valid !!'
+            ]);
+        }
+
+        $query = FnbWasteStock::query();
+
+        if (!empty($warehouse_id)) {
+            $query->where('fk_warehouse_id', $warehouse_id);
+        }
+
+        if (!empty($product_id)) {
+            $query->where('fk_product_id', $product_id);
+        }
+
+        if (!empty($date_from)) {
+            $query->whereDate('ws_date', '>=', $date_from);
+        }
+
+        if (!empty($date_to)) {
+            $query->whereDate('ws_date', '<=', $date_to);
+        }
+
+        $waste = $query
+            ->orderBy('ws_date', 'desc')
+            ->orderBy('ws_id', 'desc')
+            ->get();
+
+        return response()->json([
+            'is_error' => 0,
+            'count' => $waste->count(),
+            'data' => $waste
+        ]);
+    }
+
+
+    public function DownloadWastePdf(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $warehouse_id = $request->input('warehouse_id');
+        $product_id   = $request->input('product_id');
+        $date_from    = $request->input('date_from');
+        $date_to      = $request->input('date_to');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = hash(
+            'sha256',
+            "POS567{$user_info->u_username}{$user_info->u_fullname}{$user_info->u_email}POS567"
+        );
+
+        if ($c_hash !== $g_hash) {
+            abort(403, 'Invalid hash');
+        }
+
+
+        $wastes = FnbWasteStock::with(['product', 'warehouse'])
+            ->when($warehouse_id, function ($q) use ($warehouse_id) {
+                $q->where('fk_warehouse_id', $warehouse_id);
+            })
+            ->when($product_id, function ($q) use ($product_id) {
+                $q->where('fk_product_id', $product_id);
+            })
+            ->when($date_from, function ($q) use ($date_from) {
+                $q->whereDate('ws_date', '>=', $date_from);
+            })
+            ->when($date_to, function ($q) use ($date_to) {
+                $q->whereDate('ws_date', '<=', $date_to);
+            })
+            ->orderBy('ws_date', 'desc')
+            ->get();
+
+        if ($wastes->isEmpty()) {
+            abort(404, 'No waste data found');
+        }
+
+        $display = view('templates.waste_pdf')->render();
+
+        $rows = '';
+
+        foreach ($wastes as $w) {
+            $rows .= '
+            <tr>
+                <td>' . $w->ws_date . '</td>
+                <td>' . e(optional($w->product)->p_product_name ?? '-') . '</td>
+                <td>' . e(optional($w->warehouse)->w_warehouse_name ?? '-') . '</td>
+                <td>' . number_format($w->ws_quantity, 1) . '</td>
+            </tr>
+        ';
+        }
+
+        $display = str_replace('%WASTE_ROWS%', $rows, $display);
+        $display = str_replace('%PRINT_DATE%', date('d-m-Y H:i:s'), $display);
+        $display = str_replace('%PRINTED_BY%', $user_info->u_fullname, $display);
+
+        return PDF::loadHTML($display)
+            ->setPaper('a4')
+            ->setOption('encoding', 'UTF-8')
+            ->download('waste-report.pdf');
+    }
+
+    public function DownloadWasteExcel(Request $request)
+    {
+        $user_id      = $request->input('user_id');
+        $g_hash       = $request->input('g_hash');
+        $warehouse_id = $request->input('warehouse_id');
+        $product_id   = $request->input('product_id');
+        $date_from    = $request->input('date_from');
+        $date_to      = $request->input('date_to');
+
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'User not found'
+            ]);
+        }
+
+        $c_hash = hash(
+            'sha256',
+            "POS567{$user_info->u_username}{$user_info->u_fullname}{$user_info->u_email}POS567"
+        );
+
+        if ($c_hash !== $g_hash) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'hash sequence is not valid !!'
+            ]);
+        }
+
+        $wastes = FnbWasteStock::with(['product', 'warehouse'])
+            ->when($warehouse_id, function ($q) use ($warehouse_id) {
+                $q->where('fk_warehouse_id', $warehouse_id);
+            })
+            ->when($product_id, function ($q) use ($product_id) {
+                $q->where('fk_product_id', $product_id);
+            })
+            ->when($date_from, function ($q) use ($date_from) {
+                $q->whereDate('ws_date', '>=', $date_from);
+            })
+            ->when($date_to, function ($q) use ($date_to) {
+                $q->whereDate('ws_date', '<=', $date_to);
+            })
+            ->orderBy('ws_date', 'desc')
+            ->get();
+
+        if ($wastes->isEmpty()) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'No waste data found'
+            ]);
+        }
+
+        $data = [];
+
+        foreach ($wastes as $w) {
+            $data[] = [
+                $w->ws_date,
+                optional($w->product)->p_product_name ?? '',
+                optional($w->warehouse)->w_warehouse_name ?? '',
+                number_format($w->ws_quantity, 3),
+                $w->ws_created_at,
+            ];
+        }
+
+
+        return Excel::download(
+            new WasteExport($data),
+            'waste_report.xlsx'
+        );
     }
 }
