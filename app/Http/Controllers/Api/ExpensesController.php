@@ -101,6 +101,9 @@ class ExpensesController extends Controller
     public function SubmitNewexpense(Request $request)
     {
         $user_id = $request->input('user_id');
+        $company_id = $request->input('company_id');
+        $store_id = $request->input('store_id');
+
         $g_hash = $request->input('g_hash');
         $expense_id = $request->input('expense_id');
         $date = $request->input('date');
@@ -140,6 +143,7 @@ class ExpensesController extends Controller
         $expenses_info = new Expenses();
         $expenses_info->ac_employee_id = $user_id;
         $expenses_info->ac_category_id = $category_id;
+        $expenses_info->ac_company_id = $company_id;
         $expenses_info->ac_amount = $amount;
         $expenses_info->ac_expense_date = $date;
         $expenses_info->ac_currency_id = $currency_id;
@@ -164,6 +168,9 @@ class ExpensesController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_company_id     = $company_id;
+        $TransactionMovement->tm_store_id     = $store_id;
+        $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
         $TransactionMovement->tm_ledger_account     = $payment_info->pt_payment_account;
         $TransactionMovement->tm_sub_ledger_account = $payment_info->pt_payment_account;
         $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
@@ -176,6 +183,9 @@ class ExpensesController extends Controller
 
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
+        $TransactionMovement->tm_company_id         = $company_id;
+        $TransactionMovement->tm_store_id           = $store_id;
+        $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
         $TransactionMovement->tm_ledger_account     = $expenses_category->pt_payment_account;
         $TransactionMovement->tm_sub_ledger_account = $expenses_category->pt_payment_account;
         $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
