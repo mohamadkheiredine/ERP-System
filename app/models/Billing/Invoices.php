@@ -24,34 +24,39 @@ class Invoices extends Model
 {
     protected   $table          = 'billing_invoices';
     public      $timestamps     = false;
-    protected   $primaryKey     = "bi_id";   
-    
+    protected   $primaryKey     = "bi_id";
+
 
     public function Account()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','fk_account_id');
     }
-    
-    
+
+
     public function Client()
     {
         return $this->hasOne('App\models\CRM\CRMAccounts', 'ca_id','bi_client_id');
     }
-    
+
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','bi_invoice_currency');
     }
-    
-    
+
+
+    public function SecCurrency()
+    {
+        return $this->hasOne('App\models\System\Currency', 'cc_id','bi_second_currency');
+    }
+
     public function CreatedUser()
     {
         return $this->hasOne('App\models\Users\Users', 'id','bi_created_by');
     }
-    
+
     public function UpdatedUser()
     {
         return $this->hasOne('App\models\Users\Users', 'id','bi_last_updated_by');
     }
-    
+
 }

@@ -253,6 +253,115 @@ class InvoicesController extends Controller
     }
 
 
+    public function DownloadInvoiceSec( $bi_id )
+    {
+        $invoice_info   = Invoices::find($bi_id);
+        $company_id     = session('company_id');
+        $company_info   = Companies::find($company_id);
+        $bank_id        = $invoice_info->fk_bankaccount_id;
+        $bi_client_id   = $invoice_info->bi_client_id;
+        $fk_customer_id = $invoice_info->fk_customer_id;
+        if($bank_id != 0 ) $bank_info      = BankAccounts::find($bank_id);
+
+        if($bi_client_id != 0) $crm_account    = CRMAccounts::find($bi_client_id);
+        if($fk_customer_id != 0) $crm_customer = Customers::find($fk_customer_id);
+
+        $display = "";
+
+        $data = array();
+        $display = view("templates.invoices",$data)->render();
+
+        $AccountingManager = new AccountingManager();
+        $params_array = array(
+            "invoice_info" => $invoice_info
+        );
+        $total_array = $AccountingManager->CalculateTotalCostInvoice( $params_array );
+
+        $data = array(
+            "items_array" => $total_array['items_array'],
+            "total_cost" => $total_array['total_cost'],
+            "total_discount" => $total_array['total_discount'],
+            "total_tax" => $total_array['total_tax'],
+            "total_price" => $total_array['total_price'],
+            "currency" => $total_array['currency']
+        );
+        $item_table = view('billing.invoiceproducts',$data)->render();
+
+
+
+
+        $profile_path     = public_path().'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+        $profile_url = url('/').'/'.Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src. $company_info->cd_logo_file_name. "." . $company_info->cd_logo_file_extension;
+        if(!is_file($profile_path))
+        {
+            $profile_url= url('images/NoImageAvailable.jpg');
+        }
+
+        $display = str_replace("%company_url%", $company_info->cd_company_website, $display);
+        $display = str_replace("%logo_image_url%",$profile_url, $display);
+        $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
+        $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
+        $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
+        $display = str_replace("%company_email%",$company_info->cd_company_email, $display);
+        $display = str_replace("%invoice_code%",$invoice_info->bi_invoice_ref, $display);
+        $display = str_replace("%invoice_description%",$invoice_info->bi_invoice_note, $display);
+        $display = str_replace("%creation_date%",$invoice_info->bi_invoice_date, $display);
+        $display = str_replace("%due_date%",$invoice_info->bi_due_date, $display);
+        $display = str_replace("%registration_number%",$company_info->cd_register_number, $display);
+        if($bank_id != 0 )
+        {
+            $display = str_replace("%bank_name%",$bank_info->ba_bank_name, $display);
+            $display = str_replace("%bank_address%",$bank_info->ba_account_address, $display);
+            $display = str_replace("%bank_account_number%",$bank_info->ba_account_number, $display);
+            $display = str_replace("%bank_swift_code%",$bank_info->ba_account_swift, $display);
+            $display = str_replace("%bank_account_name%",$bank_info->ba_account_owner_name, $display);
+            $display = str_replace("%bank_iban%",$bank_info->ba_account_iban, $display);
+
+        }
+        else
+        {
+            $display = str_replace("%bank_name%","", $display);
+            $display = str_replace("%bank_address%","", $display);
+            $display = str_replace("%bank_account_number%","", $display);
+            $display = str_replace("%bank_swift_code%","", $display);
+            $display = str_replace("%bank_account_name%","", $display);
+            $display = str_replace("%bank_iban%","", $display);
+        }
+
+
+        $display = str_replace("%item_table%",$item_table, $display);
+
+        if($bi_client_id != 0)
+        {
+            $display = str_replace("%client_name%",$crm_account->ca_account_name, $display);
+            $display = str_replace("%client_address%",$crm_account->ca_billing_city . " " . $crm_account->ca_billing_street, $display);
+            $display = str_replace("%client_email%",$crm_account->ca_account_email, $display);
+            $display = str_replace("%client_phone%",$crm_account->ca_account_phone, $display);
+        }
+        else if($fk_customer_id != 0)
+        {
+            $display = str_replace("%client_name%",$crm_customer->ic_customer_name , $display);
+            $display = str_replace("%client_address%",$crm_customer->ic_customer_address, $display);
+            $display = str_replace("%client_email%",$crm_customer->ic_customer_email, $display);
+            $display = str_replace("%client_phone%",$crm_customer->ic_customer_phone, $display);
+        }
+
+
+        $display = str_replace("%contact_name%",$company_info->cd_contact_name, $display);
+        $display = str_replace("%contact_phone%",$company_info->cd_contact_mobile, $display);
+        $display = str_replace("%contact_email%",$company_info->cd_contact_email, $display);
+
+
+
+        return PDF::loadHTML($display)
+            ->setPaper('a4')
+            ->setOption('encoding', 'UTF-8')
+            ->download('invoice-' . strtolower($invoice_info->bi_invoice_ref) . '.pdf');
+    }
+
+
+
+
     /**
      * Download Invoice after fill all required variables
      *
@@ -1377,8 +1486,6 @@ class InvoicesController extends Controller
         $invoice_info->save();
 
 
-
-        // return stock to product stock management
 
 
 

@@ -210,7 +210,7 @@ th{
                          <div class="col-md-4">
                               <div class="form-group">
                                     <label class="control-label"> Exchange Rate </label><br/>
-                                    <input type="number" autocomplete="off" min="0" max="9999999" step="0.01" name="bi_exchange_rate" id="BI_EXCHANGE_RATE" class="form-control"  maxlength="15"  value="{{ session('cd_exchange_rate') }}" />
+                                    <input type="text" autocomplete="off" name="bi_exchange_rate" id="BI_EXCHANGE_RATE" class="form-control"  maxlength="15"  value="{{ session('cd_exchange_rate') }}" />
                                 </div>
                         </div>
                         <div class="col-md-4">

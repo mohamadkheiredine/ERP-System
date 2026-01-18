@@ -561,19 +561,14 @@ ALTER TABLE `prod_farm_cycles` ADD COLUMN `fc_cycle_status` INT NULL DEFAULT 0 A
 
 
 
-ALTER TABLE `prod_farm_cycles`
-    CHANGE COLUMN `fc_farm_name` `fc_farm_name` VARCHAR(150) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL ,
-    CHANGE COLUMN `fc_bird_type` `fc_bird_type` INT NULL DEFAULT 0 ;
+ALTER TABLE `prod_farm_cycles` CHANGE COLUMN `fc_farm_name` `fc_farm_name` VARCHAR(150) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL , CHANGE COLUMN `fc_bird_type` `fc_bird_type` INT NULL DEFAULT 0 ;
 
 
 INSERT INTO `privileged_actions` (`pa_id`, `pa_code`, `pa_name`, `pa_description`, `pa_group`) VALUES ('234', 'erp_farm_cycles', 'Allow Users to Access to Farm Cycles Management', 'Allow Users to Access to Farm Cycles Management', 'Production Management');
 
 
 
-ALTER TABLE `prod_farm_cycles`
-ADD COLUMN `fc_total_expenses` DECIMAL NULL DEFAULT 0 AFTER `fc_quantity_unit`,
-ADD COLUMN `fc_total_selling_price` DECIMAL NULL AFTER `fc_total_expenses`,
-ADD COLUMN `fc_currency_id` INT NULL DEFAULT 0 AFTER `fc_total_selling_price`;
+ALTER TABLE `prod_farm_cycles` ADD COLUMN `fc_total_expenses` DECIMAL NULL DEFAULT 0 AFTER `fc_quantity_unit`, ADD COLUMN `fc_total_selling_price` DECIMAL NULL AFTER `fc_total_expenses`, ADD COLUMN `fc_currency_id` INT NULL DEFAULT 0 AFTER `fc_total_selling_price`;
 
 
 
@@ -614,8 +609,7 @@ COLLATE = utf8_unicode_ci;
 
 ALTER TABLE `users` CHANGE COLUMN `u_comission_account_id` `u_comission_account_id` INT NULL DEFAULT '0' ;
 
-ALTER TABLE sales_orders
-MODIFY so_order_date DATETIME NOT NULL;
+ALTER TABLE sales_orders MODIFY so_order_date DATETIME NOT NULL;
 
 
 CREATE TABLE fnb_session_fields (
@@ -649,20 +643,16 @@ CREATE TABLE fnb_session_fields (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-ALTER TABLE `payrolls_salary_details`
-    ADD COLUMN `pd_description` TEXT NULL DEFAULT NULL AFTER `pd_company_id`;
+ALTER TABLE `payrolls_salary_details` ADD COLUMN `pd_description` TEXT NULL DEFAULT NULL AFTER `pd_company_id`;
 
 
-ALTER TABLE `sales_order_products`
-    CHANGE COLUMN `so_product_quantity` `so_product_quantity` FLOAT NULL DEFAULT '0' ;
+ALTER TABLE `sales_order_products` CHANGE COLUMN `so_product_quantity` `so_product_quantity` FLOAT NULL DEFAULT '0' ;
 
 
-ALTER TABLE `billing_invoice_items`
-    CHANGE COLUMN `ii_item_qyt` `ii_item_qyt` FLOAT NULL DEFAULT '0' ;
+ALTER TABLE `billing_invoice_items` CHANGE COLUMN `ii_item_qyt` `ii_item_qyt` FLOAT NULL DEFAULT '0' ;
 
 
-ALTER TABLE `sales_orders`
-    ADD COLUMN `so_company_id` INT NULL DEFAULT 0 AFTER `so_id`;
+ALTER TABLE `sales_orders` ADD COLUMN `so_company_id` INT NULL DEFAULT 0 AFTER `so_id`;
 
 
 
@@ -698,46 +688,39 @@ CREATE TABLE pos_allowed_currencies (
         ON DELETE RESTRICT
 );
 
-ALTER TABLE pos_allowed_currencies
-MODIFY COLUMN ac_rate_to_original DECIMAL(10,2) NOT NULL DEFAULT 1.0;
-
+ALTER TABLE pos_allowed_currencies MODIFY COLUMN ac_rate_to_original DECIMAL(10,2) NOT NULL DEFAULT 1.0;
 
 ALTER TABLE `billing_invoice_payments` ADD COLUMN `ip_is_live` TINYINT NULL DEFAULT 1 AFTER `ip_pay_date`;
 
-ALTER TABLE `sales_orders`
-    ADD COLUMN `so_store_id` INT NULL DEFAULT 0 AFTER `so_company_id`,
+ALTER TABLE `sales_orders` ADD COLUMN `so_store_id` INT NULL DEFAULT 0 AFTER `so_company_id`,
 ADD COLUMN `so_trans_id` INT NULL DEFAULT 0 AFTER `so_vendor_id`;
 
-ALTER TABLE `inventory_customers`
-    ADD COLUMN `ic_allow_credit` TINYINT NULL DEFAULT 0 AFTER `ic_customer_type`;
+ALTER TABLE `inventory_customers` ADD COLUMN `ic_allow_credit` TINYINT NULL DEFAULT 0 AFTER `ic_customer_type`;
 
-ALTER TABLE `pos_stores`
-    ADD COLUMN `ps_cash_account` INT NULL DEFAULT 0 AFTER `ps_company_id`;
+ALTER TABLE `pos_stores` ADD COLUMN `ps_cash_account` INT NULL DEFAULT 0 AFTER `ps_company_id`;
 
 
-ALTER TABLE fnb_orders
-    ADD fo_kitchen_status mediumint(9) NOT NULL DEFAULT 1;
+ALTER TABLE fnb_orders ADD fo_kitchen_status mediumint(9) NOT NULL DEFAULT 1;
 
-ALTER TABLE fnb_orders
-    ADD CONSTRAINT fk_orders_kitchen_status
-        FOREIGN KEY (fo_kitchen_status)
-            REFERENCES sys_status(ss_id)
-            ON UPDATE CASCADE
-            ON DELETE RESTRICT;
+ALTER TABLE fnb_orders ADD CONSTRAINT fk_orders_kitchen_status FOREIGN KEY (fo_kitchen_status) REFERENCES sys_status(ss_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
-ALTER TABLE `acc_transaction_movements`
-    CHANGE COLUMN `tm_trans_code` `tm_trans_code` VARCHAR(75) NULL DEFAULT NULL ;
+ALTER TABLE `acc_transaction_movements` CHANGE COLUMN `tm_trans_code` `tm_trans_code` VARCHAR(75) NULL DEFAULT NULL ;
 
-ALTER TABLE fnb_orders
-MODIFY fo_customer_id INT NULL;
+ALTER TABLE fnb_orders MODIFY fo_customer_id INT NULL;
 
-ALTER TABLE fnb_orders
-CHANGE warehouse_id fk_warehouse_id smallint(6) NULL;
+ALTER TABLE fnb_orders CHANGE warehouse_id fk_warehouse_id smallint(6) NULL;
 
-ALTER TABLE fnb_orders
-ADD CONSTRAINT fk_fnb_orders_warehouse
-FOREIGN KEY (fk_warehouse_id)
-REFERENCES inventory_warehouses(w_id)
-ON UPDATE CASCADE
-ON DELETE RESTRICT;
+ALTER TABLE fnb_orders ADD CONSTRAINT fk_fnb_orders_warehouse FOREIGN KEY (fk_warehouse_id) REFERENCES inventory_warehouses(w_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE `inventory_stocks` ADD COLUMN `is_stock_status` TINYINT NULL DEFAULT 1 AFTER `is_stock_expiry_date`;
+
+
+ALTER TABLE `billing_invoices`
+    ADD COLUMN `bi_return_code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `bi_invoice_items_type`,
+    ADD COLUMN `bi_return_reason` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `bi_return_code`;
+
+
+ALTER TABLE `billing_invoices`
+    ADD COLUMN `bi_is_returned` TINYINT NULL DEFAULT 0 AFTER `bi_invoice_items_type`;
+

@@ -1017,6 +1017,9 @@ invoices_module = {
 	                 invoice_account : {
 	                     required: true
 	                 },
+                     bi_exchange_rate : {
+                       number : true
+                     },
 	                 bi_invoice_date : {
 	                       required: true
 	                 },

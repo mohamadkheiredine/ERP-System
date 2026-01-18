@@ -9,7 +9,7 @@
 "price_by_supplier"=>"0",
 "hourly_rate_sallary"=>"1",
 "crm_client_select_lead"=>"0",
-"crm_telemarketing"=>"1",
+"crm_telemarketing"=>"0",
 "billing_pv_one_page"=>"0",
 "billing_rv_one_page"=>"1",
 "enable_shipping_module"=>"1",

@@ -33,7 +33,13 @@ class FarmCycleOrders extends Model
     }
 
 
-    public function Voucher()
+    public function Customers()
+    {
+        return $this->hasOne('App\models\Inventory\Customers', 'ic_id','co_customer_id');
+    }
+
+
+    public function Orders()
     {
         return $this->hasOne('App\models\Sales\Orders', 'so_id','co_order_id');
     }
