@@ -60,6 +60,10 @@ Route::post('/request/api/getproductstockinfo', 'Api\ProductsController@GetProdu
 
 Route::get('/request/api/products/getlistcategories', 'Api\ProductsController@GetListCategories');
 Route::post('/request/api/saveproductcategoryinfo', 'Api\ProductsController@SaveCategoryInfo');
+Route::get('/request/api/getlistofwastes', 'Api\ProductsController@GetListOfWastes');
+Route::get('/request/api/downloadwastepdf', 'Api\ProductsController@DownloadWastePdf');
+
+Route::get('/request/api/downloadwasteexcel', 'Api\ProductsController@DownloadWasteExcel');
 
 
 Route::post('/request/api/order/addproduct', 'Api\OrdersController@AddProductToOrder');
@@ -152,6 +156,7 @@ Route::post('/api/orders/sync', 'Api\FnbOrderController@SyncPendingOrders');
 Route::get('/api/orders/getbycode', 'Api\FnbOrderController@GetOrderByCode');
 Route::post('/api/orders/editorder', 'Api\FnbOrderController@EditOrder');
 Route::get('/api/orders/reprintreceipt', 'Api\FnbOrderController@ReprintOrderReceipt');
+Route::get('/api/orders/returnorder', 'Api\FnbOrderController@ReturnOrder');
 
 
 Route::get('/api/orders/getlistitemsbykitchen', 'Api\FnbItemController@GetListItemsByKitchen');

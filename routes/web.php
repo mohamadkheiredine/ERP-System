@@ -356,7 +356,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/billing/bills', 'Billing\InvoicePaymentsController@index');
     Route::get('/billing/bills/addform', 'Billing\InvoicePaymentsController@addform');
     Route::get('/billing/bills/editform/{ip_id}', 'Billing\InvoicePaymentsController@editform');
-    Route::get('/billing/bills/returnproductpreview/{ip_id}', 'Billing\InvoicePaymentsController@editform');
+    Route::get('/billing/bills/returnproductpreview/{ip_id}', 'Billing\InvoicesController@ReturnProductPreview');
 
     Route::get('/srm/suppliercategories', 'SRM\SuppliersCategoriesController@index');
     Route::get('/srm/suppliers/addcategory', 'SRM\SuppliersCategoriesController@AddForm');

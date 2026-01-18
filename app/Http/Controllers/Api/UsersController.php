@@ -154,14 +154,14 @@ class UsersController extends Controller
                 }
 
                 $allowed_currencies = PosAllowedCurrencies::where('ac_store_id', $store_id)
-                ->join('currency', 'currency.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
-                ->select(
-                    'currency.cc_id',
-                    'currency.cc_currency_code',
-                    'currency.cc_currency_name',
-                    'pos_allowed_currencies.ac_rate_to_original'
-                )
-                ->get();
+                    ->join('currency', 'currency.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
+                    ->select(
+                        'currency.cc_id',
+                        'currency.cc_currency_code',
+                        'currency.cc_currency_name',
+                        'pos_allowed_currencies.ac_rate_to_original'
+                    )
+                    ->get();
 
                 $result_array['company_id']                     = $company_id;
                 $result_array['company_country']                = $company_info->cd_company_country;
@@ -202,7 +202,10 @@ class UsersController extends Controller
                 'error_message' => 'Invalid PIN format'
             ]);
         }
-        $user_info = Users::where('u_is_active', 1)->where('u_attendance_code', $pin)->first();
+
+        $user_info = Users::where('u_is_active', 1)
+            ->where('u_attendance_code', $pin)
+            ->first();
 
         if (!$user_info) {
             return response()->json([
@@ -210,20 +213,24 @@ class UsersController extends Controller
                 'error_message' => 'Invalid PIN'
             ]);
         }
-        // Auth::login($user_info);
 
-        // $tokenResult = $user_info->createToken('POS-PIN');
-        // $accessToken = $tokenResult->accessToken;
-        // $refreshToken = $tokenResult->token->refresh_token ?? null;
+        $g_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
 
-        $g_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
         $g_hash = hash('sha256', $g_hash);
 
-        $profile_path = public_path() . '/' . \Config::get('constants.USERS_PATH')
-            . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
+        $profile_path = public_path() . '/' . Config::get('constants.USERS_PATH')
+            . $user_info->u_avatar_base_src
+            . $user_info->u_avatar_filename . '.'
+            . $user_info->u_avatar_extentions;
 
-        $profile_url = url('/') . '/' . \Config::get('constants.USERS_PATH')
-            . $user_info->u_avatar_base_src . $user_info->u_avatar_filename . "." . $user_info->u_avatar_extentions;
+        $profile_url = url('/') . '/' . Config::get('constants.USERS_PATH')
+            . $user_info->u_avatar_base_src
+            . $user_info->u_avatar_filename . '.'
+            . $user_info->u_avatar_extentions;
 
         if (!is_file($profile_path)) {
             $profile_url = url('images/NoImageAvailable.jpg');
@@ -231,24 +238,27 @@ class UsersController extends Controller
 
         $company_id = $user_info->fk_company_id;
 
-        $result_array['is_error'] = 0;
-        $result_array['g_hash'] = $g_hash;
-        $result_array['user_id'] = $user_info->id;
-        $result_array['user_profile_url'] = $profile_url;
-        $result_array['user_fullname'] = $user_info->u_fullname;
-        $result_array['user_email'] = $user_info->u_email;
-        $result_array['user_name'] = $user_info->u_username;
-        $result_array['user_type'] = $user_info->u_user_type;
-        $result_array['u_department_id'] = $user_info->u_department_id;
-        $result_array['company_id'] = $company_id;
-        // $result_array['token_type'] = 'Bearer';
-        // $result_array['expires_in'] = 31536000;
-        // $result_array['access_token'] = $accessToken;
+
+        $result_array['is_error']          = 0;
+        $result_array['g_hash']            = $g_hash;
+        $result_array['user_id']           = $user_info->id;
+        $result_array['user_profile_url']  = $profile_url;
+        $result_array['user_fullname']     = $user_info->u_fullname;
+        $result_array['user_email']        = $user_info->u_email;
+        $result_array['user_name']         = $user_info->u_username;
+        $result_array['user_type']         = $user_info->u_user_type;
+        $result_array['u_department_id']   = $user_info->u_department_id;
+        $result_array['company_id']        = $company_id;
 
         if ($company_id > 0) {
 
             $company_info = Companies::find($company_id);
-            $company_logo_src_url  = url('/') . "/" . Config::get('constants.COMPANY_PATH') . $company_info->cd_logo_base_src . $company_info->cd_logo_file_name . "." . $company_info->cd_logo_file_extension;
+
+            $company_logo_src_url = url('/') . "/"
+                . Config::get('constants.COMPANY_PATH')
+                . $company_info->cd_logo_base_src
+                . $company_info->cd_logo_file_name . "."
+                . $company_info->cd_logo_file_extension;
 
             if (strlen($company_info->cd_logo_base_src) > 0) {
                 $company_logo = $company_logo_src_url;
@@ -256,66 +266,70 @@ class UsersController extends Controller
                 $company_logo = url('images/NoImageAvailable.jpg');
             }
 
-            $currency_id    = $company_info->cd_company_currency;
-            $currency_info  = Currency::find($currency_id);
+            $currency_id       = $company_info->cd_company_currency;
+            $currency_info     = Currency::find($currency_id);
 
-            $sec_currency_id    = $company_info->cd_secondary_currency;
-            $sec_currency_info  = Currency::find($sec_currency_id);
+            $sec_currency_id   = $company_info->cd_secondary_currency;
+            $sec_currency_info = Currency::find($sec_currency_id);
 
             $store_employees = StoreEmployees::whereSeEmployeeId($user_info->id)->get();
 
             if (count($store_employees) == 0) {
-                $result_array = array();
-
-                $result_array['is_error']                   = 1;
-                $result_array['error_message']                    = 'not linked to Any Store';
-                return Response()->json($result_array);
+                return response()->json([
+                    'is_error' => 1,
+                    'error_message' => 'not linked to Any Store'
+                ]);
             }
 
             $store_id = $store_employees[0]->se_store_id;
 
-            $store_info = Stores::find($store_id);
-
             $store_warehouses = StoreWarehouses::where('sw_store_id', $store_id)->get();
 
             if (count($store_warehouses) == 0) {
-                $result_array = array();
-
-                $result_array['is_error']                   = 1;
-                $result_array['error_message']                    = 'not Warehouse Assign For this Store';
-                return Response()->json($result_array);
+                return response()->json([
+                    'is_error' => 1,
+                    'error_message' => 'not Warehouse Assign For this Store'
+                ]);
             }
 
-            $result_array['company_id']                     = $company_id;
-            $result_array['company_country']                = $company_info->cd_company_country;
-            $result_array['currency_symbol']                = $currency_info->cc_currency_code;
-            $result_array['company_currency']               = $currency_id;
-            $result_array['sec_currency_symbol']            = $sec_currency_info->cc_currency_code;
-            $result_array['sec_currency_id']                = $sec_currency_id;
-            $result_array['company_logo']                   = $company_logo;
-            $result_array['warehouse_id']                   = $store_warehouses[0]->sw_warehouse_id;
-            $result_array['store_id']                       = $store_id;
 
-            // calculate exchange rate of primary and seconday
-            $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)->whereErToCurrency($sec_currency_id)->orderBy('er_date_exchange', 'DESC')->get();
+            $allowed_currencies = PosAllowedCurrencies::where('ac_store_id', $store_id)
+                ->join('currency', 'currency.cc_id', '=', 'pos_allowed_currencies.ac_currency_id')
+                ->select(
+                    'currency.cc_id',
+                    'currency.cc_currency_code',
+                    'currency.cc_currency_name',
+                    'pos_allowed_currencies.ac_rate_to_original'
+                )
+                ->get();
+
+
+            $result_array['company_id']          = $company_id;
+            $result_array['company_country']     = $company_info->cd_company_country;
+            $result_array['currency_symbol']     = $currency_info->cc_currency_code;
+            $result_array['company_currency']    = $currency_id;
+            $result_array['sec_currency_symbol'] = $sec_currency_info->cc_currency_code;
+            $result_array['sec_currency_id']     = $sec_currency_id;
+            $result_array['company_logo']        = $company_logo;
+            $result_array['warehouse_id']        = $store_warehouses[0]->sw_warehouse_id;
+            $result_array['store_id']            = $store_id;
+            $result_array['allowed_currencies']  = $allowed_currencies;
+
+
+            $exchange_rate = CurrencyExchangeRates::whereErFromCurrency($currency_id)
+                ->whereErToCurrency($sec_currency_id)
+                ->orderBy('er_date_exchange', 'DESC')
+                ->get();
+
             if (count($exchange_rate) > 0)
-                $result_array['exchange_rate']             = $exchange_rate[0]['er_exchange_rate'];
+                $result_array['exchange_rate'] = $exchange_rate[0]['er_exchange_rate'];
             else
-                $result_array['exchange_rate']             = 1;
+                $result_array['exchange_rate'] = 1;
         }
 
-        // return response()->json($result_array)
-        //     ->cookie(
-        //         'refresh_token',
-        //         $refreshToken,
-        //         60 * 24 * 30,
-        //         null,
-        //         null,
-        //         true,
-        //         true
-        //     );
         return response()->json($result_array);
     }
+
 
 
     /**

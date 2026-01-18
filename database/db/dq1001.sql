@@ -724,3 +724,47 @@ ALTER TABLE `billing_invoices`
 ALTER TABLE `billing_invoices`
     ADD COLUMN `bi_is_returned` TINYINT NULL DEFAULT 0 AFTER `bi_invoice_items_type`;
 
+
+CREATE TABLE fnb_waste_stock (
+    ws_id            MEDIUMINT AUTO_INCREMENT PRIMARY KEY,
+
+    fk_product_id    INT NOT NULL DEFAULT 0,
+    fk_stock_id      INT NOT NULL DEFAULT 0,
+    fk_warehouse_id  SMALLINT NOT NULL DEFAULT 0,
+
+    ws_quantity      DECIMAL(10,3) NOT NULL,
+    ws_date          DATE NOT NULL,
+    ws_created_by    INT NOT NULL,
+
+    ws_created_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+
+    INDEX idx_ws_product (fk_product_id),
+    INDEX idx_ws_stock (fk_stock_id),
+    INDEX idx_ws_quantity (ws_quantity),
+    INDEX idx_ws_date (ws_date)
+);
+
+ALTER TABLE inventory_stocks
+ADD is_is_waste TINYINT(1) DEFAULT 0;
+
+ALTER TABLE fnb_orders
+  ADD COLUMN fo_returned TINYINT(1) NOT NULL DEFAULT 0 AFTER fo_is_deleted,
+  ADD COLUMN fo_returned_date DATETIME NULL AFTER fo_returned,
+  ADD COLUMN fo_returned_reason TEXT NULL AFTER fo_returned_date;
+
+
+ALTER TABLE fnb_waste_stock
+ADD CONSTRAINT fk_fnb_waste_stock_product
+FOREIGN KEY (fk_product_id)
+REFERENCES inventory_products (p_id)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE fnb_waste_stock
+ADD CONSTRAINT fk_fnb_waste_stock_warehouse
+FOREIGN KEY (fk_warehouse_id)
+REFERENCES inventory_warehouses (w_id)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
