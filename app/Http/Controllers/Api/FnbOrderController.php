@@ -225,11 +225,22 @@ class FnbOrderController extends Controller
                 'error_msg' => 'Kitchen Pending status is not configured'
             ]);
         }
+        $order_id = $request->input('order_id');
 
         $order_info = new FnbOrders();
         $order_info->fo_order_code = $order_code;
         $order_info->fo_order_type = $order_type;
-        $order_info->fo_store_id = $store_id;
+        if ($order_id) {
+            $existingOrder = FnbOrders::find($order_id);
+            if ($existingOrder) {
+                $order_info->fo_store_id = $existingOrder->fo_store_id;
+            } else {
+                $order_info->fo_store_id = $store_id;
+            }
+        } else {
+            $order_info->fo_store_id = $store_id;
+        }
+
         $order_info->fo_branch_id = $company_id;
         $order_info->fo_customer_id = $customer_id;
         $order_info->fo_order_status = 5;
@@ -242,11 +253,12 @@ class FnbOrderController extends Controller
         $order_info->fo_total_amount = $total_display;
         $order_info->fo_payment_status = 'paid';
         $order_info->fo_paid_amount  = (float) $total_display;
+        $order_info->fk_warehouse_id  = $warehouse_id;
         $order_info->save();
 
         $fo_id = $order_info->fo_id;
 
-        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links (if editing in future)
+        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
 
         if (!empty($table_ids)) {
             foreach ($table_ids as $tid) {
@@ -282,10 +294,27 @@ class FnbOrderController extends Controller
             $item->oi_order_id = $fo_id;
             $item->oi_item_id = $item_order['item_id'];
             $item->oi_quantity = $item_order['quantity'];
-            $item->oi_unit_price = $item_order['price'];
+            $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
             $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
             $item->oi_kitchen_status = $pendingKitchenStatusId;
-            $item->oi_station_id = isset($item_order['station_id']) ? $item_order['station_id'] : 1;
+            $menuItem = FnbMenuItem::find($item_order['item_id']);
+
+            if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
+                $fallbackStationId = 1;
+
+                \Log::warning(
+                    'Menu item missing kitchen station, using fallback',
+                    [
+                        'menu_item_id' => $item_order['item_id'],
+                        'fallback_station_id' => $fallbackStationId,
+                    ]
+                );
+
+                $item->oi_station_id = $fallbackStationId;
+            } else {
+                $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+            }
+
             $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
             $item->oi_currency_id = $display_currency_id;
             $item->save();
@@ -322,7 +351,7 @@ class FnbOrderController extends Controller
             }
 
 
-            $unit_price_display = floatval($item_order['price']);
+            $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
             $line_total_display = $unit_price_display * $item_order['quantity'];
 
             $final_items[] = [
@@ -530,6 +559,7 @@ class FnbOrderController extends Controller
         $order->fo_order_status = 1; // pending
         $order->fo_kitchen_status = $pendingKitchenStatusId;
         $order->fo_order_type = "dine_in";
+        $order->fo_payment_status = "unpaid";
         $order->fo_customer_id    = null;
         $order->save();
 
@@ -625,8 +655,30 @@ class FnbOrderController extends Controller
         $grouped = [];
 
         foreach ($orderItems as $it) {
+
+            // 🔧 FIX MISSING STATION AT RUNTIME
             if (!$it->oi_station_id) {
-                throw new \Exception("Order item {$it->oi_id} has no kitchen station");
+
+                $menuItem = FnbMenuItem::find($it->oi_item_id);
+
+                if ($menuItem && $menuItem->mi_kitchen_station_id) {
+                    $it->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+                } else {
+                    // 🔥 FINAL FALLBACK (AS REQUESTED)
+                    $it->oi_station_id = 1;
+
+                    \Log::warning(
+                        'Order item missing kitchen station, forced fallback in UpdateOrder',
+                        [
+                            'order_item_id' => $it->oi_id,
+                            'menu_item_id'  => $it->oi_item_id,
+                            'fallback_station_id' => 1,
+                        ]
+                    );
+                }
+
+                // persist fix
+                $it->save();
             }
 
             $stationId = (int) $it->oi_station_id;
@@ -643,6 +695,7 @@ class FnbOrderController extends Controller
                 'notes' => $it->oi_notes,
             ];
         }
+
 
         // SAFETY CHECK (VERY IMPORTANT)
         if (count($grouped) === 0) {
@@ -833,6 +886,10 @@ class FnbOrderController extends Controller
         }
 
         $order = FnbOrders::where('fo_order_code', $request->order_code)->first();
+        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
+            ->pluck('ot_table_id')
+            ->toArray();
+
 
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
@@ -866,6 +923,7 @@ class FnbOrderController extends Controller
                 'order_id' => $order->fo_id,
                 'order_code' => $order->fo_order_code,
                 'order_type' => $order->fo_order_type,
+                'table_ids'  => $tables,
                 'items' => $itemsFormatted
             ]
         ]);
@@ -1297,7 +1355,9 @@ class FnbOrderController extends Controller
 
         $query = FnbOrders::query()
             ->leftJoin('currency as c', 'c.cc_id', '=', 'fnb_orders.fo_currency_id')
-            ->where('fnb_orders.fo_is_deleted', 0);
+            ->leftJoin('inventory_warehouses as iw', 'iw.w_id', '=', 'fnb_orders.fk_warehouse_id')
+            ->where('fnb_orders.fo_is_deleted', 0)
+            ->where('fnb_orders.fo_payment_status', 'paid');
 
         if (!empty($warehouse_id)) {
             $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
@@ -1320,7 +1380,8 @@ class FnbOrderController extends Controller
                 'fnb_orders.fo_order_datetime',
                 'fnb_orders.fk_warehouse_id',
                 'fnb_orders.fo_currency_id',
-                'c.cc_currency_code'
+                'c.cc_currency_code',
+                'iw.w_warehouse_name'
             )
             ->get();
 
@@ -1333,6 +1394,7 @@ class FnbOrderController extends Controller
                 'fo_total_amount'   => $order->fo_total_amount,
                 'fo_order_datetime' => $order->fo_order_datetime,
                 'warehouse_id'      => $order->fk_warehouse_id,
+                'warehouse_name'    => $order->w_warehouse_name,
                 'currency_code'     => $order->cc_currency_code == null ? 'USD' : $order->cc_currency_code,
             ];
         }
