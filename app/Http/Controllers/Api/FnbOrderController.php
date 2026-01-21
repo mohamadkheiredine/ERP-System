@@ -23,6 +23,8 @@ use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbOrderTables;
 use App\models\FnB\Modifier;
 use App\library\OrdersExport;
+use App\Models\FnB\FnbMenuItemModifier;
+use App\models\FnB\FnbPrintJobs;
 use App\models\System\SystemStatus;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
@@ -109,6 +111,82 @@ class FnbOrderController extends Controller
             ->value('ss_id');
     }
 
+    private function resolveOrderStatusId(string $statusTitle): int
+    {
+        $statusId = SystemStatus::where('ss_status_type', 'like', '%pos%')
+            ->whereRaw('LOWER(ss_status_title) = ?', [strtolower($statusTitle)])
+            ->where('ss_is_deleted', 0)
+            ->value('ss_id');
+
+        if (!$statusId) {
+            throw new \Exception("POS order status '{$statusTitle}' is not configured");
+        }
+
+        return (int) $statusId;
+    }
+
+    private function insertWasteFIFO(
+        int $productId,
+        int $warehouseId,
+        float $qty,
+        int $userId,
+        Carbon $now
+    ): void {
+        $stocks = Stocks::where('fk_product_id', $productId)
+            ->where('fk_warehouse_id', $warehouseId)
+            ->orderBy('is_id', 'asc')
+            ->lockForUpdate()
+            ->get();
+
+        $remaining = $qty;
+
+        foreach ($stocks as $stock) {
+            if ($remaining <= 0) break;
+            if ($stock->is_quanity <= 0) continue;
+
+            $consume = min($stock->is_quanity, $remaining);
+
+            FnbWasteStock::create([
+                'fk_product_id'   => $productId,
+                'fk_stock_id'     => $stock->is_id,
+                'fk_warehouse_id' => $warehouseId,
+                'ws_quantity'     => $consume,
+                'ws_date'         => $now->toDateString(),
+                'ws_created_by'   => $userId,
+                'ws_created_at'   => $now,
+            ]);
+
+            $remaining -= $consume;
+        }
+
+        if ($remaining > 0) {
+            throw new \Exception("Not enough stock for waste product {$productId}");
+        }
+    }
+
+
+    private function registerWasteForMenuItem(
+        int $menuItemId,
+        float $itemQty,
+        int $warehouseId,
+        int $userId
+    ): void {
+        $now = Carbon::now();
+
+        $ingredients = FnbIngredients::where('in_item_id', $menuItemId)
+            ->where('in_is_deleted', 0)
+            ->get();
+
+        foreach ($ingredients as $ing) {
+            $productId = (int) $ing->in_product_id;
+            $need = $itemQty * (float) $ing->in_stock_quantity;
+
+            if ($need <= 0) continue;
+
+            $this->insertWasteFIFO($productId, $warehouseId, $need, $userId, $now);
+        }
+    }
+
 
 
     /**
@@ -124,11 +202,8 @@ class FnbOrderController extends Controller
         $g_hash   = $request->input('g_hash');
         $order_items = $request->input('order_items');
 
-        // If POSTMAN sends array → use it as is
         if (is_array($order_items)) {
-        }
-        // If POS sends JSON string → decode it
-        else if (is_string($order_items)) {
+        } else if (is_string($order_items)) {
             $order_items = json_decode($order_items, true);
         }
 
@@ -169,6 +244,9 @@ class FnbOrderController extends Controller
         $customer_info = null;
         $table_ids = $request->input('table_id');
         $table_ids = array_filter(explode(",", $table_ids));
+        $order_id   = (int) $request->input('order_id');
+        $isDineIn   = ($order_type === 'dine_in');
+
 
         $user_info = Users::find($user_id);
 
@@ -181,6 +259,7 @@ class FnbOrderController extends Controller
             $result_array['error_msg'] = 'hash sequence is not valid !!';
             return Response()->json($result_array);
         }
+
 
         if ($order_type === 'takeaway') {
 
@@ -226,13 +305,35 @@ class FnbOrderController extends Controller
             ]);
         }
 
-        $order_info = new FnbOrders();
-        $order_info->fo_order_code = $order_code;
-        $order_info->fo_order_type = $order_type;
-        $order_info->fo_store_id = $store_id;
-        $order_info->fo_branch_id = $company_id;
+        if ($isDineIn && $order_id > 0) {
+
+            $order_info = FnbOrders::where('fo_id', $order_id)
+                ->where('fo_order_type', 'dine_in')
+                ->where('fo_payment_status', 'unpaid')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$order_info) {
+                return response()->json([
+                    'is_error' => 1,
+                    'error_msg' => 'Dine-in order not found or already finalized'
+                ]);
+            }
+
+            if (empty($order_info->fo_order_code)) {
+                $order_info->fo_order_code = $this->GenerateOrdereCodeFNB();
+            }
+        } else {
+
+            $order_info = new FnbOrders();
+            $order_info->fo_order_code = $this->GenerateOrdereCodeFNB();
+            $order_info->fo_order_type = $order_type;
+            $order_info->fo_store_id   = $store_id;
+            $order_info->fo_branch_id  = $company_id;
+        }
+
         $order_info->fo_customer_id = $customer_id;
-        $order_info->fo_order_status = 5;
+        $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
         $order_info->fo_kitchen_status = $pendingKitchenStatusId;
         $order_info->fo_order_datetime = $creation_date;
         $order_info->fo_subtotal = $sub_total_display;
@@ -242,11 +343,12 @@ class FnbOrderController extends Controller
         $order_info->fo_total_amount = $total_display;
         $order_info->fo_payment_status = 'paid';
         $order_info->fo_paid_amount  = (float) $total_display;
+        $order_info->fk_warehouse_id  = $warehouse_id;
         $order_info->save();
 
         $fo_id = $order_info->fo_id;
 
-        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links (if editing in future)
+        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
 
         if (!empty($table_ids)) {
             foreach ($table_ids as $tid) {
@@ -271,10 +373,6 @@ class FnbOrderController extends Controller
             $currency = Currency::find($order_info->fo_currency_id); // fallback
         }
 
-        // $pendingStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')->where('ss_status_title', 'Pending')->value('ss_id');
-
-        // $order_info->fo_kitchen_status = $pendingStatusId;
-        // $order_info->save();
         $final_items = [];
 
         foreach ($order_items as $key => $item_order) {
@@ -282,10 +380,27 @@ class FnbOrderController extends Controller
             $item->oi_order_id = $fo_id;
             $item->oi_item_id = $item_order['item_id'];
             $item->oi_quantity = $item_order['quantity'];
-            $item->oi_unit_price = $item_order['price'];
+            $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
             $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
             $item->oi_kitchen_status = $pendingKitchenStatusId;
-            $item->oi_station_id = isset($item_order['station_id']) ? $item_order['station_id'] : 1;
+            $menuItem = FnbMenuItem::find($item_order['item_id']);
+
+            if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
+                $fallbackStationId = 1;
+
+                \Log::warning(
+                    'Menu item missing kitchen station, using fallback',
+                    [
+                        'menu_item_id' => $item_order['item_id'],
+                        'fallback_station_id' => $fallbackStationId,
+                    ]
+                );
+
+                $item->oi_station_id = $fallbackStationId;
+            } else {
+                $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+            }
+
             $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
             $item->oi_currency_id = $display_currency_id;
             $item->save();
@@ -322,7 +437,7 @@ class FnbOrderController extends Controller
             }
 
 
-            $unit_price_display = floatval($item_order['price']);
+            $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
             $line_total_display = $unit_price_display * $item_order['quantity'];
 
             $final_items[] = [
@@ -523,13 +638,13 @@ class FnbOrderController extends Controller
             ]);
         }
 
-        // Create new empty order
         $order = new FnbOrders();
         $order->fo_branch_id = $company_id;
         $order->fo_store_id = $store_id;
-        $order->fo_order_status = 1; // pending
+        $order->fo_order_status = $this->resolveOrderStatusId('pending');
         $order->fo_kitchen_status = $pendingKitchenStatusId;
         $order->fo_order_type = "dine_in";
+        $order->fo_payment_status = "unpaid";
         $order->fo_customer_id    = null;
         $order->save();
 
@@ -545,6 +660,7 @@ class FnbOrderController extends Controller
     public function UpdateOrder(Request $request)
     {
 
+
         $order = FnbOrders::find($request->order_id);
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
@@ -553,6 +669,10 @@ class FnbOrderController extends Controller
             $order->fo_order_code = $this->GenerateOrdereCodeFNB();
             $order->save();
         }
+        $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+            ->orderBy('ss_id')
+            ->value('ss_id');
+
 
         $order->fo_order_type   = $request->order_type;
         $order->fo_customer_id  = $request->customer_id ?? 0;
@@ -575,18 +695,31 @@ class FnbOrderController extends Controller
             ->where('oi_kitchen_status', '!=', $pendingKitchenStatusId)
             ->exists();
 
-        // TABLES
+        // tabless
         FnbOrderTables::where('ot_order_id', $order->fo_id)->delete();
-        foreach (explode(',', $request->table_ids) as $tid) {
+
+        $tableIds = collect(
+            is_array($request->table_ids)
+                ? $request->table_ids
+                : explode(',', (string) $request->table_ids)
+        )
+            ->map(fn($id) => (int) trim($id))
+            ->filter(fn($id) => $id > 0)
+            ->unique()
+            ->values();
+
+        foreach ($tableIds as $tableId) {
             FnbOrderTables::create([
                 'ot_order_id' => $order->fo_id,
-                'ot_table_id' => $tid
+                'ot_table_id' => $tableId,
             ]);
         }
 
 
-        // ITEM
-        FnbOrderItems::where('oi_order_id', $order->fo_id)->delete();
+        // item
+        FnbOrderItems::where('oi_order_id', $order->fo_id)
+            ->update(['oi_is_deleted' => 1]);
+
         $items = json_decode($request->order_items, true);
 
 
@@ -625,8 +758,25 @@ class FnbOrderController extends Controller
         $grouped = [];
 
         foreach ($orderItems as $it) {
+
             if (!$it->oi_station_id) {
-                throw new \Exception("Order item {$it->oi_id} has no kitchen station");
+
+                $menuItem = FnbMenuItem::find($it->oi_item_id);
+
+                if ($menuItem && $menuItem->mi_kitchen_station_id) {
+                    $it->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+                } else {
+                    $it->oi_station_id = 1;
+                    \Log::warning(
+                        'Order item missing kitchen station, forced fallback in UpdateOrder',
+                        [
+                            'order_item_id' => $it->oi_id,
+                            'menu_item_id'  => $it->oi_item_id,
+                            'fallback_station_id' => 1,
+                        ]
+                    );
+                }
+                $it->save();
             }
 
             $stationId = (int) $it->oi_station_id;
@@ -644,24 +794,21 @@ class FnbOrderController extends Controller
             ];
         }
 
-        // SAFETY CHECK (VERY IMPORTANT)
         if (count($grouped) === 0) {
             throw new \Exception("No items grouped for printing");
         }
-
-        // DELETE OLD PENDING JOBS FOR THIS ORDER
         DB::table('fnb_print_jobs')
             ->where('order_id', $order->fo_id)
             ->whereIn('status', ['pending', 'processing'])
             ->delete();
 
-        // INSERT ONE JOB PER STATION
         foreach ($grouped as $stationId => $items) {
             if (empty($items)) {
                 continue;
             }
 
-            DB::table('fnb_print_jobs')->insert([
+            FnbPrintJobs::create([
+
                 'order_id' => $order->fo_id,
                 'kitchen_station_id' => $stationId,
                 'payload' => json_encode([
@@ -671,7 +818,7 @@ class FnbOrderController extends Controller
                         'type'     => $order->fo_order_type,
                         'datetime' => $order->fo_order_datetime,
                     ],
-                    'items' => $items, // ONLY THIS STATION ITEMS
+                    'items' => $items,
                 ]),
                 'status' => 'pending',
                 'created_at' => now(),
@@ -683,47 +830,72 @@ class FnbOrderController extends Controller
         return response()->json(['is_error' => 0]);
     }
 
+
     public function SyncPendingOrders(Request $request)
     {
-        $orders = FnbOrders::where('fo_store_id', $request->store_id)
-            ->where('fo_order_status', 1)
+        $storeId = $request->store_id;
+
+        $todayStart = Carbon::today()->startOfDay();
+        $todayEnd   = Carbon::today()->endOfDay();
+
+        $orders = FnbOrders::query()
+            ->join('sys_status', 'sys_status.ss_id', '=', 'fnb_orders.fo_order_status')
+            ->where('fnb_orders.fo_store_id', $storeId)
+            ->whereRaw('LOWER(sys_status.ss_status_title) LIKE ?', ['%pos%']) // Pending / pending
+            ->whereBetween('fnb_orders.fo_order_datetime', [$todayStart, $todayEnd])
+            ->where('fnb_orders.fo_payment_status', '!=', 'paid')
+            ->where('fnb_orders.fo_is_deleted', 0)
+            ->select('fnb_orders.*')
             ->get();
 
-        $data = [];
+        $result = [];
 
         foreach ($orders as $order) {
+
             $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
                 ->pluck('ot_table_id')
-                ->toArray() ?? [];
-
-            $items = FnbOrderItems::join(
-                'fnb_menu_items',
-                'fnb_menu_items.mi_id',
-                '=',
-                'fnb_order_items.oi_item_id'
-            )
-                ->where('oi_order_id', $order->fo_id)
-                ->select([
-                    'fnb_order_items.oi_item_id',
-                    'fnb_menu_items.mi_item_name as item_name',
-                    'fnb_order_items.oi_quantity',
-                    'fnb_order_items.oi_unit_price',
-                    'fnb_order_items.oi_notes',
-                    'fnb_order_items.oi_station_id',
-                ])
-                ->get()
                 ->toArray();
 
+            $structure = json_decode($order->fo_order_structure, true);
 
-            $data[] = [
-                'order_id' => $order->fo_id,
-                'tables' => $tables,
-                'items' => $items,
+            if (!is_array($structure) || empty($structure['items'])) {
+                continue;
+            }
+
+            $items = [];
+
+            foreach ($structure['items'] as $it) {
+
+                $items[] = [
+                    'item_id'    => (int) $it['item_id'],
+                    'qty'        => (float) $it['quantity'],
+                    'unit_price' => (float) ($it['unit_price'] ?? $it['price']),
+                    'notes'      => $it['notes'] ?? '',
+                    'station_id' => null,
+                    'modifiers'  => array_map(function ($m) {
+                        return [
+                            'id' => $m['id']
+                        ];
+                    }, $it['modifiers'] ?? []),
+                ];
+            }
+
+            $result[] = [
+                'order_id'   => $order->fo_id,
+                'order_code' => $order->fo_order_code,
+                'tables'     => $tables,
+                'items'      => $items,
             ];
         }
 
-        return response()->json(['is_error' => 0, 'orders' => $data]);
+        return response()->json([
+            'is_error' => 0,
+            'orders'   => $result
+        ]);
     }
+
+
+
 
     public function ExportFnbOrders(Request $request)
     {
@@ -820,6 +992,7 @@ class FnbOrderController extends Controller
         $user_id      = $request->input('user_id');
         $g_hash       = $request->input('g_hash');
         $user_info    = Users::find($user_id);
+        $order_code = $request->input('order_code');
 
         $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
@@ -832,13 +1005,17 @@ class FnbOrderController extends Controller
             return Response()->json($result_array);
         }
 
-        $order = FnbOrders::where('fo_order_code', $request->order_code)->first();
+        $order = FnbOrders::where('fo_order_code', $order_code)->first();
+        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
+            ->pluck('ot_table_id')
+            ->toArray();
+
 
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
         }
 
-        $items = FnbOrderItems::where('oi_order_id', $order->fo_id)
+        $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->where('oi_is_deleted', 0)
             ->join('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
             ->select(
                 'fnb_order_items.*',
@@ -866,15 +1043,356 @@ class FnbOrderController extends Controller
                 'order_id' => $order->fo_id,
                 'order_code' => $order->fo_order_code,
                 'order_type' => $order->fo_order_type,
+                'table_ids'  => $tables,
                 'items' => $itemsFormatted
             ]
         ]);
     }
 
+    // public function EditOrder(Request $request)
+    // {
+    //     $user_id      = $request->input('user_id');
+    //     $g_hash       = $request->input('g_hash');
+    //     $user_info    = Users::find($user_id);
+
+    //     $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+
+    //     $c_hash = hash('sha256', $c_hash);
+    //     $result_array = array();
+
+    //     if ($c_hash != $g_hash) {
+    //         $result_array['is_error']      = 1;
+    //         $result_array['error_message'] = 'hash sequence is not valid !!';
+    //         return Response()->json($result_array);
+    //     }
+
+    //     $original = json_decode($request->original_items, true);
+    //     $updated  = json_decode($request->updated_items, true);
+
+    //     if (!is_array($original) || !is_array($updated)) {
+    //         return response()->json([
+    //             'is_error' => 1,
+    //             'error_message' => 'Invalid items JSON',
+    //         ], 422);
+    //     }
+
+    //     $original = array_values($original);
+    //     $updated  = array_values($updated);
+
+    //     try {
+    //         \DB::beginTransaction();
+
+    //         $order = FnbOrders::where('fo_id', $request->order_id)
+    //             ->where('fo_store_id', $request->store_id)
+    //             ->first();
+
+    //         if (!$order) {
+    //             \DB::rollBack();
+    //             return response()->json(['is_error' => 1, 'error_message' => 'Order not found'], 404);
+    //         }
+
+    //         $makeKey = function ($row) {
+    //             if (isset($row['oi_id'])) {
+    //                 return 'oi:' . (int)$row['oi_id'];
+    //             }
+
+    //             $itemId = (int)($row['item_id'] ?? 0);
+    //             $stationId = (int)($row['station_id'] ?? 0);
+    //             $notes = trim((string)($row['notes'] ?? ''));
+
+    //             $mods = $row['modifiers'] ?? [];
+    //             $modIds = [];
+    //             foreach ($mods as $m) {
+    //                 $id = (int)($m['modifier_id'] ?? $m['id'] ?? 0);
+    //                 if ($id > 0) $modIds[] = $id;
+    //             }
+    //             sort($modIds);
+
+    //             return $itemId . '|' . $stationId . '|' . $notes . '|' . implode(',', $modIds);
+    //         };
+
+
+
+    //         $origMap = [];
+    //         foreach ($original as $row) {
+    //             $k = $makeKey($row);
+    //             if (!isset($origMap[$k])) $origMap[$k] = $row;
+    //         }
+
+    //         $updMap = [];
+    //         foreach ($updated as $row) {
+    //             $k = $makeKey($row);
+    //             if (!isset($updMap[$k])) $updMap[$k] = $row;
+    //         }
+
+    //         $warehouseId = (int)$request->warehouse_id;
+
+    //         $kitchenDeltas = [];
+
+    //         foreach ($updMap as $key => $newRow) {
+
+    //             $itemId    = (int)($newRow['item_id'] ?? $newRow['itemId'] ?? 0);
+    //             $stationId = (int)($newRow['station_id'] ?? $newRow['stationId'] ?? 0);
+    //             $newQty    = (float)($newRow['quantity'] ?? $newRow['qty'] ?? 0);
+
+    //             if ($itemId <= 0 || $newQty < 0) {
+    //                 \DB::rollBack();
+    //                 return response()->json([
+    //                     'is_error' => 1,
+    //                     'error_message' => 'Invalid item payload',
+    //                 ], 422);
+    //             }
+
+    //             $oldRow = $origMap[$key] ?? null;
+    //             $oldQty = $oldRow ? (float)($oldRow['quantity'] ?? $oldRow['qty'] ?? 0) : 0.0;
+
+    //             $deltaQty = $newQty - $oldQty;
+
+    //             if ($deltaQty > 0) {
+    //                 $this->consumeItemStockByMenuItem($itemId, $deltaQty, $warehouseId);
+    //             }
+
+    //             $oi = FnbOrderItems::updateOrCreate(
+    //                 [
+    //                     'oi_order_id'   => $order->fo_id,
+    //                     'oi_item_id'    => $itemId,
+    //                     'oi_station_id' => $stationId,
+    //                 ],
+    //                 [
+    //                     'oi_quantity'      => $newQty,
+    //                     'oi_unit_price'    => (float)($newRow['unit_price'] ?? $newRow['price'] ?? 0),
+    //                     'oi_item_discount' => (float)($newRow['discount'] ?? 0),
+    //                     'oi_notes'         => (string)($newRow['notes'] ?? ''),
+    //                 ]
+    //             );
+
+
+    //             $oldMods = $oldRow && isset($oldRow['modifiers']) && is_array($oldRow['modifiers'])
+    //                 ? $oldRow['modifiers'] : [];
+    //             $newMods = isset($newRow['modifiers']) && is_array($newRow['modifiers'])
+    //                 ? $newRow['modifiers'] : [];
+
+    //             $modKey = function ($m) {
+    //                 return (string)($m['modifier_id'] ?? $m['id'] ?? $m['mo_id'] ?? '');
+    //             };
+
+    //             $oldModMap = [];
+    //             foreach ($oldMods as $m) {
+    //                 $mk = $modKey($m);
+    //                 if ($mk !== '') $oldModMap[$mk] = $m;
+    //             }
+
+    //             $newModMap = [];
+    //             foreach ($newMods as $m) {
+    //                 $mk = $modKey($m);
+    //                 if ($mk !== '') $newModMap[$mk] = $m;
+    //             }
+
+    //             $modsChanged = false;
+
+    //             foreach ($oldModMap as $mk => $m) {
+    //                 if (!isset($newModMap[$mk])) {
+    //                     FnbOrderItemModifiers::where('im_item_id', $oi->oi_id)
+    //                         ->where('im_modifier_id', (int)$mk)
+    //                         ->delete();
+    //                     $modsChanged = true;
+    //                 }
+    //             }
+
+    //             foreach ($newModMap as $mk => $m) {
+    //                 $modifier = Modifier::where('m_id', (int)$mk)
+    //                     ->where('m_is_deleted', 0)
+    //                     ->where('m_is_active', 1)
+    //                     ->first();
+
+    //                 if (!$modifier) {
+    //                     continue;
+    //                 }
+
+    //                 $qty   = (float)($modifier->m_quantity ?? 1);
+    //                 $price = (float)($modifier->m_price_modifier ?? 0);
+    //                 $type  = $modifier->m_modifier_type ?? 'add';
+
+    //                 FnbOrderItemModifiers::updateOrCreate(
+    //                     [
+    //                         'im_item_id'     => $oi->oi_id,
+    //                         'im_modifier_id' => (int)$mk,
+    //                     ],
+    //                     [
+    //                         'im_modifier_name' => $modifier->m_modifier_name,
+    //                         'im_modifier_type' => $type,
+    //                         'im_modifier_cost' => $price * $qty,
+    //                         'im_currency_id'   => $modifier->m_currency_id,
+    //                         'im_is_deleted'    => 0,
+    //                     ]
+    //                 );
+
+
+    //                 $old = $oldModMap[$mk] ?? null;
+    //                 $oldCost = $old ? (float)($old['im_modifier_cost'] ?? 0) : null;
+    //                 $newCost = $price * $qty;
+
+    //                 if ($old === null || $oldCost !== $newCost) {
+    //                     $modsChanged = true;
+    //                 }
+    //             }
+
+    //             if ($deltaQty > 0 || $modsChanged) {
+    //                 $kitchenDeltas[] = [
+    //                     'item_id'    => $itemId,
+    //                     'station_id' => $stationId,
+    //                     'delta_qty'  => max($deltaQty, 0),
+    //                     'new_qty'    => $newQty,
+    //                     'notes'      => (string)($newRow['notes'] ?? ''),
+    //                     'modifiers'  => $newMods,
+    //                 ];
+    //             }
+    //         }
+
+
+    //         foreach ($origMap as $key => $oldRow) {
+    //             if (!isset($updMap[$key])) {
+
+    //                 $itemId = (int)$oldRow['item_id'];
+    //                 $qty    = (float)$oldRow['quantity'];
+
+    //                 if ($qty > 0) {
+    //                     $this->registerWasteForMenuItem(
+    //                         $itemId,
+    //                         $qty,
+    //                         $warehouseId,
+    //                         $request->user_id
+    //                     );
+    //                 }
+
+
+    //                 $oiId = (int)($oldRow['oi_id'] ?? 0);
+
+    //                 $query = FnbOrderItems::where('oi_order_id', $order->fo_id);
+
+    //                 if ($oiId > 0) {
+    //                     $query->where('oi_id', $oiId);
+    //                 } else {
+    //                     // fallback only if oi_id is missing
+    //                     $query->where('oi_item_id', $itemId)
+    //                         ->where('oi_station_id', (int)($oldRow['station_id'] ?? 0));
+    //                 }
+
+    //                 $query->update([
+    //                     'oi_quantity'   => 0,
+    //                     'oi_is_deleted' => 1
+    //                 ]);
+    //             }
+    //         }
+
+    //         if ($request->has('sub_total')) $order->fo_subtotal = (float)$request->sub_total;
+    //         if ($request->has('total'))     $order->fo_total_amount = (float)$request->total;
+    //         $order->save();
+
+    //         if (count($kitchenDeltas) > 0) {
+    //             $this->dispatchKitchenDelta($order->fo_id, $kitchenDeltas, $request->user_id);
+    //         }
+
+    //         \DB::commit();
+
+    //         return response()->json([
+    //             'is_error' => 0,
+    //             'message' => 'Order updated successfully',
+    //             'kitchen_delta_count' => count($kitchenDeltas),
+    //         ]);
+    //     } catch (\Throwable $e) {
+    //         \DB::rollBack();
+
+    //         return response()->json([
+    //             'is_error' => 1,
+    //             'error_message' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
+    // private function consumeItemStockByMenuItem(int $menuItemId, float $deltaQty, int $warehouseId): void
+    // {
+    //     if ($deltaQty <= 0) return;
+
+    //     $ingredients = FnbIngredients::where('in_item_id', $menuItemId)
+    //         ->where('in_is_deleted', 0)
+    //         ->where('in_is_active', 1)
+    //         ->get();
+
+    //     foreach ($ingredients as $ing) {
+    //         $productId   = (int) $ing->in_product_id;
+    //         $perItemQty  = (float) $ing->in_stock_quantity;
+    //         $needed      = $perItemQty * $deltaQty;
+
+    //         if ($needed > 0) {
+    //             $this->reduceStock($productId, $warehouseId, $needed);
+    //         }
+    //     }
+    // }
+
+    // private function dispatchKitchenDelta(int $orderId, array $kitchenDeltas, int $userId): void
+    // {
+    //     if (empty($kitchenDeltas)) return;
+
+    //     $order = FnbOrders::find($orderId);
+    //     if (!$order) return;
+
+    //     $groupedByStation = [];
+
+    //     foreach ($kitchenDeltas as $delta) {
+    //         $stationId = (int)($delta['station_id'] ?? 0);
+    //         if ($stationId <= 0) continue;
+
+    //         if (!isset($groupedByStation[$stationId])) {
+    //             $groupedByStation[$stationId] = [];
+    //         }
+
+    //         $menuItem = FnbMenuItem::find((int)$delta['item_id']);
+
+    //         $groupedByStation[$stationId][] = [
+    //             'item_id'   => (int)$delta['item_id'],
+    //             'name'      => $menuItem?->mi_item_name ?? 'Unknown Item',
+    //             'delta_qty' => (float)$delta['delta_qty'],
+    //             'new_qty'   => (float)$delta['new_qty'],
+    //             'notes'     => (string)($delta['notes'] ?? ''),
+    //             'modifiers' => $delta['modifiers'] ?? [],
+    //         ];
+    //     }
+
+    //     foreach ($groupedByStation as $stationId => $items) {
+    //         if (empty($items)) continue;
+
+    //         DB::table('fnb_print_jobs')->insert([
+    //             'order_id' => $order->fo_id,
+    //             'kitchen_station_id' => $stationId,
+    //             'payload' => json_encode([
+    //                 'type'  => 'order_update',
+    //                 'order' => [
+    //                     'id'         => $order->fo_id,
+    //                     'code'       => $order->fo_order_code,
+    //                     'type'       => $order->fo_order_type,
+    //                     'datetime'   => now()->format('Y-m-d H:i:s'),
+    //                     'updated_by' => $userId,
+    //                 ],
+    //                 'items' => $items,
+    //             ]),
+    //             'status' => 'pending',
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //         ]);
+    //     }
+    // }
+
+
     public function EditOrder(Request $request)
     {
-        $user_id      = $request->input('user_id');
-        $g_hash       = $request->input('g_hash');
+        $g_hash = $request->input("g_hash");
+        $user_id = $request->input("user_id");
+        $store_id = $request->input("store_id");
+        $warehouse_id = $request->input("warehouse_id");
+        $order_id = $request->input("order_id");
+        $updated_items = $request->input("updated_items");
+
         $user_info    = Users::find($user_id);
 
         $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
@@ -888,311 +1406,357 @@ class FnbOrderController extends Controller
             return Response()->json($result_array);
         }
 
-        $original = json_decode($request->original_items, true);
-        $updated  = json_decode($request->updated_items, true);
+        if (is_string($updated_items)) {
+            $new_items = json_decode($updated_items, true);
+        } else {
+            $new_items = $updated_items;
+        }
+        $order = FnbOrders::whereFoIsDeleted(0)
+            ->where('fo_id', $order_id)
+            ->where('fk_warehouse_id', $warehouse_id)
+            ->where('fo_store_id', $store_id)
+            ->first();
 
-        if (!is_array($original) || !is_array($updated)) {
-            return response()->json([
-                'is_error' => 1,
-                'error_message' => 'Invalid items JSON',
-            ], 422);
+        $old_items = FnbOrderItems::where('oi_order_id', $order_id)->where('oi_is_deleted', 0)->get();
+
+        // [
+        //     items_id -> quantity,
+        //     ...
+        // ]
+        $old_items_quantities = $old_items
+            ->groupBy('oi_item_id')
+            ->map(fn($rows) => $rows->sum('oi_quantity'))
+            ->toArray();
+
+        $old_items_ids = [];
+        foreach ($old_items_quantities as $item_id => $quantity) {
+            $old_items_ids[] = $item_id;
         }
 
-        $original = array_values($original);
-        $updated  = array_values($updated);
+        $old_modifiers = [];
+        if (!empty($old_items_ids)) {
+            $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_items_ids)
+                ->where(function ($q) {
+                    $q->whereNull('im_is_deleted')->orWhere('im_is_deleted', 0);
+                })
+                ->get();
+        }
 
-        try {
-            \DB::beginTransaction();
+        //item_id -> modifier_id -> qty
+        $old_modifier_quantity = [];
 
-            $order = FnbOrders::where('fo_id', $request->order_id)
-                ->where('fo_store_id', $request->store_id)
-                ->first();
+        foreach ($old_modifiers as $mod) {
+            $item_id = $mod->im_item_id;
+            $modifier_id = $mod->im_modifier_id;
+            // $qty = Modifier::where('m_id', $modifier_id)->value('m_quantity');
 
-            if (!$order) {
-                \DB::rollBack();
-                return response()->json(['is_error' => 1, 'error_message' => 'Order not found'], 404);
+            if (!isset($old_modifier_quantity[$item_id])) {
+                $old_modifier_quantity[$item_id] = [];
             }
 
-            // Build maps for fast compare
-            // key = item_id + '|' + station_id
-            $makeKey = function ($row) {
-                $itemId = (int)($row['item_id'] ?? $row['itemId'] ?? 0);
-                $stationId = (int)($row['station_id'] ?? $row['stationId'] ?? 0);
-                return $itemId . '|' . $stationId;
-            };
-
-            $origMap = [];
-            foreach ($original as $row) {
-                $k = $makeKey($row);
-                if (!isset($origMap[$k])) $origMap[$k] = $row;
+            if (!isset($old_modifier_quantity[$item_id][$modifier_id])) {
+                $old_modifier_quantity[$item_id][$modifier_id] = 0;
             }
 
-            $updMap = [];
-            foreach ($updated as $row) {
-                $k = $makeKey($row);
-                if (!isset($updMap[$k])) $updMap[$k] = $row;
+            $old_modifier_quantity[$item_id][$modifier_id] =
+                ($old_modifier_quantity[$item_id][$modifier_id] ?? 0) + 1;
+        }
+
+        $new_items_quantity = [];
+
+        foreach ($new_items as $item) {
+            $item_id = $item['item_id'];
+            $qty = $item['quantity'];
+
+            if (!isset($new_items_quantity[$item_id])) {
+                $new_items_quantity[$item_id] = 0;
             }
 
-            $warehouseId = (int)$request->warehouse_id;
+            $new_items_quantity[$item_id] += $qty;
+        }
 
-            // Collect kitchen delta lines
-            $kitchenDeltas = [];
+        $new_modifier_quantity = [];
 
-            // -----------------------------
-            // Upsert UPDATED items + deduct delta stock
-            // -----------------------------
-            foreach ($updMap as $key => $newRow) {
+        foreach ($new_items as $item) {
+            $item_id = $item['item_id'];
+            $item_qty = $item['quantity'];
 
-                $itemId    = (int)($newRow['item_id'] ?? $newRow['itemId'] ?? 0);
-                $stationId = (int)($newRow['station_id'] ?? $newRow['stationId'] ?? 0);
-                $newQty    = (float)($newRow['quantity'] ?? $newRow['qty'] ?? 0);
+            if (empty($item['modifiers'])) {
+                continue;
+            }
 
-                if ($itemId <= 0 || $newQty < 0) {
-                    \DB::rollBack();
-                    return response()->json([
-                        'is_error' => 1,
-                        'error_message' => 'Invalid item payload',
-                    ], 422);
+            foreach ($item['modifiers'] as $mod) {
+                $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
+                $mod_qty = ($mod['quantity'] ?? 1);
+
+                $final_qty = $item_qty * $mod_qty;
+
+                if (!isset($new_modifier_quantity[$item_id])) {
+                    $new_modifier_quantity[$item_id] = [];
                 }
 
-                $oldRow = $origMap[$key] ?? null;
-                $oldQty = $oldRow ? (float)($oldRow['quantity'] ?? $oldRow['qty'] ?? 0) : 0.0;
-
-                $deltaQty = $newQty - $oldQty;
-
-                // Only positive delta reduces stock
-                if ($deltaQty > 0) {
-                    $this->consumeItemStockByMenuItem($itemId, $deltaQty, $warehouseId);
+                if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
+                    $new_modifier_quantity[$item_id][$modifier_id] = 0;
                 }
 
-                // Upsert item row
-                $oi = FnbOrderItems::updateOrCreate(
-                    [
-                        'oi_order_id'   => $order->fo_id,
-                        'oi_item_id'    => $itemId,
-                        'oi_station_id' => $stationId,
-                    ],
-                    [
-                        'oi_quantity'      => $newQty,
-                        'oi_unit_price'    => (float)($newRow['unit_price'] ?? $newRow['price'] ?? 0),
-                        'oi_item_discount' => (float)($newRow['discount'] ?? 0),
-                        'oi_notes'         => (string)($newRow['notes'] ?? ''),
-                    ]
-                );
+                $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+            }
+        }
+
+        $all_item_ids = array_unique(array_merge(
+            array_keys($old_items_quantities),
+            array_keys($new_items_quantity)
+        ));
+
+        foreach ($all_item_ids as $item_id) {
+            $old_qty = $old_items_quantities[$item_id] ?? 0;
+            $new_qty = $new_items_quantity[$item_id] ?? 0;
+            $delta = $new_qty - $old_qty;
+
+            if ($delta > 0) {
+
+                $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                    ->where('in_is_deleted', 0)
+                    ->where('in_is_active', 1)
+                    ->get(['in_product_id', 'in_stock_quantity']);
+
+                $pending_kitchen_id = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+                    ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+                    ->value('ss_id');
 
 
-                // -----------------------------
-                // 6) Modifiers diff per item
-                // -----------------------------
-                $oldMods = $oldRow && isset($oldRow['modifiers']) && is_array($oldRow['modifiers'])
-                    ? $oldRow['modifiers'] : [];
-                $newMods = isset($newRow['modifiers']) && is_array($newRow['modifiers'])
-                    ? $newRow['modifiers'] : [];
-
-                $modKey = function ($m) {
-                    return (string)($m['modifier_id'] ?? $m['id'] ?? $m['mo_id'] ?? '');
-                };
-
-                $oldModMap = [];
-                foreach ($oldMods as $m) {
-                    $mk = $modKey($m);
-                    if ($mk !== '') $oldModMap[$mk] = $m;
-                }
-
-                $newModMap = [];
-                foreach ($newMods as $m) {
-                    $mk = $modKey($m);
-                    if ($mk !== '') $newModMap[$mk] = $m;
-                }
-
-                $modsChanged = false;
-
-                // Remove old mods not in new
-                foreach ($oldModMap as $mk => $m) {
-                    if (!isset($newModMap[$mk])) {
-                        FnbOrderItemModifiers::where('im_item_id', $oi->oi_id)
-                            ->where('im_modifier_id', (int)$mk)
-                            ->delete();
-                        $modsChanged = true;
+                foreach ($ingredients as $ing) {
+                    $quantity_to_reduce = $ing->in_stock_quantity * $delta;
+                    if ($quantity_to_reduce > 0) {
+                        $this->reduceStock(
+                            $ing->in_product_id,
+                            $warehouse_id,
+                            $quantity_to_reduce
+                        );
                     }
                 }
 
-                // Add/update new mods
-                foreach ($newModMap as $mk => $m) {
-                    $modifier = Modifier::where('m_id', (int)$mk)
-                        ->where('m_is_deleted', 0)
-                        ->where('m_is_active', 1)
-                        ->first();
+                $menu_item = FnbMenuItem::find($item_id);
 
-                    if (!$modifier) {
+                $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
+
+                if ($old_qty > 0) {
+
+                    // ghayer l quantity
+                    FnbOrderItems::where('oi_order_id', $order_id)
+                        ->where('oi_item_id', $item_id)
+                        ->where('oi_is_deleted', 0)
+                        ->update([
+                            'oi_quantity' => $new_qty
+                        ]);
+                } else {
+                    // iza kenet kena 3amlin item jdide
+                    FnbOrderItems::create([
+                        'oi_order_id'       => $order_id,
+                        'oi_item_id'        => $item_id,
+                        'oi_quantity'       => $new_qty,
+                        'oi_unit_price'     => $menu_item->mi_price ?? 0,
+                        'oi_item_discount'  => 0,
+                        'oi_notes'          => '',
+                        'oi_station_id'     => $menu_item->mi_kitchen_station_id ?? 1,
+                        'oi_kitchen_status' => $pending_kitchen_id,
+                    ]);
+                }
+
+
+                FnbPrintJobs::create([
+                    'order_id' => $order_id,
+                    'kitchen_station_id' => $station_id,
+                    'payload' => json_encode([
+                        'order' => [
+                            'id'       => $order_id,
+                            'code'     => FnbOrders::find($order_id)->fo_order_code,
+                            'type'     => FnbOrders::find($order_id)->fo_order_type,
+                            'datetime' => now(),
+                        ],
+                        'items' => [[
+                            'qty'   => $delta,
+                            'name'  => $menu_item->mi_item_name,
+                            'notes' => '',
+                        ]],
+                    ]),
+                    'status' => 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } elseif ($delta < 0) {
+                $waste_qty = abs($delta);
+                $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                    ->where('in_is_deleted', 0)
+                    ->where('in_is_active', 1)
+                    ->get(['in_product_id', 'in_stock_quantity']);
+
+                $product_quantities = [];
+
+                foreach ($ingredients as $ing) {
+                    $product_id = $ing->in_product_id;
+                    $product_qty = ($ing->in_stock_quantity ?? 0);
+
+                    if (!isset($product_quantities[$product_id])) {
+                        $product_quantities[$product_id] = 0;
+                    }
+                    $product_quantities[$product_id] += $product_qty;
+                }
+
+                foreach ($product_quantities as $product_id => $qty_per_item) {
+
+                    $final_waste_qty = $qty_per_item * $waste_qty;
+                    $stock_id = Stocks::where('fk_product_id', $product_id)
+                        ->where('fk_warehouse_id', $warehouse_id)
+                        ->value('is_id');
+
+                    if (!$stock_id || $final_waste_qty <= 0) {
                         continue;
                     }
 
-                    // snapshot values
-                    $qty   = (float)($modifier->m_quantity ?? 1);
-                    $price = (float)($modifier->m_price_modifier ?? 0);
-                    $type  = $modifier->m_modifier_type ?? 'add';
-
-                    FnbOrderItemModifiers::updateOrCreate(
-                        [
-                            'im_item_id'     => $oi->oi_id,
-                            'im_modifier_id' => (int)$mk,
-                        ],
-                        [
-                            'im_modifier_name' => $modifier->m_modifier_name,
-                            'im_modifier_type' => $type,
-                            'im_modifier_cost' => $price * $qty,
-                            'im_currency_id'   => $modifier->m_currency_id,
-                            'im_is_deleted'    => 0,
-                        ]
-                    );
+                    FnbWasteStock::create([
+                        'fk_product_id'   => $product_id,
+                        'fk_stock_id'     => $stock_id,
+                        'fk_warehouse_id' => $warehouse_id,
+                        'ws_quantity'     => $final_waste_qty,
+                        'ws_date'         => now()->toDateString(),
+                        'ws_created_by'   => $user_id,
+                        'ws_created_at'   => now(),
+                    ]);
 
 
-                    // Detect differences vs old
-                    $old = $oldModMap[$mk] ?? null;
-                    $oldCost = $old ? (float)($old['im_modifier_cost'] ?? 0) : null;
-                    $newCost = $price * $qty;
-
-                    if ($old === null || $oldCost !== $newCost) {
-                        $modsChanged = true;
+                    if ($new_qty > 0) {
+                        FnbOrderItems::where('oi_order_id', $order_id)
+                            ->where('oi_item_id', $item_id)
+                            ->where('oi_is_deleted', 0)
+                            ->update([
+                                'oi_quantity' => $new_qty
+                            ]);
+                    } else {
+                        FnbOrderItems::where('oi_order_id', $order_id)
+                            ->where('oi_item_id', $item_id)
+                            ->where('oi_is_deleted', 0)
+                            ->update([
+                                'oi_is_deleted' => 1,
+                                'oi_deleted_by' => $user_id
+                            ]);
                     }
                 }
+            } else {
+            }
+        }
 
-                // -----------------------------
-                // Kitchen delta rules
-                // - send only if deltaQty > 0 OR modifiers changed
-                // -----------------------------
-                if ($deltaQty > 0 || $modsChanged) {
-                    $kitchenDeltas[] = [
-                        'item_id'    => $itemId,
-                        'station_id' => $stationId,
-                        'delta_qty'  => max($deltaQty, 0),
-                        'new_qty'    => $newQty,
-                        'notes'      => (string)($newRow['notes'] ?? ''),
-                        'modifiers'  => $newMods,
-                    ];
+
+        $all_modifiers_qty = array_unique(array_merge(
+            array_keys($old_modifier_quantity),
+            array_keys($new_modifier_quantity)
+        ));
+
+        foreach ($all_modifiers_qty as $item_id) {
+
+            $old_mods = $old_modifier_quantity[$item_id] ?? [];
+            $new_mods = $new_modifier_quantity[$item_id] ?? [];
+
+            $all_modifier_ids = array_unique(array_merge(
+                array_keys($old_mods),
+                array_keys($new_mods)
+            ));
+
+
+            $menu_item = FnbMenuItem::find($item_id);
+            $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
+
+            foreach ($all_modifier_ids as $modifier_id) {
+                $oldQty = $old_mods[$modifier_id] ?? 0;
+                $newQty = $new_mods[$modifier_id] ?? 0;
+                $delta  = $newQty - $oldQty;
+                $menuModifier = FnbMenuItemModifier::where('fk_menu_item_id', $item_id)
+                    ->where('fk_modifier_id', $modifier_id)
+                    ->where('im_is_deleted', 0)
+                    ->first();
+
+                if ($delta > 0) {
+                    $modifier = Modifier::find($modifier_id);
+                    for ($i = 0; $i < $delta; $i++) {
+                        FnbOrderItemModifiers::create([
+                            'im_order_id' => $order_id,
+                            'im_item_id' => $item_id,
+                            'im_modifier_id' => $modifier_id,
+                            'im_modifier_name' => $modifier->m_modifier_name
+                        ]);
+                    }
+
+                    FnbPrintJobs::create([
+                        'order_id' => $order_id,
+                        'kitchen_station_id' => $station_id,
+                        'payload' => json_encode([
+                            'order' => [
+                                'id'   => $order_id,
+                                'code' => $order->fo_order_code,
+                            ],
+                            'items' => [[
+                                'qty'  => $delta,
+                                'name' => '+ ' . ($modifier->m_modifier_name ?? 'Modifier'),
+                                'notes' => '',
+                            ]],
+                        ]),
+                        'status' => 'pending',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    if ($menuModifier && $menuModifier->im_product_id) {
+                        $qtyToReduce = ($modifier->m_quantity ?? 1) * abs($delta);
+                        $this->reduceStock(
+                            $menuModifier->im_product_id,
+                            $warehouse_id,
+                            $qtyToReduce
+                        );
+                    }
+                } elseif ($delta < 0) {
+                    if ($newQty > 0) {
+                        $removeCount = $oldQty - $newQty;
+                    } else {
+                        $removeCount = $oldQty;
+                    }
+                    if ($removeCount > 0) {
+                        $rows = FnbOrderItemModifiers::where('im_item_id', $item_id)
+                            ->where('im_modifier_id', $modifier_id)
+                            ->where(function ($q) {
+                                $q->whereNull('im_is_deleted')->orWhere('im_is_deleted', 0);
+                            })
+                            ->limit($removeCount)
+                            ->get();
+
+                        foreach ($rows as $row) {
+                            $row->im_is_deleted = 1;
+                            $row->save();
+                        }
+                    }
+
+                    if ($menuModifier && $menuModifier->im_product_id) {
+                        FnbWasteStock::create([
+                            'fk_product_id'   => $menuModifier->im_product_id,
+                            'fk_stock_id'     => Stocks::where('fk_product_id', $menuModifier->im_product_id)
+                                ->where('fk_warehouse_id', $warehouse_id)
+                                ->value('is_id'),
+                            'fk_warehouse_id' => $warehouse_id,
+                            'ws_quantity'     => abs($delta),
+                            'ws_date'         => now()->toDateString(),
+                            'ws_created_by'   => $user_id,
+                            'ws_created_at'   => now(),
+                        ]);
+                    }
+                } else {
                 }
             }
-
-            // -----------------------------
-            // Removed items present in original but not in updated
-            // IMPORTANT per your requirement:
-            // - Later will insert into waste tables
-            // -----------------------------
-            foreach ($origMap as $key => $oldRow) {
-                if (!isset($updMap[$key])) {
-                    $itemId    = (int)($oldRow['item_id'] ?? $oldRow['itemId'] ?? 0);
-                    $stationId = (int)($oldRow['station_id'] ?? $oldRow['stationId'] ?? 0);
-
-                    FnbOrderItems::where('oi_order_id', $order->fo_id)
-                        ->where('oi_item_id', $itemId)
-                        ->where('oi_station_id', $stationId)
-                        ->update(['oi_quantity' => 0]);
-                }
-            }
-
-            // -----------------------------
-            // Update order totals (optional)
-            // -----------------------------
-            if ($request->has('sub_total')) $order->fo_subtotal = (float)$request->sub_total;
-            if ($request->has('total'))     $order->fo_total_amount = (float)$request->total;
-            $order->save();
-
-            // -----------------------------
-            // Send kitchen delta (hook)
-            // -----------------------------
-            if (count($kitchenDeltas) > 0) {
-                $this->dispatchKitchenDelta($order->fo_id, $kitchenDeltas, $request->user_id);
-            }
-
-            \DB::commit();
-
-            return response()->json([
-                'is_error' => 0,
-                'message' => 'Order updated successfully',
-                'kitchen_delta_count' => count($kitchenDeltas),
-            ]);
-        } catch (\Throwable $e) {
-            \DB::rollBack();
-
-            return response()->json([
-                'is_error' => 1,
-                'error_message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    private function consumeItemStockByMenuItem(int $menuItemId, float $deltaQty, int $warehouseId): void
-    {
-        if ($deltaQty <= 0) return;
-
-        $ingredients = FnbIngredients::where('in_item_id', $menuItemId)
-            ->where('in_is_deleted', 0)
-            ->where('in_is_active', 1)
-            ->get();
-
-        foreach ($ingredients as $ing) {
-            $productId   = (int) $ing->in_product_id;
-            $perItemQty  = (float) $ing->in_stock_quantity;
-            $needed      = $perItemQty * $deltaQty;
-
-            if ($needed > 0) {
-                $this->reduceStock($productId, $warehouseId, $needed);
-            }
-        }
-    }
-
-    private function dispatchKitchenDelta(int $orderId, array $kitchenDeltas, int $userId): void
-    {
-        if (empty($kitchenDeltas)) return;
-
-        $order = FnbOrders::find($orderId);
-        if (!$order) return;
-
-        $groupedByStation = [];
-
-        foreach ($kitchenDeltas as $delta) {
-            $stationId = (int)($delta['station_id'] ?? 0);
-            if ($stationId <= 0) continue;
-
-            if (!isset($groupedByStation[$stationId])) {
-                $groupedByStation[$stationId] = [];
-            }
-
-            $menuItem = FnbMenuItem::find((int)$delta['item_id']);
-
-            $groupedByStation[$stationId][] = [
-                'item_id'   => (int)$delta['item_id'],
-                'name'      => $menuItem?->mi_item_name ?? 'Unknown Item',
-                'delta_qty' => (float)$delta['delta_qty'],
-                'new_qty'   => (float)$delta['new_qty'],
-                'notes'     => (string)($delta['notes'] ?? ''),
-                'modifiers' => $delta['modifiers'] ?? [],
-            ];
         }
 
-        foreach ($groupedByStation as $stationId => $items) {
-            if (empty($items)) continue;
-
-            DB::table('fnb_print_jobs')->insert([
-                'order_id' => $order->fo_id,
-                'kitchen_station_id' => $stationId,
-                'payload' => json_encode([
-                    'type'  => 'order_update',
-                    'order' => [
-                        'id'         => $order->fo_id,
-                        'code'       => $order->fo_order_code,
-                        'type'       => $order->fo_order_type,
-                        'datetime'   => now()->format('Y-m-d H:i:s'),
-                        'updated_by' => $userId,
-                    ],
-                    'items' => $items,
-                ]),
-                'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        return response()->json([
+            'is_error' => 0,
+            'message' => 'Order edited successfully',
+        ]);
     }
 
 
@@ -1297,7 +1861,9 @@ class FnbOrderController extends Controller
 
         $query = FnbOrders::query()
             ->leftJoin('currency as c', 'c.cc_id', '=', 'fnb_orders.fo_currency_id')
-            ->where('fnb_orders.fo_is_deleted', 0);
+            ->leftJoin('inventory_warehouses as iw', 'iw.w_id', '=', 'fnb_orders.fk_warehouse_id')
+            ->where('fnb_orders.fo_is_deleted', 0)
+            ->where('fnb_orders.fo_payment_status', 'paid');
 
         if (!empty($warehouse_id)) {
             $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
@@ -1320,7 +1886,8 @@ class FnbOrderController extends Controller
                 'fnb_orders.fo_order_datetime',
                 'fnb_orders.fk_warehouse_id',
                 'fnb_orders.fo_currency_id',
-                'c.cc_currency_code'
+                'c.cc_currency_code',
+                'iw.w_warehouse_name'
             )
             ->get();
 
@@ -1333,6 +1900,7 @@ class FnbOrderController extends Controller
                 'fo_total_amount'   => $order->fo_total_amount,
                 'fo_order_datetime' => $order->fo_order_datetime,
                 'warehouse_id'      => $order->fk_warehouse_id,
+                'warehouse_name'    => $order->w_warehouse_name,
                 'currency_code'     => $order->cc_currency_code == null ? 'USD' : $order->cc_currency_code,
             ];
         }
@@ -1362,12 +1930,14 @@ class FnbOrderController extends Controller
         }
 
         $orders = FnbOrders::where('fnb_orders.fo_is_deleted', 0)
-            ->whereIn('fnb_orders.fo_kitchen_status', function ($q) {
+            ->whereIn('fnb_orders.fo_order_status', function ($q) {
                 $q->select('ss_id')
                     ->from('sys_status')
-                    ->where('ss_status_type', 'kitchen_order_statuses')
+                    ->whereRaw('LOWER(ss_status_title) LIKE ?', ['p%'])
+                    ->where('ss_status_type', 'like', '%pos%')
                     ->where('ss_is_deleted', 0);
             })
+
             ->leftJoin(
                 'sys_status as order_status',
                 'order_status.ss_id',
@@ -1477,15 +2047,13 @@ class FnbOrderController extends Controller
                 return response()->json(['is_error' => 1, 'error_msg' => 'Order has no items']);
             }
 
-            // Build waste by product
-            $wasteByProduct = []; // product_id => total_waste_qty
+            $wasteByProduct = [];
 
             foreach ($orderItems as $oi) {
 
                 $menuItemId = (int) $oi->oi_item_id;
                 $itemQty    = (float) $oi->oi_quantity;
 
-                // ingredients -> products
                 $ingredients = FnbIngredients::where('in_item_id', $menuItemId)
                     ->where('in_is_deleted', 0)
                     ->get();
@@ -1550,7 +2118,6 @@ class FnbOrderController extends Controller
                 ]);
             }
 
-            // FIFO waste distribution
             foreach ($wasteByProduct as $productId => $totalWasteQty) {
 
                 $remaining = (float) $totalWasteQty;
@@ -1594,7 +2161,6 @@ class FnbOrderController extends Controller
                 }
             }
 
-            // mark order as returned
             $order->fo_returned        = 1;
             $order->fo_returned_date   = $now;
             $order->fo_returned_reason = $reason;
