@@ -28,26 +28,27 @@ class Stocks extends Model
     public      $timestamps     = false;
     protected   $primaryKey     = "is_id";
 
-    
-    
+    const RETURN_STATUS = 2;
+    const DEFECTIVE_STATUS = 3;
+
     public function products()
-    { 
+    {
         return $this->hasOne('App\models\Inventory\Products', 'p_id','fk_product_id');
     }
-    
+
     public function warehouses()
-    { 
+    {
         return $this->hasOne('App\models\Inventory\WareHouses', 'w_id','fk_warehouse_id');
     }
-    
+
     public function Zones()
     {
         return $this->hasOne('App\models\Inventory\WareHouseZones', 'wz_id','fk_zone_id');
     }
-    
+
     public function Currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','is_price_currency');
-    } 
+    }
 
 }

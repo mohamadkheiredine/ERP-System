@@ -341,6 +341,7 @@ class OrdersController extends Controller
                     ->where('fk_product_id', $product_id)
                     ->where('fk_warehouse_id', $warehouse_id)
                     ->where('is_is_deleted', 0)
+                    ->where('is_stock_status', 1)
                     ->lockForUpdate()
                     ->sum('is_quanity');
 
@@ -354,6 +355,7 @@ class OrdersController extends Controller
                         ->where('fk_warehouse_id', $warehouse_id)
                         ->where('is_is_deleted', 0)
                         ->where('is_quanity', '>', 0)
+                        ->where('is_stock_status', 1)
                         ->orderBy('is_id', 'ASC')
                         ->lockForUpdate()
                         ->get();
@@ -390,6 +392,7 @@ class OrdersController extends Controller
                         ->where('fk_product_id', $product_id)
                         ->where('fk_warehouse_id', $warehouse_id)
                         ->where('is_is_deleted', 0)
+                        ->where('is_stock_status', 1)
                         ->where('is_quanity', '<', 0)
                         ->lockForUpdate()
                         ->orderBy('is_id', 'ASC')

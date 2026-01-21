@@ -111,7 +111,7 @@ class OrdersController extends Controller
 
         // the commented line is correct
         // $list_orders = Orders::whereSoIsDeleted(0)->whereSoCompanyId($default_company_id);
-        $list_orders = Orders::whereSoIsDeleted(0);
+        $list_orders = Orders::whereSoIsDeleted(0)->whereIsStockStatus(1);
         if ($so_order_warehouse > 0)
             $list_orders = $list_orders->whereFkWarehouseId($so_order_warehouse);
         if ($so_vendor_id > 0)

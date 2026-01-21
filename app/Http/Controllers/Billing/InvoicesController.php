@@ -1110,6 +1110,7 @@ class InvoicesController extends Controller
                     // 1. Get all available stock for the product, oldest first.
                     $available_stock = Stocks::where('fk_product_id', $bi_product)
                         ->where('fk_warehouse_id', $ii_warehouse_id)
+                        ->where('is_stock_status',1)
                         ->where('is_quanity', '>', 0) // Find any record with stock
                         ->orderBy('is_id', 'asc')
                         ->lockForUpdate() // Lock rows to prevent race conditions
@@ -1419,6 +1420,10 @@ class InvoicesController extends Controller
 
         $transaction_info = Transactions::find($trans_id);
 
+        $count_return_invoices = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(1)->count();
+        $count_return_invoices = $count_return_invoices + 1;
+
+        $returncode = "RETURN" . sprintf('%05d', $count_return_invoices);
 
         $account_id = 0;
         if($invoice_info->fk_customer_id != null)
@@ -1437,7 +1442,7 @@ class InvoicesController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $trans_id;
         $TransactionMovement->tm_company_id            = $default_company_id;
-        $TransactionMovement->tm_trans_code         = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_trans_code         = $returncode;
         $TransactionMovement->tm_ledger_account     = $account_id;
         $TransactionMovement->tm_sub_ledger_account = $account_id;
         $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
@@ -1452,7 +1457,7 @@ class InvoicesController extends Controller
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $trans_id;
         $TransactionMovement->tm_company_id            = $default_company_id;
-        $TransactionMovement->tm_trans_code         = $invoice_info->bi_invoice_code;
+        $TransactionMovement->tm_trans_code         = $returncode;
         $TransactionMovement->tm_ledger_account     = 701;
         $TransactionMovement->tm_sub_ledger_account = 701;
         $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
@@ -1488,6 +1493,99 @@ class InvoicesController extends Controller
 
 
 
+
+        $result_array['bi_id'] = $bi_id;
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+
+        return Response()->json($result_array);
+    }
+
+
+    /**
+     * get all product used for this client ( invoice /mv ) and show it to be able to specify stock
+     * as used or defected
+     *
+     * @author Moe Mantach
+     * @access public
+     *
+     * @param $ip_id
+     * @param Request $request
+     * @return void
+     */
+    public function ReturnProductPreview($bi_id , Request $request)
+    {
+        $result_array = array();
+        $invoices_info = Invoices::find($bi_id);
+
+        $client_id = $invoices_info->bi_client_id;
+
+        $client_info = CRMAccounts::find($client_id);
+
+        $ca_account_code = $client_info->ca_account_code;
+
+        $lst_invoice_items = InvoiceProducts::whereFkInvoiceId($bi_id)->get();
+
+        $lst_call_products = InboundCallProducts::whereCpClientId($client_id)->get();
+
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+
+
+        $data = array(
+            "lst_invoice_items" => $lst_invoice_items,
+            "lst_call_products" => $lst_call_products,
+            "lst_warehouses" => $lst_warehouses,
+            "invoices_info" => $invoices_info,
+            "client_info" => $client_info,
+        );
+
+
+        return Response()->view('billing.invoicepreview',$data);
+    }
+
+
+    public function SaveReturnInvoice(Request $request)
+    {
+        $bi_id = $request->input('bi_id');
+        $sp_product_id = $request->input('sp_product_id');
+        $sp_quantity = $request->input('sp_quantity');
+        $sp_warehouse_id = $request->input('sp_warehouse_id');
+        $sp_serial_number = $request->input('sp_serial_number');
+        $sp_stock_type = $request->input('sp_stock_type');
+        $result_array = array();
+
+
+        $invoice_info = Invoices::find($bi_id);
+
+
+        foreach ($sp_product_id as $index => $product_id)
+        {
+            $stock_info = new Stocks();
+            $stock_info->fk_product_id          = $product_id;
+            $stock_info->fk_warehouse_id        = $sp_warehouse_id[$index];
+            $stock_info->is_quanity             = $sp_quantity[$index];
+            $stock_info->is_stock_status        = $sp_stock_type[$index];
+            $stock_info->is_wholesale_price     = 0;
+            $stock_info->is_price_stock         = 0;
+            $stock_info->is_price_item          = 0;
+            $stock_info->is_selling_price       = 0;
+            $stock_info->is_vendor_price        = 0;
+            $stock_info->is_price_currency        = $invoice_info->bi_invoice_currency;
+            $stock_info->is_stock_currency        = $invoice_info->bi_invoice_currency;
+            $stock_info->save();
+
+
+            if($sp_serial_number[$index] != null || $sp_serial_number[$index] != "")
+            {
+                // if serial number you can add it to stock ids
+                $stock_ids = new StockIds();
+                $stock_ids->fk_product_id = $product_id;
+                $stock_ids->fk_stock_id = $stock_info->is_id;
+                $stock_ids->si_stock_uid = $sp_serial_number[$index];
+                $stock_ids->si_stock_sold = 0;
+                $stock_ids->save();
+            }
+        }
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";
@@ -2341,7 +2439,7 @@ class InvoicesController extends Controller
                     $warehouse_movement->wm_quantity = $item->ii_item_qyt;
                     $warehouse_movement->wm_action_date = date('Y-m-d');
                     $warehouse_movement->wm_action_type = "INV";
-                    $warehouse_movement->wm_action_description = "Get " . $item->ii_item_qyt . " of " . $item->Product->p_product_name . " From " . $item->warehouse->w_warehouse_name . " Invoice Number #" . $bi_invoice_code;
+                    $warehouse_movement->wm_action_description = "Get " . $item->ii_item_qyt . " of " . $item->Product->p_product_name . " From " . $item->warehouse->w_warehouse_name . " Invoice Number #" . $invoice_info->bi_invoice_code;
                     $warehouse_movement->save();
 
                 }

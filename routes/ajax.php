@@ -413,6 +413,7 @@ Route::get('/request/bills/getlistbillresults','Billing\InvoicePaymentsControlle
 Route::post('/request/bills/savecallbillresult','Billing\InvoicePaymentsController@SaveBillResultInfo');
 Route::post('/request/bills/getregionarea','Billing\InvoicePaymentsController@GetRegionArea');
 Route::post('/request/billing/returninvoice','Billing\InvoicesController@ReturnInvoice');
+Route::post('/request/billing/savereturninvoice','Billing\InvoicesController@SaveReturnInvoice');
 
 Route::get('/request/billing/getcompanysupplier','Billing\InvoicesController@GetCompanySupplier');
 
