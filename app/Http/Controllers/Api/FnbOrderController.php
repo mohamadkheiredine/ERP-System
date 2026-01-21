@@ -1435,7 +1435,7 @@ class FnbOrderController extends Controller
 
         $old_modifiers = [];
         if (!empty($old_items_ids)) {
-            $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_items_ids)->whereIn('im_item_id', $old_items_ids)
+            $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_items_ids)
                 ->where(function ($q) {
                     $q->whereNull('im_is_deleted')->orWhere('im_is_deleted', 0);
                 })
@@ -1448,7 +1448,7 @@ class FnbOrderController extends Controller
         foreach ($old_modifiers as $mod) {
             $item_id = $mod->im_item_id;
             $modifier_id = $mod->im_modifier_id;
-            $qty = Modifier::where('m_id', $modifier_id)->value('m_quantity');
+            // $qty = Modifier::where('m_id', $modifier_id)->value('m_quantity');
 
             if (!isset($old_modifier_quantity[$item_id])) {
                 $old_modifier_quantity[$item_id] = [];
@@ -1458,7 +1458,8 @@ class FnbOrderController extends Controller
                 $old_modifier_quantity[$item_id][$modifier_id] = 0;
             }
 
-            $old_modifier_quantity[$item_id][$modifier_id] += $qty;
+            $old_modifier_quantity[$item_id][$modifier_id] =
+                ($old_modifier_quantity[$item_id][$modifier_id] ?? 0) + 1;
         }
 
         $new_items_quantity = [];
@@ -1485,7 +1486,8 @@ class FnbOrderController extends Controller
             }
 
             foreach ($item['modifiers'] as $mod) {
-                $modifier_id = $mod['modifier_id'];
+                $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
                 $mod_qty = ($mod['quantity'] ?? 1);
 
                 $final_qty = $item_qty * $mod_qty;
@@ -1506,8 +1508,6 @@ class FnbOrderController extends Controller
             array_keys($old_items_quantities),
             array_keys($new_items_quantity)
         ));
-
-        // dd("all items ids ", $all_item_ids);
 
         foreach ($all_item_ids as $item_id) {
             $old_qty = $old_items_quantities[$item_id] ?? 0;
@@ -1652,10 +1652,6 @@ class FnbOrderController extends Controller
             array_keys($old_modifier_quantity),
             array_keys($new_modifier_quantity)
         ));
-        // dd("old modifiers quantity ", $old_modifier_quantity);
-        // dd("new modifiers quantity ", $new_modifier_quantity);
-
-        // dd("all modifiers qty ", $all_modifiers_qty);
 
         foreach ($all_modifiers_qty as $item_id) {
 
@@ -1667,6 +1663,7 @@ class FnbOrderController extends Controller
                 array_keys($new_mods)
             ));
 
+
             $menu_item = FnbMenuItem::find($item_id);
             $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
 
@@ -1674,18 +1671,14 @@ class FnbOrderController extends Controller
                 $oldQty = $old_mods[$modifier_id] ?? 0;
                 $newQty = $new_mods[$modifier_id] ?? 0;
                 $delta  = $newQty - $oldQty;
-                // dd('delta ', $delta);
                 $menuModifier = FnbMenuItemModifier::where('fk_menu_item_id', $item_id)
                     ->where('fk_modifier_id', $modifier_id)
                     ->where('im_is_deleted', 0)
                     ->first();
 
                 if ($delta > 0) {
-                    // dd("heree");
                     $modifier = Modifier::find($modifier_id);
-                    // dd($modifier);
                     for ($i = 0; $i < $delta; $i++) {
-                        // dd("i ", $i);
                         FnbOrderItemModifiers::create([
                             'im_order_id' => $order_id,
                             'im_item_id' => $item_id,
@@ -1693,8 +1686,6 @@ class FnbOrderController extends Controller
                             'im_modifier_name' => $modifier->m_modifier_name
                         ]);
                     }
-
-
 
                     FnbPrintJobs::create([
                         'order_id' => $order_id,
@@ -1716,10 +1707,11 @@ class FnbOrderController extends Controller
                     ]);
 
                     if ($menuModifier && $menuModifier->im_product_id) {
+                        $qtyToReduce = ($modifier->m_quantity ?? 1) * abs($delta);
                         $this->reduceStock(
                             $menuModifier->im_product_id,
                             $warehouse_id,
-                            abs($delta)
+                            $qtyToReduce
                         );
                     }
                 } elseif ($delta < 0) {
