@@ -32,6 +32,7 @@ class FnbOrderItemModifiers extends Model
         'im_modifier_id',
         'im_quantity',
         'im_price',
+        'im_modifier_name',
     ];
 
     public function Item()
