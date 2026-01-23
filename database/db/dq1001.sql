@@ -768,3 +768,10 @@ REFERENCES inventory_warehouses (w_id)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
 
+ALTER TABLE fnb_order_item_modifiers
+ADD COLUMN im_quantity INT NOT NULL DEFAULT 1
+AFTER im_modifier_cost;
+
+
+ALTER TABLE fnb_order_item_modifiers
+ADD COLUMN im_order_id BIGINT(20) NULL AFTER im_item_id;

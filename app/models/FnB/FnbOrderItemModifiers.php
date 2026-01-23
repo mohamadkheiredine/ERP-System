@@ -33,11 +33,12 @@ class FnbOrderItemModifiers extends Model
         'im_quantity',
         'im_price',
         'im_modifier_name',
+        'im_quantity'
     ];
 
     public function Item()
     {
-        return $this->hasOne('App\models\FnB\FnbItem', 'fi_id', 'im_item_id');
+        return $this->hasOne('App\models\FnB\FnbMenuItem', 'fi_id', 'im_item_id');
     }
 
     public function Modifier()
