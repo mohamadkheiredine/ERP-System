@@ -177,6 +177,7 @@ Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@De
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbOrderController@GetListOfOrders');
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
+Route::get('/api/inventory/getlistmodifiersperitem', 'Api\FnbModifiersController@GetModifiersPerItem');
 Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
