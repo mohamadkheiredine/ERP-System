@@ -176,7 +176,6 @@ class ExpensesController extends Controller
             $AccTransaction->save();
             $at_id = $AccTransaction->at_id;
 
-<<<<<<< HEAD
         $TransactionMovement = new TransactionMovements();
         $TransactionMovement->fk_tran_id            = $at_id;
         $TransactionMovement->tm_company_id     = $company_id;
@@ -206,31 +205,6 @@ class ExpensesController extends Controller
         $TransactionMovement->tm_transaction_date   = $date;
         $TransactionMovement->tm_currency_id        = $currency_id;
         $TransactionMovement->save();
-=======
-            $TransactionMovement = new TransactionMovements();
-            $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $payment_info->pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $payment_info->pt_payment_account;
-            $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
-            $TransactionMovement->tm_debit              = $amount;
-            $TransactionMovement->tm_credit             = 0;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date   = $date;
-            $TransactionMovement->tm_currency_id        = $currency_id;
-            $TransactionMovement->save();
-
-            $TransactionMovement = new TransactionMovements();
-            $TransactionMovement->fk_tran_id            = $at_id;
-            $TransactionMovement->tm_ledger_account     = $expenses_category->pt_payment_account;
-            $TransactionMovement->tm_sub_ledger_account = $expenses_category->pt_payment_account;
-            $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
-            $TransactionMovement->tm_debit              = 0;
-            $TransactionMovement->tm_credit             = $amount;
-            $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            $TransactionMovement->tm_transaction_date   = $date;
-            $TransactionMovement->tm_currency_id        = $currency_id;
-            $TransactionMovement->save();
->>>>>>> origin/fix-bugs
 
             // save expenses Payment
             $expense_payment = new ExpensePayments();
