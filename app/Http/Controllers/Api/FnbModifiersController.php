@@ -69,7 +69,8 @@ class FnbModifiersController extends Controller
             $modifiers_array[] = [
                 'im_id' => $item->im_id,
                 'fk_modifier_id' => $item->fk_modifier_id,
-                'im_product_id' => $item->im_product_id
+                'im_product_id' => $item->im_product_id,
+                'im_quantity' => $item->Modifier->m_quantity ?? 0,
             ];
         }
 

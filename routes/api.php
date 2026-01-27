@@ -136,6 +136,7 @@ Route::post('/request/api/gettotalordersbydate', 'Api\DashboardController@GetLis
 Route::get('/request/api/getlistexpensecategories', 'Api\ExpensesController@GetListExpenseCategories');
 Route::post('/request/api/submitnewexpense', 'Api\ExpensesController@SubmitNewexpense');
 Route::get('/request/api/expense/list', 'Api\ExpensesController@GetListExpenses');
+Route::delete('request/api/expense/delete', 'Api\ExpensesController@DeleteExpense');
 
 
 

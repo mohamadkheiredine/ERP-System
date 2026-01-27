@@ -37,6 +37,8 @@ class FnbOrderItems extends Model
         'oi_notes',
         'oi_currency_id',
         'oi_is_deleted',
+        'oi_item_discount',
+        'oi_kitchen_status'
     ];
 
 

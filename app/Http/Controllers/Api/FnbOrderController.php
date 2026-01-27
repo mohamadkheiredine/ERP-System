@@ -182,7 +182,7 @@ class FnbOrderController extends Controller
         $customer_info = null;
         $table_ids = $request->input('table_id');
         $table_ids = array_filter(explode(",", $table_ids));
-        $order_id   = (int) $request->input('order_id');
+        $order_id   = $request->input('order_id');
         $isDineIn   = ($order_type === 'dine_in');
 
 
@@ -271,6 +271,7 @@ class FnbOrderController extends Controller
             $order_info->fo_store_id   = $store_id;
             $order_info->fo_branch_id  = $company_id;
         }
+
 
         $order_info->fo_customer_id = $customer_id;
         $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
@@ -362,10 +363,11 @@ class FnbOrderController extends Controller
                     }
 
                     FnbOrderItemModifiers::create([
-                        'im_item_id'        => $item->oi_item_id,
-                        'im_modifier_id'    => $modifier->m_id,
-                        'im_modifier_name'  => $modifier->m_modifier_name,
-                        'im_modifier_cost'  => $modifier->m_cost_modifier,
+                        'im_order_id' => $fo_id,
+                        'im_item_id' => $item->oi_item_id,
+                        'im_modifier_id' => $modifier->m_id,
+                        'im_modifier_name' => $modifier->m_modifier_name,
+                        'im_modifier_cost' => $modifier->m_cost_modifier,
                         'im_quantity' => $modifier->m_quantity * $item->oi_quantity
                     ]);
 
@@ -1039,6 +1041,7 @@ class FnbOrderController extends Controller
         } else {
             $new_items = $updated_items;
         }
+
         $order = FnbOrders::whereFoIsDeleted(0)
             ->where('fo_id', $order_id)
             ->where('fk_warehouse_id', $warehouse_id)
@@ -1046,7 +1049,6 @@ class FnbOrderController extends Controller
             ->first();
 
         $old_items = FnbOrderItems::where('oi_order_id', $order_id)->where('oi_is_deleted', 0)->get();
-        // dd("old items ", $old_items);
 
         // [
         //     items_id -> quantity,
@@ -1057,18 +1059,15 @@ class FnbOrderController extends Controller
             ->map(fn($rows) => $rows->sum('oi_quantity'))
             ->toArray();
 
-        // dd("old items quantities ", $old_items_quantities);
-
         $old_order_item_ids = $old_items->pluck('oi_item_id')->toArray();
-        // dd("order item ids ", $old_order_item_ids);
 
-        $old_modifiers = new FnbOrderItemModifiers();
+        $old_modifiers = [];
         if (!empty($old_order_item_ids)) {
             $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_order_item_ids)
+                ->where('im_order_id', $order_id)
                 ->where('im_is_deleted', 0)
                 ->get();
         }
-       // dd('old modifiers ', $old_modifiers);
 
         //item_id -> modifier_id -> qty
         $old_modifier_quantity = [];
@@ -1077,8 +1076,7 @@ class FnbOrderController extends Controller
 
             $modifier_id = $mod->im_modifier_id;
             $modifier = Modifier::find($modifier_id);
-            // $menu_item_id = $modifier->m_item_id;
-            $menu_item_id = FnbOrderItemModifiers::where('im_modifier_id', $modifier_id)->value('im_item_id');
+            $menu_item_id = $mod->im_item_id;
 
             if (!isset($old_modifier_quantity[$menu_item_id])) {
                 $old_modifier_quantity[$menu_item_id] = [];
@@ -1088,10 +1086,8 @@ class FnbOrderController extends Controller
                 $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
             }
 
-            $old_modifier_quantity[$menu_item_id][$modifier_id] = $mod->Modifier->m_quantity;
+            $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
         }
-
-        // dd("old modifier quantity ", $old_modifier_quantity);
 
         $new_items_quantity = [];
 
@@ -1105,7 +1101,6 @@ class FnbOrderController extends Controller
 
             $new_items_quantity[$item_id] += $qty;
         }
-        // dd("new items qty ", $new_items_quantity);
 
         $new_modifier_quantity = [];
 
@@ -1140,13 +1135,11 @@ class FnbOrderController extends Controller
             array_keys($old_items_quantities),
             array_keys($new_items_quantity)
         ));
-        // dd('old_items qty, new items qty ', $old_items_quantities, $new_items_quantity);
 
         foreach ($all_item_ids as $item_id) {
             $old_qty = $old_items_quantities[$item_id] ?? 0;
             $new_qty = $new_items_quantity[$item_id] ?? 0;
             $delta = $new_qty - $old_qty;
-            // dd("old,new,delta ",$old_qty, $new_qty, $delta);
             if ($delta > 0) {
 
                 $ingredients = FnbIngredients::where('in_item_id', $item_id)
@@ -1177,7 +1170,7 @@ class FnbOrderController extends Controller
                 if ($old_qty > 0) {
 
                     // ghayer l quantity
-                    FnbOrderItems::where('oi_order_id', $order_id)
+                    FnbOrderItems::where('oi_order_id', operator: $order_id)
                         ->where('oi_item_id', $item_id)
                         ->where('oi_is_deleted', 0)
                         ->update([
@@ -1189,11 +1182,14 @@ class FnbOrderController extends Controller
                         'oi_order_id'       => $order_id,
                         'oi_item_id'        => $item_id,
                         'oi_quantity'       => $new_qty,
-                        'oi_unit_price'     => $menu_item->mi_price ?? 0,
+                        'oi_unit_price'     => $menu_item->mi_base_price ?? 0,
                         'oi_item_discount'  => 0,
                         'oi_notes'          => '',
                         'oi_station_id'     => $menu_item->mi_kitchen_station_id ?? 1,
                         'oi_kitchen_status' => $pending_kitchen_id,
+                        'oi_currency_id'    => $order->fo_currency_id,
+                        'oi_is_deleted'     => 0,
+                        'oi_created_by'     => $user_id,
                     ]);
                 }
 
@@ -1302,21 +1298,17 @@ class FnbOrderController extends Controller
                 array_keys($new_mods)
             ));
 
-
-            // $menu_item = FnbOrderItems::where('oi_item_id', $item_id)->where('oi_order_id', $order_id)->get();
-            // $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
-
             foreach ($all_modifier_ids as $modifier_id) {
                 $oldQty = $old_mods[$modifier_id] ?? 0;
                 $newQty = $new_mods[$modifier_id] ?? 0;
                 $delta  = $newQty - $oldQty;
-                // dd('old, new, delta ', $oldQty, $newQty, $delta);
 
                 $modifier = Modifier::find($modifier_id);
                 if ($delta > 0) {
 
                     FnbOrderItemModifiers::create([
                         'im_item_id' => $item_id,
+                        'im_order_id' => $order_id,
                         'im_modifier_id' => $modifier->m_id,
                         'im_modifier_name' => $modifier->m_modifier_name,
                         'im_modifier_cost' => $modifier->m_cost_modifier,
@@ -1359,30 +1351,35 @@ class FnbOrderController extends Controller
                         $removeCount = $oldQty;
                     }
                     if ($removeCount > 0) {
-                        $rows = FnbOrderItemModifiers::where('im_item_id', $item_id)
+                        FnbOrderItemModifiers::where('im_item_id', $item_id)
                             ->where('im_modifier_id', $modifier_id)
+                            ->where('im_order_id', $order_id)
                             ->where('im_is_deleted', 0)
-                            ->limit($removeCount)
-                            ->get();
-
-                        foreach ($rows as $row) {
-                            $row->im_is_deleted = 1;
-                            $row->save();
-                        }
+                            ->update([
+                                'im_quantity' => $newQty,
+                                'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
+                            ]);
                     }
 
-                    if ($modifier && $modifier->im_item_id) {
-                        FnbWasteStock::create([
-                            'fk_product_id'   => $modifier->im_item_id,
-                            'fk_stock_id'     => Stocks::where('fk_product_id', $modifier->im_item_id)
+                    if ($modifier && $modifier->m_item_id > 0) {
+                        $productId = (int) $modifier->m_item_id;
+
+                        if ($removeCount > 0) {
+                            $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
                                 ->where('fk_warehouse_id', $warehouse_id)
-                                ->value('is_id'),
-                            'fk_warehouse_id' => $warehouse_id,
-                            'ws_quantity'     => abs($delta),
-                            'ws_date'         => now()->toDateString(),
-                            'ws_created_by'   => $user_id,
-                            'ws_created_at'   => now(),
-                        ]);
+                                ->value('is_id');
+
+
+                            FnbWasteStock::create([
+                                'fk_product_id'   => $productId,
+                                'fk_stock_id'     => $stockId,
+                                'fk_warehouse_id' => $warehouse_id,
+                                'ws_quantity'     => $removeCount,
+                                'ws_date'         => now()->toDateString(),
+                                'ws_created_by'   => $user_id,
+                                'ws_created_at'   => now(),
+                            ]);
+                        }
                     }
                 } else {
                 }

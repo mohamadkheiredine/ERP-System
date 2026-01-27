@@ -29,6 +29,7 @@ class FnbOrderItemModifiers extends Model
 
       protected $fillable = [
         'im_item_id',
+        'im_order_id',
         'im_modifier_id',
         'im_quantity',
         'im_price',
