@@ -159,8 +159,8 @@ class OrdersController extends Controller
                         );
                         $ic_customer_code = $customer_manager->GenerateCustomerCode($params);
 
-
                         $customer_info = new Customers();
+                        $customer_info->ic_company_id = $company_id;
                         $customer_info->ic_customer_name = $delcustomername;
                         $customer_info->ic_customer_address = $delcustomeraddress;
                         $customer_info->ic_customer_phone = $delcustomerphone;
@@ -209,9 +209,6 @@ class OrdersController extends Controller
 
 
         }
-
-
-
 
         // get default customer id
         $vendor_account_id = 0;
@@ -459,10 +456,6 @@ class OrdersController extends Controller
             $order_info->so_total_cost       = $sub_total - (($pos_total * $pos_discount) / 100);
             $order_info->save();
         }
-
-
-
-
 
 
         $lst_order_items = OrderProducts::whereFkOrderId($so_id)->get();

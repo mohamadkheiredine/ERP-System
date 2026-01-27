@@ -402,6 +402,7 @@ class CustomersController extends Controller
         $ic_customer_phone      = $request->input('ic_customer_phone');
         $ic_customer_mobile     = $request->input('ic_customer_mobile');
         $ic_hobbies             = $request->input('ic_hobbies');
+        $company_id             = $request->input('company_id');
         $ic_birth_date             = $request->input('ic_birth_date');
         // $ic_favorite_foods             = $request->input('ic_favorite_foods');
         // $ic_work_title             = $request->input('ic_work_title');
@@ -444,6 +445,7 @@ class CustomersController extends Controller
 
 
         $customer_info->ic_customer_code    = $ic_customer_code;
+        $customer_info->ic_company_id       = $company_id;
         $customer_info->ic_customer_name    = $ic_customer_name;
         $customer_info->ic_customer_address = $ic_customer_address;
         $customer_info->ic_customer_email   = $ic_customer_email;

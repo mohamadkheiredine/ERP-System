@@ -38,11 +38,11 @@ use App\models\PMP\ProjectTypes;
 
 
 
-class ProjectJobsController extends Controller
+class ProjectTasksController extends Controller
 {
 
     /**
-     * Page to control Project Phases Management
+     * Page to control Project Tasks Management
      *
      * @author Moe mantach
      * @access public

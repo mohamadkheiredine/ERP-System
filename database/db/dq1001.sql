@@ -659,6 +659,7 @@ ALTER TABLE `sales_orders` ADD COLUMN `so_company_id` INT NULL DEFAULT 0 AFTER `
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('16', 'maintenance_lite', 'Allow Maintenance Lite', '0', '1', '1');
 
 
+
 CREATE TABLE pos_allowed_currencies (
     ac_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 
@@ -775,3 +776,6 @@ AFTER im_modifier_cost;
 
 ALTER TABLE fnb_order_item_modifiers
 ADD COLUMN im_order_id BIGINT(20) NULL AFTER im_item_id;
+
+
+INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('17', 'allow_negative_stock', 'Allow Negative Stock', '0', '1', '1');

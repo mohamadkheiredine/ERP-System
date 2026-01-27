@@ -1062,13 +1062,13 @@ class FnbOrderController extends Controller
         $old_order_item_ids = $old_items->pluck('oi_item_id')->toArray();
         // dd("order item ids ", $old_order_item_ids);
 
-        $old_modifiers = [];
+        $old_modifiers = new FnbOrderItemModifiers();
         if (!empty($old_order_item_ids)) {
             $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_order_item_ids)
                 ->where('im_is_deleted', 0)
                 ->get();
         }
-        dd('old modifiers ', $old_modifiers);
+       // dd('old modifiers ', $old_modifiers);
 
         //item_id -> modifier_id -> qty
         $old_modifier_quantity = [];
@@ -1088,7 +1088,7 @@ class FnbOrderController extends Controller
                 $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
             }
 
-            $old_modifier_quantity[$menu_item_id][$modifier_id] = $mod->im_quantity;
+            $old_modifier_quantity[$menu_item_id][$modifier_id] = $mod->Modifier->m_quantity;
         }
 
         // dd("old modifier quantity ", $old_modifier_quantity);

@@ -129,6 +129,15 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-12">&nbsp;</div>
+                        <div class="col-md-4">
+                            <select class="form-control" data-control="select2" data-placeholder="Select Account" data-control="select2" id="PS_CASH_ACCOUNT" name="ps_cash_account">
+                                <option value="0">-- Select Cash Account --</option>
+                                @foreach($lst_accounts as $index => $account_info)
+                                    <option  {{ $store_info->ps_cash_account == $account_info->aa_id ? "selected" : "" }}  value="{{ $account_info->aa_id }}">{{ $account_info->aa_account_ref }} - {{  $account_info->aa_account_label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <br />

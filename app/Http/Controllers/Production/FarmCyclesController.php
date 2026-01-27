@@ -27,6 +27,7 @@ use App\models\PMP\ProjectRoles;
 use App\models\Production\FarmCycleDays;
 use App\models\Production\FarmCycleExpenses;
 use App\models\Production\FarmCycles;
+use App\models\Production\FarmCycleStock;
 use App\models\System\Companies;
 use App\models\System\Currency;
 use App\models\System\Units;
@@ -258,6 +259,32 @@ class FarmCyclesController extends Controller
             'lst_cycle_expenses' => $lst_cycle_expenses
         );
         $result_array['display'] = view('farms.listexpenses',$data)->render();
+
+        return Response()->json($result_array);
+    }
+
+
+    /**
+     * get list of stock rserve and assign to this cycle
+     *
+     * @author Moe Mantach
+     * @access public
+     * @param Request $request
+     * @return void
+     */
+    public function GetListofProductStock(Request $request)
+    {
+        $fc_id = $request->input('fc_id');
+
+
+        $lst_cycle_stock = FarmCycleStock::whereFsCycleId($fc_id)->get();
+        $result_array = array();
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = '';
+        $data = array(
+            'lst_cycle_stock' => $lst_cycle_stock
+        );
+        $result_array['display'] = view('farms.listcyclestock',$data)->render();
 
         return Response()->json($result_array);
     }

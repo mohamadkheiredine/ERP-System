@@ -60,6 +60,35 @@ farmcycles_module = {
 	        }
 	    });
 	},
+    DisplayListDrugStocks : function(){
+		var base_url 	= $('input[name=base_url]').val();
+	    var _token 		= $('input[name=_token]').val();
+	    var fc_id 		= $('input[name=fc_id]').val();
+	    var spage_number 		= $('input[name=spage_number]').val();
+	    $.ajax
+	    ({
+	        url : base_url + "/request/farmcycles/listproductstock",
+	        data : { _token : _token , fc_id : fc_id , page_number : spage_number },
+            method : 'get',
+            dataType : "json",
+            beforeSend : function(){
+            },
+	        success : function(response){
+	        	$('.LstProductStock').html(response.display);
+                if(response.total_pages > 1)
+                {
+                    $.pagination = $('#CycleStockPagination').twbsPagination({
+                        totalPages: response.total_pages,
+                        visiblePages: 7,
+                        onPageClick: function (event, page) {
+                            $('input[name=epage_number]').val(page);
+                            farmcycles_module.DisplayListExpenses();
+                        }
+                    });
+                }
+	        }
+	    });
+	},
     OpenCycleExpensesPopup : function(){
         $("#InsertExpenses").modal('toggle');
     },

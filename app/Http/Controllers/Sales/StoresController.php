@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
+use App\models\Accounting\ChartAccounts;
 use App\models\Inventory\WareHouseZones;
 use App\models\Sales\StoreEmployees;
 use App\models\Sales\Stores;
@@ -127,9 +128,11 @@ class StoresController extends Controller
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
         $lst_currencies = Currency::get();
 
         $data = array(
+            "lst_accounts" => $lst_accounts,
             "lst_managers" => $lst_managers,
             "lst_warehouses" => $lst_warehouses,
             "lst_companies" => $lst_companies,
@@ -149,6 +152,7 @@ class StoresController extends Controller
     public function SaveStoreInfo(Request $request)
     {
         $ps_id                          = $request->input('ps_id');
+        $ps_cash_account                  = $request->input('ps_cash_account');
         $ps_company_id                  = $request->input('ps_company_id');
         $ps_store_name                  = $request->input('ps_store_name');
         $ps_location                    = $request->input('ps_location');
@@ -173,7 +177,8 @@ class StoresController extends Controller
         $store_info->ps_location            = $ps_location;
         $store_info->ps_manager_id          = $ps_manager_id;
         $store_info->ps_is_active           = $ps_is_active;
-        // $store_info->ps_online_store        = $ps_online_store;
+        $store_info->ps_cash_account        = $ps_cash_account;
+        $store_info->ps_online_store        = $ps_online_store;
 
         $store_info->save();
 
@@ -231,6 +236,7 @@ class StoresController extends Controller
         $lst_managers = Users::whereUIsActive(1)->whereUIsDeleted(0)->get();
         $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
         $lst_currencies = Currency::get();
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
 
         $store_warehouses = StoreWarehouses::whereSwIsDeleted(0)->whereSwStoreId($ps_id)->get();
         $warehouse_ids = array();
@@ -253,6 +259,7 @@ class StoresController extends Controller
 
         $data = array(
             "lst_companies" => $lst_companies,
+            "lst_accounts" => $lst_accounts,
             "lst_managers" => $lst_managers,
             "lst_warehouses" => $lst_warehouses,
             "lst_currencies" => $lst_currencies,

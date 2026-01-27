@@ -38,4 +38,14 @@ class ProjectJobs extends Model
     {
         return $this->hasOne('App\models\PMP\ProjectPhases', 'pp_phase_id','fk_phase_id');
     }
+
+    public function Status()
+    {
+        return $this->hasOne('App\models\System\SystemStatus', 'ss_id','fk_phase_id');
+    }
+
+    public function AssignTo()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id','pj_owner_id');
+    }
 }

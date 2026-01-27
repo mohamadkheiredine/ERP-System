@@ -47,8 +47,8 @@ class PosAllowedCurrenciesController extends Controller
 
             $currencies_array[$index]['ac_id'] = $currency_info->ac_id;
             $currencies_array[$index]['ac_store_id'] = $currency_info->ac_store_id;
-            $currencies_array[$index]['ac_currency_id'] = $currency_info->ac_currency_id;
             $currencies_array[$index]['ac_company_id'] = $currency_info->ac_company_id;
+            $currencies_array[$index]['ac_currency_id'] = $currency_info->ac_currency_id;
             $currencies_array[$index]['ac_rate_to_original'] = $currency_info->ac_rate_to_original;
             $currencies_array[$index]['cc_currency_code'] = $currency_info->Currency->cc_currency_code;
             $currencies_array[$index]['cc_currency_name'] = $currency_info->Currency->cc_currency_name;

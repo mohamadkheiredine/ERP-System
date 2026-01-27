@@ -584,6 +584,7 @@ Route::post('/request/farmcycles/savecycleexpenses','Production\FarmCyclesContro
 Route::post('/request/farmcycles/savefarmcycleinfo','Production\FarmCyclesController@SaveInfo');
 Route::delete('/request/farmcycles/deletefarmcycleinfo','Production\FarmCyclesController@DeleteFarmCycle');
 Route::get('/request/farmcycles/listexpenses','Production\FarmCyclesController@GetListofExpenses');
+Route::get('/request/farmcycles/listproductstock','Production\FarmCyclesController@GetListofProductStock');
 
 Route::post('/request/qualitycheck/displaylist','Production\QualityCheckController@DisplayList');
 

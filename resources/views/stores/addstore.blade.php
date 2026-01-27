@@ -65,6 +65,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
+                            <label class="control-label">Company                 <span class="required"> * </span></label>
                             <select class="form-select form-control" data-control="select2" id="PS_COMPANY_ID" name="ps_company_id" name="lead_category">
                                 <option value="0">-- Select Company --</option>
                                 @foreach($lst_companies as $index => $company_info)
@@ -73,6 +74,7 @@
                             </select>
                         </div>
                         <div class="col-md-4">
+                            <label class="control-label">Manager <span class="required"> * </span></label>
                             <select class="form-select form-control" data-control="select2" id="PS_MANAGER_ID" name="ps_manager_id">
                                 <option value="0">-- Select Manager --</option>
                                 @foreach($lst_managers as $index => $manager_info)
@@ -109,6 +111,16 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-md-12">&nbsp;</div>
+                        <div class="col-md-4">
+                            <label class="control-label">Cash Account <span class="required"> * </span></label>
+                            <select class="form-control" data-control="select2" data-placeholder="Select Account" id="PS_CASH_ACCOUNT" name="ps_cash_account">
+                                <option value="0">-- Select Cash Account --</option>
+                                @foreach($lst_accounts as $index => $account_info)
+                                    <option value="{{ $account_info->aa_id }}">{{ $account_info->aa_account_ref }} - {{  $account_info->aa_account_label }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">

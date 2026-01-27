@@ -55,4 +55,5 @@ $(function(){
 	$("#BTN_SAVE_EXPENSE").on('click',farmcycles_module.SaveFarmCycleExpensesInfo);
 
     farmcycles_module.DisplayListExpenses();
+    farmcycles_module.DisplayListDrugStocks();
 })

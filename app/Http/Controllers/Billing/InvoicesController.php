@@ -1089,75 +1089,111 @@ class InvoicesController extends Controller
         }
         else
         {
-            // Variable for the quantity we still need to fulfill.
             $quantity_to_fulfill = $bi_quanity;
+            $allowNegative = (int) config('appconfig.allow_negative_stock', 0) === 1;
 
-// Wrap the entire operation in a database transaction.
-// This ensures that if any part fails, all database changes are rolled back.
             try {
                 DB::transaction(function () use (
                     $bi_product,
                     $ii_warehouse_id,
-                    &$quantity_to_fulfill, // Pass by reference to modify it
+                    &$quantity_to_fulfill,
                     $bi_quanity,
                     $invoice_id,
                     $bi_item_price,
                     $currency_id,
                     $ii_payment_type,
-                    $product_info
+                    $product_info,
+                    $allowNegative
                 ) {
 
-                    // 1. Get all available stock for the product, oldest first.
-                    $available_stock = Stocks::where('fk_product_id', $bi_product)
+                    // 1) Lock all stock rows for FIFO
+                    $stock_rows = Stocks::where('fk_product_id', $bi_product)
                         ->where('fk_warehouse_id', $ii_warehouse_id)
-                        ->where('is_stock_status',1)
-                        ->where('is_quanity', '>', 0) // Find any record with stock
+                        ->where('is_stock_status', 1)
                         ->orderBy('is_id', 'asc')
-                        ->lockForUpdate() // Lock rows to prevent race conditions
+                        ->lockForUpdate()
                         ->get();
 
-                    // 2. Check if the TOTAL available stock is sufficient.
-                    $total_stock = $available_stock->sum('is_quanity');
-                    if ($total_stock < $quantity_to_fulfill) {
-                        // Use an exception to automatically trigger the transaction rollback.
-                        throw new \Exception("We don't have enough total stock for this product. Required: $quantity_to_fulfill, Available: $total_stock");
+                    // total available quantity (only positive quantities count as available)
+                    $total_stock = $stock_rows->where('is_quanity', '>', 0)->sum('is_quanity');
+
+                    // 2) If negative stock NOT allowed, validate
+                    if (!$allowNegative && $total_stock < $quantity_to_fulfill) {
+                        throw new \Exception("Not enough stock. Required: $quantity_to_fulfill, Available: $total_stock");
                     }
 
-                    // 3. Loop through each stock record to fulfill the order.
-                    foreach ($available_stock as $stock_batch) {
-                        if ($quantity_to_fulfill <= 0) {
-                            break; // Stop if the order is already fulfilled.
-                        }
+                    // 3) Save invoice product ONCE (fix qty)
+                    $invoice_product = new InvoiceProducts();
+                    $invoice_product->fk_invoice_id     = $invoice_id;
+                    $invoice_product->ii_item_id        = $bi_product;
+                    $invoice_product->ii_item_type      = 1;
+                    $invoice_product->ii_product_serial_number = "";
+                    $invoice_product->ii_item_label     = $product_info->p_product_name;
+                    $invoice_product->ii_payment_type   = $ii_payment_type;
+                    $invoice_product->ii_item_price     = $bi_item_price;
+                    $invoice_product->ii_price_currency = $currency_id;
+                    $invoice_product->ii_item_qyt       = $bi_quanity; // ✅ full quantity
+                    $invoice_product->ii_total_price    = $bi_item_price * $bi_quanity;
+                    $invoice_product->save();
 
-                        // Determine how much to take from this specific batch.
-                        $quantity_to_take = min($stock_batch->is_quanity, $quantity_to_fulfill);
-                        $invoice_product = new InvoiceProducts();
-                        $invoice_product->fk_invoice_id     = $invoice_id;
-                        $invoice_product->ii_item_id        = $bi_product;
-                        $invoice_product->ii_item_type      = 1;
-                        $invoice_product->ii_product_serial_number      = "";
-                        $invoice_product->ii_item_label     = $product_info->p_product_name;
-                        $invoice_product->ii_price_currency = $product_info->p_product_currency;
-                        $invoice_product->ii_item_qyt       = $quantity_to_fulfill;
-                        $invoice_product->ii_payment_type   = $ii_payment_type;
-                        $invoice_product->ii_item_price     = $bi_item_price;
-                        $invoice_product->ii_price_currency     = $currency_id;
-                        $invoice_product->ii_total_price    =$bi_item_price * $bi_quanity;
-                        $invoice_product->save();
+                    // 4) If allowNegative = 1 AND total_stock == 0 => create negative record directly
+                    if ($allowNegative && $total_stock <= 0) {
+                        $neg = new Stocks();
+                        $neg->fk_product_id    = $bi_product;
+                        $neg->fk_warehouse_id  = $ii_warehouse_id;
+                        $neg->is_stock_status  = 1;
 
-                        // Decrease the stock quantity for this batch.
-                        $stock_batch->decrement('is_quanity', $quantity_to_take);
+                        // store negative
+                        $neg->is_quanity       = 0 - $quantity_to_fulfill;
 
-                        // Update the remaining quantity we need to fulfill.
-                        $quantity_to_fulfill -= $quantity_to_take;
+                        // set other required columns if your table needs them (examples):
+                        // $neg->db_effective_date = now();
+                        // $neg->is_stock_currency = $currency_id;
+
+                        $neg->save();
+
+                        $quantity_to_fulfill = 0;
+                        return;
+                    }
+
+                    // 5) Otherwise consume FIFO from positive batches
+                    foreach ($stock_rows as $batch) {
+                        if ($quantity_to_fulfill <= 0) break;
+                        if ($batch->is_quanity <= 0) continue;
+
+                        $take = min($batch->is_quanity, $quantity_to_fulfill);
+
+                        $batch->decrement('is_quanity', $take);
+
+                        $quantity_to_fulfill -= $take;
+                    }
+
+                    // 6) If remaining > 0:
+                    // - if allowNegative=0 => should never happen (validation)
+                    // - if allowNegative=1 => create a new negative row for the remainder (recommended)
+                    if ($quantity_to_fulfill > 0 && $allowNegative) {
+                        $neg = new Stocks();
+                        $neg->fk_product_id    = $bi_product;
+                        $neg->fk_warehouse_id  = $ii_warehouse_id;
+                        $neg->is_stock_status  = 1;
+                        $neg->is_quanity       = 0 - $quantity_to_fulfill;
+
+                        // optional required fields
+                        // $neg->db_effective_date = now();
+                        // $neg->is_stock_currency = $currency_id;
+
+                        $neg->save();
+
+                        $quantity_to_fulfill = 0;
                     }
                 });
+
             } catch (\Exception $e) {
-                // If the transaction failed, return the error message.
                 $result_array['is_error'] = 1;
                 $result_array['error_msg'] = $e->getMessage();
                 return response()->json($result_array);
             }
+
         }
 
         // save total invoice value in the database

@@ -40,6 +40,8 @@
             <form id="FORM_SAVE_CYCLES" name="form_save_cycles" method="post" >
                 @csrf
                 <input type="hidden" name="fc_id" value="{{ $cycle->fc_id }}">
+                <input type="hidden" name="spage_number" value="1">
+                <input type="hidden" name="epage_number" value="1">
                 {{-- HEADER --}}
                 <div class="row mb-12">
                     <div class="col-md-4">
@@ -193,7 +195,31 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="kt_tab_pharmacy" role="tabpanel">
-                            ...
+                            <div class="table-responsive">
+                                <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+                                    <thead>
+                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                        <th>Warehouse</th>
+                                        <th>Product Barcode</th>
+                                        <th>Product Name</th>
+                                        <th>Product Quantity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="LstProductStock">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-12" style="text-align: right">
+                                <button type="button" class="btn btn-info" name="btn_add_stock" id="BTN_ADD_STOCK">Add Stock</button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10" align="left">
+                                    <ul id="CycleStockPagination" class="pagination-sm"></ul>
+                                </div>
+                                <div class="col-md-2" align="right"></div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="kt_tab_orders" role="tabpanel">
                             ...

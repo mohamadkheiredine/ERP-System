@@ -1,0 +1,12 @@
+$(function(){
+    projectjobs_module.DisplayListProjectJobs();
+    $("#generalSearch").on('keyup',function(){
+        $('input[name=page_number]').val(1);
+        $.pagination.twbsPagination('destroy');
+        projectjobs_module.DisplayListProjectJobs();
+    });
+    $('select[name=fk_project_id]').on('change',projectjobs_module.DisplayListProjectJobs)
+    $('select[name=fk_phase_id]').on('change',projectjobs_module.DisplayListProjectJobs)
+    $("#LstProjectJobs").on('click',"a[id*=EDIT_JOB_]",projectjobs_module.EditProjectJobInfo);
+    $("#LstProjectJobs").on('click',"a[id*=DELETE_JOB_]",projectjobs_module.DeleteProjectJobsData);
+})
