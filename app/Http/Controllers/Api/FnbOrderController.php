@@ -154,6 +154,7 @@ class FnbOrderController extends Controller
         $user_id = $request->input('user_id');
         $sub_total = $request->input('sub_total');
         $total = $request->input('total');
+        $payment_type_id = $request->input('payment_type', PaymentTypes::PAYMENT_CASH_ID);
 
         $sub_total_display = $request->input('sub_total_display', $sub_total);
         $total_display     = $request->input('total_display', $total);
@@ -173,6 +174,8 @@ class FnbOrderController extends Controller
                 'error_msg' => 'Invalid or missing currency_id'
             ]);
         }
+
+        $payment_type_info = PaymentTypes::find($payment_type_id);
 
         $delcustomername          = $request->input('delcustomername');
         $delcustomerphone          = $request->input('delcustomerphone');
@@ -285,6 +288,7 @@ class FnbOrderController extends Controller
         $order_info->fo_payment_status = 'paid';
         $order_info->fo_paid_amount  = (float) $total_display;
         $order_info->fk_warehouse_id  = $warehouse_id;
+        $order_info->fo_payment_type = $payment_type_id;
         $order_info->save();
 
         $fo_id = $order_info->fo_id;
@@ -414,9 +418,6 @@ class FnbOrderController extends Controller
 
         $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
 
-
-
-        $payment_type_info      = PaymentTypes::find(2);
         $pt_payment_account     = $payment_type_info->pt_payment_account;
 
         $AccTransaction = new Transactions();

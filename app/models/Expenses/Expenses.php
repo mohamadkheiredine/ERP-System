@@ -46,7 +46,7 @@ class Expenses extends Model
 
     public function Payment()
     {
-        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id','ac_payment_id');
+        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id', 'ac_payment_type');
     }
 
 }

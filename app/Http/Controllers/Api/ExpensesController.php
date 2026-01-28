@@ -119,17 +119,13 @@ class ExpensesController extends Controller
         $c_hash = hash('sha256', $c_hash);
         $result_array = array();
 
-
-        // validate hash sequence for loggedin user
         if ($c_hash != $g_hash) {
             $result_array['is_error'] = 1;
             $result_array['error_message'] = 'hash sequence is not valid !!';
-
             return Response()->json($result_array);
         }
 
-
-
+        $res_data = null;
         if ($attachment != null) {
             $expenses_obj = new ExpensesManager();
             $res_data = $expenses_obj->UploadExtensesVoucher($expense_id);
@@ -138,7 +134,6 @@ class ExpensesController extends Controller
         $expenses_category = ExpensesCategories::find($category_id);
         $payment_info = PaymentTypes::find($payment_type);
 
-        // Save expenses
         if (!empty($expense_id)) {
             $expenses_info = Expenses::find($expense_id);
 
@@ -150,16 +145,18 @@ class ExpensesController extends Controller
         } else {
             $expenses_info = new Expenses();
             $expenses_info->ac_employee_id = $user_id;
+            $expenses_info->ac_is_deleted = 0;
+            $expenses_info->ac_deleted_by = 0;
         }
 
         $expenses_info->ac_category_id = $category_id;
-        $expenses_info->ac_company_id = $company_id;
         $expenses_info->ac_amount = $amount;
         $expenses_info->ac_expense_date = $date;
         $expenses_info->ac_currency_id = $currency_id;
         $expenses_info->ac_description = $note;
-        $expenses_info->ac_payment_id = $payment_type;
-        if ($attachment != null) {
+        $expenses_info->ac_payment_type = $payment_type;
+
+        if ($attachment != null && $res_data && isset($res_data['data'])) {
             $expenses_info->ac_base_src = $res_data['data']['ac_base_src'];
             $expenses_info->ac_file_name = $res_data['data']['ac_file_name'];
             $expenses_info->ac_extension = $res_data['data']['ac_extension'];
@@ -168,6 +165,11 @@ class ExpensesController extends Controller
         $expenses_info->save();
 
         if (empty($expense_id)) {
+            $expense_id = $expenses_info->ac_id;
+        }
+
+        if ($request->input('expense_id') == null || $request->input('expense_id') == '') {
+
             $AccTransaction = new Transactions();
             $AccTransaction->at_transaction_date    = $date;
             $AccTransaction->at_creation_date       = date("Y-m-d");
@@ -176,39 +178,38 @@ class ExpensesController extends Controller
             $AccTransaction->save();
             $at_id = $AccTransaction->at_id;
 
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_company_id     = $company_id;
-        $TransactionMovement->tm_store_id     = $store_id;
-        $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
-        $TransactionMovement->tm_ledger_account     = $payment_info->pt_payment_account;
-        $TransactionMovement->tm_sub_ledger_account = $payment_info->pt_payment_account;
-        $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
-        $TransactionMovement->tm_debit              = $amount;
-        $TransactionMovement->tm_credit             = 0;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_transaction_date   = $date;
-        $TransactionMovement->tm_currency_id        = $currency_id;
-        $TransactionMovement->save();
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_company_id     = $company_id;
+            $TransactionMovement->tm_store_id     = $store_id;
+            $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
+            $TransactionMovement->tm_ledger_account     = $payment_info ? $payment_info->pt_payment_account : 0;
+            $TransactionMovement->tm_sub_ledger_account = $payment_info ? $payment_info->pt_payment_account : 0;
+            $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
+            $TransactionMovement->tm_debit              = $amount;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date   = $date;
+            $TransactionMovement->tm_currency_id        = $currency_id;
+            $TransactionMovement->save();
 
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_company_id         = $company_id;
-        $TransactionMovement->tm_store_id           = $store_id;
-        $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
-        $TransactionMovement->tm_ledger_account     = $expenses_category->pt_payment_account;
-        $TransactionMovement->tm_sub_ledger_account = $expenses_category->pt_payment_account;
-        $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
-        $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $amount;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_transaction_date   = $date;
-        $TransactionMovement->tm_currency_id        = $currency_id;
-        $TransactionMovement->save();
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_company_id         = $company_id;
+            $TransactionMovement->tm_store_id           = $store_id;
+            $TransactionMovement->tm_trans_code     = "EXPENSES" . $expense_id;
+            $TransactionMovement->tm_ledger_account     = $expenses_category ? $expenses_category->pt_payment_account : 0;
+            $TransactionMovement->tm_sub_ledger_account = $expenses_category ? $expenses_category->pt_payment_account : 0;
+            $TransactionMovement->tm_ledger_label       = "Expenses Created On " . $date;
+            $TransactionMovement->tm_debit              = 0;
+            $TransactionMovement->tm_credit             = $amount;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            $TransactionMovement->tm_transaction_date   = $date;
+            $TransactionMovement->tm_currency_id        = $currency_id;
+            $TransactionMovement->save();
 
-            // save expenses Payment
             $expense_payment = new ExpensePayments();
-            $expense_payment->aa_expense_id = $expenses_info->ac_id;
+            $expense_payment->aa_expense_id = $expense_id;
             $expense_payment->aa_amount = $amount;
             $expense_payment->aa_transaction_id = $at_id;
             $expense_payment->aa_paid_by = $user_id;
@@ -216,9 +217,12 @@ class ExpensesController extends Controller
             $expense_payment->save();
         }
 
+        $result_array['is_error'] = 0;
+        $result_array['expense_id'] = $expense_id;
 
         return Response()->json($result_array);
     }
+
 
 
     /**
@@ -230,9 +234,16 @@ class ExpensesController extends Controller
     {
         $user_id = $request->input('user_id');
         $g_hash = $request->input('g_hash');
-        $page = $request->input('page');
-        $page_size = $request->input('page_size');
-        $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+        $page      = max(1, $request->input('page', 1));
+        $page_size = $request->input('page_size', 0);
+
+        $nbr_rows_per_pages = $page_size > 0
+            ? $page_size
+            : Config::get('appconfig.max_rows_per_page');
+
+        $skip = ($page - 1) * $nbr_rows_per_pages;
+
+        $page = max(1, $page);
         $result_array = array();
 
         $q = $request->input('q');
@@ -260,12 +271,16 @@ class ExpensesController extends Controller
         else
             $skip = 0;
 
-        $expenses_query = Expenses::whereAcIsDeleted(0);
+        $expenses_query = Expenses::with(['Category', 'Payment'])->whereAcIsDeleted(0);
+
 
         if (!empty($q)) {
-            $expenses_query = $expenses_query->where('ac_id', 'LIKE', "%$q%");
-            $expenses_query = $expenses_query->orWhere('ac_description', 'LIKE', "%$q%");
+            $expenses_query->where(function ($query) use ($q) {
+                $query->where('ac_id', 'LIKE', "%$q%")
+                    ->orWhere('ac_description', 'LIKE', "%$q%");
+            });
         }
+
 
         if (!empty($from_date)) {
             $expenses_query = $expenses_query->where('ac_expense_date', '>=', $from_date);
@@ -280,7 +295,7 @@ class ExpensesController extends Controller
         }
 
         if (!empty($payment_type) && $payment_type != 0) {
-            $expenses_query = $expenses_query->where('ac_payment_id', $payment_type);
+            $expenses_query = $expenses_query->where('ac_payment_type', $payment_type);
         }
 
         $count_expenses = $expenses_query->count();
@@ -297,19 +312,19 @@ class ExpensesController extends Controller
         foreach ($lst_expenses as $expense) {
             $expenses_data[] = array(
                 'ref' => $expense->ac_id,
-                'category' => $expense->Category->ec_name,
+                'category' => $expense->Category ? $expense->Category->ec_name : '-',
                 'date' => $expense->ac_expense_date,
                 'payment' => $expense->Payment ? $expense->Payment->pt_payment_type : "-",
                 'Amount' => $expense->ac_amount,
                 'note' => $expense->ac_description,
                 'category_id' => $expense->ac_category_id,
-                'payment_id' => $expense->ac_payment_id,
+                'payment_id' => $expense->ac_payment_type,
                 'currency_id' => $expense->ac_currency_id,
-
             );
 
             $total_amount = $total_amount + $expense->ac_amount;
         }
+
 
         $result_array['is_error'] = 0;
         $result_array['rows'] = $expenses_data;
@@ -357,5 +372,103 @@ class ExpensesController extends Controller
 
         $result_array['is_error'] = 0;
         return response()->json($result_array);
+    }
+
+    /**
+     * @author Mohammed kheiredine <email>
+     */
+
+    public function ExportExpensesCSV(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash  = $request->input('g_hash');
+
+        $q           = $request->input('q');
+        $from_date   = $request->input('from_date');
+        $to_date     = $request->input('to_date');
+        $category_id = $request->input('category_id');
+        $payment_type = $request->input('payment_type');
+
+        $result_array = array();
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        // validate hash sequence
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $expenses_query = Expenses::whereAcIsDeleted(0);
+
+        if (!empty($q)) {
+            $expenses_query = $expenses_query
+                ->where('ac_id', 'LIKE', "%$q%")
+                ->orWhere('ac_description', 'LIKE', "%$q%");
+        }
+
+        if (!empty($from_date)) {
+            $expenses_query = $expenses_query->where('ac_expense_date', '>=', $from_date);
+        }
+
+        if (!empty($to_date)) {
+            $expenses_query = $expenses_query->where('ac_expense_date', '<=', $to_date);
+        }
+
+        if (!empty($category_id) && $category_id != 0) {
+            $expenses_query = $expenses_query->where('ac_category_id', $category_id);
+        }
+
+        if (!empty($payment_type) && $payment_type != 0) {
+            $expenses_query = $expenses_query->where('ac_payment_type', $payment_type);
+        }
+
+        $lst_expenses = $expenses_query
+            ->orderby('ac_id', 'DESC')
+            ->get();
+
+
+        $filename = "expenses_" . date('Y-m-d') . ".csv";
+
+        $headers = array(
+            "Content-Type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$filename\"",
+        );
+
+        $callback = function () use ($lst_expenses) {
+            $file = fopen('php://output', 'w');
+
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, [
+                'Ref',
+                'Date',
+                'Category',
+                'Payment Type',
+                'Amount',
+                'Currency ID',
+                'Note'
+            ]);
+
+            foreach ($lst_expenses as $expense) {
+                fputcsv($file, [
+                    $expense->ac_id,
+                    $expense->ac_expense_date,
+                    $expense->Category ? $expense->Category->ec_name : '',
+                    $expense->Payment ? $expense->Payment->pt_payment_type : '',
+                    $expense->ac_amount,
+                    $expense->ac_currency_id,
+                    strip_tags($expense->ac_description),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

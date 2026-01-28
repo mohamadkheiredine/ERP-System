@@ -779,3 +779,7 @@ ADD COLUMN im_order_id BIGINT(20) NULL AFTER im_item_id;
 
 
 INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`, `sa_config_value`, `sa_config_type`, `sa_is_active`) VALUES ('17', 'allow_negative_stock', 'Allow Negative Stock', '0', '1', '1');
+
+
+ALTER TABLE fnb_orders
+ADD COLUMN fo_payment_type INT NULL;

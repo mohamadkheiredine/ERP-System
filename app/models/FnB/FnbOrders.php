@@ -75,4 +75,14 @@ class FnbOrders extends Model
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id', 'fo_currency_id');
     }
+
+    public function Payment()
+    {
+        return $this->hasOne('App\models\Billing\PaymentTypes', 'pt_id', 'fo_payment_type');
+    }
+
+    public function CreatedBy()
+    {
+        return $this->hasOne('App\models\Users\Users', 'id', 'fo_created_by');
+    }
 }
