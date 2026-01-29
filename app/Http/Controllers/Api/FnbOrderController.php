@@ -134,430 +134,1238 @@ class FnbOrderController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function CreateOrder(Request $request)
+    // public function CreateOrder(Request $request)
+    // {
+    //     $g_hash   = $request->input('g_hash');
+    //     $order_items = $request->input('order_items');
+    //     $order_code = null;
+
+    //     if (is_array($order_items)) {
+    //     } else if (is_string($order_items)) {
+    //         $order_items = json_decode($order_items, true);
+    //     }
+
+
+
+
+    //     $store_id = $request->input('store_id');
+    //     $company_id = $request->input('company_id');
+    //     $warehouse_id = $request->input('warehouse_id');
+    //     $user_id = $request->input('user_id');
+    //     $sub_total = $request->input('sub_total');
+    //     $total = $request->input('total');
+    //     $payment_type_id = $request->input('payment_type', PaymentTypes::PAYMENT_CASH_ID);
+
+    //     $sub_total_display = $request->input('sub_total_display', $sub_total);
+    //     $total_display     = $request->input('total_display', $total);
+
+    //     $discount = $request->input('discount');
+
+    //     $rate = (float) $request->input('currency_display_rate', 1);
+
+
+    //     $order_type = $request->input('order_type');
+    //     $customer_id = $request->input('customer_id');
+    //     $display_currency_id = (int) $request->input('currency_display_id');
+
+    //     if (!$display_currency_id || !Currency::find($display_currency_id)) {
+    //         return response()->json([
+    //             'is_error' => 1,
+    //             'error_msg' => 'Invalid or missing currency_id'
+    //         ]);
+    //     }
+
+    //     $payment_type_info = PaymentTypes::find($payment_type_id);
+
+    //     $delcustomername          = $request->input('delcustomername');
+    //     $delcustomerphone          = $request->input('delcustomerphone');
+    //     $delcustomeraddress          = $request->input('delcustomeraddress');
+    //     $customer_type         = $request->input('customer_type');
+    //     $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
+    //     $customer_info = null;
+    //     $table_ids = $request->input('table_id');
+    //     $table_ids = array_filter(explode(",", $table_ids));
+    //     $order_id   = $request->input('order_id');
+    //     $isDineIn   = ($order_type === 'dine_in');
+
+
+    //     $user_info = Users::find($user_id);
+
+    //     $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+    //     $c_hash = hash('sha256', $c_hash);
+    //     $result_array = array();
+
+    //     if ($c_hash != $g_hash) {
+    //         $result_array['is_error'] = 1;
+    //         $result_array['error_msg'] = 'hash sequence is not valid !!';
+    //         return Response()->json($result_array);
+    //     }
+
+
+    //     if ($order_type === 'takeaway') {
+
+    //         if ($customer_id > 0) {
+    //             $customer_info = Customers::find($customer_id);
+    //             if ($customer_info) {
+    //                 $customer_info->ic_customer_name    = $delcustomername;
+    //                 $customer_info->ic_customer_address = $delcustomeraddress;
+    //                 $customer_info->ic_customer_phone   = $delcustomerphone;
+    //                 $customer_info->ic_customer_mobile  = $delcustomerphone;
+    //                 $customer_info->ic_customer_type    = $customer_type;
+    //                 $customer_info->save();
+    //             }
+    //         } else if (!empty(trim($delcustomername))) {
+    //             $customer_info = new Customers();
+    //             $customer_info->ic_customer_name    = $delcustomername;
+    //             $customer_info->ic_customer_address = $delcustomeraddress;
+    //             $customer_info->ic_customer_phone   = $delcustomerphone;
+    //             $customer_info->ic_customer_mobile  = $delcustomerphone;
+    //             $customer_info->ic_customer_code    = rand(10000, 99999);
+    //             $customer_info->ic_customer_type    = $customer_type;
+    //             $customer_info->save();
+    //             $customer_id = $customer_info->ic_id;
+    //         } else {
+    //             $customer_id   = null;
+    //             $customer_info = null;
+    //         }
+    //     }
+
+
+    //     $company_info   = Companies::find($company_id);
+
+    //     $creation_date = date("Y-m-d H:i:s");
+
+
+    //     $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
+
+    //     if (!$pendingKitchenStatusId) {
+    //         return response()->json([
+    //             'is_error' => 1,
+    //             'error_msg' => 'Kitchen Pending status is not configured'
+    //         ]);
+    //     }
+
+    //     if ($isDineIn && $order_id > 0) {
+
+    //         $order_info = FnbOrders::where('fo_id', $order_id)
+    //             ->where('fo_order_type', 'dine_in')
+    //             ->where('fo_payment_status', 'unpaid')
+    //             ->lockForUpdate()
+    //             ->first();
+
+    //         if (!$order_info) {
+    //             return response()->json([
+    //                 'is_error' => 1,
+    //                 'error_msg' => 'Dine-in order not found or already finalized'
+    //             ]);
+    //         }
+
+    //         $order_code = $order_info->fo_order_code;
+    //     } else {
+
+    //         $order_info = new FnbOrders();
+    //         if (empty($order_info->fo_order_code)) {
+    //             $order_info->fo_order_code = $this->GenerateOrdereCodeFNB();
+    //         }
+
+    //         $order_code = $order_info->fo_order_code;
+
+    //         $order_info->fo_order_type = $order_type;
+    //         $order_info->fo_store_id   = $store_id;
+    //         $order_info->fo_branch_id  = $company_id;
+    //     }
+
+
+    //     $order_info->fo_customer_id = $customer_id;
+    //     $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
+    //     $order_info->fo_kitchen_status = $pendingKitchenStatusId;
+    //     $order_info->fo_order_datetime = $creation_date;
+    //     $order_info->fo_subtotal = $sub_total_display;
+    //     $order_info->fo_discount = $discount;
+    //     $order_info->fo_created_by = $user_id;
+    //     $order_info->fo_currency_id = $display_currency_id;
+    //     $order_info->fo_total_amount = $total_display;
+    //     $order_info->fo_payment_status = 'paid';
+    //     $order_info->fo_paid_amount  = (float) $total_display;
+    //     $order_info->fk_warehouse_id  = $warehouse_id;
+    //     $order_info->fo_payment_type = $payment_type_id;
+    //     $order_info->save();
+
+    //     $fo_id = $order_info->fo_id;
+
+    //     FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
+
+    //     if (!empty($table_ids)) {
+    //         foreach ($table_ids as $tid) {
+    //             FnbOrderTables::create([
+    //                 'ot_order_id' => $fo_id,
+    //                 'ot_table_id' => intval($tid)
+    //             ]);
+    //         }
+    //     }
+
+    //     $display_currency_code = $request->input('currency_display_code');
+    //     $display_rate          = floatval($request->input('currency_display_rate', 1));
+
+    //     $currency = null;
+    //     if ($display_currency_id) {
+    //         $currency = Currency::find($display_currency_id);
+    //     }
+    //     if (!$currency && $display_currency_code) {
+    //         $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
+    //     }
+    //     if (!$currency) {
+    //         $currency = Currency::find($order_info->fo_currency_id); // fallback
+    //     }
+
+    //     $final_items = [];
+
+    //     foreach ($order_items as $key => $item_order) {
+    //         $item = new FnbOrderItems();
+    //         $item->oi_order_id = $fo_id;
+    //         $item->oi_item_id = $item_order['item_id'];
+    //         $item->oi_quantity = $item_order['quantity'];
+    //         $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
+    //         $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
+    //         $item->oi_kitchen_status = $pendingKitchenStatusId;
+    //         $menuItem = FnbMenuItem::find($item_order['item_id']);
+
+    //         if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
+    //             $fallbackStationId = 1;
+
+    //             \Log::warning(
+    //                 'Menu item missing kitchen station, using fallback',
+    //                 [
+    //                     'menu_item_id' => $item_order['item_id'],
+    //                     'fallback_station_id' => $fallbackStationId,
+    //                 ]
+    //             );
+
+    //             $item->oi_station_id = $fallbackStationId;
+    //         } else {
+    //             $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+    //         }
+
+    //         $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
+    //         $item->oi_currency_id = $display_currency_id;
+    //         $item->save();
+
+    //         $item_db = FnbMenuItem::find($item_order['item_id']);
+
+    //         $mods = [];
+
+    //         if (!empty($item_order['modifiers'])) {
+    //             foreach ($item_order['modifiers'] as $m) {
+
+    //                 if (!isset($m['id'])) {
+    //                     continue;
+    //                 }
+
+    //                 $modifier = Modifier::find($m['id']);
+    //                 if (!$modifier) {
+    //                     continue;
+    //                 }
+
+    //                 FnbOrderItemModifiers::create([
+    //                     'im_order_id' => $fo_id,
+    //                     'im_item_id' => $item->oi_item_id,
+    //                     'im_modifier_id' => $modifier->m_id,
+    //                     'im_modifier_name' => $modifier->m_modifier_name,
+    //                     'im_modifier_cost' => $modifier->m_cost_modifier,
+    //                     'im_quantity' => $modifier->m_quantity * $item->oi_quantity
+    //                 ]);
+
+
+    //                 $mods[] = [
+    //                     "id"    => $modifier->m_id,
+    //                     "name"  => $modifier->m_modifier_name,
+    //                     "price" => $modifier->m_price_modifier  * $display_rate,
+    //                     "qty"   => $modifier->m_quantity,
+    //                 ];
+    //             }
+    //         }
+
+
+    //         $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
+    //         $line_total_display = $unit_price_display * $item_order['quantity'];
+
+    //         $final_items[] = [
+    //             'item_id'   => $item_order['item_id'],
+    //             'item_name' => $item_db ? $item_db->mi_item_name : '',
+    //             'quantity'  => $item_order['quantity'],
+    //             'price'     => $line_total_display,
+    //             'total'      => $line_total_display,
+    //             'unit_price' => $unit_price_display,
+    //             'modifiers' => $mods,
+    //         ];
+    //     }
+
+
+    //     $structure = array(
+    //         "fo_id" => $fo_id,
+    //         "fo_code" => $order_info->fo_order_code,
+    //         "items" => $order_items
+    //     );
+
+    //     $order_info->fo_order_structure = json_encode($structure);
+    //     $order_info->save();
+
+
+
+    //     $customer_info  = Customers::find($order_info->fo_customer_id);
+    //     $AccountingManager = new AccountingManager();
+
+
+    //     $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
+
+    //     $pt_payment_account     = $payment_type_info->pt_payment_account;
+
+    //     $AccTransaction = new Transactions();
+    //     $AccTransaction->at_transaction_date    = date("Y-m-d");
+    //     $AccTransaction->at_creation_date       = date("Y-m-d");
+    //     $AccTransaction->at_accounting_doc      = $order_code;
+    //     $AccTransaction->fk_acc_journal_id      = 3;
+    //     $AccTransaction->save();
+    //     $at_id = $AccTransaction->at_id;
+
+    //     $TransactionMovement = new TransactionMovements();
+    //     $TransactionMovement->fk_tran_id            = $at_id;
+    //     $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+    //     $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
+    //     $TransactionMovement->tm_ledger_label       = $order_code;
+    //     $TransactionMovement->tm_debit              = $total;
+    //     $TransactionMovement->tm_credit             = 0;
+    //     $TransactionMovement->tm_creation_date      = date("Y-m-d");
+    //     // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+    //     $TransactionMovement->save();
+
+
+    //     $TransactionMovement = new TransactionMovements();
+    //     $TransactionMovement->fk_tran_id            = $at_id;
+    //     $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+    //     $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
+    //     // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+    //     $TransactionMovement->tm_debit              = 0;
+    //     // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+    //     $TransactionMovement->tm_creation_date      = date("Y-m-d");
+    //     // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+    //     $TransactionMovement->save();
+
+
+    //     $TransactionMovement = new TransactionMovements();
+    //     $TransactionMovement->fk_tran_id            = $at_id;
+    //     $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+    //     $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+    //     // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+    //     $TransactionMovement->tm_debit              = 0;
+    //     // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+    //     $TransactionMovement->tm_creation_date      = date("Y-m-d");
+    //     // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+    //     $TransactionMovement->save();
+
+    //     $trans_mov = new TransactionMovements();
+    //     $trans_mov->fk_tran_id              = $at_id;
+    //     $trans_mov->tm_ledger_account       = 701;
+    //     $trans_mov->tm_sub_ledger_account   = 701;
+    //     $trans_mov->tm_debit                = 0;
+    //     // $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+    //     $trans_mov->tm_creation_date        = date('Y-m-d');
+    //     $trans_mov->tm_transaction_date        = date('Y-m-d');
+    //     // $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+    //     $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
+    //     $trans_mov->save();
+
+
+
+
+    //     foreach ($order_items as $item_order) {
+
+    //         $item_id = $item_order['item_id'];
+
+    //         $ingredients = FnbIngredients::where('in_item_id', $item_id)
+    //             ->where('in_is_deleted', 0)
+    //             ->get();
+
+    //         foreach ($ingredients as $ing) {
+    //             $product_id = $ing->in_product_id;
+    //             $total_qty = $ing->in_stock_quantity * $item_order['quantity'];
+
+
+    //             $this->reduceStock($product_id, $warehouse_id, $total_qty);
+    //         }
+
+    //         if (!empty($item_order['modifiers'])) {
+    //             foreach ($item_order['modifiers'] as $mod) {
+
+    //                 if (!isset($mod['id'])) {
+    //                     continue;
+    //                 }
+
+    //                 $modifier = Modifier::find($mod['id']);
+    //                 if (!$modifier) {
+    //                     continue;
+    //                 }
+
+    //                 $product_id   = $modifier->m_item_id;
+    //                 $qty_per_unit = $modifier->m_quantity * $item_order['quantity'];
+
+    //                 $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+    //             }
+    //         }
+    //     }
+
+
+    //     $display_currency_code = $request->input('currency_display_code');
+    //     $display_rate          = (float) $request->input('currency_display_rate', 1);
+
+    //     $currency = null;
+
+    //     if ($display_currency_id) {
+    //         $currency = Currency::find($display_currency_id);
+    //     }
+
+    //     if (!$currency && $display_currency_code) {
+    //         $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
+    //     }
+
+    //     if (!$currency) {
+    //         $currency = Currency::find($order_info->fo_currency_id); // fallback only
+    //     }
+
+
+    //     $data = array(
+    //         "company_info" => $company_info,
+    //         "creation_date" => $creation_date,
+    //         "fo_order_code" => $order_code,
+    //         "delivery_id" => $delivery_id,
+    //         "customer_info" => $customer_info,
+    //         "lst_order_items" => $final_items,
+    //         "order_info" => $order_info,
+    //         "sub_total" => $sub_total_display,
+    //         "cost_total" => $total_display,
+    //         "discount" => $discount,
+    //         "currency" => $currency,
+    //         "currency_display_code" => $request->input('currency_display_code'),
+    //         "currency_display_rate" => (float) $request->input('currency_display_rate', 1),
+
+    //     );
+
+    //     $receipt_html = view('templates.fnbreceipt', $data)->render();
+
+    //     $result_array['is_error'] = 0;
+    //     $result_array['error_msg'] = "Order Saved";
+    //     $result_array['receipt_html'] = $receipt_html;
+
+    //     return Response()->json($result_array);
+    // }
+
+    /**
+     * @author Mohammed kheiredine
+     */
+
+    public function SaveOrder(Request $request)
     {
-        $g_hash   = $request->input('g_hash');
-        $order_items = $request->input('order_items');
-        $order_code = null;
+        /**
+         * - ifrequest contains "updated_items" then run editOrder logic
+         * - else => run createOrder logic
+         */
+        $has_updated_items = $request->has('updated_items');
 
-        if (is_array($order_items)) {
-        } else if (is_string($order_items)) {
-            $order_items = json_decode($order_items, true);
-        }
+        if ($has_updated_items) {
+
+            // edit order
+            $g_hash = $request->input("g_hash");
+            $user_id = $request->input("user_id");
+            $store_id = $request->input("store_id");
+            $warehouse_id = $request->input("warehouse_id");
+            $order_id = $request->input("order_id");
+            $updated_items = $request->input("updated_items");
+
+            $user_info    = Users::find($user_id);
+
+            $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+
+            $c_hash = hash('sha256', $c_hash);
+            $result_array = array();
+
+            if ($c_hash != $g_hash) {
+                $result_array['is_error']      = 1;
+                $result_array['error_message'] = 'hash sequence is not valid !!';
+                return Response()->json($result_array);
+            }
+
+            if (is_string($updated_items)) {
+                $new_items = json_decode($updated_items, true);
+            } else {
+                $new_items = $updated_items;
+            }
+
+            $order = FnbOrders::whereFoIsDeleted(0)
+                ->where('fo_id', $order_id)
+                ->where('fk_warehouse_id', $warehouse_id)
+                ->where('fo_store_id', $store_id)
+                ->first();
+
+            $old_items = FnbOrderItems::where('oi_order_id', $order_id)->where('oi_is_deleted', 0)->get();
+
+            // [
+            //     items_id -> quantity,
+            //     ...
+            // ]
+            $old_items_quantities = $old_items
+                ->groupBy('oi_item_id')
+                ->map(fn($rows) => $rows->sum('oi_quantity'))
+                ->toArray();
+
+            $old_order_item_ids = $old_items->pluck('oi_item_id')->toArray();
+
+            $old_modifiers = [];
+            if (!empty($old_order_item_ids)) {
+                $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_order_item_ids)
+                    ->where('im_order_id', $order_id)
+                    ->where('im_is_deleted', 0)
+                    ->get();
+            }
+
+            //item_id -> modifier_id -> qty
+            $old_modifier_quantity = [];
+
+            foreach ($old_modifiers as $mod) {
+
+                $modifier_id = $mod->im_modifier_id;
+                $modifier = Modifier::find($modifier_id);
+                $menu_item_id = $mod->im_item_id;
+
+                if (!isset($old_modifier_quantity[$menu_item_id])) {
+                    $old_modifier_quantity[$menu_item_id] = [];
+                }
+
+                if (!isset($old_modifier_quantity[$menu_item_id][$modifier_id])) {
+                    $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
+                }
+
+                $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
+            }
+
+            $new_items_quantity = [];
+
+            foreach ($new_items as $item) {
+                $item_id = $item['item_id'];
+                $qty = $item['quantity'];
+
+                if (!isset($new_items_quantity[$item_id])) {
+                    $new_items_quantity[$item_id] = 0;
+                }
+
+                $new_items_quantity[$item_id] += $qty;
+            }
+
+            $new_modifier_quantity = [];
+
+            foreach ($new_items as $item) {
+                $item_id = $item['item_id'];
+                $item_qty = $item['quantity'];
+
+                if (empty($item['modifiers'])) {
+                    continue;
+                }
+
+                foreach ($item['modifiers'] as $mod) {
+                    $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
+                    $mod_qty = ($mod['quantity'] ?? 1);
+
+                    $final_qty = $item_qty * $mod_qty;
+
+                    if (!isset($new_modifier_quantity[$item_id])) {
+                        $new_modifier_quantity[$item_id] = [];
+                    }
+
+                    if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
+                        $new_modifier_quantity[$item_id][$modifier_id] = 0;
+                    }
+
+                    $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+                }
+            }
+
+            $all_item_ids = array_unique(array_merge(
+                array_keys($old_items_quantities),
+                array_keys($new_items_quantity)
+            ));
+
+            foreach ($all_item_ids as $item_id) {
+                $old_qty = $old_items_quantities[$item_id] ?? 0;
+                $new_qty = $new_items_quantity[$item_id] ?? 0;
+                $delta = $new_qty - $old_qty;
+                if ($delta > 0) {
+
+                    $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                        ->where('in_is_deleted', 0)
+                        ->where('in_is_active', 1)
+                        ->get(['in_product_id', 'in_stock_quantity']);
+
+                    $pending_kitchen_id = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+                        ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+                        ->value('ss_id');
 
 
+                    foreach ($ingredients as $ing) {
+                        $quantity_to_reduce = $ing->in_stock_quantity * $delta;
+                        if ($quantity_to_reduce > 0) {
+                            $this->reduceStock(
+                                $ing->in_product_id,
+                                $warehouse_id,
+                                $quantity_to_reduce
+                            );
+                        }
+                    }
+
+                    $menu_item = FnbMenuItem::find($item_id);
+
+                    $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
+
+                    if ($old_qty > 0) {
+
+                        // ghayer l quantity
+                        FnbOrderItems::where('oi_order_id', operator: $order_id)
+                            ->where('oi_item_id', $item_id)
+                            ->where('oi_is_deleted', 0)
+                            ->update([
+                                'oi_quantity' => $new_qty
+                            ]);
+                    } else {
+                        // iza kenet kena 3amlin item jdide
+                        FnbOrderItems::create([
+                            'oi_order_id'       => $order_id,
+                            'oi_item_id'        => $item_id,
+                            'oi_quantity'       => $new_qty,
+                            'oi_unit_price'     => $menu_item->mi_base_price ?? 0,
+                            'oi_item_discount'  => 0,
+                            'oi_notes'          => '',
+                            'oi_station_id'     => $menu_item->mi_kitchen_station_id ?? 1,
+                            'oi_kitchen_status' => $pending_kitchen_id,
+                            'oi_currency_id'    => $order->fo_currency_id,
+                            'oi_is_deleted'     => 0,
+                            'oi_created_by'     => $user_id,
+                        ]);
+                    }
 
 
-        $store_id = $request->input('store_id');
-        $company_id = $request->input('company_id');
-        $warehouse_id = $request->input('warehouse_id');
-        $user_id = $request->input('user_id');
-        $sub_total = $request->input('sub_total');
-        $total = $request->input('total');
-        $payment_type_id = $request->input('payment_type', PaymentTypes::PAYMENT_CASH_ID);
+                    FnbPrintJobs::create([
+                        'order_id' => $order_id,
+                        'kitchen_station_id' => $station_id,
+                        'payload' => json_encode([
+                            'order' => [
+                                'id'       => $order_id,
+                                'code'     => FnbOrders::find($order_id)->fo_order_code,
+                                'type'     => FnbOrders::find($order_id)->fo_order_type,
+                                'datetime' => now(),
+                            ],
+                            'items' => [[
+                                'qty'   => $delta,
+                                'name'  => $menu_item->mi_item_name,
+                                'notes' => '',
+                            ]],
+                        ]),
+                        'status' => 'pending',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } elseif ($delta < 0) {
+                    $waste_qty = abs($delta);
+                    $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                        ->where('in_is_deleted', 0)
+                        ->where('in_is_active', 1)
+                        ->get(['in_product_id', 'in_stock_quantity']);
 
-        $sub_total_display = $request->input('sub_total_display', $sub_total);
-        $total_display     = $request->input('total_display', $total);
+                    $product_quantities = [];
 
-        $discount = $request->input('discount');
+                    foreach ($ingredients as $ing) {
+                        $product_id = $ing->in_product_id;
+                        $product_qty = ($ing->in_stock_quantity ?? 0);
 
-        $rate = (float) $request->input('currency_display_rate', 1);
+                        if (!isset($product_quantities[$product_id])) {
+                            $product_quantities[$product_id] = 0;
+                        }
+                        $product_quantities[$product_id] += $product_qty;
+                    }
+
+                    foreach ($product_quantities as $product_id => $qty_per_item) {
+
+                        $final_waste_qty = $qty_per_item * $waste_qty;
+                        $stock_id = Stocks::where('fk_product_id', $product_id)
+                            ->where('fk_warehouse_id', $warehouse_id)
+                            ->value('is_id');
+
+                        FnbWasteStock::create([
+                            'fk_product_id'   => $product_id,
+                            'fk_stock_id'     => $stock_id,
+                            'fk_warehouse_id' => $warehouse_id,
+                            'ws_quantity'     => $final_waste_qty,
+                            'ws_date'         => now()->toDateString(),
+                            'ws_created_by'   => $user_id,
+                            'ws_created_at'   => now(),
+                        ]);
 
 
-        $order_type = $request->input('order_type');
-        $customer_id = $request->input('customer_id');
-        $display_currency_id = (int) $request->input('currency_display_id');
+                        if ($new_qty > 0) {
+                            FnbOrderItems::where('oi_order_id', $order_id)
+                                ->where('oi_item_id', $item_id)
+                                ->where('oi_is_deleted', 0)
+                                ->update([
+                                    'oi_quantity' => $new_qty
+                                ]);
+                        } else {
+                            FnbOrderItems::where('oi_order_id', $order_id)
+                                ->where('oi_item_id', $item_id)
+                                ->where('oi_is_deleted', 0)
+                                ->update([
+                                    'oi_is_deleted' => 1,
+                                    'oi_deleted_by' => $user_id
+                                ]);
+                        }
+                    }
+                } else {
+                }
+            }
 
-        if (!$display_currency_id || !Currency::find($display_currency_id)) {
+
+            $all_modifiers_qty = array_unique(array_merge(
+                array_keys($old_modifier_quantity),
+                array_keys($new_modifier_quantity)
+            ));
+
+            foreach ($all_modifiers_qty as $item_id) {
+
+                $orderItem = FnbOrderItems::find($item_id);
+
+                if (!$orderItem) {
+                    continue;
+                }
+
+                $menu_item = FnbMenuItem::find($orderItem->oi_item_id);
+                $station_id = $menu_item->mi_kitchen_station_id ?? 0;
+
+
+                $old_mods = $old_modifier_quantity[$item_id] ?? [];
+                $new_mods = $new_modifier_quantity[$item_id] ?? [];
+
+                $all_modifier_ids = array_unique(array_merge(
+                    array_keys($old_mods),
+                    array_keys($new_mods)
+                ));
+
+                foreach ($all_modifier_ids as $modifier_id) {
+                    $oldQty = $old_mods[$modifier_id] ?? 0;
+                    $newQty = $new_mods[$modifier_id] ?? 0;
+                    $delta  = $newQty - $oldQty;
+
+                    $modifier = Modifier::find($modifier_id);
+                    if ($delta > 0) {
+
+                        FnbOrderItemModifiers::create([
+                            'im_item_id' => $item_id,
+                            'im_order_id' => $order_id,
+                            'im_modifier_id' => $modifier->m_id,
+                            'im_modifier_name' => $modifier->m_modifier_name,
+                            'im_modifier_cost' => $modifier->m_cost_modifier,
+                            'im_quantity' => $modifier->m_quantity * $delta
+                        ]);
+
+
+                        $qty_to_reduce = $modifier->m_quantity * $delta;
+
+                        if ($qty_to_reduce > 0) {
+                            $this->reduceStock(
+                                $modifier->m_item_id,
+                                $warehouse_id,
+                                $qty_to_reduce
+                            );
+                        }
+
+                        FnbPrintJobs::create([
+                            'order_id' => $order_id,
+                            'kitchen_station_id' => $station_id,
+                            'payload' => json_encode([
+                                'order' => [
+                                    'id'   => $order_id,
+                                    'code' => $order->fo_order_code,
+                                ],
+                                'items' => [[
+                                    'qty'  => $delta,
+                                    'name' => '+ ' . ($modifier->m_modifier_name ?? 'Modifier'),
+                                    'notes' => '',
+                                ]],
+                            ]),
+                            'status' => 'pending',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    } elseif ($delta < 0) {
+                        if ($newQty > 0) {
+                            $removeCount = $oldQty - $newQty;
+                        } else {
+                            $removeCount = $oldQty;
+                        }
+                        if ($removeCount > 0) {
+                            FnbOrderItemModifiers::where('im_item_id', $item_id)
+                                ->where('im_modifier_id', $modifier_id)
+                                ->where('im_order_id', $order_id)
+                                ->where('im_is_deleted', 0)
+                                ->update([
+                                    'im_quantity' => $newQty,
+                                    'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
+                                ]);
+                        }
+
+                        if ($modifier && $modifier->m_item_id > 0) {
+                            $productId = (int) $modifier->m_item_id;
+
+                            if ($removeCount > 0) {
+                                $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
+                                    ->where('fk_warehouse_id', $warehouse_id)
+                                    ->value('is_id');
+
+
+                                FnbWasteStock::create([
+                                    'fk_product_id'   => $productId,
+                                    'fk_stock_id'     => $stockId,
+                                    'fk_warehouse_id' => $warehouse_id,
+                                    'ws_quantity'     => $removeCount,
+                                    'ws_date'         => now()->toDateString(),
+                                    'ws_created_by'   => $user_id,
+                                    'ws_created_at'   => now(),
+                                ]);
+                            }
+                        }
+                    } else {
+                    }
+                }
+            }
+
             return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'Invalid or missing currency_id'
+                'is_error' => 0,
+                'message' => 'Order edited successfully',
             ]);
-        }
+        } else {
 
-        $payment_type_info = PaymentTypes::find($payment_type_id);
+            // create order
+            $g_hash   = $request->input('g_hash');
+            $order_items = $request->input('order_items');
+            $order_code = null;
 
-        $delcustomername          = $request->input('delcustomername');
-        $delcustomerphone          = $request->input('delcustomerphone');
-        $delcustomeraddress          = $request->input('delcustomeraddress');
-        $customer_type         = $request->input('customer_type');
-        $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
-        $customer_info = null;
-        $table_ids = $request->input('table_id');
-        $table_ids = array_filter(explode(",", $table_ids));
-        $order_id   = $request->input('order_id');
-        $isDineIn   = ($order_type === 'dine_in');
+            if (is_array($order_items)) {
+            } else if (is_string($order_items)) {
+                $order_items = json_decode($order_items, true);
+            }
 
+            $store_id = $request->input('store_id');
+            $company_id = $request->input('company_id');
+            $warehouse_id = $request->input('warehouse_id');
+            $user_id = $request->input('user_id');
+            $sub_total = $request->input('sub_total');
+            $total = $request->input('total');
+            $payment_type_id = $request->input('payment_type', PaymentTypes::PAYMENT_CASH_ID);
 
-        $user_info = Users::find($user_id);
+            $sub_total_display = $request->input('sub_total_display', $sub_total);
+            $total_display     = $request->input('total_display', $total);
 
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash = hash('sha256', $c_hash);
-        $result_array = array();
+            $discount = $request->input('discount');
 
-        if ($c_hash != $g_hash) {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = 'hash sequence is not valid !!';
-            return Response()->json($result_array);
-        }
+            $rate = (float) $request->input('currency_display_rate', 1);
 
+            $order_type = $request->input('order_type');
+            $customer_id = $request->input('customer_id');
+            $display_currency_id = (int) $request->input('currency_display_id');
 
-        if ($order_type === 'takeaway') {
+            if (!$display_currency_id || !Currency::find($display_currency_id)) {
+                return response()->json([
+                    'is_error' => 1,
+                    'error_msg' => 'Invalid or missing currency_id'
+                ]);
+            }
 
-            if ($customer_id > 0) {
-                $customer_info = Customers::find($customer_id);
-                if ($customer_info) {
+            $payment_type_info = PaymentTypes::find($payment_type_id);
+
+            $delcustomername          = $request->input('delcustomername');
+            $delcustomerphone          = $request->input('delcustomerphone');
+            $delcustomeraddress          = $request->input('delcustomeraddress');
+            $customer_type         = $request->input('customer_type');
+            $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
+            $customer_info = null;
+            $table_ids = $request->input('table_id');
+            $table_ids = array_filter(explode(",", $table_ids));
+            $order_id   = $request->input('order_id');
+            $isDineIn   = ($order_type === 'dine_in');
+
+            $user_info = Users::find($user_id);
+
+            $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+            $c_hash = hash('sha256', $c_hash);
+            $result_array = array();
+
+            if ($c_hash != $g_hash) {
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = 'hash sequence is not valid !!';
+                return Response()->json($result_array);
+            }
+
+            if ($order_type === 'takeaway') {
+
+                if ($customer_id > 0) {
+                    $customer_info = Customers::find($customer_id);
+                    if ($customer_info) {
+                        $customer_info->ic_customer_name    = $delcustomername;
+                        $customer_info->ic_customer_address = $delcustomeraddress;
+                        $customer_info->ic_customer_phone   = $delcustomerphone;
+                        $customer_info->ic_customer_mobile  = $delcustomerphone;
+                        $customer_info->ic_customer_type    = $customer_type;
+                        $customer_info->save();
+                    }
+                } else if (!empty(trim($delcustomername))) {
+                    $customer_info = new Customers();
                     $customer_info->ic_customer_name    = $delcustomername;
                     $customer_info->ic_customer_address = $delcustomeraddress;
                     $customer_info->ic_customer_phone   = $delcustomerphone;
                     $customer_info->ic_customer_mobile  = $delcustomerphone;
+                    $customer_info->ic_customer_code    = rand(10000, 99999);
                     $customer_info->ic_customer_type    = $customer_type;
                     $customer_info->save();
+                    $customer_id = $customer_info->ic_id;
+                } else {
+                    $customer_id   = null;
+                    $customer_info = null;
                 }
-            } else if (!empty(trim($delcustomername))) {
-                $customer_info = new Customers();
-                $customer_info->ic_customer_name    = $delcustomername;
-                $customer_info->ic_customer_address = $delcustomeraddress;
-                $customer_info->ic_customer_phone   = $delcustomerphone;
-                $customer_info->ic_customer_mobile  = $delcustomerphone;
-                $customer_info->ic_customer_code    = rand(10000, 99999);
-                $customer_info->ic_customer_type    = $customer_type;
-                $customer_info->save();
-                $customer_id = $customer_info->ic_id;
-            } else {
-                $customer_id   = null;
-                $customer_info = null;
             }
-        }
 
+            $company_info   = Companies::find($company_id);
 
-        $company_info   = Companies::find($company_id);
+            $creation_date = date("Y-m-d H:i:s");
 
-        $creation_date = date("Y-m-d H:i:s");
+            $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
 
-
-        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
-
-        if (!$pendingKitchenStatusId) {
-            return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'Kitchen Pending status is not configured'
-            ]);
-        }
-
-        if ($isDineIn && $order_id > 0) {
-
-            $order_info = FnbOrders::where('fo_id', $order_id)
-                ->where('fo_order_type', 'dine_in')
-                ->where('fo_payment_status', 'unpaid')
-                ->lockForUpdate()
-                ->first();
-
-            if (!$order_info) {
+            if (!$pendingKitchenStatusId) {
                 return response()->json([
                     'is_error' => 1,
-                    'error_msg' => 'Dine-in order not found or already finalized'
+                    'error_msg' => 'Kitchen Pending status is not configured'
                 ]);
             }
 
-            $order_code = $order_info->fo_order_code;
-        } else {
+            if ($isDineIn && $order_id > 0) {
 
-            $order_info = new FnbOrders();
-            if (empty($order_info->fo_order_code)) {
-                $order_info->fo_order_code = $this->GenerateOrdereCodeFNB();
-            }
+                $order_info = FnbOrders::where('fo_id', $order_id)
+                    ->where('fo_order_type', 'dine_in')
+                    ->where('fo_payment_status', 'unpaid')
+                    ->lockForUpdate()
+                    ->first();
 
-            $order_code = $order_info->fo_order_code;
-
-            $order_info->fo_order_type = $order_type;
-            $order_info->fo_store_id   = $store_id;
-            $order_info->fo_branch_id  = $company_id;
-        }
-
-
-        $order_info->fo_customer_id = $customer_id;
-        $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
-        $order_info->fo_kitchen_status = $pendingKitchenStatusId;
-        $order_info->fo_order_datetime = $creation_date;
-        $order_info->fo_subtotal = $sub_total_display;
-        $order_info->fo_discount = $discount;
-        $order_info->fo_created_by = $user_id;
-        $order_info->fo_currency_id = $display_currency_id;
-        $order_info->fo_total_amount = $total_display;
-        $order_info->fo_payment_status = 'paid';
-        $order_info->fo_paid_amount  = (float) $total_display;
-        $order_info->fk_warehouse_id  = $warehouse_id;
-        $order_info->fo_payment_type = $payment_type_id;
-        $order_info->save();
-
-        $fo_id = $order_info->fo_id;
-
-        FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
-
-        if (!empty($table_ids)) {
-            foreach ($table_ids as $tid) {
-                FnbOrderTables::create([
-                    'ot_order_id' => $fo_id,
-                    'ot_table_id' => intval($tid)
-                ]);
-            }
-        }
-
-        $display_currency_code = $request->input('currency_display_code');
-        $display_rate          = floatval($request->input('currency_display_rate', 1));
-
-        $currency = null;
-        if ($display_currency_id) {
-            $currency = Currency::find($display_currency_id);
-        }
-        if (!$currency && $display_currency_code) {
-            $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
-        }
-        if (!$currency) {
-            $currency = Currency::find($order_info->fo_currency_id); // fallback
-        }
-
-        $final_items = [];
-
-        foreach ($order_items as $key => $item_order) {
-            $item = new FnbOrderItems();
-            $item->oi_order_id = $fo_id;
-            $item->oi_item_id = $item_order['item_id'];
-            $item->oi_quantity = $item_order['quantity'];
-            $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
-            $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
-            $item->oi_kitchen_status = $pendingKitchenStatusId;
-            $menuItem = FnbMenuItem::find($item_order['item_id']);
-
-            if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
-                $fallbackStationId = 1;
-
-                \Log::warning(
-                    'Menu item missing kitchen station, using fallback',
-                    [
-                        'menu_item_id' => $item_order['item_id'],
-                        'fallback_station_id' => $fallbackStationId,
-                    ]
-                );
-
-                $item->oi_station_id = $fallbackStationId;
-            } else {
-                $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
-            }
-
-            $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
-            $item->oi_currency_id = $display_currency_id;
-            $item->save();
-
-            $item_db = FnbMenuItem::find($item_order['item_id']);
-
-            $mods = [];
-
-            if (!empty($item_order['modifiers'])) {
-                foreach ($item_order['modifiers'] as $m) {
-
-                    if (!isset($m['id'])) {
-                        continue;
-                    }
-
-                    $modifier = Modifier::find($m['id']);
-                    if (!$modifier) {
-                        continue;
-                    }
-
-                    FnbOrderItemModifiers::create([
-                        'im_order_id' => $fo_id,
-                        'im_item_id' => $item->oi_item_id,
-                        'im_modifier_id' => $modifier->m_id,
-                        'im_modifier_name' => $modifier->m_modifier_name,
-                        'im_modifier_cost' => $modifier->m_cost_modifier,
-                        'im_quantity' => $modifier->m_quantity * $item->oi_quantity
+                if (!$order_info) {
+                    return response()->json([
+                        'is_error' => 1,
+                        'error_msg' => 'Dine-in order not found or already finalized'
                     ]);
+                }
+
+                $order_code = $order_info->fo_order_code;
+            } else {
+
+                $order_info = new FnbOrders();
+                if (empty($order_info->fo_order_code)) {
+                    $order_info->fo_order_code = $this->GenerateOrdereCodeFNB();
+                }
+
+                $order_code = $order_info->fo_order_code;
+
+                $order_info->fo_order_type = $order_type;
+                $order_info->fo_store_id   = $store_id;
+                $order_info->fo_branch_id  = $company_id;
+            }
+
+            $order_info->fo_customer_id = $customer_id;
+            $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
+            $order_info->fo_kitchen_status = $pendingKitchenStatusId;
+            $order_info->fo_order_datetime = $creation_date;
+            $order_info->fo_subtotal = $sub_total_display;
+            $order_info->fo_discount = $discount;
+            $order_info->fo_created_by = $user_id;
+            $order_info->fo_currency_id = $display_currency_id;
+            $order_info->fo_total_amount = $total_display;
+            $order_info->fo_payment_status = 'paid';
+            $order_info->fo_paid_amount  = (float) $total_display;
+            $order_info->fk_warehouse_id  = $warehouse_id;
+            $order_info->fo_payment_type = $payment_type_id;
+            $order_info->save();
+
+            $fo_id = $order_info->fo_id;
+
+            FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
+
+            if (!empty($table_ids)) {
+                foreach ($table_ids as $tid) {
+                    FnbOrderTables::create([
+                        'ot_order_id' => $fo_id,
+                        'ot_table_id' => intval($tid)
+                    ]);
+                }
+            }
+
+            $display_currency_code = $request->input('currency_display_code');
+            $display_rate          = floatval($request->input('currency_display_rate', 1));
+
+            $currency = null;
+            if ($display_currency_id) {
+                $currency = Currency::find($display_currency_id);
+            }
+            if (!$currency && $display_currency_code) {
+                $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
+            }
+            if (!$currency) {
+                $currency = Currency::find($order_info->fo_currency_id); // fallback
+            }
+
+            $final_items = [];
+
+            foreach ($order_items as $key => $item_order) {
+                $item = new FnbOrderItems();
+                $item->oi_order_id = $fo_id;
+                $item->oi_item_id = $item_order['item_id'];
+                $item->oi_quantity = $item_order['quantity'];
+                $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
+                $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
+                $item->oi_kitchen_status = $pendingKitchenStatusId;
+                $menuItem = FnbMenuItem::find($item_order['item_id']);
+
+                if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
+                    $fallbackStationId = 1;
+
+                    \Log::warning(
+                        'Menu item missing kitchen station, using fallback',
+                        [
+                            'menu_item_id' => $item_order['item_id'],
+                            'fallback_station_id' => $fallbackStationId,
+                        ]
+                    );
+
+                    $item->oi_station_id = $fallbackStationId;
+                } else {
+                    $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+                }
+
+                $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
+                $item->oi_currency_id = $display_currency_id;
+                $item->save();
+
+                $item_db = FnbMenuItem::find($item_order['item_id']);
+
+                $mods = [];
+
+                if (!empty($item_order['modifiers'])) {
+                    foreach ($item_order['modifiers'] as $m) {
+
+                        if (!isset($m['id'])) {
+                            continue;
+                        }
+
+                        $modifier = Modifier::find($m['id']);
+                        if (!$modifier) {
+                            continue;
+                        }
+
+                        FnbOrderItemModifiers::create([
+                            'im_order_id' => $fo_id,
+                            'im_item_id' => $item->oi_item_id,
+                            'im_modifier_id' => $modifier->m_id,
+                            'im_modifier_name' => $modifier->m_modifier_name,
+                            'im_modifier_cost' => $modifier->m_cost_modifier,
+                            'im_quantity' => $modifier->m_quantity * $item->oi_quantity
+                        ]);
 
 
-                    $mods[] = [
-                        "id"    => $modifier->m_id,
-                        "name"  => $modifier->m_modifier_name,
-                        "price" => $modifier->m_price_modifier  * $display_rate,
-                        "qty"   => $modifier->m_quantity,
-                    ];
+                        $mods[] = [
+                            "id"    => $modifier->m_id,
+                            "name"  => $modifier->m_modifier_name,
+                            "price" => $modifier->m_price_modifier  * $display_rate,
+                            "qty"   => $modifier->m_quantity,
+                        ];
+                    }
+                }
+
+
+                $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
+                $line_total_display = $unit_price_display * $item_order['quantity'];
+
+                $final_items[] = [
+                    'item_id'   => $item_order['item_id'],
+                    'item_name' => $item_db ? $item_db->mi_item_name : '',
+                    'quantity'  => $item_order['quantity'],
+                    'price'     => $line_total_display,
+                    'total'      => $line_total_display,
+                    'unit_price' => $unit_price_display,
+                    'modifiers' => $mods,
+                ];
+            }
+
+
+            $structure = array(
+                "fo_id" => $fo_id,
+                "fo_code" => $order_info->fo_order_code,
+                "items" => $order_items
+            );
+
+            $order_info->fo_order_structure = json_encode($structure);
+            $order_info->save();
+
+
+
+            $customer_info  = Customers::find($order_info->fo_customer_id);
+            $AccountingManager = new AccountingManager();
+
+
+            $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
+
+            $pt_payment_account     = $payment_type_info->pt_payment_account;
+
+            $AccTransaction = new Transactions();
+            $AccTransaction->at_transaction_date    = date("Y-m-d");
+            $AccTransaction->at_creation_date       = date("Y-m-d");
+            $AccTransaction->at_accounting_doc      = $order_code;
+            $AccTransaction->fk_acc_journal_id      = 3;
+            $AccTransaction->save();
+            $at_id = $AccTransaction->at_id;
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
+            $TransactionMovement->tm_ledger_label       = $order_code;
+            $TransactionMovement->tm_debit              = $total;
+            $TransactionMovement->tm_credit             = 0;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
+            $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
+            // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+            $TransactionMovement->tm_debit              = 0;
+            // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+
+            $TransactionMovement = new TransactionMovements();
+            $TransactionMovement->fk_tran_id            = $at_id;
+            $TransactionMovement->tm_ledger_account     = $pt_payment_account;
+            $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
+            // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
+            $TransactionMovement->tm_debit              = 0;
+            // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+            $TransactionMovement->tm_creation_date      = date("Y-m-d");
+            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+            $TransactionMovement->save();
+
+            $trans_mov = new TransactionMovements();
+            $trans_mov->fk_tran_id              = $at_id;
+            $trans_mov->tm_ledger_account       = 701;
+            $trans_mov->tm_sub_ledger_account   = 701;
+            $trans_mov->tm_debit                = 0;
+            // $trans_mov->tm_credit               = $invoice_info->bi_total_price;
+            $trans_mov->tm_creation_date        = date('Y-m-d');
+            $trans_mov->tm_transaction_date        = date('Y-m-d');
+            // $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+            $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
+            $trans_mov->save();
+
+
+
+
+            foreach ($order_items as $item_order) {
+
+                $item_id = $item_order['item_id'];
+
+                $ingredients = FnbIngredients::where('in_item_id', $item_id)
+                    ->where('in_is_deleted', 0)
+                    ->get();
+
+                foreach ($ingredients as $ing) {
+                    $product_id = $ing->in_product_id;
+                    $total_qty = $ing->in_stock_quantity * $item_order['quantity'];
+
+
+                    $this->reduceStock($product_id, $warehouse_id, $total_qty);
+                }
+
+                if (!empty($item_order['modifiers'])) {
+                    foreach ($item_order['modifiers'] as $mod) {
+
+                        if (!isset($mod['id'])) {
+                            continue;
+                        }
+
+                        $modifier = Modifier::find($mod['id']);
+                        if (!$modifier) {
+                            continue;
+                        }
+
+                        $product_id   = $modifier->m_item_id;
+                        $qty_per_unit = $modifier->m_quantity * $item_order['quantity'];
+
+                        $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+                    }
                 }
             }
 
 
-            $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
-            $line_total_display = $unit_price_display * $item_order['quantity'];
+            $display_currency_code = $request->input('currency_display_code');
+            $display_rate          = (float) $request->input('currency_display_rate', 1);
 
-            $final_items[] = [
-                'item_id'   => $item_order['item_id'],
-                'item_name' => $item_db ? $item_db->mi_item_name : '',
-                'quantity'  => $item_order['quantity'],
-                'price'     => $line_total_display,
-                'total'      => $line_total_display,
-                'unit_price' => $unit_price_display,
-                'modifiers' => $mods,
-            ];
-        }
+            $currency = null;
 
-
-        $structure = array(
-            "fo_id" => $fo_id,
-            "fo_code" => $order_info->fo_order_code,
-            "items" => $order_items
-        );
-
-        $order_info->fo_order_structure = json_encode($structure);
-        $order_info->save();
-
-
-
-        $customer_info  = Customers::find($order_info->fo_customer_id);
-        $AccountingManager = new AccountingManager();
-
-
-        $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
-
-        $pt_payment_account     = $payment_type_info->pt_payment_account;
-
-        $AccTransaction = new Transactions();
-        $AccTransaction->at_transaction_date    = date("Y-m-d");
-        $AccTransaction->at_creation_date       = date("Y-m-d");
-        $AccTransaction->at_accounting_doc      = $order_code;
-        $AccTransaction->fk_acc_journal_id      = 3;
-        $AccTransaction->save();
-        $at_id = $AccTransaction->at_id;
-
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
-        $TransactionMovement->tm_ledger_label       = $order_code;
-        $TransactionMovement->tm_debit              = $total;
-        $TransactionMovement->tm_credit             = 0;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
-
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
-        $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
-        // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
-        $TransactionMovement->tm_debit              = 0;
-        // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
-
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $at_id;
-        $TransactionMovement->tm_ledger_account     = $pt_payment_account;
-        $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
-        // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
-        $TransactionMovement->tm_debit              = 0;
-        // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
-        $trans_mov = new TransactionMovements();
-        $trans_mov->fk_tran_id              = $at_id;
-        $trans_mov->tm_ledger_account       = 701;
-        $trans_mov->tm_sub_ledger_account   = 701;
-        $trans_mov->tm_debit                = 0;
-        // $trans_mov->tm_credit               = $invoice_info->bi_total_price;
-        $trans_mov->tm_creation_date        = date('Y-m-d');
-        $trans_mov->tm_transaction_date        = date('Y-m-d');
-        // $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
-        $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
-        $trans_mov->save();
-
-
-
-
-        foreach ($order_items as $item_order) {
-
-            $item_id = $item_order['item_id'];
-
-            $ingredients = FnbIngredients::where('in_item_id', $item_id)
-                ->where('in_is_deleted', 0)
-                ->get();
-
-            foreach ($ingredients as $ing) {
-                $product_id = $ing->in_product_id;
-                $total_qty = $ing->in_stock_quantity * $item_order['quantity'];
-
-
-                $this->reduceStock($product_id, $warehouse_id, $total_qty);
+            if ($display_currency_id) {
+                $currency = Currency::find($display_currency_id);
             }
 
-            if (!empty($item_order['modifiers'])) {
-                foreach ($item_order['modifiers'] as $mod) {
-
-                    if (!isset($mod['id'])) {
-                        continue;
-                    }
-
-                    $modifier = Modifier::find($mod['id']);
-                    if (!$modifier) {
-                        continue;
-                    }
-
-                    $product_id   = $modifier->m_item_id;
-                    $qty_per_unit = $modifier->m_quantity * $item_order['quantity'];
-
-                    $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
-                }
+            if (!$currency && $display_currency_code) {
+                $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
             }
+
+            if (!$currency) {
+                $currency = Currency::find($order_info->fo_currency_id); // fallback only
+            }
+
+
+            $data = array(
+                "company_info" => $company_info,
+                "creation_date" => $creation_date,
+                "fo_order_code" => $order_code,
+                "delivery_id" => $delivery_id,
+                "customer_info" => $customer_info,
+                "lst_order_items" => $final_items,
+                "order_info" => $order_info,
+                "sub_total" => $sub_total_display,
+                "cost_total" => $total_display,
+                "discount" => $discount,
+                "currency" => $currency,
+                "currency_display_code" => $request->input('currency_display_code'),
+                "currency_display_rate" => (float) $request->input('currency_display_rate', 1),
+
+            );
+
+            $receipt_html = view('templates.fnbreceipt', $data)->render();
+
+            $result_array['is_error'] = 0;
+            $result_array['error_msg'] = "Order Saved";
+            $result_array['receipt_html'] = $receipt_html;
+
+            return Response()->json($result_array);
         }
-
-
-        $display_currency_code = $request->input('currency_display_code');
-        $display_rate          = (float) $request->input('currency_display_rate', 1);
-
-        $currency = null;
-
-        if ($display_currency_id) {
-            $currency = Currency::find($display_currency_id);
-        }
-
-        if (!$currency && $display_currency_code) {
-            $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
-        }
-
-        if (!$currency) {
-            $currency = Currency::find($order_info->fo_currency_id); // fallback only
-        }
-
-
-        $data = array(
-            "company_info" => $company_info,
-            "creation_date" => $creation_date,
-            "fo_order_code" => $order_code,
-            "delivery_id" => $delivery_id,
-            "customer_info" => $customer_info,
-            "lst_order_items" => $final_items,
-            "order_info" => $order_info,
-            "sub_total" => $sub_total_display,
-            "cost_total" => $total_display,
-            "discount" => $discount,
-            "currency" => $currency,
-            "currency_display_code" => $request->input('currency_display_code'),
-            "currency_display_rate" => (float) $request->input('currency_display_rate', 1),
-
-        );
-
-        $receipt_html = view('templates.fnbreceipt', $data)->render();
-
-        $result_array['is_error'] = 0;
-        $result_array['error_msg'] = "Order Saved";
-        $result_array['receipt_html'] = $receipt_html;
-
-        return Response()->json($result_array);
     }
+
 
     public function CreateEmptyOrder(Request $request)
     {
@@ -1015,383 +1823,383 @@ class FnbOrderController extends Controller
         ]);
     }
 
-    public function EditOrder(Request $request)
-    {
-        $g_hash = $request->input("g_hash");
-        $user_id = $request->input("user_id");
-        $store_id = $request->input("store_id");
-        $warehouse_id = $request->input("warehouse_id");
-        $order_id = $request->input("order_id");
-        $updated_items = $request->input("updated_items");
+    // public function EditOrder(Request $request)
+    // {
+    //     $g_hash = $request->input("g_hash");
+    //     $user_id = $request->input("user_id");
+    //     $store_id = $request->input("store_id");
+    //     $warehouse_id = $request->input("warehouse_id");
+    //     $order_id = $request->input("order_id");
+    //     $updated_items = $request->input("updated_items");
 
-        $user_info    = Users::find($user_id);
+    //     $user_info    = Users::find($user_id);
 
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+    //     $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
-        $c_hash = hash('sha256', $c_hash);
-        $result_array = array();
+    //     $c_hash = hash('sha256', $c_hash);
+    //     $result_array = array();
 
-        if ($c_hash != $g_hash) {
-            $result_array['is_error']      = 1;
-            $result_array['error_message'] = 'hash sequence is not valid !!';
-            return Response()->json($result_array);
-        }
-
-        if (is_string($updated_items)) {
-            $new_items = json_decode($updated_items, true);
-        } else {
-            $new_items = $updated_items;
-        }
-
-        $order = FnbOrders::whereFoIsDeleted(0)
-            ->where('fo_id', $order_id)
-            ->where('fk_warehouse_id', $warehouse_id)
-            ->where('fo_store_id', $store_id)
-            ->first();
-
-        $old_items = FnbOrderItems::where('oi_order_id', $order_id)->where('oi_is_deleted', 0)->get();
-
-        // [
-        //     items_id -> quantity,
-        //     ...
-        // ]
-        $old_items_quantities = $old_items
-            ->groupBy('oi_item_id')
-            ->map(fn($rows) => $rows->sum('oi_quantity'))
-            ->toArray();
-
-        $old_order_item_ids = $old_items->pluck('oi_item_id')->toArray();
-
-        $old_modifiers = [];
-        if (!empty($old_order_item_ids)) {
-            $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_order_item_ids)
-                ->where('im_order_id', $order_id)
-                ->where('im_is_deleted', 0)
-                ->get();
-        }
-
-        //item_id -> modifier_id -> qty
-        $old_modifier_quantity = [];
-
-        foreach ($old_modifiers as $mod) {
-
-            $modifier_id = $mod->im_modifier_id;
-            $modifier = Modifier::find($modifier_id);
-            $menu_item_id = $mod->im_item_id;
-
-            if (!isset($old_modifier_quantity[$menu_item_id])) {
-                $old_modifier_quantity[$menu_item_id] = [];
-            }
-
-            if (!isset($old_modifier_quantity[$menu_item_id][$modifier_id])) {
-                $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
-            }
-
-            $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
-        }
-
-        $new_items_quantity = [];
-
-        foreach ($new_items as $item) {
-            $item_id = $item['item_id'];
-            $qty = $item['quantity'];
-
-            if (!isset($new_items_quantity[$item_id])) {
-                $new_items_quantity[$item_id] = 0;
-            }
-
-            $new_items_quantity[$item_id] += $qty;
-        }
-
-        $new_modifier_quantity = [];
-
-        foreach ($new_items as $item) {
-            $item_id = $item['item_id'];
-            $item_qty = $item['quantity'];
-
-            if (empty($item['modifiers'])) {
-                continue;
-            }
-
-            foreach ($item['modifiers'] as $mod) {
-                $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
-
-                $mod_qty = ($mod['quantity'] ?? 1);
-
-                $final_qty = $item_qty * $mod_qty;
-
-                if (!isset($new_modifier_quantity[$item_id])) {
-                    $new_modifier_quantity[$item_id] = [];
-                }
-
-                if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
-                    $new_modifier_quantity[$item_id][$modifier_id] = 0;
-                }
-
-                $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
-            }
-        }
-
-        $all_item_ids = array_unique(array_merge(
-            array_keys($old_items_quantities),
-            array_keys($new_items_quantity)
-        ));
-
-        foreach ($all_item_ids as $item_id) {
-            $old_qty = $old_items_quantities[$item_id] ?? 0;
-            $new_qty = $new_items_quantity[$item_id] ?? 0;
-            $delta = $new_qty - $old_qty;
-            if ($delta > 0) {
-
-                $ingredients = FnbIngredients::where('in_item_id', $item_id)
-                    ->where('in_is_deleted', 0)
-                    ->where('in_is_active', 1)
-                    ->get(['in_product_id', 'in_stock_quantity']);
-
-                $pending_kitchen_id = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-                    ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
-                    ->value('ss_id');
-
-
-                foreach ($ingredients as $ing) {
-                    $quantity_to_reduce = $ing->in_stock_quantity * $delta;
-                    if ($quantity_to_reduce > 0) {
-                        $this->reduceStock(
-                            $ing->in_product_id,
-                            $warehouse_id,
-                            $quantity_to_reduce
-                        );
-                    }
-                }
-
-                $menu_item = FnbMenuItem::find($item_id);
-
-                $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
-
-                if ($old_qty > 0) {
-
-                    // ghayer l quantity
-                    FnbOrderItems::where('oi_order_id', operator: $order_id)
-                        ->where('oi_item_id', $item_id)
-                        ->where('oi_is_deleted', 0)
-                        ->update([
-                            'oi_quantity' => $new_qty
-                        ]);
-                } else {
-                    // iza kenet kena 3amlin item jdide
-                    FnbOrderItems::create([
-                        'oi_order_id'       => $order_id,
-                        'oi_item_id'        => $item_id,
-                        'oi_quantity'       => $new_qty,
-                        'oi_unit_price'     => $menu_item->mi_base_price ?? 0,
-                        'oi_item_discount'  => 0,
-                        'oi_notes'          => '',
-                        'oi_station_id'     => $menu_item->mi_kitchen_station_id ?? 1,
-                        'oi_kitchen_status' => $pending_kitchen_id,
-                        'oi_currency_id'    => $order->fo_currency_id,
-                        'oi_is_deleted'     => 0,
-                        'oi_created_by'     => $user_id,
-                    ]);
-                }
-
-
-                FnbPrintJobs::create([
-                    'order_id' => $order_id,
-                    'kitchen_station_id' => $station_id,
-                    'payload' => json_encode([
-                        'order' => [
-                            'id'       => $order_id,
-                            'code'     => FnbOrders::find($order_id)->fo_order_code,
-                            'type'     => FnbOrders::find($order_id)->fo_order_type,
-                            'datetime' => now(),
-                        ],
-                        'items' => [[
-                            'qty'   => $delta,
-                            'name'  => $menu_item->mi_item_name,
-                            'notes' => '',
-                        ]],
-                    ]),
-                    'status' => 'pending',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            } elseif ($delta < 0) {
-                $waste_qty = abs($delta);
-                $ingredients = FnbIngredients::where('in_item_id', $item_id)
-                    ->where('in_is_deleted', 0)
-                    ->where('in_is_active', 1)
-                    ->get(['in_product_id', 'in_stock_quantity']);
-
-                $product_quantities = [];
-
-                foreach ($ingredients as $ing) {
-                    $product_id = $ing->in_product_id;
-                    $product_qty = ($ing->in_stock_quantity ?? 0);
-
-                    if (!isset($product_quantities[$product_id])) {
-                        $product_quantities[$product_id] = 0;
-                    }
-                    $product_quantities[$product_id] += $product_qty;
-                }
-
-                foreach ($product_quantities as $product_id => $qty_per_item) {
-
-                    $final_waste_qty = $qty_per_item * $waste_qty;
-                    $stock_id = Stocks::where('fk_product_id', $product_id)
-                        ->where('fk_warehouse_id', $warehouse_id)
-                        ->value('is_id');
-
-                    FnbWasteStock::create([
-                        'fk_product_id'   => $product_id,
-                        'fk_stock_id'     => $stock_id,
-                        'fk_warehouse_id' => $warehouse_id,
-                        'ws_quantity'     => $final_waste_qty,
-                        'ws_date'         => now()->toDateString(),
-                        'ws_created_by'   => $user_id,
-                        'ws_created_at'   => now(),
-                    ]);
-
-
-                    if ($new_qty > 0) {
-                        FnbOrderItems::where('oi_order_id', $order_id)
-                            ->where('oi_item_id', $item_id)
-                            ->where('oi_is_deleted', 0)
-                            ->update([
-                                'oi_quantity' => $new_qty
-                            ]);
-                    } else {
-                        FnbOrderItems::where('oi_order_id', $order_id)
-                            ->where('oi_item_id', $item_id)
-                            ->where('oi_is_deleted', 0)
-                            ->update([
-                                'oi_is_deleted' => 1,
-                                'oi_deleted_by' => $user_id
-                            ]);
-                    }
-                }
-            } else {
-            }
-        }
-
-
-        $all_modifiers_qty = array_unique(array_merge(
-            array_keys($old_modifier_quantity),
-            array_keys($new_modifier_quantity)
-        ));
-
-        foreach ($all_modifiers_qty as $item_id) {
-
-            $orderItem = FnbOrderItems::find($item_id);
-
-            if (!$orderItem) {
-                continue;
-            }
-
-            $menu_item = FnbMenuItem::find($orderItem->oi_item_id);
-            $station_id = $menu_item->mi_kitchen_station_id ?? 0;
-
-
-            $old_mods = $old_modifier_quantity[$item_id] ?? [];
-            $new_mods = $new_modifier_quantity[$item_id] ?? [];
-
-            $all_modifier_ids = array_unique(array_merge(
-                array_keys($old_mods),
-                array_keys($new_mods)
-            ));
-
-            foreach ($all_modifier_ids as $modifier_id) {
-                $oldQty = $old_mods[$modifier_id] ?? 0;
-                $newQty = $new_mods[$modifier_id] ?? 0;
-                $delta  = $newQty - $oldQty;
-
-                $modifier = Modifier::find($modifier_id);
-                if ($delta > 0) {
-
-                    FnbOrderItemModifiers::create([
-                        'im_item_id' => $item_id,
-                        'im_order_id' => $order_id,
-                        'im_modifier_id' => $modifier->m_id,
-                        'im_modifier_name' => $modifier->m_modifier_name,
-                        'im_modifier_cost' => $modifier->m_cost_modifier,
-                        'im_quantity' => $modifier->m_quantity * $delta
-                    ]);
-
-
-                    $qty_to_reduce = $modifier->m_quantity * $delta;
-
-                    if ($qty_to_reduce > 0) {
-                        $this->reduceStock(
-                            $modifier->m_item_id,
-                            $warehouse_id,
-                            $qty_to_reduce
-                        );
-                    }
-
-                    FnbPrintJobs::create([
-                        'order_id' => $order_id,
-                        'kitchen_station_id' => $station_id,
-                        'payload' => json_encode([
-                            'order' => [
-                                'id'   => $order_id,
-                                'code' => $order->fo_order_code,
-                            ],
-                            'items' => [[
-                                'qty'  => $delta,
-                                'name' => '+ ' . ($modifier->m_modifier_name ?? 'Modifier'),
-                                'notes' => '',
-                            ]],
-                        ]),
-                        'status' => 'pending',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } elseif ($delta < 0) {
-                    if ($newQty > 0) {
-                        $removeCount = $oldQty - $newQty;
-                    } else {
-                        $removeCount = $oldQty;
-                    }
-                    if ($removeCount > 0) {
-                        FnbOrderItemModifiers::where('im_item_id', $item_id)
-                            ->where('im_modifier_id', $modifier_id)
-                            ->where('im_order_id', $order_id)
-                            ->where('im_is_deleted', 0)
-                            ->update([
-                                'im_quantity' => $newQty,
-                                'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
-                            ]);
-                    }
-
-                    if ($modifier && $modifier->m_item_id > 0) {
-                        $productId = (int) $modifier->m_item_id;
-
-                        if ($removeCount > 0) {
-                            $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
-                                ->where('fk_warehouse_id', $warehouse_id)
-                                ->value('is_id');
-
-
-                            FnbWasteStock::create([
-                                'fk_product_id'   => $productId,
-                                'fk_stock_id'     => $stockId,
-                                'fk_warehouse_id' => $warehouse_id,
-                                'ws_quantity'     => $removeCount,
-                                'ws_date'         => now()->toDateString(),
-                                'ws_created_by'   => $user_id,
-                                'ws_created_at'   => now(),
-                            ]);
-                        }
-                    }
-                } else {
-                }
-            }
-        }
-
-        return response()->json([
-            'is_error' => 0,
-            'message' => 'Order edited successfully',
-        ]);
-    }
+    //     if ($c_hash != $g_hash) {
+    //         $result_array['is_error']      = 1;
+    //         $result_array['error_message'] = 'hash sequence is not valid !!';
+    //         return Response()->json($result_array);
+    //     }
+
+    //     if (is_string($updated_items)) {
+    //         $new_items = json_decode($updated_items, true);
+    //     } else {
+    //         $new_items = $updated_items;
+    //     }
+
+    //     $order = FnbOrders::whereFoIsDeleted(0)
+    //         ->where('fo_id', $order_id)
+    //         ->where('fk_warehouse_id', $warehouse_id)
+    //         ->where('fo_store_id', $store_id)
+    //         ->first();
+
+    //     $old_items = FnbOrderItems::where('oi_order_id', $order_id)->where('oi_is_deleted', 0)->get();
+
+    //     // [
+    //     //     items_id -> quantity,
+    //     //     ...
+    //     // ]
+    //     $old_items_quantities = $old_items
+    //         ->groupBy('oi_item_id')
+    //         ->map(fn($rows) => $rows->sum('oi_quantity'))
+    //         ->toArray();
+
+    //     $old_order_item_ids = $old_items->pluck('oi_item_id')->toArray();
+
+    //     $old_modifiers = [];
+    //     if (!empty($old_order_item_ids)) {
+    //         $old_modifiers = FnbOrderItemModifiers::whereIn('im_item_id', $old_order_item_ids)
+    //             ->where('im_order_id', $order_id)
+    //             ->where('im_is_deleted', 0)
+    //             ->get();
+    //     }
+
+    //     //item_id -> modifier_id -> qty
+    //     $old_modifier_quantity = [];
+
+    //     foreach ($old_modifiers as $mod) {
+
+    //         $modifier_id = $mod->im_modifier_id;
+    //         $modifier = Modifier::find($modifier_id);
+    //         $menu_item_id = $mod->im_item_id;
+
+    //         if (!isset($old_modifier_quantity[$menu_item_id])) {
+    //             $old_modifier_quantity[$menu_item_id] = [];
+    //         }
+
+    //         if (!isset($old_modifier_quantity[$menu_item_id][$modifier_id])) {
+    //             $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
+    //         }
+
+    //         $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
+    //     }
+
+    //     $new_items_quantity = [];
+
+    //     foreach ($new_items as $item) {
+    //         $item_id = $item['item_id'];
+    //         $qty = $item['quantity'];
+
+    //         if (!isset($new_items_quantity[$item_id])) {
+    //             $new_items_quantity[$item_id] = 0;
+    //         }
+
+    //         $new_items_quantity[$item_id] += $qty;
+    //     }
+
+    //     $new_modifier_quantity = [];
+
+    //     foreach ($new_items as $item) {
+    //         $item_id = $item['item_id'];
+    //         $item_qty = $item['quantity'];
+
+    //         if (empty($item['modifiers'])) {
+    //             continue;
+    //         }
+
+    //         foreach ($item['modifiers'] as $mod) {
+    //             $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
+    //             $mod_qty = ($mod['quantity'] ?? 1);
+
+    //             $final_qty = $item_qty * $mod_qty;
+
+    //             if (!isset($new_modifier_quantity[$item_id])) {
+    //                 $new_modifier_quantity[$item_id] = [];
+    //             }
+
+    //             if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
+    //                 $new_modifier_quantity[$item_id][$modifier_id] = 0;
+    //             }
+
+    //             $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+    //         }
+    //     }
+
+    //     $all_item_ids = array_unique(array_merge(
+    //         array_keys($old_items_quantities),
+    //         array_keys($new_items_quantity)
+    //     ));
+
+    //     foreach ($all_item_ids as $item_id) {
+    //         $old_qty = $old_items_quantities[$item_id] ?? 0;
+    //         $new_qty = $new_items_quantity[$item_id] ?? 0;
+    //         $delta = $new_qty - $old_qty;
+    //         if ($delta > 0) {
+
+    //             $ingredients = FnbIngredients::where('in_item_id', $item_id)
+    //                 ->where('in_is_deleted', 0)
+    //                 ->where('in_is_active', 1)
+    //                 ->get(['in_product_id', 'in_stock_quantity']);
+
+    //             $pending_kitchen_id = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+    //                 ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+    //                 ->value('ss_id');
+
+
+    //             foreach ($ingredients as $ing) {
+    //                 $quantity_to_reduce = $ing->in_stock_quantity * $delta;
+    //                 if ($quantity_to_reduce > 0) {
+    //                     $this->reduceStock(
+    //                         $ing->in_product_id,
+    //                         $warehouse_id,
+    //                         $quantity_to_reduce
+    //                     );
+    //                 }
+    //             }
+
+    //             $menu_item = FnbMenuItem::find($item_id);
+
+    //             $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
+
+    //             if ($old_qty > 0) {
+
+    //                 // ghayer l quantity
+    //                 FnbOrderItems::where('oi_order_id', operator: $order_id)
+    //                     ->where('oi_item_id', $item_id)
+    //                     ->where('oi_is_deleted', 0)
+    //                     ->update([
+    //                         'oi_quantity' => $new_qty
+    //                     ]);
+    //             } else {
+    //                 // iza kenet kena 3amlin item jdide
+    //                 FnbOrderItems::create([
+    //                     'oi_order_id'       => $order_id,
+    //                     'oi_item_id'        => $item_id,
+    //                     'oi_quantity'       => $new_qty,
+    //                     'oi_unit_price'     => $menu_item->mi_base_price ?? 0,
+    //                     'oi_item_discount'  => 0,
+    //                     'oi_notes'          => '',
+    //                     'oi_station_id'     => $menu_item->mi_kitchen_station_id ?? 1,
+    //                     'oi_kitchen_status' => $pending_kitchen_id,
+    //                     'oi_currency_id'    => $order->fo_currency_id,
+    //                     'oi_is_deleted'     => 0,
+    //                     'oi_created_by'     => $user_id,
+    //                 ]);
+    //             }
+
+
+    //             FnbPrintJobs::create([
+    //                 'order_id' => $order_id,
+    //                 'kitchen_station_id' => $station_id,
+    //                 'payload' => json_encode([
+    //                     'order' => [
+    //                         'id'       => $order_id,
+    //                         'code'     => FnbOrders::find($order_id)->fo_order_code,
+    //                         'type'     => FnbOrders::find($order_id)->fo_order_type,
+    //                         'datetime' => now(),
+    //                     ],
+    //                     'items' => [[
+    //                         'qty'   => $delta,
+    //                         'name'  => $menu_item->mi_item_name,
+    //                         'notes' => '',
+    //                     ]],
+    //                 ]),
+    //                 'status' => 'pending',
+    //                 'created_at' => now(),
+    //                 'updated_at' => now(),
+    //             ]);
+    //         } elseif ($delta < 0) {
+    //             $waste_qty = abs($delta);
+    //             $ingredients = FnbIngredients::where('in_item_id', $item_id)
+    //                 ->where('in_is_deleted', 0)
+    //                 ->where('in_is_active', 1)
+    //                 ->get(['in_product_id', 'in_stock_quantity']);
+
+    //             $product_quantities = [];
+
+    //             foreach ($ingredients as $ing) {
+    //                 $product_id = $ing->in_product_id;
+    //                 $product_qty = ($ing->in_stock_quantity ?? 0);
+
+    //                 if (!isset($product_quantities[$product_id])) {
+    //                     $product_quantities[$product_id] = 0;
+    //                 }
+    //                 $product_quantities[$product_id] += $product_qty;
+    //             }
+
+    //             foreach ($product_quantities as $product_id => $qty_per_item) {
+
+    //                 $final_waste_qty = $qty_per_item * $waste_qty;
+    //                 $stock_id = Stocks::where('fk_product_id', $product_id)
+    //                     ->where('fk_warehouse_id', $warehouse_id)
+    //                     ->value('is_id');
+
+    //                 FnbWasteStock::create([
+    //                     'fk_product_id'   => $product_id,
+    //                     'fk_stock_id'     => $stock_id,
+    //                     'fk_warehouse_id' => $warehouse_id,
+    //                     'ws_quantity'     => $final_waste_qty,
+    //                     'ws_date'         => now()->toDateString(),
+    //                     'ws_created_by'   => $user_id,
+    //                     'ws_created_at'   => now(),
+    //                 ]);
+
+
+    //                 if ($new_qty > 0) {
+    //                     FnbOrderItems::where('oi_order_id', $order_id)
+    //                         ->where('oi_item_id', $item_id)
+    //                         ->where('oi_is_deleted', 0)
+    //                         ->update([
+    //                             'oi_quantity' => $new_qty
+    //                         ]);
+    //                 } else {
+    //                     FnbOrderItems::where('oi_order_id', $order_id)
+    //                         ->where('oi_item_id', $item_id)
+    //                         ->where('oi_is_deleted', 0)
+    //                         ->update([
+    //                             'oi_is_deleted' => 1,
+    //                             'oi_deleted_by' => $user_id
+    //                         ]);
+    //                 }
+    //             }
+    //         } else {
+    //         }
+    //     }
+
+
+    //     $all_modifiers_qty = array_unique(array_merge(
+    //         array_keys($old_modifier_quantity),
+    //         array_keys($new_modifier_quantity)
+    //     ));
+
+    //     foreach ($all_modifiers_qty as $item_id) {
+
+    //         $orderItem = FnbOrderItems::find($item_id);
+
+    //         if (!$orderItem) {
+    //             continue;
+    //         }
+
+    //         $menu_item = FnbMenuItem::find($orderItem->oi_item_id);
+    //         $station_id = $menu_item->mi_kitchen_station_id ?? 0;
+
+
+    //         $old_mods = $old_modifier_quantity[$item_id] ?? [];
+    //         $new_mods = $new_modifier_quantity[$item_id] ?? [];
+
+    //         $all_modifier_ids = array_unique(array_merge(
+    //             array_keys($old_mods),
+    //             array_keys($new_mods)
+    //         ));
+
+    //         foreach ($all_modifier_ids as $modifier_id) {
+    //             $oldQty = $old_mods[$modifier_id] ?? 0;
+    //             $newQty = $new_mods[$modifier_id] ?? 0;
+    //             $delta  = $newQty - $oldQty;
+
+    //             $modifier = Modifier::find($modifier_id);
+    //             if ($delta > 0) {
+
+    //                 FnbOrderItemModifiers::create([
+    //                     'im_item_id' => $item_id,
+    //                     'im_order_id' => $order_id,
+    //                     'im_modifier_id' => $modifier->m_id,
+    //                     'im_modifier_name' => $modifier->m_modifier_name,
+    //                     'im_modifier_cost' => $modifier->m_cost_modifier,
+    //                     'im_quantity' => $modifier->m_quantity * $delta
+    //                 ]);
+
+
+    //                 $qty_to_reduce = $modifier->m_quantity * $delta;
+
+    //                 if ($qty_to_reduce > 0) {
+    //                     $this->reduceStock(
+    //                         $modifier->m_item_id,
+    //                         $warehouse_id,
+    //                         $qty_to_reduce
+    //                     );
+    //                 }
+
+    //                 FnbPrintJobs::create([
+    //                     'order_id' => $order_id,
+    //                     'kitchen_station_id' => $station_id,
+    //                     'payload' => json_encode([
+    //                         'order' => [
+    //                             'id'   => $order_id,
+    //                             'code' => $order->fo_order_code,
+    //                         ],
+    //                         'items' => [[
+    //                             'qty'  => $delta,
+    //                             'name' => '+ ' . ($modifier->m_modifier_name ?? 'Modifier'),
+    //                             'notes' => '',
+    //                         ]],
+    //                     ]),
+    //                     'status' => 'pending',
+    //                     'created_at' => now(),
+    //                     'updated_at' => now(),
+    //                 ]);
+    //             } elseif ($delta < 0) {
+    //                 if ($newQty > 0) {
+    //                     $removeCount = $oldQty - $newQty;
+    //                 } else {
+    //                     $removeCount = $oldQty;
+    //                 }
+    //                 if ($removeCount > 0) {
+    //                     FnbOrderItemModifiers::where('im_item_id', $item_id)
+    //                         ->where('im_modifier_id', $modifier_id)
+    //                         ->where('im_order_id', $order_id)
+    //                         ->where('im_is_deleted', 0)
+    //                         ->update([
+    //                             'im_quantity' => $newQty,
+    //                             'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
+    //                         ]);
+    //                 }
+
+    //                 if ($modifier && $modifier->m_item_id > 0) {
+    //                     $productId = (int) $modifier->m_item_id;
+
+    //                     if ($removeCount > 0) {
+    //                         $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
+    //                             ->where('fk_warehouse_id', $warehouse_id)
+    //                             ->value('is_id');
+
+
+    //                         FnbWasteStock::create([
+    //                             'fk_product_id'   => $productId,
+    //                             'fk_stock_id'     => $stockId,
+    //                             'fk_warehouse_id' => $warehouse_id,
+    //                             'ws_quantity'     => $removeCount,
+    //                             'ws_date'         => now()->toDateString(),
+    //                             'ws_created_by'   => $user_id,
+    //                             'ws_created_at'   => now(),
+    //                         ]);
+    //                     }
+    //                 }
+    //             } else {
+    //             }
+    //         }
+    //     }
+
+    //     return response()->json([
+    //         'is_error' => 0,
+    //         'message' => 'Order edited successfully',
+    //     ]);
+    // }
 
 
     public function ReprintOrderReceipt(Request $request)

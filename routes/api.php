@@ -155,12 +155,12 @@ Route::get('/api/products/getproducts','Api\ProductsController@GetProducts');
 
 
 
-Route::post('/api/orders/createorder', 'Api\FnbOrderController@CreateOrder');
+Route::post('/api/orders/saveorder', 'Api\FnbOrderController@SaveOrder');
+
 Route::post('/api/orders/createemptyorder', 'Api\FnbOrderController@CreateEmptyOrder');
 Route::post('/api/orders/updateorder', 'Api\FnbOrderController@UpdateOrder');
 Route::post('/api/orders/sync', 'Api\FnbOrderController@SyncPendingOrders');
 Route::get('/api/orders/getbycode', 'Api\FnbOrderController@GetOrderByCode');
-Route::post('/api/orders/editorder', 'Api\FnbOrderController@EditOrder');
 Route::get('/api/orders/reprintreceipt', 'Api\FnbOrderController@ReprintOrderReceipt');
 Route::get('/api/orders/returnorder', 'Api\FnbOrderController@ReturnOrder');
 
