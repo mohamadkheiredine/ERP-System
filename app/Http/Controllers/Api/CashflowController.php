@@ -15,6 +15,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\models\Accounting\ChartAccounts;
 use Illuminate\Http\Request;
 use Config;
 use App\models\Users\Users;
@@ -192,7 +193,7 @@ class CashflowController extends Controller
 
         $user_info = Users::find($user_id);
 
-        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email  . "POS567";
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email  . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
 
@@ -315,5 +316,54 @@ class CashflowController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function GetAccounts(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash = $request->input('g_hash');
+
+        $result_array = array();
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'Invalid user';
+            return Response()->json($result_array);
+        }
+
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $lst_accounts = ChartAccounts::whereAaIsDeleted(0)->get();
+        $accounts_array = [];
+
+        $accounts_array = $lst_accounts->map(function ($account) {
+            return [
+                'aa_id' => $account->aa_id,
+                'aa_account' => $account->aa_account,
+                'aa_account_label' => $account->aa_account_label,
+                'aa_sub_account' => $account->aa_sub_account,
+            ];
+        });
+
+
+        $result_array['is_error'] = 0;
+        $result_array['error_message'] = 'Accounts fetched successfully';
+
+        $result_array['lst_accounts'] = $accounts_array;
+
+        return response()->json($result_array);
     }
 }
