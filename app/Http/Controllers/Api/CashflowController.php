@@ -130,8 +130,8 @@ class CashflowController extends Controller
             });
         }
 
-        $sum_in  = (float) $orders_query->sum('fo_paid_amount');
-        $sum_out = (float) $expenses_query->sum('ac_amount');
+        $sum_in  = $orders_query->sum('fo_paid_amount');
+        $sum_out = $expenses_query->sum('ac_amount');
 
         $orders   = $orders_query->get();
         $expenses = $expenses_query->get();
@@ -161,6 +161,54 @@ class CashflowController extends Controller
                 'amount' => $expense->ac_amount,
             );
         }
+
+        $cash_movements = TransactionMovements::where(function ($q) {
+            $q->where('tm_credit', '>', 0)
+                ->orWhere('tm_debit', '>', 0);
+        })
+            ->when($from_date, function ($q) use ($from_date) {
+                $q->whereDate('tm_transaction_date', '>=', $from_date);
+            })
+            ->when($to_date, function ($q) use ($to_date) {
+                $q->whereDate('tm_transaction_date', '<=', $to_date);
+            })
+            ->when($q, function ($query) use ($q) {
+                $query->where('tm_ledger_label', 'LIKE', "%$q%");
+            })->get();
+
+        foreach ($cash_movements as $m) {
+
+            // in
+            if ($m->tm_credit > 0) {
+                $rows[] = [
+                    'id' => 'cash_in_' . $m->tm_id,
+                    't' => $m->tm_transaction_date,
+                    'type' => 'in',
+                    'method' => 'cash',
+                    'user' => ' ',
+                    'note' => $m->tm_ledger_label,
+                    'amount' => $m->tm_credit,
+                ];
+
+                $sum_in += $m->tm_credit;
+            }
+
+            // out
+            if ($m->tm_debit > 0) {
+                $rows[] = [
+                    'id' => 'cash_out_' . $m->tm_id,
+                    't' => $m->tm_transaction_date,
+                    'type' => 'out',
+                    'method' => 'cash',
+                    'user' => ' ',
+                    'note' => $m->tm_ledger_label,
+                    'amount' => $m->tm_debit,
+                ];
+
+                $sum_out += $m->tm_debit;
+            }
+        }
+
 
         usort($rows, function ($a, $b) {
             return strtotime($b['t']) <=> strtotime($a['t']);
@@ -393,7 +441,7 @@ class CashflowController extends Controller
             return Response()->json($result_array);
         }
 
-        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
 
@@ -437,7 +485,7 @@ class CashflowController extends Controller
         $movement_destination->tm_trans_code = $code;
         $movement_destination->tm_ledger_account = $destination;
         $movement_destination->tm_sub_ledger_account = $destination;
-        $movement_destination->tm_ledger_label= $description;
+        $movement_destination->tm_ledger_label = $description;
         $movement_destination->tm_debit = $amount;
         $movement_destination->tm_credit = 0;
         $movement_destination->tm_currency_id = $currency_id;
