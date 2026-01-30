@@ -28,20 +28,20 @@ class TransactionMovements extends Model
     protected   $table          = 'acc_transaction_movements';
     public      $timestamps     = false;
     protected   $primaryKey     = "tm_id";
-    
+
     public function currency()
     {
         return $this->hasOne('App\models\System\Currency', 'cc_id','tm_currency_id');
     }
-    
+
     public function Payable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','tm_ledger_account');
     }
-    
+
     public function Receivable()
     {
         return $this->hasOne('App\models\Accounting\ChartAccounts', 'aa_id','tm_sub_ledger_account');
     }
-   
+
 }

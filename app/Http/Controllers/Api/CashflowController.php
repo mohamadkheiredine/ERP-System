@@ -16,6 +16,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\models\Accounting\ChartAccounts;
+use App\models\Accounting\TransactionMovements;
+use App\models\Accounting\Transactions;
 use Illuminate\Http\Request;
 use Config;
 use App\models\Users\Users;
@@ -365,5 +367,87 @@ class CashflowController extends Controller
         $result_array['lst_accounts'] = $accounts_array;
 
         return response()->json($result_array);
+    }
+
+    public function SaveCashMovement(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash = $request->input('g_hash');
+
+        $code = $request->input('code'); // in or out
+        $source = $request->input('source_account');
+        $destination = $request->input('destination_account');
+        $amount = $request->input('amount');
+        $currency_id = $request->input('currency_id');
+        $description = $request->input('description');
+        $company_id = $request->input('company_id');
+        $store_id = $request->input('store_id');
+
+        $result_array = array();
+
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'Invalid user';
+            return Response()->json($result_array);
+        }
+
+        $c_hash = "POS567". $user_info->u_username. $user_info->u_fullname. $user_info->u_email. "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_message'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $transaction = new Transactions();
+        $transaction->at_transaction_date = date('Y-m-d');
+        $transaction->at_creation_date = date('Y-m-d');
+        $transaction->at_accounting_doc = $description;
+        $transaction->fk_acc_journal_id = 1;
+        $transaction->at_currency_id = $currency_id;
+        $transaction->save();
+
+        $transaction_id = $transaction->at_id;
+
+        // creditt
+        $movement_source = new TransactionMovements();
+        $movement_source->fk_tran_id = $transaction_id;
+        $movement_source->tm_company_id = $company_id;
+        $movement_source->tm_store_id = $store_id;
+        $movement_source->tm_trans_code = $code;
+        $movement_source->tm_ledger_account = $source;
+        $movement_source->tm_sub_ledger_account = $source;
+        $movement_source->tm_ledger_label = $description;
+        $movement_source->tm_credit = $amount;
+        $movement_source->tm_debit = 0;
+        $movement_source->tm_currency_id = $currency_id;
+        $movement_source->tm_transaction_date = date('Y-m-d');
+        $movement_source->tm_creation_date = date('Y-m-d');
+        $movement_source->save();
+
+        // debit
+        $movement_destination = new TransactionMovements();
+        $movement_destination->fk_tran_id = $transaction_id;
+        $movement_destination->tm_company_id = $company_id;
+        $movement_destination->tm_store_id = $store_id;
+        $movement_destination->tm_trans_code = $code;
+        $movement_destination->tm_ledger_account = $destination;
+        $movement_destination->tm_sub_ledger_account = $destination;
+        $movement_destination->tm_ledger_label= $description;
+        $movement_destination->tm_debit = $amount;
+        $movement_destination->tm_credit = 0;
+        $movement_destination->tm_currency_id = $currency_id;
+        $movement_destination->tm_transaction_date = date('Y-m-d');
+        $movement_destination->tm_creation_date = date('Y-m-d');
+        $movement_destination->save();
+
+        $result_array['is_error'] = 0;
+        $result_array['message']  = 'Cash movement saved successfully';
+
+        return Response()->json($result_array);
     }
 }

@@ -143,6 +143,7 @@ Route::get('/request/api/expense/export', 'Api\ExpensesController@ExportExpenses
 Route::get('/request/api/cash/list', 'Api\CashflowController@GetCashflow');
 Route::get('/request/api/cash/export', 'Api\CashflowController@ExportCashflowCSV');
 Route::get('/request/api/cash/getaccounts', 'Api\CashflowController@GetAccounts');
+Route::post('/request/api/cash/savecashmovements', 'Api\CashflowController@SaveCashMovement');
 
 
 
