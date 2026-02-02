@@ -1568,6 +1568,28 @@ class FnbOrderController extends Controller
         $date_from    = $request->input('date_from');
         $date_to      = $request->input('date_to');
         $warehouse_id = $request->input('warehouse_id');
+        $filter = $request->input('filter');
+
+        if ($filter === 'today') {
+            $date_from = date('Y-m-d');
+            $date_to   = date('Y-m-d');
+        }
+
+        if ($filter === 'yesterday') {
+            $date_from = date('Y-m-d', strtotime('-1 day'));
+            $date_to   = $date_from;
+        }
+
+        if ($filter === 'lastweek') {
+            $date_from = date('Y-m-d', strtotime('monday last week'));
+            $date_to   = date('Y-m-d', strtotime('sunday last week'));
+        }
+
+        if ($filter === 'lastmonth') {
+            $date_from = date('Y-m-01', strtotime('last month'));
+            $date_to   = date('Y-m-t', strtotime('last month'));
+        }
+
 
         $query = FnbOrders::query()
             ->leftJoin('currency as c', 'c.cc_id', '=', 'fnb_orders.fo_currency_id')
@@ -1579,12 +1601,13 @@ class FnbOrderController extends Controller
             $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
         }
 
+
         if (!empty($date_from)) {
-            $query->whereDate('fnb_orders.fo_order_datetime', '>=', $date_from);
+            $query->where('fnb_orders.fo_order_datetime', '>=', $date_from . ' 00:00:00');
         }
 
         if (!empty($date_to)) {
-            $query->whereDate('fnb_orders.fo_order_datetime', '<=', $date_to);
+            $query->where('fnb_orders.fo_order_datetime', '<=', $date_to . ' 23:59:59');
         }
 
         $lst_orders = $query
