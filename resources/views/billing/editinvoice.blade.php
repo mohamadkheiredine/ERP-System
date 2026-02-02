@@ -410,9 +410,29 @@ th{
 
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="tabProducts" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12" align="right">
+                                            @if(Config::get("appconfig.crm_telemarketing") == 0)
+                                                @if($invoice_info->bi_invoice_status == 0)
+                                                    @if($invoice_info->bi_invoice_type == 1 || $invoice_info->bi_invoice_type == 3)
+                                                        <button  type="button" name="btn_add_product" id="BTN_ADD_PRODUCT_TOP" class="btn btn-danger">Add Product</button>
+                                                    @endif
+                                                    @if($invoice_info->bi_invoice_type == 2 || $invoice_info->bi_invoice_type == 3)
+                                                        <button type="button" name="btn_add_service" id="BTN_ADD_SERVICE_TOP" class="btn btn-danger">Add Service</button>
+                                                    @endif
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">&nbsp;</div>
+                                    </div>
                                    <div class="row">
 											<div class="col-md-12" id="LstProducts" align="center"></div>
 										</div>
+                                    <div class="row">
+                                        <div class="col-md-12">&nbsp;</div>
+                                    </div>
 										<div class="row">
 											<div class="col-md-12" align="right">
                                                 @if(Config::get("appconfig.crm_telemarketing") == 0)

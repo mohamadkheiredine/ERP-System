@@ -72,10 +72,14 @@ $(function(){
 		invoices_module.DisplayListInvoiceProducts();
 		invoices_module.DisplayListInvoicePayments();
 		receipts_module.DisplayListInvoiceReceipts();
-                 invoices_module.GetAccountInformation();
+
+        invoices_module.GetAccountInformation();
+
 		$("#BTN_ADD_PRODUCT").on("click",invoices_module.OpenInsertItemsPopup);
+		$("#BTN_ADD_PRODUCT_TOP").on("click",invoices_module.OpenInsertItemsPopup);
 		$("#BI_SERVICE_ID").on("change",invoices_module.ShowPaymentType);
 		$("#BTN_ADD_SERVICE").on("click",invoices_module.OpenInsertServicesPopup);
+		$("#BTN_ADD_SERVICE_TOP").on("click",invoices_module.OpenInsertServicesPopup);
 		$("#BTN_INSERT_ITEM").on("click",invoices_module.SaveItemsInfo);
 		$("#BTN_INSERT_SERVICE").on("click",invoices_module.SaveServiceInfo);
 		$("#BTN_SAVE_PAYMENT").on("click",invoices_module.SavePaymentInvoiceInfo);

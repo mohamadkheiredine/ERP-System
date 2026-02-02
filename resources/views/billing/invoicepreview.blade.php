@@ -66,6 +66,7 @@
                                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                                     <th title="Product"> Product </th>
                                     <th title="Quantity"> Quantity </th>
+                                    <th title="Serial Number"> Serial Number </th>
                                     <th title="Warehouse"> Warehouse </th>
                                     <th title="Stock Type"> Stock Type </th>
                                 </tr>
@@ -76,11 +77,13 @@
                                         <td>
                                             <b>{{ $item_info->Product->p_product_name }}</b>
                                             <input type="hidden" name="sp_product_id[]" value="{{ $item_info->ii_item_id }}" />
-                                            <input type="hidden" name="sp_serial_number[]" value="{{ $item_info->ii_product_serial_number }}" />
                                         </td>
                                         <td>
                                             {{ $item_info->ii_item_qyt }}
                                             <input type="hidden" name="sp_quantity[]" value="{{ $item_info->ii_item_qyt }}" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="sp_serial_number[]" value="{{ $item_info->ii_product_serial_number }}" />
                                         </td>
                                         <td>
                                             <select   data-control="select2" data-placeholder="Select a warehouse" class="form-select" name="sp_warehouse_id[]" data-actions-box="true">
@@ -95,33 +98,7 @@
                                                 <option value="">-- Select Stock Type --</option>
                                                 <option value="3">Returned</option>
                                                 <option value="2">defective</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @foreach( $lst_call_products as $index => $item_info )
-                                    <tr>
-                                        <td>
-                                            <b>{{ $item_info->Product->p_product_name }}</b>
-                                            <input type="hidden" name="sp_product_id[]" value="{{ $item_info->cp_product_id }}" />
-                                        </td>
-                                        <td>
-                                            {{ $item_info->cp_quantity }}
-                                            <input type="hidden" name="sp_quantity[]" value="{{ $item_info->cp_quantity }}" />
-                                        </td>
-                                        <td>
-                                            <select   data-control="select2" data-placeholder="Select a warehouse" class="form-select" name="sp_warehouse_id[]" data-actions-box="true">
-                                                <option value="">-- Select Warehouse --</option>
-                                                @foreach ( $lst_warehouses as $key => $warehouse_info )
-                                                    <option {{ $item_info->cp_warehouse_id == $warehouse_info->w_id ? "selected" : "" }} value="{{ $warehouse_info->w_id }}">{{ $warehouse_info->w_warehouse_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select   data-control="select2" data-placeholder="Select a stock type" class="form-select" name="sp_stock_type[]" data-actions-box="true">
-                                                <option value="">-- Select Stock Type --</option>
-                                                <option value="1">defective</option>
-                                                <option value="2">Returned</option>
+                                                <option value="4">Keep it</option>
                                             </select>
                                         </td>
                                     </tr>

@@ -155,17 +155,19 @@
                     <div class="col-md-12">
                     	<table border="0" width="100%" style="background-color:white;height: 125px;" cellspacing="0" cellpadding="0">
                     		<tr>
-                    			<td width="50%"></td>
                     			<td width="50%">
-                    					<div class="company-details">
-                                		 	<h2 class="name">
-                                                %company_name%
-                                            </h2>
-                                            <div>%company_address%</div>
-                                            <div>%company_phone%</div>
-                                            <div>%company_email%</div>
-                                            <div><strong>CR:</strong>%registration_number%</div>
-                                       </div>
+                                    <div class="company-details" align="left" style="text-align: left;">
+                                        <h2 class="name">
+                                            %company_name%
+                                        </h2>
+                                        <div>%company_address%</div>
+                                        <div>%company_phone%</div>
+                                        <div>%company_email%</div>
+                                        <div><strong>CR:</strong>%registration_number%</div>
+                                    </div>
+                                </td>
+                    			<td width="50%" style="text-align: right">
+                                    <img src="%LOGO_IMG%" style="width:125px;height:125px;" />
                     			</td>
                     		</tr>
                     	</table>

@@ -441,7 +441,7 @@ class InvoicesController extends Controller
             }
 
             $display = str_replace("%company_url%", $company_info->cd_company_website, $display);
-            $display = str_replace("%logo_image_url%",$profile_url, $display);
+            $display = str_replace("%LOGO_IMG%",$profile_url, $display);
             $display = str_replace("%company_name%",$company_info->cd_company_name, $display);
             $display = str_replace("%company_address%",$company_info->cd_company_address, $display);
             $display = str_replace("%company_phone%",$company_info->cd_company_phone, $display);
@@ -1522,13 +1522,8 @@ class InvoicesController extends Controller
         $deal_info->ad_is_approved = 3;
         $deal_info->save();
 
-
         $invoice_info->bi_invoice_status = 0;
         $invoice_info->save();
-
-
-
-
 
         $result_array['bi_id'] = $bi_id;
         $result_array['is_error'] = 0;
@@ -1569,7 +1564,6 @@ class InvoicesController extends Controller
 
         $data = array(
             "lst_invoice_items" => $lst_invoice_items,
-            "lst_call_products" => $lst_call_products,
             "lst_warehouses" => $lst_warehouses,
             "invoices_info" => $invoices_info,
             "client_info" => $client_info,
@@ -1596,6 +1590,10 @@ class InvoicesController extends Controller
 
         foreach ($sp_product_id as $index => $product_id)
         {
+
+            if($sp_stock_type[$index] == 4)
+                continue;
+
             $stock_info = new Stocks();
             $stock_info->fk_product_id          = $product_id;
             $stock_info->fk_warehouse_id        = $sp_warehouse_id[$index];

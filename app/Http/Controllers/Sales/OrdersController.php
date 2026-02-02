@@ -101,7 +101,7 @@ class OrdersController extends Controller
         $page_number            = $request->input('page_number');
         $general_search         = $request->input('general_search');
         $nbr_rows_per_pages     = Config::get('appconfig.max_rows_per_page');
-        $default_company_id = session('default_company_id');
+        $default_company_id     = session('default_company_id');
 
         if ($page_number > 1)
             $skip = ($page_number - 1) * $nbr_rows_per_pages;
@@ -111,7 +111,7 @@ class OrdersController extends Controller
 
         // the commented line is correct
         // $list_orders = Orders::whereSoIsDeleted(0)->whereSoCompanyId($default_company_id);
-        $list_orders = Orders::whereSoIsDeleted(0)->whereIsStockStatus(1);
+        $list_orders = Orders::whereSoIsDeleted(0);
         if ($so_order_warehouse > 0)
             $list_orders = $list_orders->whereFkWarehouseId($so_order_warehouse);
         if ($so_vendor_id > 0)
