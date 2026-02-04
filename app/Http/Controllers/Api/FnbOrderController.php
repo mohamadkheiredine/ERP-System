@@ -722,6 +722,30 @@ class FnbOrderController extends Controller
 
             $fo_id = $order_info->fo_id;
 
+            // delete empty orders after merge
+            if (!empty($table_ids)) {
+
+                // find empty orders that do not have items (the orders that we should delete them)
+                $orphanOrders = FnbOrders::where('fo_id', '!=', $fo_id)
+                    ->where('fo_order_type', 'dine_in')
+                    ->where('fo_payment_status', 'unpaid')
+                    ->where('fo_is_deleted', 0)
+                    ->where('fo_store_id', $store_id)
+                    ->whereDoesntHave('Items', function ($q) {
+                        $q->where('oi_is_deleted', 0);
+                    })
+                    ->orderByDesc('fo_id')
+                    ->get();
+
+
+                foreach ($orphanOrders as $orphan) {
+                    $orphan->fo_is_deleted = 1;
+                    $orphan->fo_deleted_by = $user_id;
+                    $orphan->save();
+                }
+            }
+
+
             FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
 
             if (!empty($table_ids)) {
@@ -1274,8 +1298,6 @@ class FnbOrderController extends Controller
             'orders'   => $result
         ]);
     }
-
-
 
 
     public function ExportFnbOrders(Request $request)
