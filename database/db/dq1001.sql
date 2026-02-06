@@ -783,3 +783,20 @@ INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`
 
 ALTER TABLE fnb_orders
 ADD COLUMN fo_payment_type INT NULL;
+
+
+CREATE INDEX idx_oi_status_del_station_order
+ON fnb_order_items (oi_kitchen_status, oi_is_deleted, oi_station_id, oi_order_id);
+
+CREATE INDEX idx_oi_order_del_status
+ON fnb_order_items (oi_order_id, oi_is_deleted, oi_kitchen_status);
+
+CREATE INDEX idx_orders_del_datetime
+ON fnb_orders (fo_is_deleted, fo_order_datetime);
+
+ALTER TABLE sys_status
+ADD COLUMN ss_is_closed TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE fnb_order_items
+ADD COLUMN oi_is_kitchen_closed TINYINT(1) NOT NULL DEFAULT 0;
+

@@ -649,60 +649,6 @@ class FnbController extends Controller
     }
 
 
-    public function UpdateKitchenStatus(Request $request)
-    {
-        $g_hash   = $request->input('g_hash');
-        $user_id = $request->input('user_id');
-
-        $user_info = Users::find($user_id);
-
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash = hash('sha256', $c_hash);
-        $result_array = array();
-
-        if ($c_hash != $g_hash) {
-            $result_array['is_error'] = 1;
-            $result_array['error_msg'] = 'hash sequence is not valid !!';
-            return Response()->json($result_array);
-        }
-
-        $oi_id   = $request->input('oi_id');
-        $new_status = $request->input('oi_kitchen_status');
-        $order_item = FnbOrderItems::find($oi_id);
-        if (!$order_item) {
-            return response()->json([
-                "is_error" => 1,
-                "error_msg" => "Order item not found."
-            ]);
-        }
-
-        $old_status = $order_item->oi_kitchen_status;
-
-        $order_item->oi_kitchen_status = $new_status;
-        $order_item->save();
-
-        $orderId = $order_item->oi_order_id;
-
-        $remaining = FnbOrderItems::where('oi_order_id', $orderId)
-            ->where('oi_is_deleted', 0)
-            ->where('oi_kitchen_status', '!=', $new_status)
-            ->count();
-
-        if ($remaining === 0) {
-            FnbOrders::where('fo_id', $orderId)
-                ->update(['fo_kitchen_status' => $new_status]);
-        }
-
-
-        return response()->json([
-            "is_error" => 0,
-            "error_msg" => "",
-            "message" => "Kitchen status updated successfully.",
-            "old_status" => $old_status,
-            "new_status" => $new_status
-        ]);
-    }
-
     public function GetListModifiers(Request $request)
     {
 
