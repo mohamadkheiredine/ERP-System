@@ -390,6 +390,8 @@ Route::post('/request/srm/deletestatusinfo','SRM\SupplierStatusesController@Dele
 Route::post('/request/srm/findproductbybarcode','SRM\SupplierQuotationsController@FindProductByBarcode');
 
 
+Route::post('/request/billing/displaylistreturninvoices','Billing\InvoicesController@DisplayListReturnInvoices');
+Route::get('/request/billing/getinvoiceproducts','Billing\InvoicesController@GetInvoiceProducts');
 Route::post('/request/billing/displaylistinvoices','Billing\InvoicesController@DisplayListInvoices');
 Route::post('/request/billing/saveinvoiceinfo','Billing\InvoicesController@SaveInvoiceInfo');
 Route::post('/request/billing/deleteinvoiceinfo','Billing\InvoicesController@DeleteInvoiceInfo');

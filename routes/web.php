@@ -354,6 +354,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/billing/downloadvoucher/{pv_id}', 'Billing\PaymentVouchersController@DownloadPaymentVoucher');
     Route::get('/billing/invoices/returnproductpreview/{bi_id}', 'Billing\InvoicesController@ReturnProductPreview');
 
+    Route::get('/billing/returninvoices', 'Billing\InvoicesController@ReturnIndex');
+    Route::get('/billing/returninvoices/return', 'Billing\InvoicesController@ReturnInvoiceForm');
+
+
+
     Route::get('/billing/bills', 'Billing\InvoicePaymentsController@index');
     Route::get('/billing/bills/addform', 'Billing\InvoicePaymentsController@addform');
     Route::get('/billing/bills/editform/{ip_id}', 'Billing\InvoicePaymentsController@editform');

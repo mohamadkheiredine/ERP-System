@@ -270,6 +270,9 @@ class OrdersController extends Controller
             $order_info->so_order_date       = $full_date;
             $order_info->so_delivery_date    = $creation_date;
             $order_info->so_vat_id           = $so_vat_id;
+            $order_info->so_delivery_customer_name           = $delcustomername;
+            $order_info->so_delivery_customer_phone           = $delcustomerphone;
+            $order_info->so_delivery_customer_address           = $delcustomeraddress;
             $order_info->so_pos_order        = 1;
         }
 
@@ -531,11 +534,12 @@ class OrdersController extends Controller
             "creation_date"     => $creation_date,
             "so_order_code" => $so_order_code,
             "creation_time" => $creation_time,
-            "delcustomername" => $delcustomername,
-            "delcustomerphone" => $delcustomerphone,
-            "delcustomeraddress" => $delcustomeraddress,
+            "delcustomername" => $order_info->so_delivery_customer_name,
+            "delcustomerphone" => $order_info->so_delivery_customer_phone,
+            "delcustomeraddress" => $order_info->so_delivery_customer_address,
             "deliveryFee" => $deliveryFee
         );
+
         if ($delivery_id != 0) {
             $customer_info = Customers::find($customer_id);
             $data['delivery_id'] = $delivery_id;
@@ -907,6 +911,8 @@ class OrdersController extends Controller
             "creation_date"     => $order_info->so_creation_date,
             "so_order_code" => $order_info->so_order_code,
             "deliveryFee" => $order_info->so_delivery_fees,
+            "delcustomername" => $order_info->so_delivery_customer_name,
+            "delcustomerphone" => $order_info->so_delivery_customer_phone,
             "creation_time" => $creation_time
         );
 

@@ -1589,6 +1589,16 @@ Page Description :
     											<!--end:Menu link-->
     										</div>
                                         @endif
+                                        <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="{{ url('billing/returninvoices') }}">
+    												<span class="menu-bullet">
+    													<span class="bullet bullet-dot"></span>
+    												</span>
+                                                <span class="menu-title">Return Invoices</span>
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
                                         @if(CheckPrivilage('erp_manage_receipts') == "allow")
     										<div class="menu-item">
     											<!--begin:Menu link-->

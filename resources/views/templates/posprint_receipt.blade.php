@@ -69,14 +69,14 @@
 			<p  style="width:100%;font-weight:bold" align="center">{{$company_info->cd_company_phone}}</p>
 			<p  style="width:100%;font-weight:bold" align="center">code marchand: 590953</p>
         </div>
-            @if(isset($delivery_id) && $delivery_id != 0)
+            @if(strlen($order_info->so_delivery_customer_name) > 0 || strlen($order_info->so_delivery_customer_address) > 0 || strlen($order_info->so_delivery_customer_phone) > 0)
             <div id="mid">
               <div class="info">
                 <h2>Contact Info</h2>
                 <p>
-                    Name   : {{$customer_info->ic_customer_name}}</br>
-                    Address : {{$customer_info->ic_customer_address}}</br>
-                    Phone   : {{$customer_info->ic_customer_phone}}</br>
+                    Name   : {{$order_info->so_delivery_customer_name}}</br>
+                    Address : {{$order_info->so_delivery_customer_address }}</br>
+                    Phone   : {{$order_info->so_delivery_customer_phone}}</br>
                 </p>
               </div>
             </div>

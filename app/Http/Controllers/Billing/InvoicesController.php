@@ -94,6 +94,24 @@ class InvoicesController extends Controller
         return Response()->view("billing.invoices",$data);
     }
 
+    public function ReturnIndex()
+    {
+        $default_company_id = session('default_company_id');
+
+        $list_accounts      = CRMAccounts::whereCaIsDeleted(0)->get();
+        $list_customers     = Customers::whereIcIsDeleted(0)->whereIcCompanyId($default_company_id)->get();
+        $lst_banks_info     = BankAccounts::whereBaIsDeleted(0)->get();
+
+        $crm_telemarketing    = Config::get('appconfig.crm_telemarketing');
+        $data = array(
+            "list_accounts"     => $list_accounts,
+            "list_customers"    => $list_customers,
+            "crm_telemarketing"    => $crm_telemarketing,
+            "lst_banks_info"    => $lst_banks_info
+        );
+        return Response()->view("billing.returninvoices",$data);
+    }
+
 
     /**
      * Display list of products in the selected invoice
@@ -742,7 +760,7 @@ class InvoicesController extends Controller
 
         $default_company_id = session('default_company_id');
 
-        $lst_invoices   = Invoices::whereBiIsDeleted(0)->where('bi_company_id','=',$default_company_id);
+        $lst_invoices   = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(0)->where('bi_company_id','=',$default_company_id);
 
         if($invoice_customer!= 0)
             $lst_invoices = $lst_invoices->whereFkCustomerId($invoice_customer);
@@ -790,6 +808,155 @@ class InvoicesController extends Controller
             $result_array['display'] = view("billing.listinvoices",$data)->render();
 
             return Response()->json($result_array);
+    }
+
+    public function DisplayListReturnInvoices(Request $request)
+    {
+
+        $general_search     = $request->input("general_search");
+        $invoice_customer   = $request->input("invoice_customer");
+        $invoice_bank       = $request->input("invoice_bank");
+        $start_date         = $request->input("start_date");
+        $end_date           = $request->input("end_date");
+        $page_number        = $request->input("page_number");
+        $general_search         = $request->input("general_search");
+        $nbr_rows_per_pages    = Config::get('appconfig.max_rows_per_page');
+        $lst_customers    = Customers::whereIcIsDeleted(0)->get();
+        $customers_array  = CreateDatabaseArrayByIndex($lst_customers, "ic_id");
+
+
+        if($page_number > 1)
+            $skip = ( $page_number - 1 ) * $nbr_rows_per_pages ;
+            else
+                $skip = 0;
+
+
+        $default_company_id = session('default_company_id');
+
+        $lst_invoices   = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(1)->where('bi_company_id','=',$default_company_id);
+
+        if($invoice_customer!= 0)
+            $lst_invoices = $lst_invoices->whereFkCustomerId($invoice_customer);
+            if($invoice_bank!= 0)
+                $lst_invoices = $lst_invoices->whereFkBankaccountId($invoice_bank);
+
+            if(strlen($start_date) > 0)
+                $lst_invoices = $lst_invoices->where('bi_invoice_date','>=',$start_date);
+
+            if(strlen($end_date) > 0)
+                $lst_invoices = $lst_invoices->where('bi_invoice_date','<',$end_date);
+
+
+
+
+            if(strlen($general_search) > 0)
+            {
+                $lst_invoices = $lst_invoices->where('bi_invoice_note','LIKE',"%" . $general_search. "%");
+                $lst_invoices = $lst_invoices->orWhere('bi_contract_number','LIKE',"%" . $general_search. "%");
+                $lst_invoices = $lst_invoices->orWhere('bi_account_number','LIKE',"%" . $general_search. "%");
+            }
+
+            $count_invoices =     $lst_invoices->count();
+            $total_pages = ceil( $count_invoices/$nbr_rows_per_pages );
+            $total_pages = intval($total_pages);
+
+            $lst_invoices = $lst_invoices->skip($skip)->take($nbr_rows_per_pages)->orderby('bi_id',"DESC")->get();
+
+            $lst_currency           = Currency::all();
+            $currency_array         = CreateDatabaseArrayByIndex($lst_currency,"cc_id");
+
+
+            $data = array(
+                "customers_array" => $customers_array,
+                "lst_invoices" => $lst_invoices,
+                "currency_array" => $currency_array
+            );
+
+            $result_array = array();
+            $result_array['total_pages'] = $total_pages;
+            $result_array['display'] = view("billing.listreturnedinvoices",$data)->render();
+
+            return Response()->json($result_array);
+    }
+
+    public function ReturnInvoiceForm(Request $request)
+    {
+
+
+        return Response()->view("billing.returninvoiceform");
+    }
+
+
+    public function GetInvoiceProducts(Request $request)
+    {
+        $ca_client_code = $request->input("ca_client_code");
+        $ca_invoice_code = $request->input("ca_invoice_code");
+
+        $result_array = array();
+        $invoice_info = new Invoices();
+        $client_info = new CRMAccounts();
+        $bi_id = 0;
+        if(strlen($ca_client_code) > 0){
+
+            $client_info = CRMAccounts::whereCaAccountCode($ca_client_code)->first();
+
+
+            if($client_info == null){
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Client not found";
+                return Response()->json($result_array);
+            }
+
+            $invoices_info = Invoices::whereBiClientId($ca_client_code)->first();
+
+            if($invoices_info == null){
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Invoice not found";
+                return Response()->json($result_array);
+            }
+
+
+            $bi_id = $invoices_info->bi_id;
+
+
+        }
+        else if(strlen($ca_invoice_code) > 0){
+            $invoices_info = Invoices::whereBiInvoiceCode($ca_invoice_code)->first();
+            if($invoices_info == null){
+                $result_array['is_error'] = 1;
+                $result_array['error_msg'] = "Invoice not found";
+                return Response()->json($result_array);
+            }
+
+            $client_id = $invoices_info->bi_client_id;
+            $client_info = CRMAccounts::find($client_id);
+            $bi_id = $invoices_info->bi_id;
+        }
+
+        $client_id = $invoices_info->bi_client_id;
+
+        $ca_account_code = $client_info->ca_account_code;
+
+        $lst_invoice_items = InvoiceProducts::whereFkInvoiceId($bi_id)->get();
+
+        $lst_call_products = InboundCallProducts::whereCpClientId($client_id)->get();
+
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
+
+
+        $data = array(
+            "lst_invoice_items" => $lst_invoice_items,
+            "lst_warehouses" => $lst_warehouses,
+            "invoices_info" => $invoices_info,
+            "bi_id" => $bi_id,
+            "client_info" => $client_info,
+        );
+
+        $result_array['display'] = view('billing.returnproductspreview',$data)->render();
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = "Operation Completed Successfully";
+
+        return Response()->json($result_array);
     }
 
 
@@ -1448,82 +1615,7 @@ class InvoicesController extends Controller
     {
         $bi_id = $request->input('bi_id');
         $result_array = array();
-        $invoice_info = Invoices::find($bi_id);
-        $default_company_id = session('default_company_id');
 
-        // get transaciton id and save accounting records
-        $trans_id = $invoice_info->bi_transaction_id;
-
-        $transaction_info = Transactions::find($trans_id);
-
-        $count_return_invoices = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(1)->count();
-        $count_return_invoices = $count_return_invoices + 1;
-
-        $returncode = "RETURN" . sprintf('%05d', $count_return_invoices);
-
-        $account_id = 0;
-        if($invoice_info->fk_customer_id != null)
-        {
-            $customer_info = Customers::find($invoice_info->fk_customer_id);
-            $account_id = $customer_info->ic_account_number;
-        }
-        else
-        {
-
-            $client_info = CRMAccounts::find($invoice_info->bi_client_id);
-            $account_id = $client_info->ca_accounting_id;
-        }
-
-
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $trans_id;
-        $TransactionMovement->tm_company_id            = $default_company_id;
-        $TransactionMovement->tm_trans_code         = $returncode;
-        $TransactionMovement->tm_ledger_account     = $account_id;
-        $TransactionMovement->tm_sub_ledger_account = $account_id;
-        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
-        $TransactionMovement->tm_debit              = 0;
-        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
-        $TransactionMovement->tm_currency_id        =$invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
-
-        $TransactionMovement = new TransactionMovements();
-        $TransactionMovement->fk_tran_id            = $trans_id;
-        $TransactionMovement->tm_company_id            = $default_company_id;
-        $TransactionMovement->tm_trans_code         = $returncode;
-        $TransactionMovement->tm_ledger_account     = 701;
-        $TransactionMovement->tm_sub_ledger_account = 701;
-        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
-        $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
-        $TransactionMovement->tm_credit             = 0;
-        $TransactionMovement->tm_creation_date      = date("Y-m-d");
-        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
-        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
-        $TransactionMovement->save();
-
-        // get deal info
-
-        $client_id  =  $invoice_info->bi_client_id;
-
-        $deal_info = CRMDeals::whereFkAccountId($client_id)->first();
-        $deal_id = $deal_info->ad_id;
-
-
-
-        // delete bills not paied
-        $bills_info = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($deal_id)->whereIpPaymentStatus(0)->delete();
-
-
-        // change status of deal to be cancel
-        $deal_info = CRMDeals::find($deal_id);
-        $deal_info->ad_is_approved = 3;
-        $deal_info->save();
-
-        $invoice_info->bi_invoice_status = 0;
-        $invoice_info->save();
 
         $result_array['bi_id'] = $bi_id;
         $result_array['is_error'] = 0;
@@ -1579,6 +1671,7 @@ class InvoicesController extends Controller
         $bi_id = $request->input('bi_id');
         $sp_product_id = $request->input('sp_product_id');
         $sp_quantity = $request->input('sp_quantity');
+        $sp_return_quantity = $request->input('sp_return_quantity');
         $sp_warehouse_id = $request->input('sp_warehouse_id');
         $sp_serial_number = $request->input('sp_serial_number');
         $sp_stock_type = $request->input('sp_stock_type');
@@ -1597,7 +1690,7 @@ class InvoicesController extends Controller
             $stock_info = new Stocks();
             $stock_info->fk_product_id          = $product_id;
             $stock_info->fk_warehouse_id        = $sp_warehouse_id[$index];
-            $stock_info->is_quanity             = $sp_quantity[$index];
+            $stock_info->is_quanity             = $sp_return_quantity[$index];
             $stock_info->is_stock_status        = $sp_stock_type[$index];
             $stock_info->is_wholesale_price     = 0;
             $stock_info->is_price_stock         = 0;
@@ -1620,6 +1713,86 @@ class InvoicesController extends Controller
                 $stock_ids->save();
             }
         }
+
+        $invoice_info = Invoices::find($bi_id);
+        $default_company_id = session('default_company_id');
+
+        // get transaciton id and save accounting records
+        $trans_id = $invoice_info->bi_transaction_id;
+
+        $transaction_info = Transactions::find($trans_id);
+
+        $count_return_invoices = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(1)->count();
+        $count_return_invoices = $count_return_invoices + 1;
+
+        $returncode = "RETURN" . sprintf('%05d', $count_return_invoices);
+
+        $account_id = 0;
+        if($invoice_info->fk_customer_id != null)
+        {
+            $customer_info = Customers::find($invoice_info->fk_customer_id);
+            $account_id = $customer_info->ic_account_number;
+        }
+        else
+        {
+
+            $client_info = CRMAccounts::find($invoice_info->bi_client_id);
+            $account_id = $client_info->ca_accounting_id;
+        }
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $trans_id;
+        $TransactionMovement->tm_company_id         = $default_company_id;
+        $TransactionMovement->tm_trans_code         = $returncode;
+        $TransactionMovement->tm_ledger_account     = $account_id;
+        $TransactionMovement->tm_sub_ledger_account = $account_id;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
+        $TransactionMovement->tm_debit              = 0;
+        $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
+        $TransactionMovement->tm_currency_id        =$invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+
+        $TransactionMovement = new TransactionMovements();
+        $TransactionMovement->fk_tran_id            = $trans_id;
+        $TransactionMovement->tm_company_id            = $default_company_id;
+        $TransactionMovement->tm_trans_code         = $returncode;
+        $TransactionMovement->tm_ledger_account     = 701;
+        $TransactionMovement->tm_sub_ledger_account = 701;
+        $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code . " " . $invoice_info->bi_invoice_note;
+        $TransactionMovement->tm_debit              = $invoice_info->bi_total_price;
+        $TransactionMovement->tm_credit             = 0;
+        $TransactionMovement->tm_creation_date      = date("Y-m-d");
+        $TransactionMovement->tm_transaction_date   = $invoice_info->bi_invoice_date;
+        $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
+        $TransactionMovement->save();
+
+        // get deal info
+
+        $client_id  =  $invoice_info->bi_client_id;
+
+        $deal_info = CRMDeals::whereFkAccountId($client_id)->first();
+        $deal_id = $deal_info->ad_id;
+
+
+
+        // delete bills not paied
+        $bills_info = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($deal_id)->whereIpPaymentStatus(0)->delete();
+
+
+        // change status of deal to be cancel
+        $deal_info = CRMDeals::find($deal_id);
+        $deal_info->ad_is_approved = 3;
+        $deal_info->save();
+
+        $invoice_info->bi_invoice_status = 0;
+        $invoice_info->bi_is_returned = 1;
+        $invoice_info->bi_return_code = $returncode;
+        $invoice_info->bi_return_reason = $returncode;
+        $invoice_info->save();
 
         $result_array['is_error'] = 0;
         $result_array['error_msg'] = "Operation Completed Successfully";

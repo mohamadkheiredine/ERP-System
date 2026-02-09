@@ -10,7 +10,7 @@ All Rights Reserved ,    Softweb S.A.R.L COPYRIGHT 2018
 
 Page Description :
 {Enter page description Here}
-***********************************************************/
+ ***********************************************************/
 
 namespace App\Http\Controllers\Dashboard;
 
@@ -77,7 +77,7 @@ class DashboardController extends Controller
 
         $lst_inboundcalls = InboundCall::whereIcIsDeleted(0)->whereIcIsPaid(0)->whereIcClosedVoucher(0)->whereBetween('ic_call_date',[$first,$last])->limit(10)->orderBy('ic_call_date','DESC')->get();
 
-        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
+        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
 
 
         $stock_alert = 'SELECT
@@ -240,13 +240,13 @@ LIMIT 10;';
 
 
         foreach ($total_selling_products as $key => $product_info ) {
-           if($product_info->p_product_name != null)
-           {
-               $stock_products[] = array(
-                   'product' =>   $product_info->p_product_name,
-                   'value' =>   $product_info->total_sel_quantity
-               );
-           }
+            if($product_info->p_product_name != null)
+            {
+                $stock_products[] = array(
+                    'product' =>   $product_info->p_product_name,
+                    'value' =>   $product_info->total_sel_quantity
+                );
+            }
 
         }
 
@@ -298,19 +298,19 @@ LIMIT 10;';
         if(strlen($search_query) > 0)
             $query .= " AND ( tm.tm_ledger_label LIKE '%" . $search_query . "%' OR accounts.aa_account_ref LIKE '%" . $search_query . "%' OR accounts.aa_account_label LIKE '%" . $search_query . "%' )";
 
-            $query .= " AND YEAR(tm_transaction_date) ='" . $fisical_year . "'";
+        $query .= " AND YEAR(tm_transaction_date) ='" . $fisical_year . "'";
 
-            $query = $query . " group by tm_sub_ledger_account,tm_currency_id  order by accounts.aa_account_ref,tm_currency_id DESC;";
-            $lst_accounts = DB::select($query);
+        $query = $query . " group by tm_sub_ledger_account,tm_currency_id  order by accounts.aa_account_ref,tm_currency_id DESC;";
+        $lst_accounts = DB::select($query);
 
 
-            $data = array(
-                "lst_accounts" => $lst_accounts,
-            );
-            $result_array['is_error'] = 0;
-            $result_array['display'] = view("dashboard.lstaccountstatmentgroup",$data)->render();
+        $data = array(
+            "lst_accounts" => $lst_accounts,
+        );
+        $result_array['is_error'] = 0;
+        $result_array['display'] = view("dashboard.lstaccountstatmentgroup",$data)->render();
 
-            return Response()->json($result_array);
+        return Response()->json($result_array);
     }
 
 
@@ -343,8 +343,8 @@ LIMIT 10;';
 
             if(isset($order_array[$bi_invoice_date]))
                 $order_array[$bi_currency][$bi_invoice_date] = $order_array[$bi_invoice_date] + $bi_total_cost;
-                else
-                    $order_array[$bi_currency][$bi_invoice_date] =$bi_total_cost;
+            else
+                $order_array[$bi_currency][$bi_invoice_date] =$bi_total_cost;
         }
 
 
@@ -436,8 +436,8 @@ LIMIT 10;';
                 if(!isset($order_stock_amount[$currency_id][$i]))
                     $order_stock_amount[$currency_id][$i] = 0;
 
-                    if(!isset($total_order_amount[$currency_code]))
-                        $total_order_amount[$currency_code] = 0;
+                if(!isset($total_order_amount[$currency_code]))
+                    $total_order_amount[$currency_code] = 0;
             }
         }
 
@@ -504,7 +504,7 @@ LIMIT 10;';
 
             }
             if($total_price != 0)
-            $supplier_stock_amount[ $stock_info->month_supplier_stock ] = $total_price;
+                $supplier_stock_amount[ $stock_info->month_supplier_stock ] = $total_price;
         }
 
         for ($i = 1; $i <= 12; $i++) {

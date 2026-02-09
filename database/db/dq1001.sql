@@ -783,3 +783,15 @@ INSERT INTO `sys_appconfig` (`sa_id`, `sa_config_index`, `sa_config_description`
 
 ALTER TABLE fnb_orders
 ADD COLUMN fo_payment_type INT NULL;
+
+
+
+ALTER TABLE `sales_orders`
+    ADD COLUMN `so_delivery_customer_name` VARCHAR(255) NULL DEFAULT NULL AFTER `so_delivery_fees`,
+ADD COLUMN `so_delivery_customer_phone` VARCHAR(255) NULL DEFAULT NULL AFTER `so_delivery_customer_name`;
+
+
+ALTER TABLE `sales_orders`
+ADD COLUMN `so_delivery_customer_address` VARCHAR(500) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `so_delivery_customer_phone`,
+CHANGE COLUMN `so_delivery_customer_name` `so_delivery_customer_name` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+CHANGE COLUMN `so_delivery_customer_phone` `so_delivery_customer_phone` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
