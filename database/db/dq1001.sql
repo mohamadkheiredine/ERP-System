@@ -795,3 +795,20 @@ ALTER TABLE `sales_orders`
 ADD COLUMN `so_delivery_customer_address` VARCHAR(500) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL AFTER `so_delivery_customer_phone`,
 CHANGE COLUMN `so_delivery_customer_name` `so_delivery_customer_name` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
 CHANGE COLUMN `so_delivery_customer_phone` `so_delivery_customer_phone` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
+
+
+CREATE INDEX idx_oi_status_del_station_order
+ON fnb_order_items (oi_kitchen_status, oi_is_deleted, oi_station_id, oi_order_id);
+
+CREATE INDEX idx_oi_order_del_status
+ON fnb_order_items (oi_order_id, oi_is_deleted, oi_kitchen_status);
+
+CREATE INDEX idx_orders_del_datetime
+ON fnb_orders (fo_is_deleted, fo_order_datetime);
+
+ALTER TABLE sys_status
+ADD COLUMN ss_is_closed TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE fnb_order_items
+ADD COLUMN oi_is_kitchen_closed TINYINT(1) NOT NULL DEFAULT 0;
+

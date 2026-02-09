@@ -675,11 +675,17 @@ class FnbOrderController extends Controller
                 ]);
             }
 
-            if ($isDineIn && $order_id > 0) {
+            $alreadySent = false;
 
+            if ($order_id > 0) {
+
+                // $order_info = FnbOrders::where('fo_id', $order_id)
+                //     ->where('fo_order_type', 'dine_in')
+                //     ->where('fo_payment_status', 'unpaid')
+                //     ->lockForUpdate()
+                //     ->first();
                 $order_info = FnbOrders::where('fo_id', $order_id)
-                    ->where('fo_order_type', 'dine_in')
-                    ->where('fo_payment_status', 'unpaid')
+                    ->where('fo_is_deleted', 0)
                     ->lockForUpdate()
                     ->first();
 
@@ -708,7 +714,9 @@ class FnbOrderController extends Controller
 
             $order_info->fo_customer_id = $customer_id;
             $order_info->fo_order_status = $this->resolveOrderStatusId('paid');
-            $order_info->fo_kitchen_status = $pendingKitchenStatusId;
+            if (!$alreadySent) {
+                $order_info->fo_kitchen_status = $pendingKitchenStatusId;
+            }
             $order_info->fo_order_datetime = $creation_date;
             $order_info->fo_subtotal = $sub_total_display;
             $order_info->fo_discount = $discount;
@@ -721,6 +729,30 @@ class FnbOrderController extends Controller
             $order_info->save();
 
             $fo_id = $order_info->fo_id;
+
+            // delete empty orders after merge
+            if (!empty($table_ids)) {
+
+                // find empty orders that do not have items (the orders that we should delete them)
+                $orphanOrders = FnbOrders::where('fo_id', '!=', $fo_id)
+                    ->where('fo_order_type', 'dine_in')
+                    ->where('fo_payment_status', 'unpaid')
+                    ->where('fo_is_deleted', 0)
+                    ->where('fo_store_id', $store_id)
+                    ->whereDoesntHave('Items', function ($q) {
+                        $q->where('oi_is_deleted', 0);
+                    })
+                    ->orderByDesc('fo_id')
+                    ->get();
+
+
+                foreach ($orphanOrders as $orphan) {
+                    $orphan->fo_is_deleted = 1;
+                    $orphan->fo_deleted_by = $user_id;
+                    $orphan->save();
+                }
+            }
+
 
             FnbOrderTables::where('ot_order_id', $fo_id)->delete(); // remove old links
 
@@ -749,15 +781,73 @@ class FnbOrderController extends Controller
 
             $final_items = [];
 
+            // Check if order was already sent to kitchen
+            $alreadySent = FnbOrderItems::where('oi_order_id', $fo_id)
+                ->where('oi_is_deleted', 0)
+                ->where('oi_kitchen_status', '!=', $pendingKitchenStatusId)
+                ->exists();
+
+            // Load existing items once
+            $existingMap = FnbOrderItems::where('oi_order_id', $fo_id)
+                ->where('oi_is_deleted', 0)
+                ->get()
+                ->keyBy('oi_item_id');
+
             foreach ($order_items as $key => $item_order) {
+
+                //PREVENT DUPLICATE ITEM CREATION
+                if (isset($existingMap[$item_order['item_id']])) {
+
+                    // Item already exists in DB lezm just update quantity
+                    $existingItem = $existingMap[$item_order['item_id']];
+
+                    $existingItem->oi_quantity = $item_order['quantity'];
+                    $existingItem->save();
+
+                    // Skip creating new row & skip printing again
+                    continue;
+                }
+
                 $item = new FnbOrderItems();
                 $item->oi_order_id = $fo_id;
                 $item->oi_item_id = $item_order['item_id'];
                 $item->oi_quantity = $item_order['quantity'];
                 $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
                 $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
-                $item->oi_kitchen_status = $pendingKitchenStatusId;
+
+                // keep old status if already sent
+                $item->oi_kitchen_status = $alreadySent
+                    ? ($existingMap[$item_order['item_id']]->oi_kitchen_status ?? $pendingKitchenStatusId)
+                    : $pendingKitchenStatusId;
+
                 $menuItem = FnbMenuItem::find($item_order['item_id']);
+
+                $stationId = $menuItem && $menuItem->mi_kitchen_station_id
+                    ? $menuItem->mi_kitchen_station_id
+                    : 1;
+
+                // create print job only if not sent before
+                if (!$alreadySent) {
+
+                    FnbPrintJobs::create([
+                        'order_id' => $fo_id,
+                        'kitchen_station_id' => $stationId,
+                        'payload' => json_encode([
+                            'order' => [
+                                'id'   => $fo_id,
+                                'code' => $order_info->fo_order_code,
+                                'type' => $order_info->fo_order_type,
+                                'datetime' => now(),
+                            ],
+                            'items' => [[
+                                'qty'  => $item_order['quantity'],
+                                'name' => $menuItem ? $menuItem->mi_item_name : 'Unknown',
+                                'notes' => $item_order['notes'] ?? '',
+                            ]]
+                        ]),
+                        'status' => 'pending',
+                    ]);
+                }
 
                 if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
                     $fallbackStationId = 1;
@@ -804,7 +894,6 @@ class FnbOrderController extends Controller
                             'im_quantity' => $modifier->m_quantity * $item->oi_quantity
                         ]);
 
-
                         $mods[] = [
                             "id"    => $modifier->m_id,
                             "name"  => $modifier->m_modifier_name,
@@ -813,7 +902,6 @@ class FnbOrderController extends Controller
                         ];
                     }
                 }
-
 
                 $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
                 $line_total_display = $unit_price_display * $item_order['quantity'];
@@ -828,7 +916,6 @@ class FnbOrderController extends Controller
                     'modifiers' => $mods,
                 ];
             }
-
 
             $structure = array(
                 "fo_id" => $fo_id,
@@ -1000,6 +1087,7 @@ class FnbOrderController extends Controller
         $store_id = $request->input('store_id');
         $user_id = $request->input('user_id');
         $company_id = $request->input('company_id');
+        $order_type = $request->input('order_type', 'dine_in');
         $user = Users::find($user_id);
 
         $check_hash = "POS567{$user->u_username}{$user->u_fullname}{$user->u_email}POS567";
@@ -1024,7 +1112,7 @@ class FnbOrderController extends Controller
         $order->fo_order_code = $this->GenerateOrdereCodeFNB();
         $order->fo_order_status = $this->resolveOrderStatusId('pending');
         $order->fo_kitchen_status = $pendingKitchenStatusId;
-        $order->fo_order_type = "dine_in";
+        $order->fo_order_type = $order_type;
         $order->fo_payment_status = "unpaid";
         $order->fo_customer_id    = null;
         $order->save();
@@ -1038,57 +1126,239 @@ class FnbOrderController extends Controller
     }
 
 
+    // public function UpdateOrder(Request $request)
+    // {
+    //     $order_id = $request->input('order_id');
+    //     $order = FnbOrders::find($order_id);
+    //     if (!$order) {
+    //         return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
+    //     }
+
+    //     if (empty($order->fo_order_code)) {
+    //         $order->fo_order_code = $this->GenerateOrdereCodeFNB();
+    //         $order->save();
+    //     }
+    //     $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+    //         ->orderBy('ss_id')
+    //         ->value('ss_id');
+
+
+    //     $order->fo_order_type   = $request->order_type;
+    //     $order->fo_customer_id  = $request->customer_id ?? 0;
+    //     $order->fo_subtotal     = $request->sub_total;
+    //     $order->fo_discount     = $request->discount;
+    //     $order->fo_total_amount = $request->total;
+
+    //     $pendingPosStatusId = SystemStatus::where('ss_status_type', 'like', '%pos%')
+    //         ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
+    //         ->value('ss_id');
+
+    //     if (!$pendingPosStatusId) {
+    //         throw new \Exception('Pending POS status not found');
+    //     }
+    //     $order->fo_order_status = $pendingPosStatusId;
+    //     $order->save();
+
+    //     $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+    //         ->where('ss_status_title', 'Pending')
+    //         ->value('ss_id');
+
+    //     if (!$pendingKitchenStatusId) {
+    //         throw new \Exception('Pending kitchen status not found');
+    //     }
+
+    //     $alreadySentToKitchen = FnbOrderItems::where('oi_order_id', $order->fo_id)
+    //         ->whereNotNull('oi_kitchen_status')
+    //         ->where('oi_kitchen_status', '!=', $pendingKitchenStatusId)
+    //         ->exists();
+
+    //     // tabless
+    //     FnbOrderTables::where('ot_order_id', $order->fo_id)->delete();
+
+    //     $tableIds = collect(
+    //         is_array($request->table_ids)
+    //             ? $request->table_ids
+    //             : explode(',', (string) $request->table_ids)
+    //     )
+    //         ->map(fn($id) => (int) trim($id))
+    //         ->filter(fn($id) => $id > 0)
+    //         ->unique()
+    //         ->values();
+
+    //     foreach ($tableIds as $tableId) {
+    //         FnbOrderTables::create([
+    //             'ot_order_id' => $order->fo_id,
+    //             'ot_table_id' => $tableId,
+    //         ]);
+    //     }
+
+
+    //     // item
+    //     // FnbOrderItems::where('oi_order_id', $order->fo_id)
+    //     //     ->update(['oi_is_deleted' => 1]);
+
+    //     $items = json_decode($request->order_items, true);
+
+
+    //     foreach ($items as $it) {
+
+    //         $menuItem = FnbMenuItem::find($it['item_id']);
+
+    //         if (!$menuItem) {
+    //             throw new \Exception("Menu item not found: " . $it['item_id']);
+    //         }
+
+    //         $data = [
+    //             'oi_order_id'      => $order->fo_id,
+    //             'oi_item_id'       => $it['item_id'],
+    //             'oi_quantity'      => $it['quantity'],
+    //             'oi_unit_price'    => $it['unit_price'],
+    //             'oi_item_discount' => $it['discount'],
+    //             'oi_notes'         => $it['notes'] ?? '',
+    //             'oi_station_id'    => $menuItem->mi_kitchen_station_id,
+    //         ];
+
+    //         $data['oi_kitchen_status'] = $pendingKitchenStatusId;
+
+
+    //         FnbOrderItems::create($data);
+    //     }
+
+    //     if (!$alreadySentToKitchen) {
+    //         $order->fo_kitchen_status = $pendingKitchenStatusId;
+    //         $order->save();
+    //     }
+
+    //     $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
+
+    //     $grouped = [];
+
+    //     foreach ($orderItems as $it) {
+
+    //         if (!$it->oi_station_id) {
+
+    //             $menuItem = FnbMenuItem::find($it->oi_item_id);
+
+    //             if ($menuItem && $menuItem->mi_kitchen_station_id) {
+    //                 $it->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
+    //             } else {
+    //                 $it->oi_station_id = 1;
+    //                 \Log::warning(
+    //                     'Order item missing kitchen station, forced fallback in UpdateOrder',
+    //                     [
+    //                         'order_item_id' => $it->oi_id,
+    //                         'menu_item_id'  => $it->oi_item_id,
+    //                         'fallback_station_id' => 1,
+    //                     ]
+    //                 );
+    //             }
+    //             $it->save();
+    //         }
+
+    //         $stationId = (int) $it->oi_station_id;
+
+    //         if (!isset($grouped[$stationId])) {
+    //             $grouped[$stationId] = [];
+    //         }
+
+    //         $menu = FnbMenuItem::find($it->oi_item_id);
+
+    //         $grouped[$stationId][] = [
+    //             'qty'   => $it->oi_quantity,
+    //             'name'  => $menu?->mi_item_name ?? 'Unknown',
+    //             'notes' => $it->oi_notes,
+    //         ];
+    //     }
+
+    //     if (count($grouped) === 0) {
+    //         throw new \Exception("No items grouped for printing");
+    //     }
+    //     DB::table('fnb_print_jobs')
+    //         ->where('order_id', $order->fo_id)
+    //         ->whereIn('status', ['pending', 'processing'])
+    //         ->delete();
+
+    //     foreach ($grouped as $stationId => $items) {
+    //         if (empty($items)) {
+    //             continue;
+    //         }
+
+    //         FnbPrintJobs::create([
+
+    //             'order_id' => $order->fo_id,
+    //             'kitchen_station_id' => $stationId,
+    //             'payload' => json_encode([
+    //                 'order' => [
+    //                     'id'       => $order->fo_id,
+    //                     'code'     => $order->fo_order_code,
+    //                     'type'     => $order->fo_order_type,
+    //                     'datetime' => $order->fo_order_datetime,
+    //                 ],
+    //                 'items' => $items,
+    //             ]),
+    //             'status' => 'pending',
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //         ]);
+    //     }
+
+
+    //     return response()->json(['is_error' => 0]);
+    // }
+
+
+
     public function UpdateOrder(Request $request)
     {
-
-
-        $order = FnbOrders::find($request->order_id);
+        // get order from database
+        $order_id = $request->input('order_id');
+        $order = FnbOrders::find($order_id);
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
         }
+
+        // if this order has no code generate new one
         if (empty($order->fo_order_code)) {
             $order->fo_order_code = $this->GenerateOrdereCodeFNB();
-            $order->save();
         }
-        $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
+
+        // search SystemStatus table for POS status called pending
+        $pendingPosStatusId = SystemStatus::where('ss_status_type', 'like', '%pos%')
             ->orderBy('ss_id')
             ->value('ss_id');
 
+        // Get kitchen pending status
+        $pendingKitchenStatusId = $this->resolvePendingKitchenStatusId();
 
+        if (!$pendingPosStatusId || !$pendingKitchenStatusId) {
+            throw new \Exception('Pending statuses not found');
+        }
+
+        // fill data (update order information)
         $order->fo_order_type   = $request->order_type;
         $order->fo_customer_id  = $request->customer_id ?? 0;
         $order->fo_subtotal     = $request->sub_total;
         $order->fo_discount     = $request->discount;
         $order->fo_total_amount = $request->total;
-        $order->fo_order_status = 2;
+
+        $order->fo_order_status = $pendingPosStatusId;
+
         $order->save();
 
-        $pendingKitchenStatusId = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-            ->where('ss_status_title', 'Pending')
-            ->value('ss_id');
+        //tables
 
-        if (!$pendingKitchenStatusId) {
-            throw new \Exception('Pending kitchen status not found');
-        }
-
-        $alreadySentToKitchen = FnbOrderItems::where('oi_order_id', $order->fo_id)
-            ->whereNotNull('oi_kitchen_status')
-            ->where('oi_kitchen_status', '!=', $pendingKitchenStatusId)
-            ->exists();
-
-        // tabless
+        //remove all previous table relations for this order
         FnbOrderTables::where('ot_order_id', $order->fo_id)->delete();
 
+        // Read table IDs from request.
+        // It may come as array [1,2,3] OR string "1,2,3"
         $tableIds = collect(
             is_array($request->table_ids)
                 ? $request->table_ids
-                : explode(',', (string) $request->table_ids)
-        )
-            ->map(fn($id) => (int) trim($id))
-            ->filter(fn($id) => $id > 0)
-            ->unique()
-            ->values();
+                : explode(',', $request->table_ids)
+        )->map(fn($id) => $id)->filter();
 
+        //insert new table relations
         foreach ($tableIds as $tableId) {
             FnbOrderTables::create([
                 'ot_order_id' => $order->fo_id,
@@ -1096,78 +1366,110 @@ class FnbOrderController extends Controller
             ]);
         }
 
+        // update order items
 
-        // item
-        FnbOrderItems::where('oi_order_id', $order->fo_id)
-            ->update(['oi_is_deleted' => 1]);
+        //itemss
 
-        $items = json_decode($request->order_items, true);
+        // Convert JSON string from frontend into PHP array
+        $incoming = json_decode($request->order_items, true);
 
+        // Get existing non-deleted items from database
+        $existing = FnbOrderItems::where('oi_order_id', $order->fo_id)
+            ->where('oi_is_deleted', 0)
+            ->get();
 
-        foreach ($items as $it) {
+        // This array will store IDs of items that we handled
+        $processed = [];
 
+        foreach ($incoming as $it) {
+
+            // Check that menu item really exists in menu table
             $menuItem = FnbMenuItem::find($it['item_id']);
-
             if (!$menuItem) {
-                throw new \Exception("Menu item not found: " . $it['item_id']);
+                throw new \Exception("Menu item not found");
             }
 
-            $data = [
-                'oi_order_id'      => $order->fo_id,
-                'oi_item_id'       => $it['item_id'],
-                'oi_quantity'      => $it['quantity'],
-                'oi_unit_price'    => $it['unit_price'],
-                'oi_item_discount' => $it['discount'],
-                'oi_notes'         => $it['notes'] ?? '',
-                'oi_station_id'    => $menuItem->mi_kitchen_station_id,
-            ];
+            // ---------------------------------------------------------
+            // Try to find if this item already exists in order
+            // Match by:
+            //  - item id
+            //  - notes text
+            //  - kitchen station
+            // ---------------------------------------------------------
+            $match = $existing->first(function ($e) use ($it, $menuItem) {
+                return $e->oi_item_id == $it['item_id']
+                    && $e->oi_notes == ($it['notes'] ?? '')
+                    && $e->oi_station_id == $menuItem->mi_kitchen_station_id;
+            });
 
-            if (!$alreadySentToKitchen) {
-                $data['oi_kitchen_status'] = $pendingKitchenStatusId;
+            // CASE 1: ITEM ALREADY EXISTS → JUST UPDATE IT
+            if ($match) {
+
+                //keep old status
+                $match->oi_quantity = $it['quantity'];
+                $match->oi_unit_price = $it['unit_price'];
+                $match->save();
+
+                $processed[] = $match->oi_id;
             }
+            // CASE 2: NEW ITEM → CREATE NEW ROW
+            else {
 
-            FnbOrderItems::create($data);
+                //new item y3ne pending
+                $new = FnbOrderItems::create([
+                    'oi_order_id'      => $order->fo_id,
+                    'oi_item_id'       => $it['item_id'],
+                    'oi_quantity'      => $it['quantity'],
+                    'oi_unit_price'    => $it['unit_price'],
+                    'oi_item_discount' => $it['discount'],
+                    'oi_notes'         => $it['notes'] ?? '',
+                    'oi_station_id'    => $menuItem->mi_kitchen_station_id,
+
+                    'oi_kitchen_status' => $pendingKitchenStatusId,
+                    'oi_is_deleted' => 0,
+                ]);
+
+                $processed[] = $new->oi_id;
+            }
         }
 
-        if (!$alreadySentToKitchen) {
+        // Any old item that was NOT in the incoming list
+        // should be marked as deleted
+        FnbOrderItems::where('oi_order_id', $order->fo_id)
+            ->whereNotIn('oi_id', $processed)
+            ->update(['oi_is_deleted' => 1]);
+
+        // Check if at least one item is still pending
+        $hasPending = FnbOrderItems::where('oi_order_id', $order->fo_id)
+            ->where('oi_is_deleted', 0)
+            ->where('oi_kitchen_status', $pendingKitchenStatusId)
+            ->exists();
+
+        // If yes → order itself becomes pending in kitchen
+        if ($hasPending) {
             $order->fo_kitchen_status = $pendingKitchenStatusId;
             $order->save();
         }
 
-        $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)->get();
+        //print new items
 
+        // Get all pending items that need printing
+        $toPrint = FnbOrderItems::where('oi_order_id', $order->fo_id)
+            ->where('oi_is_deleted', 0)
+            ->where('oi_kitchen_status', $pendingKitchenStatusId)
+            ->get();
+
+        // We will group items by kitchen statio
         $grouped = [];
 
-        foreach ($orderItems as $it) {
+        foreach ($toPrint as $it) {
 
-            if (!$it->oi_station_id) {
-
-                $menuItem = FnbMenuItem::find($it->oi_item_id);
-
-                if ($menuItem && $menuItem->mi_kitchen_station_id) {
-                    $it->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
-                } else {
-                    $it->oi_station_id = 1;
-                    \Log::warning(
-                        'Order item missing kitchen station, forced fallback in UpdateOrder',
-                        [
-                            'order_item_id' => $it->oi_id,
-                            'menu_item_id'  => $it->oi_item_id,
-                            'fallback_station_id' => 1,
-                        ]
-                    );
-                }
-                $it->save();
-            }
-
-            $stationId = (int) $it->oi_station_id;
-
-            if (!isset($grouped[$stationId])) {
-                $grouped[$stationId] = [];
-            }
+            // If station is null → default to 1
+            $stationId = $it->oi_station_id ?: 1;
 
             $menu = FnbMenuItem::find($it->oi_item_id);
 
+            // Build printable structure
             $grouped[$stationId][] = [
                 'qty'   => $it->oi_quantity,
                 'name'  => $menu?->mi_item_name ?? 'Unknown',
@@ -1175,42 +1477,24 @@ class FnbOrderController extends Controller
             ];
         }
 
-        if (count($grouped) === 0) {
-            throw new \Exception("No items grouped for printing");
-        }
-        DB::table('fnb_print_jobs')
-            ->where('order_id', $order->fo_id)
-            ->whereIn('status', ['pending', 'processing'])
-            ->delete();
-
+        // Create one print job per kitchen station
         foreach ($grouped as $stationId => $items) {
-            if (empty($items)) {
-                continue;
-            }
-
             FnbPrintJobs::create([
-
                 'order_id' => $order->fo_id,
                 'kitchen_station_id' => $stationId,
                 'payload' => json_encode([
                     'order' => [
-                        'id'       => $order->fo_id,
-                        'code'     => $order->fo_order_code,
-                        'type'     => $order->fo_order_type,
-                        'datetime' => $order->fo_order_datetime,
+                        'id' => $order->fo_id,
+                        'code' => $order->fo_order_code,
                     ],
                     'items' => $items,
                 ]),
                 'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
             ]);
         }
 
-
         return response()->json(['is_error' => 0]);
     }
-
 
     public function SyncPendingOrders(Request $request)
     {
@@ -1274,8 +1558,6 @@ class FnbOrderController extends Controller
             'orders'   => $result
         ]);
     }
-
-
 
 
     public function ExportFnbOrders(Request $request)
@@ -1568,6 +1850,28 @@ class FnbOrderController extends Controller
         $date_from    = $request->input('date_from');
         $date_to      = $request->input('date_to');
         $warehouse_id = $request->input('warehouse_id');
+        $filter = $request->input('filter');
+
+        if ($filter === 'today') {
+            $date_from = date('Y-m-d');
+            $date_to   = date('Y-m-d');
+        }
+
+        if ($filter === 'yesterday') {
+            $date_from = date('Y-m-d', strtotime('-1 day'));
+            $date_to   = $date_from;
+        }
+
+        if ($filter === 'lastweek') {
+            $date_from = date('Y-m-d', strtotime('monday last week'));
+            $date_to   = date('Y-m-d', strtotime('sunday last week'));
+        }
+
+        if ($filter === 'lastmonth') {
+            $date_from = date('Y-m-01', strtotime('last month'));
+            $date_to   = date('Y-m-t', strtotime('last month'));
+        }
+
 
         $query = FnbOrders::query()
             ->leftJoin('currency as c', 'c.cc_id', '=', 'fnb_orders.fo_currency_id')
@@ -1579,12 +1883,13 @@ class FnbOrderController extends Controller
             $query->where('fnb_orders.fk_warehouse_id', $warehouse_id);
         }
 
+
         if (!empty($date_from)) {
-            $query->whereDate('fnb_orders.fo_order_datetime', '>=', $date_from);
+            $query->where('fnb_orders.fo_order_datetime', '>=', $date_from . ' 00:00:00');
         }
 
         if (!empty($date_to)) {
-            $query->whereDate('fnb_orders.fo_order_datetime', '<=', $date_to);
+            $query->where('fnb_orders.fo_order_datetime', '<=', $date_to . ' 23:59:59');
         }
 
         $lst_orders = $query
@@ -1627,6 +1932,16 @@ class FnbOrderController extends Controller
         $g_hash   = $request->input('g_hash');
         $user_id = $request->input('user_id');
 
+        $page = max(1, $request->input('page', 1));
+        $perPage = 10;
+
+        //how many records to skip
+        $offset = ($page - 1) * $perPage;
+
+        //hol l filters
+        $stationId = $request->input('station_id', 0);
+        $q = trim($request->input('q', ''));
+
         $user_info = Users::find($user_id);
 
         $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
@@ -1639,13 +1954,55 @@ class FnbOrderController extends Controller
             ]);
         }
 
+        //Get kitchen pending status id
+        $pendingKitchenId = $this->resolvePendingKitchenStatusId();
+
+        // count total for pagination
+        // count total orders that match filters
+        $total = FnbOrders::where('fnb_orders.fo_is_deleted', 0)
+
+            // filter l search
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('fnb_orders.fo_order_code', 'like', "%{$q}%")
+                        ->orWhere('fnb_orders.fo_table_id', 'like', "%{$q}%");
+                });
+            })
+
+            ->whereExists(function ($q2) use ($pendingKitchenId, $stationId) {
+
+                $q2->from('fnb_order_items')
+                    ->whereColumn('oi_order_id', 'fnb_orders.fo_id')
+                    ->where('oi_is_deleted', 0)
+                    ->where('oi_is_kitchen_closed', 0);
+
+                //station filter
+                if ($stationId > 0) {
+                    $q2->where('oi_station_id', $stationId);
+                }
+            })
+            ->count();
+
+        // Get orders that have at least one pending item
         $orders = FnbOrders::where('fnb_orders.fo_is_deleted', 0)
-            ->whereIn('fnb_orders.fo_order_status', function ($q) {
-                $q->select('ss_id')
-                    ->from('sys_status')
-                    ->whereRaw('LOWER(ss_status_title) LIKE ?', ['p%'])
-                    ->where('ss_status_type', 'like', '%pos%')
-                    ->where('ss_is_deleted', 0);
+
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('fnb_orders.fo_order_code', 'like', "%{$q}%")
+                        ->orWhere('fnb_orders.fo_table_id', 'like', "%{$q}%");
+                });
+            })
+
+            ->whereExists(function ($q2) use ($pendingKitchenId, $stationId) {
+
+                $q2->from('fnb_order_items')
+                    ->whereColumn('oi_order_id', 'fnb_orders.fo_id')
+                    ->where('oi_is_deleted', 0)
+                    ->where('oi_is_kitchen_closed', 0);
+
+                if ($stationId > 0) {
+                    $q2->where('oi_station_id', $stationId);
+                }
             })
 
             ->leftJoin(
@@ -1659,43 +2016,82 @@ class FnbOrderController extends Controller
                 'fnb_orders.fo_order_code',
                 'fnb_orders.fo_order_type',
                 'fnb_orders.fo_table_id',
-                'fnb_orders.fo_creation_date',
+                'fnb_orders.fo_order_datetime',
                 'fnb_orders.fo_kitchen_status',
                 'order_status.ss_status_title as order_status_title'
             )
-            ->orderBy('fnb_orders.fo_creation_date')
+            ->orderBy('fnb_orders.fo_order_datetime', 'desc')
+            ->skip($offset)
+            ->take($perPage)
             ->get();
 
+        $orderIds = $orders->pluck('fo_id');
+
+        //load all items in one query
+        //hon wafarna l complexity
+        $items = FnbOrderItems::whereIn('oi_order_id', $orderIds)
+            ->where('oi_is_deleted', 0)
+            ->where('oi_is_kitchen_closed', 0)
+
+            ->when($stationId > 0, function ($qq) use ($stationId) {
+                $qq->where('oi_station_id', $stationId);
+            })
+
+            ->leftJoin(
+                'fnb_menu_items',
+                'fnb_menu_items.mi_id',
+                '=',
+                'fnb_order_items.oi_item_id'
+            )
+
+            ->leftJoin(
+                'sys_status as item_status',
+                'item_status.ss_id',
+                '=',
+                'fnb_order_items.oi_kitchen_status'
+            )
+
+            ->select(
+                'oi_id',
+                'oi_order_id',
+                'oi_quantity',
+                'oi_notes',
+                'oi_station_id',
+                'oi_kitchen_status',
+                'item_status.ss_status_title',
+                'fnb_menu_items.mi_item_name'
+            )
+            ->get();
+
+        //group items by order id
+        $grouped = [];
+
+        foreach ($items as $it) {
+            $grouped[$it->oi_order_id][] = $it;
+        }
+
+        // attach to orders
         foreach ($orders as $order) {
-            $order->items = FnbOrderItems::where('oi_order_id', $order->fo_id)
-                ->where('oi_is_deleted', 0)
-                ->leftJoin('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
-                ->leftJoin(
-                    'sys_status as item_status',
-                    'item_status.ss_id',
-                    '=',
-                    'fnb_order_items.oi_kitchen_status'
-                )
-                ->select(
-                    'oi_id',
-                    'oi_quantity',
-                    'oi_notes',
-                    'oi_station_id',
-                    'oi_kitchen_status',
-                    'item_status.ss_status_title',
-                    'fnb_menu_items.mi_item_name'
-                )
-                ->get();
+            $order->items = $grouped[$order->fo_id] ?? [];
         }
 
         return response()->json([
             "is_error" => 0,
-            "lst_pending_orders" => $orders
+            "lst_pending_orders" => $orders,
+
+            "pagination" => [
+                "page" => $page,
+                "per_page" => $perPage,
+                "total" => $total,
+                "total_pages" => ceil($total / $perPage)
+            ]
         ]);
     }
 
+
     /**
      * Api to return order
+
      *
      * @author Mohamad Kheiredine
      * @access public

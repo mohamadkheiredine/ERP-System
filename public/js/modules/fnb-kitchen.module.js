@@ -21,7 +21,7 @@ kitchen_module = {
                 $("#LstKitchensGrid").html(response.display);
                 $(".group-checkable").change(function () {
                     var set = $("kitchen").find(
-                        'tbody > tr > td:nth-child(1) input[type="checkbox"]'
+                        'tbody > tr > td:nth-child(1) input[type="checkbox"]',
                     );
                     var checked = $(this).prop("checked");
                     $(set).each(function () {
@@ -57,7 +57,9 @@ kitchen_module = {
             ignore: "",
 
             rules: {
-                ks_name: { required: true, maxlength: 255 }, // Kitchen Name
+                ks_name: { required: true, maxlength: 255 },
+                printer_ip: { required: true },
+                printer_port: { required: true, number: true },
             },
 
             messages: {
@@ -66,8 +68,15 @@ kitchen_module = {
                     maxlength: "Kitchen name cannot exceed 255 characters",
                 },
                 ks_description: {
-                    required: "Please enter a description for the kitchen station",
-                }
+                    required:
+                        "Please enter a description for the kitchen station",
+                },
+                printer_ip: {
+                    required: "Printer IP is required",
+                },
+                printer_port: {
+                    required: "Printer port is required",
+                },
             },
 
             errorPlacement: function (error, element) {

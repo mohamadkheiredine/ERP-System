@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fnb;
 
 use App\Http\Controllers\Controller;
+use App\models\FnB\FnbPrinters;
 use Illuminate\Http\Request;
 use App\models\System\Companies;
 use App\models\FnB\KitchenStations;
@@ -74,6 +75,8 @@ class FnbKitchenController extends Controller
         $ks_description = $request->input('ks_description');
         $ks_active = $request->has('ks_active') ? 1 : 0;
         $default_company_id = session('default_company_id');
+        $printer_ip = $request->input('printer_ip');
+        $printer_port = $request->input('printer_port');
 
         $result_array = array();
 
@@ -90,6 +93,16 @@ class FnbKitchenController extends Controller
         $kitchen_info->save();
 
         $ks_id = $kitchen_info->ks_id;
+        $kitchen_info->ks_code = 'K' . $ks_id;
+        $kitchen_info->save();
+
+        $printer = new FnbPrinters();
+        $printer->ks_id = $ks_id;
+        $printer->printer_ip = $printer_ip;
+        $printer->printer_port = $printer_port;
+        $printer->printer_name = $ks_name . 'Printer';
+        $printer->is_enabled = $ks_active;
+        $printer->save();
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Kitchen Information Has been saved';

@@ -171,7 +171,7 @@ Route::post('/api/orders/savemenuitem', 'Api\FnbItemController@SaveMenuItem');
 
 Route::get('/api/orders/getstationsname', 'Api\FnbKitchenController@GetStationsName');
 Route::get('/api/orders/getpendingorders', 'Api\FnbOrderController@GetPendingOrders');
-Route::post('api/orders/updatekitchenstatus', 'Api\FnbController@UpdateKitchenStatus');
+Route::post('api/orders/updatekitchenstatus', 'Api\FnbKitchenController@UpdateKitchenStatus');
 Route::post('api/shift/openshift', 'Api\FnbShiftController@OpenShift');
 Route::post('api/shift/closeshift', 'Api\FnbShiftController@CloseShift');
 
