@@ -26,7 +26,7 @@ class WasteExport implements FromArray, WithHeadings
             'Product',
             'Warehouse',
             'Quantity',
-            'Created At',
+            'Unit',
         ];
     }
 }

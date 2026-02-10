@@ -6,10 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\models\Users\Users;
 use App\models\FnB\FnbMenuItem;
+use App\Models\FnB\FnbIngredients;
 
 class FnbItemController extends Controller
 {
 
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function GetListOfItems(Request $request)
     {
         $category_id = $request->input('category_id');
@@ -40,19 +46,19 @@ class FnbItemController extends Controller
         $items_array = array();
         foreach ($lst_fnb_items as $index => $item) {
             $items_array[$index] = [
-                'mi_id'            => $item->mi_id,
-                'mi_item_name'     => $item->mi_item_name,
-                'mi_category_id'   => $item->mi_category_id,
-                'category_name'    => $item->Category ? $item->Category->mc_category_name : "",
-                'mi_base_price'    => $item->mi_base_price,
-                'mi_cost_price'    => $item->mi_cost_price,
-                'currency_code'    => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
-                'cc_id'      => $item->mi_currency_id,
-                'mi_is_available'  => $item->mi_is_available,
-                'mi_is_spicy'      => $item->mi_is_spicy,
+                'mi_id' => $item->mi_id,
+                'mi_item_name' => $item->mi_item_name,
+                'mi_category_id' => $item->mi_category_id,
+                'category_name' => $item->Category ? $item->Category->mc_category_name : "",
+                'mi_base_price' => $item->mi_base_price,
+                'mi_cost_price' => $item->mi_cost_price,
+                'currency_code' => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
+                'cc_id' => $item->mi_currency_id,
+                'mi_is_available' => $item->mi_is_available,
+                'mi_is_spicy'=> $item->mi_is_spicy,
                 'mi_is_vegetarian' => $item->mi_is_vegetarian,
-                'mi_barcode'       => $item->mi_barcode,
-                'mi_image'         => $item->mi_image_file_name,
+                'mi_barcode' => $item->mi_barcode,
+                'mi_image' => $item->mi_image_file_name,
             ];
         }
 
@@ -62,6 +68,11 @@ class FnbItemController extends Controller
         return Response()->json($result_array);
     }
 
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function GetListItemsByKitchen(Request $request)
     {
         $kitchen_id = $request->input('mi_kitchen_station_id');
@@ -97,6 +108,11 @@ class FnbItemController extends Controller
         return Response()->json($result_array);
     }
 
+    /**
+     *@author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function SaveMenuItem(Request $request)
     {
 
@@ -176,5 +192,127 @@ class FnbItemController extends Controller
         $result_array['mi_id']     = $item_info->mi_id;
 
         return Response()->json($result_array);
+    }
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetListIngredientsForMenuItem(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $item_id = $request->input('item_id');
+
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $lst_ingredients = FnbIngredients::with(['Product', 'Unit', 'Currency'])
+            ->where('in_item_id', $item_id)
+            ->where('in_is_deleted', 0)
+            ->get();
+
+        $ingredients_array = [];
+        foreach ($lst_ingredients as $index => $ing) {
+            $ingredients_array[$index] = [
+                'in_id'              => $ing->in_id,
+                'in_ingredient_name' => $ing->in_ingredient_name,
+                'in_product_id'      => $ing->in_product_id,
+                'product_name'       => $ing->Product ? $ing->Product->p_product_name : '',
+                'in_stock_quantity'  => $ing->in_stock_quantity,
+                'in_unit_of_measure' => $ing->in_unit_of_measure,
+                'unit_label'         => $ing->Unit ? $ing->Unit->su_unit_label : '',
+                'in_cost_per_unit'   => $ing->in_cost_per_unit,
+                'in_currency_id'     => $ing->in_currency_id,
+                'currency_code'      => $ing->Currency ? $ing->Currency->cc_currency_code : '',
+                'in_waste_percent'   => $ing->in_waste_percent,
+                'in_line_cost'       => $ing->in_line_cost,
+                'in_notes'           => $ing->in_notes,
+            ];
+        }
+
+        return Response()->json([
+            'is_error'    => 0,
+            'error_msg'   => '',
+            'ingredients' => $ingredients_array,
+        ]);
+    }
+
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function SaveIngredientForItem(Request $request)
+    {
+        //if in_id mwjood => update existing ingredient
+        //if in_id is null => creates new ingredient linked to item_id
+
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $in_id = $request->input('in_id');
+        $item_id = $request->input('item_id');
+        $in_ingredient_name = $request->input('in_ingredient_name');
+        $in_product_id = $request->input('in_product_id');
+        $in_stock_quantity = $request->input('in_stock_quantity');
+        $in_unit_of_measure = $request->input('in_unit_of_measure');
+        $in_cost_per_unit = $request->input('in_cost_per_unit');
+        $in_currency_id = $request->input('in_currency_id');
+        $in_waste_percent = $request->input('in_waste_percent', 0);
+        $in_notes = $request->input('in_notes');
+
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        if ($in_id != null) {
+            $ingredient = FnbIngredients::find($in_id);
+            if (!$ingredient) {
+                return Response()->json(['is_error' => 1, 'error_msg' => 'Ingredient not found']);
+            }
+        } else {
+            $ingredient = new FnbIngredients();
+            $ingredient->in_item_id = $item_id;
+        }
+
+        $ingredient->in_ingredient_name = $in_ingredient_name;
+        $ingredient->in_product_id = $in_product_id;
+        $ingredient->in_stock_quantity = $in_stock_quantity;
+        $ingredient->in_unit_of_measure = $in_unit_of_measure;
+        $ingredient->in_cost_per_unit = $in_cost_per_unit;
+        $ingredient->in_currency_id = $in_currency_id;
+        $ingredient->in_waste_percent = $in_waste_percent;
+        $ingredient->in_notes = $in_notes;
+        $ingredient->in_line_cost = $in_stock_quantity * $in_cost_per_unit * (1 + $in_waste_percent);
+
+        $ingredient->save();
+
+        return Response()->json([
+            'is_error'  => 0,
+            'error_msg' => 'Ingredient has been saved',
+            'in_id'     => $ingredient->in_id,
+        ]);
     }
 }

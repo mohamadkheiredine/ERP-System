@@ -7,9 +7,9 @@ namespace App\Models\Fnb;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FnbWasteStock extends Model
+class InventoryWasteStock extends Model
 {
-    protected $table = 'fnb_waste_stock';
+    protected $table = 'inventory_waste_stock';
     protected $primaryKey = 'ws_id';
     public $timestamps = false;
 
@@ -18,6 +18,7 @@ class FnbWasteStock extends Model
         'fk_stock_id',
         'fk_warehouse_id',
         'ws_quantity',
+        'ws_unit',
         'ws_date',
         'ws_created_by',
         'ws_created_at',
@@ -38,6 +39,15 @@ class FnbWasteStock extends Model
             'App\Models\Inventory\Warehouses',
             'fk_warehouse_id',
             'w_id'
+        );
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(
+            'App\models\System\Units',
+            'ws_unit',
+            'su_id'
         );
     }
 }

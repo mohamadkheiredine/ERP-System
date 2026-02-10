@@ -45,7 +45,7 @@ use App\models\System\Units;
 use App\models\Users\Users;
 use App\models\Accounting\Transactions;
 use App\models\Accounting\TransactionMovements;
-use App\Models\Fnb\FnbWasteStock;
+use App\Models\Fnb\InventoryWasteStock;
 use App\models\System\CurrencyExchangeRates;
 use App\models\Inventory\StockIds;
 use App\models\SRM\Suppliers;
@@ -1556,7 +1556,7 @@ class ProductsController extends Controller
             ]);
         }
 
-        $query = FnbWasteStock::query();
+        $query = InventoryWasteStock::with(['product', 'warehouse', 'unit']);
 
         if (!empty($warehouse_id)) {
             $query->where('fk_warehouse_id', $warehouse_id);
@@ -1589,26 +1589,33 @@ class ProductsController extends Controller
 
     public function DownloadWastePdf(Request $request)
     {
-        $user_id      = $request->input('user_id');
-        $g_hash       = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $g_hash = $request->input('g_hash');
         $warehouse_id = $request->input('warehouse_id');
-        $product_id   = $request->input('product_id');
-        $date_from    = $request->input('date_from');
-        $date_to      = $request->input('date_to');
+        $product_id = $request->input('product_id');
+        $date_from = $request->input('date_from');
+        $date_to = $request->input('date_to');
 
         $user_info = Users::find($user_id);
 
-        $c_hash = hash(
-            'sha256',
-            "POS567{$user_info->u_username}{$user_info->u_fullname}{$user_info->u_email}POS567"
-        );
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
 
         if ($c_hash !== $g_hash) {
-            abort(403, 'Invalid hash');
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'hash sequence is not valid !!'
+            ]);
         }
 
 
-        $wastes = FnbWasteStock::with(['product', 'warehouse'])
+        //->when() m3neta eno bs ykoon mwjoudd ..
+        $wastes = InventoryWasteStock::with(['product', 'warehouse', 'unit'])
             ->when($warehouse_id, function ($q) use ($warehouse_id) {
                 $q->where('fk_warehouse_id', $warehouse_id);
             })
@@ -1639,6 +1646,7 @@ class ProductsController extends Controller
                 <td>' . e(optional($w->product)->p_product_name ?? '-') . '</td>
                 <td>' . e(optional($w->warehouse)->w_warehouse_name ?? '-') . '</td>
                 <td>' . number_format($w->ws_quantity, 1) . '</td>
+                <td>' . e(optional($w->unit)->su_unit_label ?? '-') . '</td>
             </tr>
         ';
         }
@@ -1655,26 +1663,22 @@ class ProductsController extends Controller
 
     public function DownloadWasteExcel(Request $request)
     {
-        $user_id      = $request->input('user_id');
-        $g_hash       = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $g_hash = $request->input('g_hash');
         $warehouse_id = $request->input('warehouse_id');
-        $product_id   = $request->input('product_id');
-        $date_from    = $request->input('date_from');
-        $date_to      = $request->input('date_to');
+        $product_id = $request->input('product_id');
+        $date_from = $request->input('date_from');
+        $date_to = $request->input('date_to');
 
         $user_info = Users::find($user_id);
 
-        if (!$user_info) {
-            return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'User not found'
-            ]);
-        }
+        $c_hash = "POS567"
+            . $user_info->u_username
+            . $user_info->u_fullname
+            . $user_info->u_email
+            . "POS567";
 
-        $c_hash = hash(
-            'sha256',
-            "POS567{$user_info->u_username}{$user_info->u_fullname}{$user_info->u_email}POS567"
-        );
+        $c_hash = hash('sha256', $c_hash);
 
         if ($c_hash !== $g_hash) {
             return response()->json([
@@ -1683,7 +1687,7 @@ class ProductsController extends Controller
             ]);
         }
 
-        $wastes = FnbWasteStock::with(['product', 'warehouse'])
+        $wastes = InventoryWasteStock::with(['product', 'warehouse', 'unit'])
             ->when($warehouse_id, function ($q) use ($warehouse_id) {
                 $q->where('fk_warehouse_id', $warehouse_id);
             })
@@ -1714,7 +1718,7 @@ class ProductsController extends Controller
                 optional($w->product)->p_product_name ?? '',
                 optional($w->warehouse)->w_warehouse_name ?? '',
                 number_format($w->ws_quantity, 3),
-                $w->ws_created_at,
+                optional($w->unit)->su_unit_label ?? '',
             ];
         }
 

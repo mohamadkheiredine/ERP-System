@@ -148,8 +148,8 @@ Route::post('/request/api/cash/savecashmovements', 'Api\CashflowController@SaveC
 
 
 
-Route::get(' /api/inventory/getlistrawmaterials', 'Api\ProductsController@GetListRawMaterials');
-Route::get(' /api/inventory/validatestock', 'Api\ProductsController@ValidateStock');
+Route::get('/api/inventory/getlistrawmaterials', 'Api\ProductsController@GetListRawMaterials');
+Route::get('/api/inventory/validatestock', 'Api\ProductsController@ValidateStock');
 
 Route::get('/api/products/getproductlotsbyproductid','Api\ProductsController@GetProductLotsByProductId');
 Route::get('/api/products/getproducts','Api\ProductsController@GetProducts');
@@ -182,6 +182,8 @@ Route::post('/api/inventory/savemenucategory', 'Api\FnbCategoriesController@Save
 Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@DeleteMenuCategory');
 
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
+Route::get('/api/inventory/getlistingredientsformenuitem', 'Api\FnbItemController@GetListIngredientsForMenuItem');
+Route::post('/api/inventory/saveingredientforitem', 'Api\FnbItemController@SaveIngredientForItem');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbOrderController@GetListOfOrders');
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
 Route::get('/api/inventory/getlistmodifiersperitem', 'Api\FnbModifiersController@GetModifiersPerItem');
