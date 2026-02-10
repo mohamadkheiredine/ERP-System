@@ -812,3 +812,6 @@ ADD COLUMN ss_is_closed TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE fnb_order_items
 ADD COLUMN oi_is_kitchen_closed TINYINT(1) NOT NULL DEFAULT 0;
 
+ALTER TABLE inventory_waste_stock
+ADD COLUMN ws_unit INT(11) NULL DEFAULT NULL AFTER ws_quantity;
+

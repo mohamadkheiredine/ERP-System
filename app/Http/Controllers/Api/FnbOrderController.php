@@ -29,7 +29,7 @@ use App\models\System\SystemStatus;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
-use App\Models\Fnb\FnbWasteStock;
+use App\Models\Fnb\InventoryWasteStock;
 use App\models\Inventory\Products;
 
 class FnbOrderController extends Controller
@@ -409,15 +409,16 @@ class FnbOrderController extends Controller
                     foreach ($product_quantities as $product_id => $qty_per_item) {
 
                         $final_waste_qty = $qty_per_item * $waste_qty;
-                        $stock_id = Stocks::where('fk_product_id', $product_id)
+                        $stock = Stocks::where('fk_product_id', $product_id)
                             ->where('fk_warehouse_id', $warehouse_id)
-                            ->value('is_id');
+                            ->first(['is_id', 'is_stock_unit']);
 
-                        FnbWasteStock::create([
+                        InventoryWasteStock::create([
                             'fk_product_id'   => $product_id,
-                            'fk_stock_id'     => $stock_id,
+                            'fk_stock_id'     => $stock->is_id ?? null,
                             'fk_warehouse_id' => $warehouse_id,
                             'ws_quantity'     => $final_waste_qty,
+                            'ws_unit'         => $stock->is_stock_unit ?? null,
                             'ws_date'         => now()->toDateString(),
                             'ws_created_by'   => $user_id,
                             'ws_created_at'   => now(),
@@ -541,16 +542,16 @@ class FnbOrderController extends Controller
                             $productId = (int) $modifier->m_item_id;
 
                             if ($removeCount > 0) {
-                                $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
+                                $stock = Stocks::where('fk_product_id', $modifier->m_item_id)
                                     ->where('fk_warehouse_id', $warehouse_id)
-                                    ->value('is_id');
+                                    ->first(['is_id', 'is_stock_unit']);
 
-
-                                FnbWasteStock::create([
+                                InventoryWasteStock::create([
                                     'fk_product_id'   => $productId,
-                                    'fk_stock_id'     => $stockId,
+                                    'fk_stock_id'     => $stock->is_id ?? null,
                                     'fk_warehouse_id' => $warehouse_id,
                                     'ws_quantity'     => $removeCount,
+                                    'ws_unit'         => $stock->is_stock_unit ?? null,
                                     'ws_date'         => now()->toDateString(),
                                     'ws_created_by'   => $user_id,
                                     'ws_created_at'   => now(),
@@ -1657,6 +1658,10 @@ class FnbOrderController extends Controller
         $user_info    = Users::find($user_id);
         $order_code = $request->input('order_code');
 
+        if (!$user_info) {
+            return response()->json(['is_error' => 1, 'error_message' => 'User not found']);
+        }
+
         $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
@@ -1669,14 +1674,14 @@ class FnbOrderController extends Controller
         }
 
         $order = FnbOrders::where('fo_order_code', $order_code)->first();
-        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
-            ->pluck('ot_table_id')
-            ->toArray();
-
 
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
         }
+
+        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
+            ->pluck('ot_table_id')
+            ->toArray();
 
         $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->where('oi_is_deleted', 0)
             ->join('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
@@ -2247,11 +2252,12 @@ class FnbOrderController extends Controller
 
                     $consume = min($available, $remaining);
 
-                    FnbWasteStock::create([
+                    InventoryWasteStock::create([
                         'fk_product_id'   => $productId,
                         'fk_stock_id'     => $stock->is_id,
                         'fk_warehouse_id' => $warehouse_id,
                         'ws_quantity'     => $consume,
+                        'ws_unit'         => $stock->is_stock_unit ?? null,
                         'ws_date'         => $now->toDateString(),
                         'ws_created_by'   => $user_id,
                         'ws_created_at'   => $now,

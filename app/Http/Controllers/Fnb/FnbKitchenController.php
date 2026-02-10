@@ -7,6 +7,7 @@ use App\models\FnB\FnbPrinters;
 use Illuminate\Http\Request;
 use App\models\System\Companies;
 use App\models\FnB\KitchenStations;
+use App\models\Inventory\WareHouses;
 use Config;
 
 class FnbKitchenController extends Controller
@@ -23,8 +24,10 @@ class FnbKitchenController extends Controller
     public function addKitchen()
     {
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
+        $lst_warehouses = WareHouses::all();
         $data = array(
-            "lst_companies" => $lst_companies
+            "lst_companies" => $lst_companies,
+            "lst_warehouses" => $lst_warehouses,
         );
         return Response()->view('fnb.kitchen.addform', $data);
     }
@@ -74,6 +77,7 @@ class FnbKitchenController extends Controller
         $ks_name = $request->input('ks_name');
         $ks_description = $request->input('ks_description');
         $ks_active = $request->has('ks_active') ? 1 : 0;
+        $ks_warehouse_id = $request->input('ks_warehouse_id');
         $default_company_id = session('default_company_id');
         $printer_ip = $request->input('printer_ip');
         $printer_port = $request->input('printer_port');
@@ -89,6 +93,7 @@ class FnbKitchenController extends Controller
         $kitchen_info->ks_description = $ks_description;
         $kitchen_info->ks_branch_id = $default_company_id;
         $kitchen_info->ks_is_active = $ks_active;
+        $kitchen_info->ks_warehouse_id = $ks_warehouse_id;
 
         $kitchen_info->save();
 
@@ -96,8 +101,12 @@ class FnbKitchenController extends Controller
         $kitchen_info->ks_code = 'K' . $ks_id;
         $kitchen_info->save();
 
-        $printer = new FnbPrinters();
-        $printer->ks_id = $ks_id;
+        $printer = FnbPrinters::where('ks_id', $ks_id)->first();
+
+        if (!$printer) {
+            $printer = new FnbPrinters();
+            $printer->ks_id = $ks_id;
+        }
         $printer->printer_ip = $printer_ip;
         $printer->printer_port = $printer_port;
         $printer->printer_name = $ks_name . 'Printer';
@@ -113,9 +122,11 @@ class FnbKitchenController extends Controller
     public function editKitchen($ks_id)
     {
         $kitchen_info = KitchenStations::find($ks_id);
+        $lst_warehouses = WareHouses::all();
 
         $data = array(
             "kitchen_info" => $kitchen_info,
+            "lst_warehouses" => $lst_warehouses,
         );
         return view('fnb.kitchen.editform', $data);
     }
