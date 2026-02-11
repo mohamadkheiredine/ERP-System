@@ -134,7 +134,7 @@
                                     name="mi_unit_id">
                                     <option value="0">-- Select Unit --</option>
                                     @foreach($lst_units as $index => $unit_info)
-                                        <option value="{{ $unit_info->ss_id }}">{{ $unit_info->ss_status_title }}</option>
+                                        <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_label }}</option>
                                     @endforeach
                                 </select>
                             </div>

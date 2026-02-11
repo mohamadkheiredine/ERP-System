@@ -18,6 +18,7 @@ use App\models\FnB\Modifier;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
 use App\models\System\SystemStatus;
+use App\models\System\Units;
 use Milon\Barcode\DNS1D;
 use Termwind\Components\Raw;
 
@@ -81,7 +82,7 @@ class FnbItemsController extends Controller
     {
         $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
         $lst_currencies = Currency::all();
-        $lst_units = SystemStatus::whereSsStatusType('pos_order_statuses')->whereSsIsDeleted(0)->get();
+        $lst_units = Units::all();
 
         $rand_barcode = rand(10000000, 99999999999);
 

@@ -125,6 +125,25 @@ class FnbOrderController extends Controller
         return (int) $statusId;
     }
 
+    private function resolveProductWarehouse($productId)
+    {
+        $prod = Products::where('p_id', $productId)
+            ->first(['fk_warehouse_id']);
+
+        return $prod && $prod->fk_warehouse_id
+            ? $prod->fk_warehouse_id
+            : null;
+    }
+
+    private function resolveModifierProduct($itemId, $modifierId)
+    {
+        $row = FnbMenuItemModifier::where('fk_menu_item_id', $itemId)
+            ->where('fk_modifier_id', $modifierId)
+            ->first(['im_product_id']);
+
+        return $row ? $row->im_product_id : null;
+    }
+
     /**
      * @author Mohammed kheiredine
      * @access public
@@ -244,23 +263,21 @@ class FnbOrderController extends Controller
             }
 
             //item_id -> modifier_id -> qty
-            $old_modifier_quantity = [];
+            $old_modifier_quantity = []; // item_id -> modifier_id -> consumed_qty
 
             foreach ($old_modifiers as $mod) {
+                $itemId = (int) $mod->im_item_id;
+                $modifierId = (int) $mod->im_modifier_id;
 
-                $modifier_id = $mod->im_modifier_id;
-                $modifier = Modifier::find($modifier_id);
-                $menu_item_id = $mod->im_item_id;
-
-                if (!isset($old_modifier_quantity[$menu_item_id])) {
-                    $old_modifier_quantity[$menu_item_id] = [];
+                if (!isset($old_modifier_quantity[$itemId])) {
+                    $old_modifier_quantity[$itemId] = [];
+                }
+                if (!isset($old_modifier_quantity[$itemId][$modifierId])) {
+                    $old_modifier_quantity[$itemId][$modifierId] = 0;
                 }
 
-                if (!isset($old_modifier_quantity[$menu_item_id][$modifier_id])) {
-                    $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
-                }
-
-                $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
+                // im_quantity must be treated as consumed stock units
+                $old_modifier_quantity[$itemId][$modifierId] += (float) ($mod->im_quantity ?? 0);
             }
 
             $new_items_quantity = [];
@@ -276,32 +293,62 @@ class FnbOrderController extends Controller
                 $new_items_quantity[$item_id] += $qty;
             }
 
-            $new_modifier_quantity = [];
+            // $new_modifier_quantity = [];
+
+            // foreach ($new_items as $item) {
+            //     $item_id = $item['item_id'];
+            //     $item_qty = $item['quantity'];
+
+            //     if (empty($item['modifiers'])) {
+            //         continue;
+            //     }
+
+            //     foreach ($item['modifiers'] as $mod) {
+            //         $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
+            //         $mod_qty = ($mod['quantity'] ?? 1);
+
+            //         $final_qty = $item_qty * $mod_qty;
+
+            //         if (!isset($new_modifier_quantity[$item_id])) {
+            //             $new_modifier_quantity[$item_id] = [];
+            //         }
+
+            //         if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
+            //             $new_modifier_quantity[$item_id][$modifier_id] = 0;
+            //         }
+
+            //         $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+            //     }
+            // }
+
+            $new_modifier_quantity = []; // item_id -> modifier_id -> consumed_qty
 
             foreach ($new_items as $item) {
-                $item_id = $item['item_id'];
-                $item_qty = $item['quantity'];
+                $itemId = $item['item_id'];
+                $itemQty = ($item['quantity'] ?? 0);
 
-                if (empty($item['modifiers'])) {
-                    continue;
-                }
+                if (empty($item['modifiers'])) continue;
 
                 foreach ($item['modifiers'] as $mod) {
-                    $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+                    $modifierId = ($mod['modifier_id'] ?? $mod['id'] ?? 0);
+                    if (!$modifierId) continue;
 
-                    $mod_qty = ($mod['quantity'] ?? 1);
+                    $selectedQty = ($mod['quantity'] ?? 1);
+                    $modifier = Modifier::find($modifierId);
+                    if (!$modifier) continue;
 
-                    $final_qty = $item_qty * $mod_qty;
+                    $baseConsume = ($modifier->m_quantity ?? 0); // units of product per selection
+                    $consumed = $itemQty * $selectedQty * $baseConsume;
 
-                    if (!isset($new_modifier_quantity[$item_id])) {
-                        $new_modifier_quantity[$item_id] = [];
+                    if (!isset($new_modifier_quantity[$itemId])) {
+                        $new_modifier_quantity[$itemId] = [];
+                    }
+                    if (!isset($new_modifier_quantity[$itemId][$modifierId])) {
+                        $new_modifier_quantity[$itemId][$modifierId] = 0;
                     }
 
-                    if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
-                        $new_modifier_quantity[$item_id][$modifier_id] = 0;
-                    }
-
-                    $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+                    $new_modifier_quantity[$itemId][$modifierId] += $consumed;
                 }
             }
 
@@ -327,13 +374,17 @@ class FnbOrderController extends Controller
 
                     foreach ($ingredients as $ing) {
                         $quantity_to_reduce = $ing->in_stock_quantity * $delta;
-                        if ($quantity_to_reduce > 0) {
-                            $this->reduceStock(
-                                $ing->in_product_id,
-                                $warehouse_id,
-                                $quantity_to_reduce
-                            );
+                        $realWh = $this->resolveProductWarehouse($ing->in_product_id);
+
+                        if (!$realWh) {
+                            throw new \Exception("Product {$ing->in_product_id} has no warehouse defined");
                         }
+
+                        $this->reduceStock(
+                            $ing->in_product_id,
+                            $realWh,
+                            $quantity_to_reduce
+                        );
                     }
 
                     $menu_item = FnbMenuItem::find($item_id);
@@ -483,25 +534,46 @@ class FnbOrderController extends Controller
 
                     $modifier = Modifier::find($modifier_id);
                     if ($delta > 0) {
-
-                        FnbOrderItemModifiers::create([
-                            'im_item_id' => $item_id,
-                            'im_order_id' => $order_id,
-                            'im_modifier_id' => $modifier->m_id,
-                            'im_modifier_name' => $modifier->m_modifier_name,
-                            'im_modifier_cost' => $modifier->m_cost_modifier,
-                            'im_quantity' => $modifier->m_quantity * $delta
-                        ]);
-
-                        $qty_to_reduce = $modifier->m_quantity;
-
-                        if ($qty_to_reduce > 0) {
-                            $this->reduceStock(
-                                $modifier->m_item_id,
-                                $warehouse_id,
-                                $qty_to_reduce
-                            );
+                        //resolve productId from fnb_menu_item_modifiers (your rule)
+                        $productId = $this->resolveModifierProduct($item_id, $modifier_id);
+                        if (!$productId) {
+                            throw new \Exception("No product linked to modifier {$modifier_id} for item {$item_id}");
                         }
+
+                        //resolve correct warehouse from inventory_product
+                        $realWh = $this->resolveProductWarehouse($productId);
+                        if (!$realWh) {
+                            throw new \Exception("No warehouse for modifier product {$productId}");
+                        }
+
+                        //reduce only the delta (already stock units)
+                        $this->reduceStock($productId, $realWh, $delta);
+
+                        //upsert modifier row quantity to NEW consumed amount (not delta)
+                        $existing = FnbOrderItemModifiers::where('im_order_id', $order_id)
+                            ->where('im_item_id', $item_id)
+                            ->where('im_modifier_id', $modifier_id)
+                            ->where('im_is_deleted', 0)
+                            ->first();
+
+                        if ($existing) {
+                            $existing->im_quantity = $newQty;
+                            $existing->save();
+                        } else {
+                            $modifier = Modifier::find($modifier_id);
+
+                            FnbOrderItemModifiers::create([
+                                'im_item_id' => $item_id,
+                                'im_order_id' => $order_id,
+                                'im_modifier_id' => $modifier_id,
+                                'im_modifier_name' => $modifier->m_modifier_name ?? '',
+                                'im_modifier_cost' => $modifier->m_cost_modifier ?? 0,
+                                'im_quantity' => $newQty, // store NEW consumed total
+                                'im_is_deleted' => 0,
+                            ]);
+                        }
+
+
 
                         FnbPrintJobs::create([
                             'order_id' => $order_id,
@@ -796,16 +868,13 @@ class FnbOrderController extends Controller
 
             foreach ($order_items as $key => $item_order) {
 
-                //PREVENT DUPLICATE ITEM CREATION
                 if (isset($existingMap[$item_order['item_id']])) {
 
-                    // Item already exists in DB lezm just update quantity
                     $existingItem = $existingMap[$item_order['item_id']];
 
                     $existingItem->oi_quantity = $item_order['quantity'];
                     $existingItem->save();
 
-                    // Skip creating new row & skip printing again
                     continue;
                 }
 
@@ -1011,7 +1080,13 @@ class FnbOrderController extends Controller
                     $total_qty = $ing->in_stock_quantity * $item_order['quantity'];
 
 
-                    $this->reduceStock($product_id, $warehouse_id, $total_qty);
+                    $realWh = $this->resolveProductWarehouse($product_id);
+
+                    if (!$realWh) {
+                        throw new \Exception("No warehouse for product {$product_id}");
+                    }
+
+                    $this->reduceStock($product_id, $realWh, $total_qty);
                 }
 
                 if (!empty($item_order['modifiers'])) {
@@ -1026,10 +1101,28 @@ class FnbOrderController extends Controller
                             continue;
                         }
 
-                        $product_id   = $modifier->m_item_id;
+                        $productId = $this->resolveModifierProduct(
+                            $item_order['item_id'],
+                            $mod['id']
+                        );
+
+                        if (!$productId) {
+                            throw new \Exception("No product linked to modifier {$mod['id']}");
+                        }
+
+                        $realWh = $this->resolveProductWarehouse($productId);
+
+                        if (!$realWh) {
+                            throw new \Exception("No warehouse for modifier product {$productId}");
+                        }
+
                         $qty_per_unit = $modifier->m_quantity * $item_order['quantity'];
 
-                        $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+                        $this->reduceStock(
+                            $productId,
+                            $realWh,
+                            $qty_per_unit
+                        );
                     }
                 }
             }

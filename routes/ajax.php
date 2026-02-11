@@ -802,6 +802,7 @@ Route::get('/request/receipes/getreceipe', 'Fnb\FnbReceipesController@GetReceipe
 Route::get('/request/receipes/listingredients', 'Fnb\FnbReceipesController@DisplayListIngredients');
 Route::post('/request/receipe/saveinfo', 'Fnb\FnbReceipesController@SaveIngredientInfo');
 Route::delete("/request/receipe/deletereceipeinfo",'Fnb\FnbReceipesController@DeleteIngredientInfo');
+Route::post('/request/receipe/saverecipeinfo', 'Fnb\FnbReceipesController@SaveRecipeInfo');
 
 
 Route::get('/request/orders/displaylistorders', 'Fnb\FnbOrdersController@DisplayListOrders');
