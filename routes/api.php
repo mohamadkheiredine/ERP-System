@@ -184,6 +184,10 @@ Route::post('/api/inventory/deletemenucategory', 'Api\FnbCategoriesController@De
 Route::get('/api/inventory/getlistofitems', 'Api\FnbItemController@GetListOfItems');
 Route::get('/api/inventory/getlistingredientsformenuitem', 'Api\FnbItemController@GetListIngredientsForMenuItem');
 Route::post('/api/inventory/saveingredientforitem', 'Api\FnbItemController@SaveIngredientForItem');
+Route::get('/api/inventory/getlistunits', 'Api\FnbItemController@GetListUnits');
+Route::post('/api/inventory/deleteingredient', 'Api\FnbItemController@DeleteIngredient');
+Route::post('/api/inventory/updateitemdescription', 'Api\FnbItemController@UpdateItemDescription');
+Route::get('/api/inventory/printrecipepdf', 'Api\FnbItemController@PrintRecipePdf');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbOrderController@GetListOfOrders');
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
 Route::get('/api/inventory/getlistmodifiersperitem', 'Api\FnbModifiersController@GetModifiersPerItem');

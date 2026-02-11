@@ -1,4 +1,6 @@
 <div>
+    <input type="hidden" id="RECIPE_MI_ID" value="{{ $item->mi_id }}">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 id="RECIPE_PAGE_TITLE">Recipes Management</h2>
         <h4 class="fw-bold" style="padding-left:10px;" id="RECIPE_TITLE">{{ $item->mi_item_name }}</h4>
@@ -7,7 +9,7 @@
             <button class="btn btn-outline-secondary me-2" id="BTN_PRINT_RECIPE">
                 <i class="bi bi-printer"></i>
             </button>
-            <button class="btn btn-outline-secondary me-2">
+            <button class="btn btn-outline-secondary me-2" id="BTN_DOWNLOAD_RECIPE">
                 <i class="bi bi-download"></i>
             </button>
             <button class="btn btn-warning fw-bold" id="BTN_SAVE_RECIPE">
@@ -72,7 +74,7 @@
                     </tr>
                 </thead>
                 <tbody id="INGREDIENTS_BODY">
-
+                    @include('fnb.receipes.listingredients')
                 </tbody>
             </table>
 
@@ -170,7 +172,8 @@
 
         <div class="card-body">
             <div id="PREP_STEPS">
-                <!-- AJAX loaded steps -->
+                <textarea class="form-control" id="MI_ITEM_DESCRIPTION" name="mi_item_description"
+                    rows="6" placeholder="Enter preparation steps here...">{{ $item->mi_item_description }}</textarea>
             </div>
         </div>
     </div>
@@ -205,9 +208,9 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Ingredient Name</label>
-                            <select class="form-select form-control" id="IN_INGREDIENT_NAME" name="in_product_id">
-                                <option value="0">-- Select Ingredient --</option>
+                            <label class="form-label fw-bold">Product Name</label>
+                            <select class="form-select form-control" id="IN_PRODUCT_ID" name="in_product_id">
+                                <option value="0">-- Select Product --</option>
                                 @foreach($lst_products as $product_info)
                                     <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
                                 @endforeach
@@ -227,6 +230,20 @@
                                     <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_label }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ingredient Name</label>
+                            <input type="text" class="form-control" name="in_ingredient_name" id="IN_INGREDIENT_NAME"
+                                placeholder="Custom ingredient name">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ingredient Code</label>
+                            <input type="text" class="form-control" name="in_ingredient_code" id="IN_INGREDIENT_CODE"
+                                placeholder="Ingredient code">
                         </div>
                     </div>
 

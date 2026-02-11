@@ -33,6 +33,7 @@ fnb_receipes_module = {
             },
             success: function (response) {
                 $("#RECIPE_CONTENT_WRAPPER").html(response.display);
+                fnb_receipes_module.RecalculateSummary();
             },
         });
     },
@@ -49,6 +50,7 @@ fnb_receipes_module = {
             },
             success: function (response) {
                 $("#INGREDIENTS_BODY").html(response.display);
+                fnb_receipes_module.RecalculateSummary();
             },
         });
     },
@@ -154,5 +156,98 @@ fnb_receipes_module = {
     backToPreviousPage: function () {
         var base_url = $("#BASE_URL").val();
         window.location.href = base_url + "/fnb/kitchen";
+    },
+
+    RecalculateSummary: function () {
+        var batchCost = 0;
+        $("#INGREDIENTS_BODY .ingredient-row").each(function () {
+            var lineCost = parseFloat($(this).data("line_cost")) || 0;
+            batchCost += lineCost;
+        });
+
+        var batchYield = parseFloat($("#BATCH_YIELD").val()) || 0;
+        var portionSize = parseFloat($("#PORTION_SIZE").val()) || 1;
+        var targetMargin = parseFloat($("#TARGET_MARGIN").val()) || 0;
+
+        var portions = portionSize > 0 ? batchYield / portionSize : 0;
+        var costPerPortion = portions > 0 ? batchCost / portions : 0;
+        var suggestedPrice = targetMargin < 100
+            ? costPerPortion / (1 - targetMargin / 100)
+            : 0;
+
+        $("#BATCH_COST").text("$" + batchCost.toFixed(2));
+        $("#PORTION_COUNT").text(portions.toFixed(0));
+        $("#PORTION_COST").text("$" + costPerPortion.toFixed(2));
+
+        $("#SUGGESTED_PRICE").text("$" + suggestedPrice.toFixed(2));
+        $("#TARGET_MARGIN_LABEL").text("at " + targetMargin + "% margin");
+
+        fnb_receipes_module.RecalculateScaledPreview();
+    },
+
+    RecalculateScaledPreview: function () {
+        var scaleFactor = parseFloat($("#SCALE_FACTOR").val()) || 1;
+        var batchYield = parseFloat($("#BATCH_YIELD").val()) || 0;
+        var batchCost = 0;
+
+        $("#INGREDIENTS_BODY .ingredient-row").each(function () {
+            batchCost += parseFloat($(this).data("line_cost")) || 0;
+        });
+
+        var scaledYield = batchYield * scaleFactor;
+        var scaledCost = batchCost * scaleFactor;
+
+        $("#SCALED_PREVIEW").text(
+            "Yield " + scaledYield.toFixed(0) + " pcs \u00B7 Cost $" + scaledCost.toFixed(2)
+        );
+
+        var scaledRows = "";
+        $("#INGREDIENTS_BODY .ingredient-row").each(function () {
+            var name = $(this).data("ingredient_name") || "\u2014";
+            var qty = parseFloat($(this).data("qty")) || 0;
+            var uom = $(this).data("uom") || "";
+            var lineCost = parseFloat($(this).data("line_cost")) || 0;
+
+            var scaledQty = (qty * scaleFactor).toFixed(2);
+            var scaledLineCost = (lineCost * scaleFactor).toFixed(2);
+
+            scaledRows += "<tr>" +
+                "<td>" + name + "</td>" +
+                "<td>" + scaledQty + "</td>" +
+                "<td>" + uom + "</td>" +
+                '<td class="text-end">$' + scaledLineCost + "</td>" +
+                "</tr>";
+        });
+
+        $("#SCALED_INGREDIENTS_BODY").html(scaledRows);
+    },
+
+    SaveRecipeInfo: function () {
+        var base_url = $("#BASE_URL").val();
+        var _token = $("input[name=_token]").val();
+        var mi_id = $("#RECIPE_MI_ID").val();
+        var mi_item_description = $("#MI_ITEM_DESCRIPTION").val();
+
+        $.ajax({
+            url: base_url + "/request/receipe/saverecipeinfo",
+            method: "POST",
+            dataType: "json",
+            data: {
+                _token: _token,
+                mi_id: mi_id,
+                mi_item_description: mi_item_description,
+            },
+            success: function (response) {
+                if (response.is_error == 0) {
+                    if (typeof bootbox !== "undefined") {
+                        bootbox.alert("Recipe saved successfully!");
+                    } else {
+                        alert("Recipe saved successfully!");
+                    }
+                } else {
+                    alert(response.error_msg);
+                }
+            },
+        });
     },
 };

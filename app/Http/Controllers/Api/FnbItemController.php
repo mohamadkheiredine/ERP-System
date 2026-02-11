@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\models\Users\Users;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbIngredients;
+use App\models\System\Units;
+use App\Models\System\Companies;
+use App\models\System\Currency;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FnbItemController extends Controller
 {
@@ -45,6 +49,12 @@ class FnbItemController extends Controller
 
         $items_array = array();
         foreach ($lst_fnb_items as $index => $item) {
+            $unit_label = '';
+            if ($item->mi_unit_id) {
+                $unit = Units::find($item->mi_unit_id);
+                $unit_label = $unit ? $unit->su_unit_label : '';
+            }
+
             $items_array[$index] = [
                 'mi_id' => $item->mi_id,
                 'mi_item_name' => $item->mi_item_name,
@@ -54,11 +64,14 @@ class FnbItemController extends Controller
                 'mi_cost_price' => $item->mi_cost_price,
                 'currency_code' => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
                 'cc_id' => $item->mi_currency_id,
+                'mi_unit_id' => $item->mi_unit_id,
+                'unit_label' => $unit_label,
                 'mi_is_available' => $item->mi_is_available,
-                'mi_is_spicy'=> $item->mi_is_spicy,
+                'mi_is_spicy' => $item->mi_is_spicy,
                 'mi_is_vegetarian' => $item->mi_is_vegetarian,
                 'mi_barcode' => $item->mi_barcode,
                 'mi_image' => $item->mi_image_file_name,
+                'mi_item_description' => $item->mi_item_description,
             ];
         }
 
@@ -207,12 +220,12 @@ class FnbItemController extends Controller
 
         $user_info = Users::find($user_id);
 
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
         if (!$user_info) {
             return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
         }
-
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash = hash('sha256', $c_hash);
 
         if ($c_hash != $g_hash) {
             return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
@@ -276,12 +289,12 @@ class FnbItemController extends Controller
 
         $user_info = Users::find($user_id);
 
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
         if (!$user_info) {
             return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
         }
-
-        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-        $c_hash = hash('sha256', $c_hash);
 
         if ($c_hash != $g_hash) {
             return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
@@ -314,5 +327,217 @@ class FnbItemController extends Controller
             'error_msg' => 'Ingredient has been saved',
             'in_id'     => $ingredient->in_id,
         ]);
+    }
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetListUnits(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $lst_units = Units::whereSuIsDeleted(0)->get();
+
+        $units_array = [];
+        foreach ($lst_units as $index => $unit) {
+            $units_array[$index] = [
+                'su_id'         => $unit->su_id,
+                'su_unit_label' => $unit->su_unit_label,
+                'su_unit_code'  => $unit->su_unit_code,
+            ];
+        }
+
+        return Response()->json([
+            'is_error'  => 0,
+            'error_msg' => '',
+            'lst_units' => $units_array,
+        ]);
+    }
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function DeleteIngredient(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $in_id   = $request->input('in_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $ingredient = FnbIngredients::find($in_id);
+        if (!$ingredient) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'Ingredient not found']);
+        }
+
+        $ingredient->in_is_deleted = 1;
+        $ingredient->in_deleted_by = $user_id;
+        $ingredient->save();
+
+        return Response()->json([
+            'is_error'  => 0,
+            'error_msg' => 'Ingredient has been deleted',
+        ]);
+    }
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function UpdateItemDescription(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $mi_id   = $request->input('mi_id');
+        $mi_item_description = $request->input('mi_item_description');
+
+        $user_info = Users::find($user_id);
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $item = FnbMenuItem::find($mi_id);
+        if (!$item) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'Item not found']);
+        }
+
+        $item->mi_item_description = $mi_item_description;
+        $item->save();
+
+        return Response()->json([
+            'is_error'  => 0,
+            'error_msg' => 'Description has been saved',
+        ]);
+    }
+
+    /**
+     * @author Mohammed kheiredine
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function PrintRecipePdf(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $mi_id   = $request->input('mi_id');
+        $download = $request->input('download', 0);
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        if (!$user_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        $item = FnbMenuItem::where('mi_id', $mi_id)
+            ->where('mi_is_deleted', 0)
+            ->first();
+
+        if (!$item) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'Item not found']);
+        }
+
+        $ingredients = FnbIngredients::with(['Product', 'Unit'])
+            ->where('in_item_id', $mi_id)
+            ->where('in_is_deleted', 0)
+            ->get();
+
+        $company = Companies::first();
+
+        $logoSrc = null;
+
+        if (
+            $company &&
+            $company->cd_logo_base_src &&
+            $company->cd_logo_file_name &&
+            $company->cd_logo_file_extension
+        ) {
+            $logoSrc =
+                'resources/companies/' .
+                trim($company->cd_logo_base_src, '/\\') . '/' .
+                $company->cd_logo_file_name . '.' .
+                $company->cd_logo_file_extension;
+
+            $logoSrc = str_replace('\\', '/', $logoSrc);
+
+            if (!file_exists(public_path($logoSrc))) {
+                $logoSrc = null;
+            }
+        }
+
+        $currency = Currency::where('cc_id', $item->mi_currency_id)->first();
+        $currencyCode = $currency ? $currency->cc_currency_code : '';
+        $totalCost = $ingredients->sum('in_line_cost');
+
+        $data = [
+            'item'        => $item,
+            'ingredients' => $ingredients,
+            'logoSrc'     => $logoSrc ?? null,
+            'printedBy'   => $user_info->u_fullname,
+            'printedAt'   => now(),
+            'currency'    => $currencyCode,
+            'totalCost'   => $totalCost,
+        ];
+
+        $pdf = Pdf::loadView('fnb.receipes.receipe-print', $data)
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isRemoteEnabled' => false,
+                'chroot' => public_path(),
+                'isHtml5ParserEnabled' => true,
+                'defaultFont' => 'dejavu sans',
+            ]);
+
+        $fileName = 'Recipe_' . $item->mi_item_name . '.pdf';
+
+        if ($download) {
+            return $pdf->download($fileName);
+        }
+
+        return $pdf->stream($fileName);
     }
 }

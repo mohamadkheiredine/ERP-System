@@ -58,7 +58,7 @@
 
           <div class="col-md-6">
             <div class="form-group">
-              <label class="control-label">Item <span class="required"></span></label>
+              <label class="control-label">Product(raw material) <span class="required"></span></label>
               <select class="form-select form-control" data-control="select2" id="M_ITEM_ID" name="m_item_id">
                 <option value="0">-- Select Item --</option>
                 @foreach($lst_items as $index => $item_info)
