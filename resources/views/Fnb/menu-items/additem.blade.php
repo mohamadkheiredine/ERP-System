@@ -155,6 +155,24 @@
                             </div>
                         </div>
 
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Kitchen Station</label>
+                                <select class="form-select form-control" data-control="select2" id="MI_KITCHEN_STATION_ID"
+                                    name="mi_kitchen_station_id">
+
+                                    <option value="0">-- Select Kitchen --</option>
+
+                                    @foreach($lst_kitchens as $kitchen)
+                                        <option value="{{ $kitchen->ks_id }}">
+                                            {{ $kitchen->ks_name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="row">
