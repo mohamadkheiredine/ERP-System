@@ -131,9 +131,9 @@
                             <select class="form-select" name="mi_unit_id" id="MI_UNIT_ID">
                                 <option value="0">-- Select Unit --</option>
                                 @foreach($lst_units as $unit)
-                                    <option value="{{ $unit->ss_id }}" @if($unit->ss_id == $item_info->mi_unit_id) selected
+                                    <option value="{{ $unit->su_id }}" @if($unit->su_id == $item_info->mi_unit_id) selected
                                     @endif>
-                                        {{ $unit->ss_status_title }}
+                                        {{ $unit->su_unit_label }}
                                     </option>
                                 @endforeach
                             </select>
@@ -150,6 +150,24 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="control-label">Kitchen Station</label>
+
+                            <select class="form-select" name="mi_kitchen_station_id" id="MI_KITCHEN_STATION_ID">
+
+                                <option value="0">-- Select Kitchen --</option>
+
+                                @foreach($lst_kitchens as $kitchen)
+                                    <option value="{{ $kitchen->ks_id }}"
+                                        @if($kitchen->ks_id == $item_info->mi_kitchen_station_id) selected @endif>
+                                        {{ $kitchen->ks_name }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+
                         </div>
 
                     </div>
