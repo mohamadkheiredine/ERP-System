@@ -18,6 +18,7 @@ use App\models\FnB\Modifier;
 use App\models\Inventory\Products;
 use App\models\System\Currency;
 use App\models\System\SystemStatus;
+use App\models\System\Units;
 use Milon\Barcode\DNS1D;
 use Termwind\Components\Raw;
 
@@ -81,7 +82,11 @@ class FnbItemsController extends Controller
     {
         $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
         $lst_currencies = Currency::all();
-        $lst_units = SystemStatus::whereSsStatusType('pos_order_statuses')->whereSsIsDeleted(0)->get();
+        $lst_units = Units::where('su_is_deleted', 0)->get();
+
+        $lst_kitchens = KitchenStations::where('ks_is_deleted', 0)
+            ->where('ks_is_active', 1)
+            ->get();
 
         $rand_barcode = rand(10000000, 99999999999);
 
@@ -90,6 +95,7 @@ class FnbItemsController extends Controller
 
         $data = [
             "lst_units" => $lst_units,
+            "lst_kitchens" => $lst_kitchens,
             "lst_categories" => $lst_categories,
             "lst_currencies" => $lst_currencies,
             "rand_barcode" => $rand_barcode,
@@ -102,6 +108,25 @@ class FnbItemsController extends Controller
     public function saveItem(Request $request)
     {
         $mi_id = $request->input('mi_id');
+        $mi_unit_id = $request->input('mi_unit_id');
+        $mi_item_name = $request->input('mi_item_name');
+        $mi_item_description = $request->input('mi_item_description');
+        $mi_barcode = $request->input('mi_barcode');
+        $mi_base_price = $request->input('mi_base_price');
+        $mi_cost_price = $request->input('mi_cost_price');
+        $mi_currency_id = $request->input('mi_currency_id');
+        $mi_category_id = $request->input('mi_category_id');
+        $mi_sku_code = $request->input('mi_sku_code');
+        $mi_preparation_time_minutes = $request->input('mi_preparation_time_minutes');
+        $mi_tax_percentage = $request->input('mi_tax_percentage');
+        $mi_pos_order_display = $request->input('mi_pos_order_display');
+        $mi_calories = $request->input('mi_calories');
+        $mi_max_order_quantity = $request->input('mi_max_order_quantity');
+        $mi_is_available = $request->has('mi_is_available') ? 1 : 0;
+        $mi_is_vegetarian = $request->has('mi_is_vegetarian') ? 1 : 0;
+        $mi_is_spicy = $request->has('mi_is_spicy') ? 1 : 0;
+        $mi_is_active = $request->has('fi_is_active') ? 1 : 0;
+        $mi_kitchen_station_id = $request->input('mi_kitchen_station_id');
 
         $image_data = null;
         if ($request->hasFile('mi_avatar_pic')) {
@@ -118,24 +143,26 @@ class FnbItemsController extends Controller
             $item = new FnbMenuItem();
             $item->mi_created_by = session('user_id');
         }
-        $item->mi_item_name = $request->mi_item_name;
-        $item->mi_item_description = $request->mi_item_description;
-        $item->mi_barcode = $request->mi_barcode;
-        $item->mi_base_price = $request->mi_base_price;
-        $item->mi_cost_price = $request->mi_cost_price;
-        $item->mi_currency_id = $request->mi_currency_id;
-        $item->mi_unit_id = $request->mi_unit_id;
-        $item->mi_category_id = $request->mi_category_id;
-        $item->mi_sku_code = $request->mi_sku_code;
-        $item->mi_preparation_time_minutes = $request->mi_preparation_time_minutes;
-        $item->mi_tax_percentage = $request->mi_tax_percentage;
-        $item->mi_pos_order_display = $request->mi_pos_order_display;
-        $item->mi_calories = $request->mi_calories;
-        $item->mi_max_order_quantity = $request->mi_max_order_quantity;
-        $item->mi_is_available = $request->has('mi_is_available') ? 1 : 0;
-        $item->mi_is_vegetarian = $request->has('mi_is_vegetarian') ? 1 : 0;
-        $item->mi_is_spicy = $request->has('mi_is_spicy') ? 1 : 0;
-        $item->mi_is_active = $request->has('fi_is_active') ? 1 : 0;
+        $item->mi_item_name = $mi_item_name;
+        $item->mi_item_description = $mi_item_description;
+        $item->mi_barcode = $mi_barcode;
+        $item->mi_base_price = $mi_base_price;
+        $item->mi_cost_price = $mi_cost_price;
+        $item->mi_currency_id = $mi_currency_id;
+        $item->mi_unit_id = $mi_unit_id;
+
+        $item->mi_category_id = $mi_category_id;
+        $item->mi_sku_code = $mi_sku_code;
+        $item->mi_preparation_time_minutes = $mi_preparation_time_minutes;
+        $item->mi_tax_percentage = $mi_tax_percentage;
+        $item->mi_pos_order_display = $mi_pos_order_display;
+        $item->mi_calories = $mi_calories;
+        $item->mi_max_order_quantity = $mi_max_order_quantity;
+        $item->mi_is_available = $mi_is_available;
+        $item->mi_is_vegetarian = $mi_is_vegetarian;
+        $item->mi_is_spicy = $mi_is_spicy;
+        $item->mi_is_active = $mi_is_active;
+        $item->mi_kitchen_station_id = $mi_kitchen_station_id;
 
         if ($image_data != null) {
             $item->mi_image_base_src  = $image_data['mi_image_base_src'];
@@ -160,7 +187,10 @@ class FnbItemsController extends Controller
     {
         $item_info = FnbMenuItem::findOrFail($mi_id);
 
-        $lst_units = SystemStatus::whereSsIsDeleted(0)->get();
+        $lst_units = Units::where('su_is_deleted', 0)->get();
+        $lst_kitchens = KitchenStations::where('ks_is_deleted', 0)
+            ->where('ks_is_active', 1)
+            ->get();
         $lst_categories = MenuCategories::whereMcIsDeleted(0)->get();
         $lst_currencies = Currency::all();
 
@@ -173,6 +203,7 @@ class FnbItemsController extends Controller
         return view('fnb.menu-items.edititem', [
             'item_info'      => $item_info,
             'lst_units'  => $lst_units,
+            'lst_kitchens' => $lst_kitchens,
             'lst_categories' => $lst_categories,
             'bar_code_png'   => $bar_code_png,
             'lst_modifiers'  => $lst_modifiers,

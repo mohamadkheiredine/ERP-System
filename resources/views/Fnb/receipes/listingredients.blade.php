@@ -1,5 +1,11 @@
 @foreach($lst_ingredients as $index => $ingredient_info)
-    <tr class="ingredient-row" data-in_id="{{ $ingredient_info->in_id }}">
+    <tr class="ingredient-row" data-in_id="{{ $ingredient_info->in_id }}"
+        data-line_cost="{{ $ingredient_info->in_line_cost }}"
+        data-qty="{{ $ingredient_info->in_stock_quantity }}"
+        data-unit_cost="{{ $ingredient_info->in_cost_per_unit }}"
+        data-waste="{{ $ingredient_info->in_waste_percent }}"
+        data-ingredient_name="{{ $ingredient_info->in_ingredient_name ?? optional($ingredient_info->Product)->p_product_name }}"
+        data-uom="{{ optional($ingredient_info->Unit)->su_unit_label ?? '' }}">
 
          <td style="width: 220px;">
             <select class="form-select ingredient-select" name="in_item_id[]">
@@ -12,6 +18,14 @@
                     </option>
                 @endforeach
             </select>
+            @if(!empty($ingredient_info->in_ingredient_name))
+                <small class="text-muted d-block mt-1">
+                    {{ $ingredient_info->in_ingredient_name }}
+                    @if(!empty($ingredient_info->in_ingredient_code))
+                        ({{ $ingredient_info->in_ingredient_code }})
+                    @endif
+                </small>
+            @endif
         </td>
         <td style="width: 80px;">
             <input type="number" step="0.01" class="form-control qty-input" name="in_stock_quantity" value="{{ $ingredient_info->in_stock_quantity }}">
@@ -19,8 +33,8 @@
 
         <td style="width: 100px;">
             <select class="form-select" name="in_unit_of_measure">
-            @foreach($lst_units as $index => $unit_info)
-                <option @if($unit_info->su_id == $ingredient_info->in_unit_of_measure) selected @endif>
+            @foreach($lst_units as $unit_index => $unit_info)
+                <option value="{{ $unit_info->su_id }}" @if($unit_info->su_id == $ingredient_info->in_unit_of_measure) selected @endif>
                     {{ $unit_info->su_unit_label }}
                 </option>
             @endforeach

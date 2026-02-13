@@ -29,7 +29,8 @@ use App\models\System\SystemStatus;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
-use App\Models\Fnb\FnbWasteStock;
+use App\Models\Fnb\InventoryWasteStock;
+use App\models\FnB\KitchenStations;
 use App\models\Inventory\Products;
 
 class FnbOrderController extends Controller
@@ -70,38 +71,110 @@ class FnbOrderController extends Controller
             return;
         }
 
-        DB::transaction(function () use ($product_id, $warehouse_id, &$qty_to_reduce) {
+        DB::transaction(function () use ($product_id, $warehouse_id, $qty_to_reduce) {
 
-            $available_stock = Stocks::where('fk_product_id', $product_id)
+            $remaining = $qty_to_reduce;
+
+            // get ALL stock rows FIFO (positive, zero, negative)
+            $stocks = Stocks::where('fk_product_id', $product_id)
                 ->where('fk_warehouse_id', $warehouse_id)
-                ->where('is_quanity', '>', 0)
                 ->orderBy('is_id', 'asc')
                 ->lockForUpdate()
                 ->get();
 
-            $total_stock = $available_stock->sum('is_quanity');
-            if ($total_stock < $qty_to_reduce) {
-                throw new \Exception("Not enough stock for product ID $product_id. Need $qty_to_reduce but only $total_stock available.");
+            if ($stocks->isEmpty()) {
+
+                $stock = new Stocks();
+                $stock->fk_product_id = $product_id;
+                $stock->fk_warehouse_id = $warehouse_id;
+                $stock->is_quanity = -$remaining;
+                $stock->is_stock_label = 'NEGATIVE STOCK AUTO-GENERATED';
+                $stock->is_created_by = session('user_id') ?? 0;
+                $stock->is_creation_date = now();
+
+                return;
             }
 
-            foreach ($available_stock as $batch) {
-                if ($qty_to_reduce <= 0) {
+            foreach ($stocks as $stock) {
+
+                if ($remaining <= 0) {
                     break;
                 }
 
-                $take = min($batch->is_quanity, $qty_to_reduce);
+                if ($stock->is_quanity > 0) {
 
-                $batch->decrement('is_quanity', $take);
-                $qty_to_reduce -= $take;
+                    $take = min($stock->is_quanity, $remaining);
+
+                    $stock->is_quanity -= $take;
+                    $stock->save();
+
+                    $remaining -= $take;
+                }
+            }
+
+            // CRITICAL FIX: if still remaining, reduce last stock row
+            if ($remaining > 0) {
+
+                $lastStock = $stocks->last();
+
+                $lastStock->is_quanity -= $remaining;
+                $lastStock->save();
             }
         });
     }
-
     private function restoreStock($product_id, $warehouse_id, $qty)
     {
-        Stocks::where('fk_product_id', $product_id)
-            ->where('fk_warehouse_id', $warehouse_id)
-            ->increment('is_quanity', $qty);
+        if ($qty <= 0) {
+            return;
+        }
+
+        DB::transaction(function () use ($product_id, $warehouse_id, $qty) {
+            $remaining = $qty;
+
+            // First fill negative rows back toward 0
+            $negatives = Stocks::where('fk_product_id', $product_id)
+                ->where('fk_warehouse_id', $warehouse_id)
+                ->where('is_quanity', '<', 0)
+                ->orderBy('is_id', 'asc')
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($negatives as $row) {
+                if ($remaining <= 0) break;
+
+                $canFill = min($remaining, abs($row->is_quanity));
+                $row->increment('is_quanity', $canFill);
+                $remaining -= $canFill;
+
+                // Remove row if it reached 0
+                if ($row->fresh()->is_quanity == 0) {
+                    $row->delete();
+                }
+            }
+
+            // Add remainder to the first positive batch (or create one)
+            if ($remaining > 0) {
+                $positiveBatch = Stocks::where('fk_product_id', $product_id)
+                    ->where('fk_warehouse_id', $warehouse_id)
+                    ->where('is_quanity', '>=', 0)
+                    ->orderBy('is_id', 'asc')
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($positiveBatch) {
+                    $positiveBatch->increment('is_quanity', $remaining);
+                } else {
+                    $newStock = new Stocks();
+                    $newStock->fk_product_id   = $product_id;
+                    $newStock->fk_warehouse_id = $warehouse_id;
+                    $newStock->is_quanity      = $remaining;
+                    $newStock->is_stock_label   = 'STOCK RESTORED';
+                    $newStock->is_created_by    = auth()->id() ?? 0;
+                    $newStock->is_creation_date = now();
+                    $newStock->save();
+                }
+            }
+        });
     }
 
     private function resolvePendingKitchenStatusId(): ?int
@@ -125,6 +198,33 @@ class FnbOrderController extends Controller
         return (int) $statusId;
     }
 
+    private function resolveKitchenWarehouseByMenuItem($menuItemId): ?int
+    {
+        $menuItem = FnbMenuItem::where('mi_id', $menuItemId)
+            ->first(['mi_kitchen_station_id']);
+
+        if (!$menuItem || !$menuItem->mi_kitchen_station_id) {
+            return null;
+        }
+
+        $kitchen = KitchenStations::where('ks_id', $menuItem->mi_kitchen_station_id)
+            ->first(['ks_warehouse_id']);
+
+        return $kitchen && $kitchen->ks_warehouse_id
+            ? $kitchen->ks_warehouse_id
+            : null;
+    }
+
+    private function resolveModifierProduct($itemId, $modifierId)
+    {
+        $row = FnbMenuItemModifier::where('fk_menu_item_id', $itemId)
+            ->where('fk_modifier_id', $modifierId)
+            ->where('im_is_deleted', 0)
+            ->first(['im_product_id']);
+
+        return $row ? $row->im_product_id : null;
+    }
+
     /**
      * @author Mohammed kheiredine
      * @access public
@@ -138,34 +238,32 @@ class FnbOrderController extends Controller
          * - ifrequest contains "updated_items" then run editOrder logic
          * - else => run createOrder logic
          */
+        $g_hash             = $request->input('g_hash');
+        $user_id            = $request->input('user_id');
+        $store_id           = $request->input('store_id');
+        $warehouse_id       = $request->input('warehouse_id');
+        $customer_id        = $request->input('customer_id');
+        $delcustomername    = $request->input('delcustomername');
+        $delcustomerphone   = $request->input('delcustomerphone');
+        $delcustomeraddress = $request->input('delcustomeraddress');
+        $customer_type      = $request->input('customer_type');
+
+        // --- hash validation ---
+        $user_info = Users::find($user_id);
+        $c_hash = hash('sha256', "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567");
+
+        if ($c_hash != $g_hash) {
+            return response()->json([
+                'is_error'  => 1,
+                'error_msg' => 'hash sequence is not valid !!',
+            ]);
+        }
+
         $has_updated_items = $request->has('updated_items');
 
         if ($has_updated_items) {
-            $g_hash = $request->input("g_hash");
-            $user_id = $request->input("user_id");
-            $store_id = $request->input("store_id");
-            $warehouse_id = $request->input("warehouse_id");
             $order_id = $request->input("order_id");
             $updated_items = $request->input("updated_items");
-            $customer_id = $request->input('customer_id');
-            $delcustomername = $request->input('delcustomername');
-            $delcustomerphone = $request->input('delcustomerphone');
-            $delcustomeraddress = $request->input('delcustomeraddress');
-            $customer_type = $request->input('customer_type');
-
-
-            $user_info    = Users::find($user_id);
-
-            $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-
-            $c_hash = hash('sha256', $c_hash);
-            $result_array = array();
-
-            if ($c_hash != $g_hash) {
-                $result_array['is_error']      = 1;
-                $result_array['error_message'] = 'hash sequence is not valid !!';
-                return Response()->json($result_array);
-            }
 
             if (is_string($updated_items)) {
                 $new_items = json_decode($updated_items, true);
@@ -244,23 +342,21 @@ class FnbOrderController extends Controller
             }
 
             //item_id -> modifier_id -> qty
-            $old_modifier_quantity = [];
+            $old_modifier_quantity = []; // item_id -> modifier_id -> consumed_qty
 
             foreach ($old_modifiers as $mod) {
+                $itemId = (int) $mod->im_item_id;
+                $modifierId = (int) $mod->im_modifier_id;
 
-                $modifier_id = $mod->im_modifier_id;
-                $modifier = Modifier::find($modifier_id);
-                $menu_item_id = $mod->im_item_id;
-
-                if (!isset($old_modifier_quantity[$menu_item_id])) {
-                    $old_modifier_quantity[$menu_item_id] = [];
+                if (!isset($old_modifier_quantity[$itemId])) {
+                    $old_modifier_quantity[$itemId] = [];
+                }
+                if (!isset($old_modifier_quantity[$itemId][$modifierId])) {
+                    $old_modifier_quantity[$itemId][$modifierId] = 0;
                 }
 
-                if (!isset($old_modifier_quantity[$menu_item_id][$modifier_id])) {
-                    $old_modifier_quantity[$menu_item_id][$modifier_id] = 0;
-                }
-
-                $old_modifier_quantity[$menu_item_id][$modifier_id] += $mod->Modifier->m_quantity;
+                // im_quantity must be treated as consumed stock units
+                $old_modifier_quantity[$itemId][$modifierId] += (float) ($mod->im_quantity ?? 0);
             }
 
             $new_items_quantity = [];
@@ -276,32 +372,65 @@ class FnbOrderController extends Controller
                 $new_items_quantity[$item_id] += $qty;
             }
 
-            $new_modifier_quantity = [];
+            // $new_modifier_quantity = [];
+
+            // foreach ($new_items as $item) {
+            //     $item_id = $item['item_id'];
+            //     $item_qty = $item['quantity'];
+
+            //     if (empty($item['modifiers'])) {
+            //         continue;
+            //     }
+
+            //     foreach ($item['modifiers'] as $mod) {
+            //         $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+
+            //         $mod_qty = ($mod['quantity'] ?? 1);
+
+            //         $final_qty = $item_qty * $mod_qty;
+
+            //         if (!isset($new_modifier_quantity[$item_id])) {
+            //             $new_modifier_quantity[$item_id] = [];
+            //         }
+
+            //         if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
+            //             $new_modifier_quantity[$item_id][$modifier_id] = 0;
+            //         }
+
+            //         $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+            //     }
+            // }
+
+            $new_modifier_quantity = []; // item_id -> modifier_id -> consumed_qty
 
             foreach ($new_items as $item) {
-                $item_id = $item['item_id'];
-                $item_qty = $item['quantity'];
+                $itemId = $item['item_id'];
+                $itemQty = ($item['quantity'] ?? 0);
 
-                if (empty($item['modifiers'])) {
-                    continue;
-                }
+                if (empty($item['modifiers'])) continue;
 
                 foreach ($item['modifiers'] as $mod) {
-                    $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
+                    $modifierId = ($mod['modifier_id'] ?? $mod['id'] ?? 0);
+                    if (!$modifierId) continue;
 
-                    $mod_qty = ($mod['quantity'] ?? 1);
+                    $modifier = Modifier::find($modifierId);
+                    if (!$modifier) continue;
 
-                    $final_qty = $item_qty * $mod_qty;
+                    $baseConsume = ($modifier->m_quantity ?? 0); // units of product per selection
 
-                    if (!isset($new_modifier_quantity[$item_id])) {
-                        $new_modifier_quantity[$item_id] = [];
+                    // must match create-flow formula: m_quantity * item_qty
+                    // do NOT multiply by frontend selectedQty — the create path
+                    // stores im_quantity = m_quantity * item_qty (no selection factor)
+                    $consumed = $itemQty * $baseConsume;
+
+                    if (!isset($new_modifier_quantity[$itemId])) {
+                        $new_modifier_quantity[$itemId] = [];
+                    }
+                    if (!isset($new_modifier_quantity[$itemId][$modifierId])) {
+                        $new_modifier_quantity[$itemId][$modifierId] = 0;
                     }
 
-                    if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
-                        $new_modifier_quantity[$item_id][$modifier_id] = 0;
-                    }
-
-                    $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
+                    $new_modifier_quantity[$itemId][$modifierId] += $consumed;
                 }
             }
 
@@ -309,6 +438,8 @@ class FnbOrderController extends Controller
                 array_keys($old_items_quantities),
                 array_keys($new_items_quantity)
             ));
+
+            $pending_kitchen_id = $this->resolvePendingKitchenStatusId();
 
             foreach ($all_item_ids as $item_id) {
                 $old_qty = $old_items_quantities[$item_id] ?? 0;
@@ -321,36 +452,35 @@ class FnbOrderController extends Controller
                         ->where('in_is_active', 1)
                         ->get(['in_product_id', 'in_stock_quantity']);
 
-                    $pending_kitchen_id = SystemStatus::where('ss_status_type', 'kitchen_order_statuses')
-                        ->whereRaw('LOWER(ss_status_title) = ?', ['pending'])
-                        ->value('ss_id');
-
                     foreach ($ingredients as $ing) {
                         $quantity_to_reduce = $ing->in_stock_quantity * $delta;
-                        if ($quantity_to_reduce > 0) {
-                            $this->reduceStock(
-                                $ing->in_product_id,
-                                $warehouse_id,
-                                $quantity_to_reduce
-                            );
+                        $reduceWh = $this->resolveKitchenWarehouseByMenuItem($item_id);
+
+                        if (!$reduceWh) {
+                            throw new \Exception("No warehouse linked to kitchen station for menu item {$item_id}");
                         }
+
+                        $this->reduceStock(
+                            $ing->in_product_id,
+                            $reduceWh,
+                            $quantity_to_reduce
+                        );
                     }
 
                     $menu_item = FnbMenuItem::find($item_id);
-
                     $station_id = ($menu_item->mi_kitchen_station_id ?? 0);
 
                     if ($old_qty > 0) {
-
-                        // ghayer l quantity
-                        FnbOrderItems::where('oi_order_id', operator: $order_id)
+                        $orderItem = FnbOrderItems::where('oi_order_id', $order_id)
                             ->where('oi_item_id', $item_id)
                             ->where('oi_is_deleted', 0)
-                            ->update([
-                                'oi_quantity' => $new_qty
-                            ]);
+                            ->first();
+
+                        if ($orderItem) {
+                            $orderItem->oi_quantity = $new_qty;
+                            $orderItem->save();
+                        }
                     } else {
-                        // iza kenet kena 3amlin item jdide
                         FnbOrderItems::create([
                             'oi_order_id'       => $order_id,
                             'oi_item_id'        => $item_id,
@@ -362,10 +492,8 @@ class FnbOrderController extends Controller
                             'oi_kitchen_status' => $pending_kitchen_id,
                             'oi_currency_id'    => $order->fo_currency_id,
                             'oi_is_deleted'     => 0,
-                            'oi_created_by'     => $user_id,
                         ]);
                     }
-
 
                     FnbPrintJobs::create([
                         'order_id' => $order_id,
@@ -409,37 +537,44 @@ class FnbOrderController extends Controller
                     foreach ($product_quantities as $product_id => $qty_per_item) {
 
                         $final_waste_qty = $qty_per_item * $waste_qty;
-                        $stock_id = Stocks::where('fk_product_id', $product_id)
-                            ->where('fk_warehouse_id', $warehouse_id)
-                            ->value('is_id');
+                        $wasteWh = $this->resolveKitchenWarehouseByMenuItem($item_id);
 
-                        FnbWasteStock::create([
+                        if (!$wasteWh) {
+                            throw new \Exception("No warehouse linked to kitchen station for menu item {$item_id}");
+                        }
+
+                        $stock = Stocks::where('fk_product_id', $product_id)
+                            ->where('fk_warehouse_id', $wasteWh)
+                            ->first(['is_id', 'is_stock_unit']);
+
+                        InventoryWasteStock::create([
                             'fk_product_id'   => $product_id,
-                            'fk_stock_id'     => $stock_id,
-                            'fk_warehouse_id' => $warehouse_id,
+                            'fk_stock_id'     => $stock ? $stock->is_id : null,
+                            'fk_warehouse_id' => $wasteWh,
                             'ws_quantity'     => $final_waste_qty,
+                            'ws_unit'         => $stock ? $stock->is_stock_unit : null,
                             'ws_date'         => now()->toDateString(),
                             'ws_created_by'   => $user_id,
                             'ws_created_at'   => now(),
                         ]);
+                    }
 
-
-                        if ($new_qty > 0) {
-                            FnbOrderItems::where('oi_order_id', $order_id)
-                                ->where('oi_item_id', $item_id)
-                                ->where('oi_is_deleted', 0)
-                                ->update([
-                                    'oi_quantity' => $new_qty
-                                ]);
-                        } else {
-                            FnbOrderItems::where('oi_order_id', $order_id)
-                                ->where('oi_item_id', $item_id)
-                                ->where('oi_is_deleted', 0)
-                                ->update([
-                                    'oi_is_deleted' => 1,
-                                    'oi_deleted_by' => $user_id
-                                ]);
-                        }
+                    // update or soft-delete the order item (outside ingredients loop)
+                    if ($new_qty > 0) {
+                        FnbOrderItems::where('oi_order_id', $order_id)
+                            ->where('oi_item_id', $item_id)
+                            ->where('oi_is_deleted', 0)
+                            ->update([
+                                'oi_quantity' => $new_qty
+                            ]);
+                    } else {
+                        FnbOrderItems::where('oi_order_id', $order_id)
+                            ->where('oi_item_id', $item_id)
+                            ->where('oi_is_deleted', 0)
+                            ->update([
+                                'oi_is_deleted' => 1,
+                                'oi_deleted_by' => $user_id
+                            ]);
                     }
                 } else {
                 }
@@ -453,19 +588,8 @@ class FnbOrderController extends Controller
 
             foreach ($all_modifiers_qty as $item_id) {
 
-                $orderItem = FnbOrderItems::where('oi_order_id', $order_id)
-                    ->where('oi_item_id', $item_id)
-                    ->where('oi_is_deleted', 0)
-                    ->first();
-
-
-                if (!$orderItem) {
-                    continue;
-                }
-
-                $menu_item = FnbMenuItem::find($orderItem->oi_item_id);
+                $menu_item = FnbMenuItem::find($item_id);
                 $station_id = $menu_item->mi_kitchen_station_id ?? 0;
-
 
                 $old_mods = $old_modifier_quantity[$item_id] ?? [];
                 $new_mods = $new_modifier_quantity[$item_id] ?? [];
@@ -482,24 +606,38 @@ class FnbOrderController extends Controller
 
                     $modifier = Modifier::find($modifier_id);
                     if ($delta > 0) {
+                        // resolve productId — skip stock if no product linked
+                        $productId = $this->resolveModifierProduct($item_id, $modifier_id);
 
-                        FnbOrderItemModifiers::create([
-                            'im_item_id' => $item_id,
-                            'im_order_id' => $order_id,
-                            'im_modifier_id' => $modifier->m_id,
-                            'im_modifier_name' => $modifier->m_modifier_name,
-                            'im_modifier_cost' => $modifier->m_cost_modifier,
-                            'im_quantity' => $modifier->m_quantity * $delta
-                        ]);
+                        if ($productId) {
+                            $reduceWh = $this->resolveKitchenWarehouseByMenuItem($item_id);
 
-                        $qty_to_reduce = $modifier->m_quantity;
+                            if (!$reduceWh) {
+                                throw new \Exception("No warehouse linked to kitchen station for menu item {$item_id}");
+                            }
+                            $this->reduceStock($productId, $reduceWh, $delta);
+                        }
 
-                        if ($qty_to_reduce > 0) {
-                            $this->reduceStock(
-                                $modifier->m_item_id,
-                                $warehouse_id,
-                                $qty_to_reduce
-                            );
+                        // upsert modifier row quantity to NEW consumed amount (not delta)
+                        $existing = FnbOrderItemModifiers::where('im_order_id', $order_id)
+                            ->where('im_item_id', $item_id)
+                            ->where('im_modifier_id', $modifier_id)
+                            ->where('im_is_deleted', 0)
+                            ->first();
+
+                        if ($existing) {
+                            $existing->im_quantity = $newQty;
+                            $existing->save();
+                        } else {
+                            FnbOrderItemModifiers::create([
+                                'im_item_id' => $item_id,
+                                'im_order_id' => $order_id,
+                                'im_modifier_id' => $modifier_id,
+                                'im_modifier_name' => $modifier->m_modifier_name ?? '',
+                                'im_modifier_cost' => $modifier->m_cost_modifier ?? 0,
+                                'im_quantity' => $newQty,
+                                'im_is_deleted' => 0,
+                            ]);
                         }
 
                         FnbPrintJobs::create([
@@ -521,43 +659,49 @@ class FnbOrderController extends Controller
                             'updated_at' => now(),
                         ]);
                     } elseif ($delta < 0) {
-                        if ($newQty > 0) {
-                            $removeCount = $oldQty - $newQty;
-                        } else {
-                            $removeCount = $oldQty;
+                        $removeCount = abs($delta);
+
+                        FnbOrderItemModifiers::where('im_item_id', $item_id)
+                            ->where('im_modifier_id', $modifier_id)
+                            ->where('im_order_id', $order_id)
+                            ->where('im_is_deleted', 0)
+                            ->update([
+                                'im_quantity' => $newQty,
+                                'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
+                            ]);
+
+                        if ($modifier && $modifier->m_item_id > 0 && $removeCount > 0) {
+                            $productId = (int) $modifier->m_item_id;
+                            $wasteWh = $this->resolveKitchenWarehouseByMenuItem($item_id);
+
+                            if (!$wasteWh) {
+                                throw new \Exception("No warehouse linked to kitchen station for menu item {$item_id}");
+                            }
+
+                            $stock = Stocks::where('fk_product_id', $productId)
+                                ->where('fk_warehouse_id', $wasteWh)
+                                ->first(['is_id', 'is_stock_unit']);
+
+                            InventoryWasteStock::create([
+                                'fk_product_id'   => $productId,
+                                'fk_stock_id'     => $stock ? $stock->is_id : null,
+                                'fk_warehouse_id' => $wasteWh,
+                                'ws_quantity'     => $removeCount,
+                                'ws_unit'         => $stock ? $stock->is_stock_unit : null,
+                                'ws_date'         => now()->toDateString(),
+                                'ws_created_by'   => $user_id,
+                                'ws_created_at'   => now(),
+                            ]);
                         }
-                        if ($removeCount > 0) {
+                    } else {
+                        // delta = 0: self-heal im_quantity if stored value differs from correct calculation
+                        if ($newQty > 0) {
                             FnbOrderItemModifiers::where('im_item_id', $item_id)
                                 ->where('im_modifier_id', $modifier_id)
                                 ->where('im_order_id', $order_id)
                                 ->where('im_is_deleted', 0)
-                                ->update([
-                                    'im_quantity' => $newQty,
-                                    'im_is_deleted' => ($newQty <= 0 ? 1 : 0),
-                                ]);
+                                ->update(['im_quantity' => $newQty]);
                         }
-
-                        if ($modifier && $modifier->m_item_id > 0) {
-                            $productId = (int) $modifier->m_item_id;
-
-                            if ($removeCount > 0) {
-                                $stockId = Stocks::where('fk_product_id', $modifier->m_item_id)
-                                    ->where('fk_warehouse_id', $warehouse_id)
-                                    ->value('is_id');
-
-
-                                FnbWasteStock::create([
-                                    'fk_product_id'   => $productId,
-                                    'fk_stock_id'     => $stockId,
-                                    'fk_warehouse_id' => $warehouse_id,
-                                    'ws_quantity'     => $removeCount,
-                                    'ws_date'         => now()->toDateString(),
-                                    'ws_created_by'   => $user_id,
-                                    'ws_created_at'   => now(),
-                                ]);
-                            }
-                        }
-                    } else {
                     }
                 }
             }
@@ -569,7 +713,6 @@ class FnbOrderController extends Controller
         } else {
 
             // create order
-            $g_hash   = $request->input('g_hash');
             $order_items = $request->input('order_items');
             $order_code = null;
 
@@ -578,13 +721,7 @@ class FnbOrderController extends Controller
                 $order_items = json_decode($order_items, true);
             }
 
-
-
-
-            $store_id = $request->input('store_id');
             $company_id = $request->input('company_id');
-            $warehouse_id = $request->input('warehouse_id');
-            $user_id = $request->input('user_id');
             $sub_total = $request->input('sub_total');
             $total = $request->input('total');
 
@@ -595,9 +732,7 @@ class FnbOrderController extends Controller
 
             $rate = (float) $request->input('currency_display_rate', 1);
 
-
             $order_type = $request->input('order_type');
-            $customer_id = $request->input('customer_id');
             $display_currency_id = (int) $request->input('currency_display_id');
 
             if (!$display_currency_id || !Currency::find($display_currency_id)) {
@@ -607,29 +742,12 @@ class FnbOrderController extends Controller
                 ]);
             }
 
-            $delcustomername          = $request->input('delcustomername');
-            $delcustomerphone          = $request->input('delcustomerphone');
-            $delcustomeraddress          = $request->input('delcustomeraddress');
-            $customer_type         = $request->input('customer_type');
-            $delivery_id          = strlen($delcustomername) > 0 ? 1 : 0;
+            $delivery_id   = strlen($delcustomername) > 0 ? 1 : 0;
             $customer_info = null;
             $table_ids = $request->input('table_id');
             $table_ids = array_filter(explode(",", $table_ids));
-            $order_id   = $request->input('order_id');
-            $isDineIn   = ($order_type === 'dine_in');
-
-
-            $user_info = Users::find($user_id);
-
-            $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
-            $c_hash = hash('sha256', $c_hash);
-            $result_array = array();
-
-            if ($c_hash != $g_hash) {
-                $result_array['is_error'] = 1;
-                $result_array['error_msg'] = 'hash sequence is not valid !!';
-                return Response()->json($result_array);
-            }
+            $order_id  = $request->input('order_id');
+            $isDineIn  = ($order_type === 'dine_in');
 
 
             if ($order_type === 'takeaway') {
@@ -793,20 +911,31 @@ class FnbOrderController extends Controller
                 ->get()
                 ->keyBy('oi_item_id');
 
+            // Track qty to reduce per item (only new items or positive deltas)
+            $stockReduceQty = []; // item_id => qty to reduce
+
             foreach ($order_items as $key => $item_order) {
 
-                //PREVENT DUPLICATE ITEM CREATION
                 if (isset($existingMap[$item_order['item_id']])) {
 
-                    // Item already exists in DB lezm just update quantity
                     $existingItem = $existingMap[$item_order['item_id']];
+                    $oldQty = (int) $existingItem->oi_quantity;
+                    $newQty = (int) $item_order['quantity'];
 
-                    $existingItem->oi_quantity = $item_order['quantity'];
+                    $existingItem->oi_quantity = $newQty;
                     $existingItem->save();
 
-                    // Skip creating new row & skip printing again
+                    // Only reduce stock for the increased delta
+                    $delta = $newQty - $oldQty;
+                    if ($delta > 0) {
+                        $stockReduceQty[$item_order['item_id']] = $delta;
+                    }
+
                     continue;
                 }
+
+                // New item — reduce full quantity
+                $stockReduceQty[$item_order['item_id']] = (int) $item_order['quantity'];
 
                 $item = new FnbOrderItems();
                 $item->oi_order_id = $fo_id;
@@ -997,9 +1126,16 @@ class FnbOrderController extends Controller
 
 
 
+            // Only reduce stock for new items or the increased delta of existing items
             foreach ($order_items as $item_order) {
 
                 $item_id = $item_order['item_id'];
+                $reduceQty = $stockReduceQty[$item_id] ?? 0;
+
+                // Skip items with no stock change (existing items with same or decreased qty)
+                if ($reduceQty <= 0) {
+                    continue;
+                }
 
                 $ingredients = FnbIngredients::where('in_item_id', $item_id)
                     ->where('in_is_deleted', 0)
@@ -1007,10 +1143,15 @@ class FnbOrderController extends Controller
 
                 foreach ($ingredients as $ing) {
                     $product_id = $ing->in_product_id;
-                    $total_qty = $ing->in_stock_quantity * $item_order['quantity'];
+                    $total_qty = $ing->in_stock_quantity * $reduceQty;
 
+                    $realWh = $this->resolveKitchenWarehouseByMenuItem($item_id);
 
-                    $this->reduceStock($product_id, $warehouse_id, $total_qty);
+                    if (!$realWh) {
+                        throw new \Exception("No warehouse for product {$product_id}");
+                    }
+
+                    $this->reduceStock($product_id, $realWh, $total_qty);
                 }
 
                 if (!empty($item_order['modifiers'])) {
@@ -1025,10 +1166,28 @@ class FnbOrderController extends Controller
                             continue;
                         }
 
-                        $product_id   = $modifier->m_item_id;
-                        $qty_per_unit = $modifier->m_quantity * $item_order['quantity'];
+                        $productId = $this->resolveModifierProduct(
+                            $item_order['item_id'],
+                            $mod['id']
+                        );
 
-                        $this->reduceStock($product_id, $warehouse_id, $qty_per_unit);
+                        if (!$productId) {
+                            throw new \Exception("No product linked to modifier {$mod['id']}");
+                        }
+
+                        $realWh = $this->resolveKitchenWarehouseByMenuItem($item_order['item_id']);
+
+                        if (!$realWh) {
+                            throw new \Exception("No warehouse for modifier product {$productId}");
+                        }
+
+                        $qty_per_unit = $modifier->m_quantity * $reduceQty;
+
+                        $this->reduceStock(
+                            $productId,
+                            $realWh,
+                            $qty_per_unit
+                        );
                     }
                 }
             }
@@ -1657,6 +1816,10 @@ class FnbOrderController extends Controller
         $user_info    = Users::find($user_id);
         $order_code = $request->input('order_code');
 
+        if (!$user_info) {
+            return response()->json(['is_error' => 1, 'error_message' => 'User not found']);
+        }
+
         $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
 
         $c_hash = hash('sha256', $c_hash);
@@ -1669,14 +1832,14 @@ class FnbOrderController extends Controller
         }
 
         $order = FnbOrders::where('fo_order_code', $order_code)->first();
-        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
-            ->pluck('ot_table_id')
-            ->toArray();
-
 
         if (!$order) {
             return response()->json(['is_error' => 1, 'error_msg' => 'Order not found']);
         }
+
+        $tables = FnbOrderTables::where('ot_order_id', $order->fo_id)
+            ->pluck('ot_table_id')
+            ->toArray();
 
         $items = FnbOrderItems::where('oi_order_id', $order->fo_id)->where('oi_is_deleted', 0)
             ->join('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
@@ -2247,11 +2410,12 @@ class FnbOrderController extends Controller
 
                     $consume = min($available, $remaining);
 
-                    FnbWasteStock::create([
+                    InventoryWasteStock::create([
                         'fk_product_id'   => $productId,
                         'fk_stock_id'     => $stock->is_id,
                         'fk_warehouse_id' => $warehouse_id,
                         'ws_quantity'     => $consume,
+                        'ws_unit'         => $stock->is_stock_unit ?? null,
                         'ws_date'         => $now->toDateString(),
                         'ws_created_by'   => $user_id,
                         'ws_created_at'   => $now,

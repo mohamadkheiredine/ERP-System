@@ -229,7 +229,14 @@ class ProductStocksController extends Controller
 FROM inventory_stocks as stock
 LEFT JOIN inventory_products as products ON products.p_id = stock.fk_product_id
 LEFT JOIN inventory_warehouses as warehouses ON warehouses.w_id = stock.fk_warehouse_id
-LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY fk_product_id,stock.fk_warehouse_id,stock.is_price_item,stock.is_price_currency;";
+LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY
+  stock.fk_product_id,
+  stock.fk_warehouse_id,
+  stock.is_price_item,
+  stock.is_price_currency,
+  products.p_product_name,
+  warehouses.w_warehouse_name,
+  currency.cc_currency_code;";
             $lst_stocks = DB::select($query);
             $total_stocks = count($lst_stocks);
 
@@ -247,7 +254,14 @@ LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $quer
 FROM inventory_stocks as stock
 LEFT JOIN inventory_products as products ON products.p_id = stock.fk_product_id
 LEFT JOIN inventory_warehouses as warehouses ON warehouses.w_id = stock.fk_warehouse_id
-LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY fk_product_id,stock.fk_warehouse_id,stock.is_price_item,stock.is_price_currency LIMIT " . $skip . "," . $nbr_rows_per_pages . ";";
+LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $query_cond ." GROUP BY
+  stock.fk_product_id,
+  stock.fk_warehouse_id,
+  stock.is_price_item,
+  stock.is_price_currency,
+  products.p_product_name,
+  warehouses.w_warehouse_name,
+  currency.cc_currency_code LIMIT " . $skip . "," . $nbr_rows_per_pages . ";";
             $lst_stocks = DB::select($query);
 
             $data = array(
@@ -975,6 +989,12 @@ LEFT JOIN currency ON currency.cc_id = stock.is_price_currency  where 1 ". $quer
 
         $product_info = Products::find($p_id);
         $result_array = array();
+
+        if (!$product_info) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'Product not found';
+            return Response()->json($result_array);
+        }
 
         $result_array['category_id']                = $product_info->fk_pc_id;
         $result_array['barcode']                    = $product_info->p_barcode;

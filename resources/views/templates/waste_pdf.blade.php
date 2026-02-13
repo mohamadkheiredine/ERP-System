@@ -22,6 +22,7 @@
             <th>Product Name</th>
             <th>Warehouse Name</th>
             <th>Quantity</th>
+            <th>Unit</th>
         </tr>
     </thead>
     <tbody>

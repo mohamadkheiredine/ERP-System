@@ -57,9 +57,9 @@
 
           <div class="col-md-4">
             <div class="form-group">
-              <label class="control-label">Ingredient Name <span class="required"></span></label>
-              <select class="form-select form-control" data-control="select2" id="IN_INGREDIENT_NAME" name="in_ingredient_name">
-                <option value="0">-- Select Ingredient --</option>
+              <label class="control-label">Product Name <span class="required"></span></label>
+              <select class="form-select form-control" data-control="select2" id="IN_INGREDIENT_NAME" name="in_product_id">
+                <option value="0">-- Select Product --</option>
                 @foreach($lst_products as $index => $product_info)
                 <option value="{{ $product_info->p_id }}">{{ $product_info->p_product_name }}</option>
                 @endforeach

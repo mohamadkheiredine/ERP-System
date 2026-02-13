@@ -243,18 +243,22 @@ class ExchangeRatesController extends Controller
             $from_currency  = Currency::find($exchange_rate_from);
             $to_currency    = Currency::find($exchange_rate_to);
             $apikey = '90b8f7b6384738232778';
-            
+
             $from_Currency  = urlencode($from_currency->cc_currency_code);
             $to_Currency    = urlencode($to_currency->cc_currency_code);
             $query          =  "{$from_Currency}_{$to_Currency}";
 
-            $json = file_get_contents("https://free.currconv.com/api/v7/convert?q={$query}&compact=ultra&apiKey={$apikey}");
-            $obj = json_decode($json, true);
-            
-            $exchange_rate = floatval($obj["$query"]);
+            try {
+                $json = file_get_contents("https://free.currconv.com/api/v7/convert?q={$query}&compact=ultra&apiKey={$apikey}");
+                $obj = json_decode($json, true);
+                $exchange_rate = floatval($obj["$query"] ?? 0);
+            } catch (\Exception $e) {
+                $exchange_rate = 0;
+            }
+
             $result_array['exchange_rate'] = $exchange_rate;
         }
-        else 
+        else
         {
             $result_array['exchange_rate'] = $exchange_rate[0]->er_exchange_rate;
         }

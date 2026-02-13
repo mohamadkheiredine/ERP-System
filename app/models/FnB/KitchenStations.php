@@ -31,4 +31,9 @@ class KitchenStations extends Model
     {
         return $this->hasOne('App\models\System\Companies', 'cd_id', 'fl_branch_id');
     }
+
+    public function Printer()
+    {
+        return $this->hasOne('App\models\FnB\FnbPrinters', 'ks_id', 'ks_id');
+    }
 }

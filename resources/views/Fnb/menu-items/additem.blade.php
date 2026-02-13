@@ -134,7 +134,7 @@
                                     name="mi_unit_id">
                                     <option value="0">-- Select Unit --</option>
                                     @foreach($lst_units as $index => $unit_info)
-                                        <option value="{{ $unit_info->ss_id }}">{{ $unit_info->ss_status_title }}</option>
+                                        <option value="{{ $unit_info->su_id }}">{{ $unit_info->su_unit_label }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -151,6 +151,24 @@
                                         <option value="{{ $category_info->mc_id }}">{{ $category_info->mc_category_name }}
                                         </option>
                                     @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Kitchen Station</label>
+                                <select class="form-select form-control" data-control="select2" id="MI_KITCHEN_STATION_ID"
+                                    name="mi_kitchen_station_id">
+
+                                    <option value="0">-- Select Kitchen --</option>
+
+                                    @foreach($lst_kitchens as $kitchen)
+                                        <option value="{{ $kitchen->ks_id }}">
+                                            {{ $kitchen->ks_name }}
+                                        </option>
+                                    @endforeach
+
                                 </select>
                             </div>
                         </div>

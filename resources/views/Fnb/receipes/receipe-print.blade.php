@@ -93,7 +93,7 @@
         @foreach($ingredients as $index => $ing)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ optional($ing->Product)->p_product_name ?? '-' }}</td>
+                <td>{{ $ing->in_ingredient_name ?: (optional($ing->Product)->p_product_name ?? '-') }}</td>
                 <td>{{ $ing->in_stock_quantity }}</td>
                 <td>{{ optional($ing->Unit)->su_unit_label ?? '-' }}</td>
                 <td>{{ $ing->in_waste_percent }}%</td>
@@ -117,6 +117,11 @@
         </tr>
     </tbody>
 </table>
+
+@if(!empty($item->mi_item_description))
+<h3 style="margin-top: 20px;">Preparation Steps</h3>
+<div style="border: 1px solid #ccc; padding: 10px; white-space: pre-wrap;">{{ $item->mi_item_description }}</div>
+@endif
 
 <footer>
     Created by: {{ $printedBy }} &nbsp;|&nbsp;

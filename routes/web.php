@@ -637,6 +637,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/fnb/receipes/addform', 'Fnb\FnbReceipesController@addIngredient');
 
     Route::get('/fnb/receipes/print/{mi_id}','Fnb\FnbReceipesController@PrintReceipePdf')->name('fnb.receipes.print');
+    Route::get('/fnb/receipes/download/{mi_id}','Fnb\FnbReceipesController@DownloadReceipePdf')->name('fnb.receipes.download');
 
 
     Route::get('/fnb/orders', 'Fnb\FnbOrdersController@index');

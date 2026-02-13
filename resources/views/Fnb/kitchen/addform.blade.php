@@ -82,6 +82,17 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Warehouse <span class="required">*</span></label>
+                                    <select name="ks_warehouse_id" id="KS_WAREHOUSE_ID" class="form-control" required>
+                                        <option value="">-- Select Warehouse --</option>
+                                        @foreach($lst_warehouses as $warehouse)
+                                            <option value="{{ $warehouse->w_id }}">{{ $warehouse->w_warehouse_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="col-md-4">
                                 <div class="form-group">
