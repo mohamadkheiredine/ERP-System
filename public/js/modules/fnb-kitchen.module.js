@@ -58,8 +58,10 @@ kitchen_module = {
 
             rules: {
                 ks_name: { required: true, maxlength: 255 },
-                printer_ip: { required: true },
-                printer_port: { required: true, number: true },
+                printer_ip: {
+
+                },
+                printer_port: {  number: true },
             },
 
             messages: {

@@ -907,7 +907,7 @@ class InvoicesController extends Controller
                 return Response()->json($result_array);
             }
 
-            $invoices_info = Invoices::whereBiClientId($ca_client_code)->first();
+            $invoices_info = Invoices::whereBiClientId($client_info->ca_id)->first();
 
             if($invoices_info == null){
                 $result_array['is_error'] = 1;
@@ -915,9 +915,7 @@ class InvoicesController extends Controller
                 return Response()->json($result_array);
             }
 
-
             $bi_id = $invoices_info->bi_id;
-
 
         }
         else if(strlen($ca_invoice_code) > 0){
@@ -931,6 +929,14 @@ class InvoicesController extends Controller
             $client_id = $invoices_info->bi_client_id;
             $client_info = CRMAccounts::find($client_id);
             $bi_id = $invoices_info->bi_id;
+        }
+
+        // if alreasdy returned need to return because we cannot add return twice
+        if($invoices_info->bi_is_returned == 1)
+        {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = "Invoice Data already returned";
+            return Response()->json($result_array);
         }
 
         $client_id = $invoices_info->bi_client_id;
@@ -1725,7 +1731,7 @@ class InvoicesController extends Controller
         $count_return_invoices = Invoices::whereBiIsDeleted(0)->whereBiIsReturned(1)->count();
         $count_return_invoices = $count_return_invoices + 1;
 
-        $returncode = "RETURN" . sprintf('%05d', $count_return_invoices);
+        $returncode = "RET" . sprintf('%05d', $count_return_invoices);
 
         $account_id = 0;
         if($invoice_info->fk_customer_id != null)
@@ -1775,18 +1781,22 @@ class InvoicesController extends Controller
         $client_id  =  $invoice_info->bi_client_id;
 
         $deal_info = CRMDeals::whereFkAccountId($client_id)->first();
-        $deal_id = $deal_info->ad_id;
+        if($deal_info != null)
+        {
+            $deal_id = $deal_info->ad_id;
 
 
 
-        // delete bills not paied
-        $bills_info = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($deal_id)->whereIpPaymentStatus(0)->delete();
+            // delete bills not paied
+            $bills_info = InvoicePayments::whereIpIsDeleted(0)->whereIpDealId($deal_id)->whereIpPaymentStatus(0)->delete();
 
 
-        // change status of deal to be cancel
-        $deal_info = CRMDeals::find($deal_id);
-        $deal_info->ad_is_approved = 3;
-        $deal_info->save();
+            // change status of deal to be cancel
+            $deal_info = CRMDeals::find($deal_id);
+            $deal_info->ad_is_approved = 3;
+            $deal_info->save();
+
+        }
 
         $invoice_info->bi_invoice_status = 0;
         $invoice_info->bi_is_returned = 1;
