@@ -58,6 +58,20 @@
                                   class="form-control" required maxlength="255" value="" />
                        </div>
                    </div>
+                   <div class="col-md-6 col-xs-12">
+                       <div class="form-group">
+                           <label class="control-label">Store <span class="required"> * </span></label>
+                           <select name="fl_store_id" id="FL_STORE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Store" required>
+                               <option value="">Select Store</option>
+                               @foreach ($lst_stores as $store)
+                                   <option value="{{ $store->ps_id }}">{{ $store->ps_store_name }}</option>
+                               @endforeach
+                           </select>
+                       </div>
+                   </div>
+               </div>
+               <div class="row" style="height:5px;"></div>
+               <div class="row">
                    <div class="col-md-12">
                        <div class="d-flex justify-content-end">
                            <button type="submit" name="btn_save_floor" id="BTN_SAVE_FLOOR"

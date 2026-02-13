@@ -27,7 +27,15 @@ class FnbTablesController extends Controller
             return Response()->json($result_array);
         }
 
-        $lst_tables = Tables::whereFtIsDeleted(0)->get();
+        $floor_id = $request->input('floor_id');
+
+        $query = Tables::whereFtIsDeleted(0);
+
+        if (!empty($floor_id)) {
+            $query->where('ft_floor_id', $floor_id);
+        }
+
+        $lst_tables = $query->get();
 
         $tables_array = [];
         foreach ($lst_tables as $index => $table_info) {
@@ -35,6 +43,7 @@ class FnbTablesController extends Controller
             $tables_array[$index]['ft_label'] = $table_info->ft_label;
             $tables_array[$index]['ft_number_seats'] = $table_info->ft_number_seats;
             $tables_array[$index]['ft_status_id'] = $table_info->ft_status_id;
+            $tables_array[$index]['ft_floor_id'] = $table_info->ft_floor_id;
         }
 
         $result_array['is_error'] = 0;
