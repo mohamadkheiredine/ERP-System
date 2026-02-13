@@ -24,7 +24,7 @@ class FnbKitchenController extends Controller
     public function addKitchen()
     {
         $lst_companies = Companies::whereCdIsDeleted(0)->get();
-        $lst_warehouses = WareHouses::all();
+        $lst_warehouses = WareHouses::whereWIsDeleted(0)->get();
         $data = array(
             "lst_companies" => $lst_companies,
             "lst_warehouses" => $lst_warehouses,
@@ -88,6 +88,19 @@ class FnbKitchenController extends Controller
         if ($ks_id != null) {
             $kitchen_info = KitchenStations::find($ks_id);
         }
+
+        if($ks_warehouse_id == "")
+        {
+            $warehouse_info = new WareHouses();
+            $warehouse_info->w_company_id = $default_company_id;
+            $warehouse_info->w_warehouse_ref = substr($ks_name,0,5);
+            $warehouse_info->w_warehouse_name = $ks_name;
+            $warehouse_info->w_warehouse_adddress = "";
+            $warehouse_info->w_owner_id = session('user_id');
+            $warehouse_info->w_warehouse_status = 1;
+            $warehouse_info->save();
+        }
+
 
         $kitchen_info->ks_name = $ks_name;
         $kitchen_info->ks_description = $ks_description;

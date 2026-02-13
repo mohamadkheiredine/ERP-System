@@ -66,7 +66,7 @@ Page Description :
 					<!--begin::Logo-->
 					<div class="aside-logo flex-column-auto pt-10 pt-lg-20" id="kt_aside_logo">
 						<a href="{{ url('dashboard') }}">
-							<img alt="Logo" src="{{ session('company_logo') }}"  style="height:70px" />
+							<img alt="Logo" src="{{ session('company_logo') }}"  style="width:120px;height: auto" />
 						</a>
 					</div>
 					<!--end::Logo-->

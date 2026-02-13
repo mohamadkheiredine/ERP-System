@@ -669,11 +669,17 @@ invoices_module = {
                         beforeSend : function(){
                         },
                         success : function(response){
-                            if(response.is_error == 0)
+                            if(response.is_error == 1)
+                            {
+                                bootbox.alert(response.error_msg);
+                            }
+                            else
                             {
                                 let base_url = $('#BASE_URL').val();
                                 let url = base_url + "/billing/returninvoices";
+                                window.location.href = url;
                             }
+
                         }
                     });
                 }
