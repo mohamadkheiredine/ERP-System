@@ -815,3 +815,13 @@ ADD COLUMN oi_is_kitchen_closed TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE inventory_waste_stock
 ADD COLUMN ws_unit INT(11) NULL DEFAULT NULL AFTER ws_quantity;
 
+
+ALTER TABLE fnb_floor
+MODIFY fl_store_id INT(11) SIGNED NOT NULL;
+
+ALTER TABLE fnb_floor
+ADD CONSTRAINT fk_fnb_floor_store
+FOREIGN KEY (fl_store_id)
+REFERENCES pos_stores(ps_id)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;

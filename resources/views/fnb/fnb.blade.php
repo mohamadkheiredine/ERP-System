@@ -86,6 +86,7 @@
                         <th style="width:4px;white-space: nowrap;"  title="Id"></th>
                         <th style="width:4px;white-space: nowrap;"  title="Id">ID</th>
                         <th title="Floor Name">Floor Name</th>
+                        <th title="Store">Store</th>
                         <th style="width:4px;white-space: nowrap;"  title="#">edit</th>
                         <th style="width:4px;white-space: nowrap;"  title="#">Delete</th>
                     </tr>

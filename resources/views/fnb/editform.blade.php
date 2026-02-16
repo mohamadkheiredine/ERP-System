@@ -47,10 +47,21 @@
           <strong>Error!</strong> You have some form errors. Please check below.
         </div>
         <div class="row">
-          <div class="col-6 mb-3">
+          <div class="col-md-6 mb-3">
             <div class="form-group">
               <label class="control-label">Floor Name <span class="required"> * </span></label>
               <input type="text" name="fl_floor_name" id="PS_FLOOR_NAME" class="form-control" required maxlength="255" value="{{ $floor_info->fl_floor_name }}" />
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="control-label">Store <span class="required"> * </span></label>
+              <select name="fl_store_id" id="FL_STORE_ID" class="form-control form-select" data-control="select2" data-placeholder="Select Store" required>
+                <option value="">Select Store</option>
+                @foreach ($lst_stores as $store)
+                  <option value="{{ $store->ps_id }}" {{ $floor_info->fl_store_id == $store->ps_id ? 'selected' : '' }}>{{ $store->ps_store_name }}</option>
+                @endforeach
+              </select>
             </div>
           </div>
         </div>

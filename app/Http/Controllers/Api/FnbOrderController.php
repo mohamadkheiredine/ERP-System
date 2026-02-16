@@ -112,7 +112,7 @@ class FnbOrderController extends Controller
                 }
             }
 
-            // CRITICAL FIX: if still remaining, reduce last stock row
+            //if still remaining, reduce last stock row
             if ($remaining > 0) {
 
                 $lastStock = $stocks->last();
@@ -1014,14 +1014,26 @@ class FnbOrderController extends Controller
                             continue;
                         }
 
-                        FnbOrderItemModifiers::create([
-                            'im_order_id' => $fo_id,
-                            'im_item_id' => $item->oi_item_id,
-                            'im_modifier_id' => $modifier->m_id,
-                            'im_modifier_name' => $modifier->m_modifier_name,
-                            'im_modifier_cost' => $modifier->m_cost_modifier,
-                            'im_quantity' => $modifier->m_quantity * $item->oi_quantity
-                        ]);
+                        $existingMod = FnbOrderItemModifiers::where('im_order_id', $fo_id)
+                            ->where('im_item_id', $item->oi_item_id)
+                            ->where('im_modifier_id', $modifier->m_id)
+                            ->where('im_is_deleted', 0)
+                            ->first();
+
+                        if ($existingMod) {
+                            $existingMod->im_quantity = $modifier->m_quantity * $item->oi_quantity;
+                            $existingMod->save();
+                        } else {
+                            FnbOrderItemModifiers::create([
+                                'im_order_id' => $fo_id,
+                                'im_item_id' => $item->oi_item_id,
+                                'im_modifier_id' => $modifier->m_id,
+                                'im_modifier_name' => $modifier->m_modifier_name,
+                                'im_modifier_cost' => $modifier->m_cost_modifier,
+                                'im_quantity' => $modifier->m_quantity * $item->oi_quantity,
+                                'im_is_deleted' => 0,
+                            ]);
+                        }
 
                         $mods[] = [
                             "id"    => $modifier->m_id,
@@ -1570,6 +1582,7 @@ class FnbOrderController extends Controller
                 $match->save();
 
                 $processed[] = $match->oi_id;
+                $itemQty = $it['quantity'];
             }
             // CASE 2: NEW ITEM → CREATE NEW ROW
             else {
@@ -1589,7 +1602,52 @@ class FnbOrderController extends Controller
                 ]);
 
                 $processed[] = $new->oi_id;
+                $itemQty = $it['quantity'];
             }
+
+            // Save modifiers for this item
+            $incomingModIds = [];
+            if (!empty($it['modifiers'])) {
+                foreach ($it['modifiers'] as $m) {
+                    if (!isset($m['id'])) continue;
+
+                    $modifier = Modifier::find($m['id']);
+                    if (!$modifier) continue;
+
+                    $incomingModIds[] = $modifier->m_id;
+                    $newQty = ($modifier->m_quantity ?? 1) * $itemQty;
+
+                    $existingMod = FnbOrderItemModifiers::where('im_order_id', $order->fo_id)
+                        ->where('im_item_id', $it['item_id'])
+                        ->where('im_modifier_id', $modifier->m_id)
+                        ->where('im_is_deleted', 0)
+                        ->first();
+
+                    if ($existingMod) {
+                        $existingMod->im_quantity = $newQty;
+                        $existingMod->save();
+                    } else {
+                        FnbOrderItemModifiers::create([
+                            'im_item_id'       => $it['item_id'],
+                            'im_order_id'      => $order->fo_id,
+                            'im_modifier_id'   => $modifier->m_id,
+                            'im_modifier_name' => $modifier->m_modifier_name ?? '',
+                            'im_modifier_cost' => $modifier->m_cost_modifier ?? 0,
+                            'im_quantity'      => $newQty,
+                            'im_is_deleted'    => 0,
+                        ]);
+                    }
+                }
+            }
+
+            // Soft-delete modifiers that were removed from this item
+            FnbOrderItemModifiers::where('im_order_id', $order->fo_id)
+                ->where('im_item_id', $it['item_id'])
+                ->where('im_is_deleted', 0)
+                ->when(!empty($incomingModIds), function ($q) use ($incomingModIds) {
+                    $q->whereNotIn('im_modifier_id', $incomingModIds);
+                })
+                ->update(['im_is_deleted' => 1]);
         }
 
         // Any old item that was NOT in the incoming list
@@ -2217,6 +2275,7 @@ class FnbOrderController extends Controller
             ->select(
                 'oi_id',
                 'oi_order_id',
+                'oi_item_id',
                 'oi_quantity',
                 'oi_notes',
                 'oi_station_id',
@@ -2226,10 +2285,31 @@ class FnbOrderController extends Controller
             )
             ->get();
 
+        // load modifiers for all these items in one query
+        // im_item_id = menu item id (oi_item_id), im_order_id = order id (oi_order_id)
+        $modifiers = FnbOrderItemModifiers::whereIn('im_order_id', $orderIds)
+            ->where('im_is_deleted', 0)
+            ->select('im_id', 'im_order_id', 'im_item_id', 'im_modifier_id', 'im_modifier_name', 'im_quantity', 'im_modifier_cost')
+            ->get();
+
+        // group modifiers by composite key: order_id + item_id
+        $modifiersByKey = [];
+        foreach ($modifiers as $mod) {
+            $key = $mod->im_order_id . '_' . $mod->im_item_id;
+            $modifiersByKey[$key][] = [
+                'modifier_id' => $mod->im_modifier_id,
+                'name'        => $mod->im_modifier_name,
+                'price'       => $mod->im_modifier_cost ?? 0,
+                'quantity'    => $mod->im_quantity ?? 1,
+            ];
+        }
+
         //group items by order id
         $grouped = [];
 
         foreach ($items as $it) {
+            $key = $it->oi_order_id . '_' . $it->oi_item_id;
+            $it->modifiers = $modifiersByKey[$key] ?? [];
             $grouped[$it->oi_order_id][] = $it;
         }
 
@@ -2248,6 +2328,108 @@ class FnbOrderController extends Controller
                 "total" => $total,
                 "total_pages" => ceil($total / $perPage)
             ]
+        ]);
+    }
+
+
+    /**
+     * @author Mohamad Kheireidne
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetMenuItemsSoldToday(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        if (!$user_info) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'User not found',
+            ]);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'hash sequence is not valid !!',
+            ]);
+        }
+
+        $filter    = $request->input('filter');
+        $date_from = $request->input('date_from');
+        $date_to   = $request->input('date_to');
+
+        // apply filter
+        if ($filter === 'today') {
+            $date_from = date('Y-m-d');
+            $date_to   = date('Y-m-d');
+        }
+
+        if ($filter === 'yesterday') {
+            $date_from = date('Y-m-d', strtotime('-1 day'));
+            $date_to   = $date_from;
+        }
+
+        if ($filter === 'lastweek') {
+            $date_from = date('Y-m-d', strtotime('monday last week'));
+            $date_to   = date('Y-m-d', strtotime('sunday last week'));
+        }
+
+        if ($filter === 'lastmonth') {
+            $date_from = date('Y-m-01', strtotime('last month'));
+            $date_to   = date('Y-m-t', strtotime('last month'));
+        }
+
+        //join order items, orders, menu items, categories, and currency
+        $query = FnbOrderItems::join('fnb_orders', 'fnb_orders.fo_id', '=', 'fnb_order_items.oi_order_id')
+            ->join('fnb_menu_items', 'fnb_menu_items.mi_id', '=', 'fnb_order_items.oi_item_id')
+            ->leftJoin('fnb_menu_categories', 'fnb_menu_categories.mc_id', '=', 'fnb_menu_items.mi_category_id')
+            ->leftJoin('currency as c', 'c.cc_id', '=', 'fnb_order_items.oi_currency_id')
+            //only include valid, non-deleted, paid orders
+            ->where('fnb_order_items.oi_is_deleted', 0)
+            ->where('fnb_orders.fo_is_deleted', 0)
+            ->where('fnb_orders.fo_payment_status', 'paid');
+
+        if (!empty($date_from)) {
+            $query->where('fnb_orders.fo_order_datetime', '>=', $date_from . ' 00:00:00');
+        }
+
+        if (!empty($date_to)) {
+            $query->where('fnb_orders.fo_order_datetime', '<=', $date_to . ' 23:59:59');
+        }
+
+        //total_qty= total units sold
+        //total_revenue = sum of quantity × price
+        //order_count = number of distinct orders containing item
+        $items = $query->select(
+            'fnb_menu_items.mi_id',
+            'fnb_menu_items.mi_item_name',
+            'fnb_menu_items.mi_category_id',
+            'fnb_menu_categories.mc_category_name as category_name',
+            DB::raw('SUM(fnb_order_items.oi_quantity) as total_qty'),
+            DB::raw('SUM(fnb_order_items.oi_quantity * fnb_order_items.oi_unit_price) as total_revenue'),
+            DB::raw('COUNT(DISTINCT fnb_orders.fo_id) as order_count'),
+            DB::raw('MIN(c.cc_currency_code) as currency_code')
+        )
+            ->groupBy(
+                'fnb_menu_items.mi_id',
+                'fnb_menu_items.mi_item_name',
+                'fnb_menu_items.mi_category_id',
+                'fnb_menu_categories.mc_category_name'
+            )
+            ->orderByDesc('total_qty')
+            ->get();
+
+        return response()->json([
+            'is_error' => 0,
+            'lst_menu_items' => $items,
         ]);
     }
 

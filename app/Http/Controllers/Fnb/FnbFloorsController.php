@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\models\System\Companies;
 use App\models\Fnb\Floor;
+use App\models\Sales\Stores;
 use Config;
 
 class FnbFloorsController extends Controller
@@ -21,7 +22,10 @@ class FnbFloorsController extends Controller
 
     public function addFloor()
     {
-        $data = array();
+        $lst_stores = Stores::wherePsIsDeleted(0)->get();
+        $data = array(
+            "lst_stores" => $lst_stores,
+        );
         return Response()->view('fnb.addform', $data);
     }
 
@@ -49,7 +53,10 @@ class FnbFloorsController extends Controller
         $total_pages = ceil($floors_count / $nbr_rows_per_pages);
         $total_pages = intval($total_pages);
 
-        $list_floors = $floors_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        $list_floors = $floors_cond
+            ->leftJoin('pos_stores', 'pos_stores.ps_id', '=', 'fnb_floor.fl_store_id')
+            ->select('fnb_floor.*', 'pos_stores.ps_store_name')
+            ->skip($skip)->take($nbr_rows_per_pages)->get();
         $data = array(
             "lst_floors" => $list_floors,
         );
@@ -66,6 +73,7 @@ class FnbFloorsController extends Controller
         $fl_id                          = $request->input('fl_id');
         $default_company_id = session('default_company_id');
         $fl_floor_name                  = $request->input('fl_floor_name');
+        $fl_store_id                    = $request->input('fl_store_id');
 
         $result_array = array();
 
@@ -77,6 +85,7 @@ class FnbFloorsController extends Controller
 
         $floor_info->fl_branch_id          = $default_company_id;
         $floor_info->fl_floor_name          = $fl_floor_name;
+        $floor_info->fl_store_id            = $fl_store_id;
 
         $floor_info->save();
 
@@ -91,9 +100,11 @@ class FnbFloorsController extends Controller
     public function editFloor($fl_id)
     {
         $floor_info = Floor::find($fl_id);
+        $lst_stores = Stores::wherePsIsDeleted(0)->get();
 
         $data = array(
             "floor_info" => $floor_info,
+            "lst_stores" => $lst_stores,
         );
         return view('fnb.editform', $data);
     }
