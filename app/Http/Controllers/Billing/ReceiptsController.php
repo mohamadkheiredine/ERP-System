@@ -174,7 +174,7 @@ class ReceiptsController extends Controller
         $receipts   = new Receipts();
 
 
-        $receipts= $receipts_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('br_id', 'ASC')->orderby('br_id',"DESC")->get();
+        $receipts= $receipts_cond->skip($skip)->take($nbr_rows_per_pages)->orderby('br_id',"DESC")->get();
 
         $data = array(
             "receipts" => $receipts

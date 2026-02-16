@@ -19,6 +19,8 @@
     <td>{{ $stock_info->w_warehouse_name }}</td>
     <td>{{ $stock_info->p_barcode }}</td>
     <td>{{ $stock_info->p_product_name }}</td>
+    <td>{{ $stock_info->is_price_item }}</td>
+    <td>{{ $stock_info->is_price_stock }}</td>
     <td>{{ $stock_info->total_quantity }}</td>
 </tr>
 <?php } ?>

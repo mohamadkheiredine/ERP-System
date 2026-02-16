@@ -736,7 +736,21 @@ class WareHouseController extends Controller
         {
             $where_cond = " AND stock.fk_warehouse_id = " . $sw_stock_warehouse;
         }
-        $query = "SELECT p_product_name , p_barcode, p_id ,w_warehouse_name,fk_product_id,SUM(is_quanity) as total_quantity FROM inventory_stocks as stock left join inventory_products as product on  product.p_id = stock.fk_product_id left join inventory_warehouses as warehouse on warehouse.w_id = stock.fk_warehouse_id where is_is_deleted=0 " . $where_cond . " group by stock.fk_product_id,stock.fk_warehouse_id ;";
+        $query = "SELECT
+        p_product_name,
+        p_barcode,
+        p_id,
+        w_warehouse_name,
+        fk_product_id,
+        is_price_item,
+        is_price_stock,
+        SUM(is_quanity) as total_quantity
+    FROM inventory_stocks as stock
+    LEFT JOIN inventory_products as product ON product.p_id = stock.fk_product_id
+    LEFT JOIN inventory_warehouses as warehouse ON warehouse.w_id = stock.fk_warehouse_id
+    WHERE is_is_deleted = 0 " . $where_cond . "
+    GROUP BY stock.fk_product_id, stock.fk_warehouse_id,stock.is_price_item,is_price_stock
+    HAVING SUM(is_quanity) > 0;";
         $lst_stock_availability = DB::select($query);
 
         $result_array = array();
@@ -768,17 +782,32 @@ class WareHouseController extends Controller
         {
             $where_cond = " AND stock.fk_warehouse_id = " . $sw_stock_warehouse;
         }
-        $query = "SELECT p_product_name , p_barcode , p_id ,w_warehouse_name,fk_product_id,SUM(is_quanity) as total_quantity FROM inventory_stocks as stock left join inventory_products as product on  product.p_id = stock.fk_product_id left join inventory_warehouses as warehouse on warehouse.w_id = stock.fk_warehouse_id where is_is_deleted=0 " . $where_cond . " group by stock.fk_product_id,stock.fk_warehouse_id ;";
+        $query = "SELECT
+    p_product_name,
+    p_barcode,
+    p_id,
+    w_warehouse_name,
+    fk_product_id,
+    is_price_item,
+    is_price_stock,
+    SUM(is_quanity) as total_quantity,
+FROM inventory_stocks as stock
+LEFT JOIN inventory_products as product ON product.p_id = stock.fk_product_id
+LEFT JOIN inventory_warehouses as warehouse ON warehouse.w_id = stock.fk_warehouse_id
+WHERE is_is_deleted = 0 " . $where_cond . "
+GROUP BY stock.fk_product_id, stock.fk_warehouse_id,stock.is_price_item,is_price_stock
+HAVING SUM(is_quanity) > 0;";
+
         $lst_stock_availability = DB::select($query);
 
         if($type == 'csv')
         {
             $data = array();
-            $data[] = ['id', 'Warehouse','Product','Stock Quantity'];
+            $data[] = ['id', 'Warehouse','Product','Cost Item','Total Cost Price','Stock Quantity'];
 
             foreach ($lst_stock_availability as $index => $stock_info)
             {
-                $data[] = [$stock_info->p_id, $stock_info->w_warehouse_name, $stock_info->p_product_name,$stock_info->total_quantity];
+                $data[] = [$stock_info->p_id, $stock_info->w_warehouse_name, $stock_info->p_product_name,$stock_info->is_price_item,$stock_info->total_price,$stock_info->total_quantity];
             }
 
 

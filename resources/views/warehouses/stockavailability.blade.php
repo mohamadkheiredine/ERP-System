@@ -82,6 +82,8 @@
                         <th title="Warehouse Name">Warehouse Name</th>
                         <th title="Product Code">Product Code</th>
                         <th title="Product Name">Product Name</th>
+                        <th title=" Price Item">Cost Item</th>
+                        <th title="Stock Price">Cost Stock Price</th>
                         <th title="Total Stock">Total Stock </th>
                     </tr>
                     </thead>

@@ -118,7 +118,7 @@ class DealsController extends Controller
          $total_pages = ceil( $deals_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
 
-         $lst_account_deals = $lst_deals_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+         $lst_account_deals = $lst_deals_cond->skip($skip)->take($nbr_rows_per_pages)->orderBy('ad_id','DESC')->get();
           $lst_accounts   = CRMAccounts::whereCaIsDeleted(0)->get();
 
         $accounts_array   = array();
@@ -365,17 +365,17 @@ class DealsController extends Controller
      */
     public function SaveDealsInfo(Request $request)
     {
-        $ad_id                      = $request->input('ad_id');
-        $fk_account_id              = $request->input('fk_account_id');
-        $fk_contact_id              = $request->input('fk_contact_id');
-        $fk_lead_id                 = $request->input('fk_lead_id');
-        $ad_deal_code               = $request->input('ad_deal_code');
-        $ad_deal_title              = $request->input('ad_deal_title');
-        $ad_deal_description        = $request->input('ad_deal_description');
-        $ad_deal_owner              = $request->input('ad_deal_owner');
-        $ad_deal_amount             = $request->input('ad_deal_amount');
-        $ad_closing_date            = $request->input('ad_closing_date');
-        $ad_closing_date            = date("Y-m-d",strtotime($ad_closing_date));
+        $ad_id                                      = $request->input('ad_id');
+        $fk_account_id                              = $request->input('fk_account_id');
+        $fk_contact_id                              = $request->input('fk_contact_id');
+        $fk_lead_id                                 = $request->input('fk_lead_id');
+        $ad_deal_code                               = $request->input('ad_deal_code');
+        $ad_deal_title                              = $request->input('ad_deal_title');
+        $ad_deal_description                        = $request->input('ad_deal_description');
+        $ad_deal_owner                              = $request->input('ad_deal_owner');
+        $ad_deal_amount                             = $request->input('ad_deal_amount');
+        $ad_closing_date                            = $request->input('ad_closing_date');
+        $ad_closing_date                            = date("Y-m-d",strtotime($ad_closing_date));
         $ad_deal_stage                              = $request->input('ad_deal_stage');
         $ad_deal_type                               = $request->input('ad_deal_type');
         $ad_deal_probability                        = $request->input('ad_deal_probability');
@@ -734,8 +734,6 @@ class DealsController extends Controller
 
         }
 
-
-
         $remaining_amount = $ad_deal_amount - $ad_down_payment;
 
         $payment_amount = $remaining_amount / $ad_nbr_of_payments;
@@ -754,6 +752,7 @@ class DealsController extends Controller
         if($action == "add")
         {
             // generate all bills for this deal
+
             if($ad_contract_type == 2)
             {
                 for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
@@ -788,7 +787,7 @@ class DealsController extends Controller
                 $invoice_payment->ip_remaining_amount =$bill_amount[$ad_nbr_of_payments - 1];
                 $invoice_payment->ip_payment_type = 2;
                 $invoice_payment->ip_is_live = $is_approved;
-                $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ".$ad_nbr_of_payments . " Month"));
+                $invoice_payment->ip_billing_date = date("Y-m-d",strtotime($ad_first_bill_date . " + ". ($ad_nbr_of_payments - 1) . " Month"));
                 $invoice_payment->ip_billing_nbr = "00" . $ad_nbr_of_payments;
                 $invoice_payment->ip_billing_status = 0;
                 $invoice_payment->ip_client_code = $client_info->ca_account_code;
@@ -804,7 +803,7 @@ class DealsController extends Controller
 
             if($ad_contract_type == 2)
             {
-                $delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
+//                $delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
                 for ($index = 1; $index <= $ad_nbr_of_payments - 1; $index++)
                 {
                     $invoice_payment = new InvoicePayments();
@@ -825,6 +824,7 @@ class DealsController extends Controller
                     $invoice_payment->ip_sales_comission = isset($bill_sales_commission[$index -1]) ? $bill_sales_commission[$index -1] : 0;
                     $invoice_payment->ip_payment_label = "Payment number #00" . $index . " of Deal Code #" . $ad_deal_code;
                     $invoice_payment->save();
+                   // dd($invoice_payment);
                 }
 
                 $percentage_last_amount = ( $last_payment /$ad_deal_amount ) * 100;
@@ -853,12 +853,8 @@ class DealsController extends Controller
 
 
 
-        // when approve create invoice and generate receipts and payment for all number of
-        // payments
         if($is_approved > 0)
         {
-            // delete old invoice and payments exist
-            //$delete_payments = InvoicePayments::whereIpDealId($ad_id)->delete();
 
 
             if($fk_account_id == 0)
@@ -868,35 +864,6 @@ class DealsController extends Controller
 
                 return Response()->json($result_array);
             }
-
-            // Create Accounting Account
-             $crm_account = CRMAccounts::find($fk_account_id);
-//
-//
-//            $account_info   = ChartAccounts::where("aa_account_ref","=","41")->get();
-//            $account_info = $account_info[0];
-//
-//            $count   = ChartAccounts::where("aa_account_ref","LIKE","41%")->count();
-//
-//            $new_count      = $count + 1;
-//            $aa_account_ref = $account_info->aa_account . (String)$new_count;
-//
-//            $acc_accounting = new ChartAccounts();
-//            $acc_accounting->aa_parent_account   = $account_info->aa_id;
-//            $acc_accounting->aa_account_ref      = $aa_account_ref;
-//            $acc_accounting->aa_account          = $aa_account_ref;
-//            $acc_accounting->aa_sub_account      = $account_info->aa_id;
-//            $acc_accounting->aa_account_label    = $crm_account->ca_account_name;
-//            $acc_accounting->fk_country_id       = 0;
-//            $acc_accounting->save();
-//            $aa_id = $acc_accounting->aa_id;
-
-
-
-
-
-
-
 
         }
 
@@ -1149,6 +1116,7 @@ class DealsController extends Controller
         {
             $deal_info = CRMDeals::find($ad_id);
             $lst_invoice_payment = InvoicePayments::whereIpDealId($ad_id)->get();
+            $ad_nbr_of_payment = count($lst_invoice_payment);
 
             if($ad_nbr_of_payment == count($lst_invoice_payment))
             {
@@ -1165,7 +1133,7 @@ class DealsController extends Controller
             else
             {
 
-                $delete = InvoicePayments::whereIpDealId($ad_id)->delete();
+                //$delete = InvoicePayments::whereIpDealId($ad_id)->delete();
                 $remaining_amount = $ad_deal_amount - $ad_down_payment;
 
                 $payment_amount = $remaining_amount / $ad_nbr_of_payment;

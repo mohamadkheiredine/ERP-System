@@ -110,7 +110,7 @@ class AccountsController extends Controller
          $total_pages = ceil( $accounts_count/$nbr_rows_per_pages );
          $total_pages = intval($total_pages);
 
-        $lst_accounts = $accounts_cond->skip($skip)->take($nbr_rows_per_pages)->get();
+        $lst_accounts = $accounts_cond->orderBy('ca_id','DESC')->skip($skip)->take($nbr_rows_per_pages)->get();
 
 
         $response_array = array();

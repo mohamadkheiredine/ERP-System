@@ -11,6 +11,10 @@
  * Page Description :
  ***********************************************************/
 
+{
+    $total_price = 0;
+    $total_quantity = 0;
+}
 ?>
     <!DOCTYPE html>
 <html lang="en">
@@ -164,7 +168,9 @@
             <th class="col-name">Product Code</th>
             <th class="col-name">Product Name</th>
             <th class="col-warehouse">Warehouse</th>
-            <th class="col-total">Stock Total</th>
+            <th class="col-warehouse">Cost Price</th>
+            <th class="col-total">total Cost Total</th>
+            <th class="col-total">Quantity</th>
         </tr>
         </thead>
         <tbody>
@@ -175,12 +181,39 @@
                 <td class="col-name">{{ $stock_info->p_barcode }} </td>
                 <td class="col-name">{{ $stock_info->p_product_name }}</td>
                 <td class="col-warehouse">{{ $stock_info->w_warehouse_name }}</td>
+                <td class="col-warehouse">{{ $stock_info->is_price_item }}</td>
+                <td class="col-warehouse">{{ $stock_info->is_price_stock }}</td>
                 <td class="col-total">{{ $stock_info->total_quantity }}</td>
             </tr>
-
+            <?php
+                $total_price = $total_price + $stock_info->is_price_stock;
+                $total_quantity = $total_quantity + $stock_info->total_quantity;
+                ?>
         @endforeach
         <!-- End sample rows -->
         </tbody>
+        <tfoot>
+            <tr>
+                <td class="col-id"></td>
+                <td class="col-name"></td>
+                <td class="col-name"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <th class="col-total" colspan="3" ><span><u>Total Quantity: </u></span> {{ $total_quantity }}</th>
+            </tr>
+            <tr>
+                <td class="col-id"></td>
+                <td class="col-name"></td>
+                <td class="col-name"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <td class="col-warehouse"></td>
+                <th class="col-total" colspan="3"><span><u>Total Price: </u></span> {{ $total_price  }}</th>
+            </tr>
+        </tfoot>
     </table>
 
 </div>

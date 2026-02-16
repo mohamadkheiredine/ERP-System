@@ -75,10 +75,21 @@ class DashboardController extends Controller
         $first = Carbon::now()->startOfMonth()->format('Y-m-d');
         $last  = Carbon::now()->endOfMonth()->format('Y-m-d');
 
-        $lst_inboundcalls = InboundCall::whereIcIsDeleted(0)->whereIcIsPaid(0)->whereIcClosedVoucher(0)->whereBetween('ic_call_date',[$first,$last])->limit(10)->orderBy('ic_call_date','DESC')->get();
 
-        $lst_bills = InvoicePayments::whereIpIsDeleted(0)->whereIpIsLive(1)->whereBetween('ip_billing_date',[$first,$last])->limit(10)->orderBy('ip_billing_date','DESC')->get();
+        $lst_inboundcalls = InboundCall::whereIcIsDeleted(0)
+            ->whereIcIsPaid(0)
+            ->whereIcClosedVoucher(0)
+            ->where('ic_call_date', '<=', $last)
+            ->limit(10)
+            ->orderBy('ic_call_date', 'DESC')
+            ->get();
 
+        $lst_bills = InvoicePayments::whereIpIsDeleted(0)
+            ->whereIpIsLive(1)
+            ->where('ip_billing_date', '<=', $last)
+            ->limit(10)
+            ->orderBy('ip_billing_date', 'DESC')
+            ->get();
 
         $stock_alert = 'SELECT
     p_id,
