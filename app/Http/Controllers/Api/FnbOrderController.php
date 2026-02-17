@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\OrderUpdated;
 use App\Http\Controllers\Controller;
 use App\models\FnB\FnbPosShift;
 use Illuminate\Http\Request;
@@ -897,8 +898,6 @@ class FnbOrderController extends Controller
                 $currency = Currency::find($order_info->fo_currency_id); // fallback
             }
 
-            $final_items = [];
-
             // Check if order was already sent to kitchen
             $alreadySent = FnbOrderItems::where('oi_order_id', $fo_id)
                 ->where('oi_is_deleted', 0)
@@ -998,10 +997,6 @@ class FnbOrderController extends Controller
                 $item->oi_currency_id = $display_currency_id;
                 $item->save();
 
-                $item_db = FnbMenuItem::find($item_order['item_id']);
-
-                $mods = [];
-
                 if (!empty($item_order['modifiers'])) {
                     foreach ($item_order['modifiers'] as $m) {
 
@@ -1034,28 +1029,8 @@ class FnbOrderController extends Controller
                                 'im_is_deleted' => 0,
                             ]);
                         }
-
-                        $mods[] = [
-                            "id"    => $modifier->m_id,
-                            "name"  => $modifier->m_modifier_name,
-                            "price" => $modifier->m_price_modifier  * $display_rate,
-                            "qty"   => $modifier->m_quantity,
-                        ];
                     }
                 }
-
-                $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
-                $line_total_display = $unit_price_display * $item_order['quantity'];
-
-                $final_items[] = [
-                    'item_id'   => $item_order['item_id'],
-                    'item_name' => $item_db ? $item_db->mi_item_name : '',
-                    'quantity'  => $item_order['quantity'],
-                    'price'     => $line_total_display,
-                    'total'      => $line_total_display,
-                    'unit_price' => $unit_price_display,
-                    'modifiers' => $mods,
-                ];
             }
 
             $structure = array(
@@ -1205,6 +1180,39 @@ class FnbOrderController extends Controller
             }
 
 
+            // Build $final_items from ALL order_items (frontend payload) for the receipt
+            $final_items = [];
+            foreach ($order_items as $item_order) {
+                $item_db = FnbMenuItem::find($item_order['item_id']);
+                $unit_price_display = floatval($item_order['unit_price'] ?? $item_order['price']);
+                $line_total_display = $unit_price_display * $item_order['quantity'];
+
+                $mods = [];
+                if (!empty($item_order['modifiers'])) {
+                    foreach ($item_order['modifiers'] as $m) {
+                        if (!isset($m['id'])) continue;
+                        $modifier = Modifier::find($m['id']);
+                        if (!$modifier) continue;
+                        $mods[] = [
+                            "id"    => $modifier->m_id,
+                            "name"  => $modifier->m_modifier_name,
+                            "price" => $modifier->m_price_modifier * $display_rate,
+                            "qty"   => $modifier->m_quantity,
+                        ];
+                    }
+                }
+
+                $final_items[] = [
+                    'item_id'    => $item_order['item_id'],
+                    'item_name'  => $item_db ? $item_db->mi_item_name : '',
+                    'quantity'   => $item_order['quantity'],
+                    'price'      => $line_total_display,
+                    'total'      => $line_total_display,
+                    'unit_price' => $unit_price_display,
+                    'modifiers'  => $mods,
+                ];
+            }
+
             $display_currency_code = $request->input('currency_display_code');
             $display_rate          = (float) $request->input('currency_display_rate', 1);
 
@@ -1241,6 +1249,13 @@ class FnbOrderController extends Controller
             );
 
             $receipt_html = view('templates.fnbreceipt', $data)->render();
+
+            // Broadcast so other browsers remove this paid order
+            try {
+                broadcast(new OrderUpdated($fo_id, $store_id));
+            } catch (\Exception $e) {
+                \Log::warning('Broadcast failed: ' . $e->getMessage());
+            }
 
             $result_array['is_error'] = 0;
             $result_array['error_msg'] = "Order Saved";
@@ -1289,6 +1304,10 @@ class FnbOrderController extends Controller
         $order->save();
 
         $order_id = $order->fo_id;
+
+        // No broadcast here — empty orders have no items yet.
+        // The broadcast happens when items are sent to kitchen (UpdateOrder)
+        // or when the order is paid (SaveOrder).
 
         return response()->json([
             'is_error' => 0,
@@ -1710,6 +1729,20 @@ class FnbOrderController extends Controller
             ]);
         }
 
+        // broadcast event after everything saved
+        try {
+            // broadcast(new OrderUpdated(
+            //     $order->fo_id,
+            //     $order->fo_store_id
+            // ))->toOthers();
+            broadcast(new OrderUpdated(
+                $order->fo_id,
+                $order->fo_store_id
+            ));
+        } catch (\Exception $e) {
+            \Log::warning('Broadcast failed: ' . $e->getMessage());
+        }
+
         return response()->json(['is_error' => 0]);
     }
 
@@ -1723,7 +1756,7 @@ class FnbOrderController extends Controller
         $orders = FnbOrders::query()
             ->join('sys_status', 'sys_status.ss_id', '=', 'fnb_orders.fo_order_status')
             ->where('fnb_orders.fo_store_id', $storeId)
-            ->whereRaw('LOWER(sys_status.ss_status_title) LIKE ?', ['%pos%']) // Pending / pending
+            ->where('sys_status.ss_status_type', 'like', '%pos%')
             ->whereBetween('fnb_orders.fo_order_datetime', [$todayStart, $todayEnd])
             ->where('fnb_orders.fo_payment_status', '!=', 'paid')
             ->where('fnb_orders.fo_is_deleted', 0)
@@ -1738,27 +1771,41 @@ class FnbOrderController extends Controller
                 ->pluck('ot_table_id')
                 ->toArray();
 
-            $structure = json_decode($order->fo_order_structure, true);
+            // Read items from FnbOrderItems table (source of truth)
+            $orderItems = FnbOrderItems::where('oi_order_id', $order->fo_id)
+                ->where('oi_is_deleted', 0)
+                ->get();
 
-            if (!is_array($structure) || empty($structure['items'])) {
+            if ($orderItems->isEmpty()) {
                 continue;
             }
 
             $items = [];
 
-            foreach ($structure['items'] as $it) {
+            foreach ($orderItems as $it) {
+
+                // Get modifiers for this item from FnbOrderItemModifiers table
+                $modifiers = FnbOrderItemModifiers::where('im_order_id', $order->fo_id)
+                    ->where('im_item_id', $it->oi_item_id)
+                    ->where('im_is_deleted', 0)
+                    ->get()
+                    ->map(function ($m) {
+                        $mod = Modifier::find($m->im_modifier_id);
+                        return [
+                            'modifier_id' => $m->im_modifier_id,
+                            'quantity'    => $m->im_quantity,
+                            'price'       => $mod ? (float) $mod->m_price_modifier : 0,
+                        ];
+                    })
+                    ->toArray();
 
                 $items[] = [
-                    'item_id'    => (int) $it['item_id'],
-                    'qty'        => (float) $it['quantity'],
-                    'unit_price' => (float) ($it['unit_price'] ?? $it['price']),
-                    'notes'      => $it['notes'] ?? '',
-                    'station_id' => null,
-                    'modifiers'  => array_map(function ($m) {
-                        return [
-                            'id' => $m['id']
-                        ];
-                    }, $it['modifiers'] ?? []),
+                    'item_id'    => (int) $it->oi_item_id,
+                    'qty'        => (float) $it->oi_quantity,
+                    'unit_price' => (float) $it->oi_unit_price,
+                    'notes'      => $it->oi_notes ?? '',
+                    'station_id' => $it->oi_station_id,
+                    'modifiers'  => $modifiers,
                 ];
             }
 
@@ -2336,7 +2383,9 @@ class FnbOrderController extends Controller
      * @author Mohamad Kheireidne
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return
+     *
+     * Illuminate\Http\JsonResponse
      */
     public function GetMenuItemsSoldToday(Request $request)
     {

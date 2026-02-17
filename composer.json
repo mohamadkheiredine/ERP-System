@@ -10,6 +10,7 @@
         "aws/aws-sdk-php": "^3.263",
         "barryvdh/laravel-dompdf": "^2.2",
         "barryvdh/laravel-snappy": "^1.0",
+        "beyondcode/laravel-websockets": "^1.14",
         "dompdf/dompdf": "^2.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^3.0",
@@ -29,6 +30,7 @@
         "milon/barcode": "*",
         "phpmailer/phpmailer": "^6.8",
         "predis/predis": "^2.0",
+        "pusher/pusher-php-server": "^7.2",
         "torann/geoip": "^3.0"
     },
     "require-dev": {
