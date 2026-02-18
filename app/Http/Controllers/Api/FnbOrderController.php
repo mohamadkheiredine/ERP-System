@@ -249,7 +249,6 @@ class FnbOrderController extends Controller
         $delcustomeraddress = $request->input('delcustomeraddress');
         $customer_type      = $request->input('customer_type');
 
-        // --- hash validation ---
         $user_info = Users::find($user_id);
         $c_hash = hash('sha256', "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567");
 
@@ -349,14 +348,8 @@ class FnbOrderController extends Controller
                 $itemId = (int) $mod->im_item_id;
                 $modifierId = (int) $mod->im_modifier_id;
 
-                if (!isset($old_modifier_quantity[$itemId])) {
-                    $old_modifier_quantity[$itemId] = [];
-                }
-                if (!isset($old_modifier_quantity[$itemId][$modifierId])) {
-                    $old_modifier_quantity[$itemId][$modifierId] = 0;
-                }
-
-                // im_quantity must be treated as consumed stock units
+                $old_modifier_quantity[$itemId] ??= [];
+                $old_modifier_quantity[$itemId][$modifierId] ??= 0;
                 $old_modifier_quantity[$itemId][$modifierId] += (float) ($mod->im_quantity ?? 0);
             }
 
@@ -364,43 +357,8 @@ class FnbOrderController extends Controller
 
             foreach ($new_items as $item) {
                 $item_id = $item['item_id'];
-                $qty = $item['quantity'];
-
-                if (!isset($new_items_quantity[$item_id])) {
-                    $new_items_quantity[$item_id] = 0;
-                }
-
-                $new_items_quantity[$item_id] += $qty;
+                $new_items_quantity[$item_id] = ($new_items_quantity[$item_id] ?? 0) + $item['quantity'];
             }
-
-            // $new_modifier_quantity = [];
-
-            // foreach ($new_items as $item) {
-            //     $item_id = $item['item_id'];
-            //     $item_qty = $item['quantity'];
-
-            //     if (empty($item['modifiers'])) {
-            //         continue;
-            //     }
-
-            //     foreach ($item['modifiers'] as $mod) {
-            //         $modifier_id = $mod['modifier_id'] ?? $mod['id'] ?? null;
-
-            //         $mod_qty = ($mod['quantity'] ?? 1);
-
-            //         $final_qty = $item_qty * $mod_qty;
-
-            //         if (!isset($new_modifier_quantity[$item_id])) {
-            //             $new_modifier_quantity[$item_id] = [];
-            //         }
-
-            //         if (!isset($new_modifier_quantity[$item_id][$modifier_id])) {
-            //             $new_modifier_quantity[$item_id][$modifier_id] = 0;
-            //         }
-
-            //         $new_modifier_quantity[$item_id][$modifier_id] += $final_qty;
-            //     }
-            // }
 
             $new_modifier_quantity = []; // item_id -> modifier_id -> consumed_qty
 
@@ -424,13 +382,8 @@ class FnbOrderController extends Controller
                     // stores im_quantity = m_quantity * item_qty (no selection factor)
                     $consumed = $itemQty * $baseConsume;
 
-                    if (!isset($new_modifier_quantity[$itemId])) {
-                        $new_modifier_quantity[$itemId] = [];
-                    }
-                    if (!isset($new_modifier_quantity[$itemId][$modifierId])) {
-                        $new_modifier_quantity[$itemId][$modifierId] = 0;
-                    }
-
+                    $new_modifier_quantity[$itemId] ??= [];
+                    $new_modifier_quantity[$itemId][$modifierId] ??= 0;
                     $new_modifier_quantity[$itemId][$modifierId] += $consumed;
                 }
             }
@@ -502,8 +455,8 @@ class FnbOrderController extends Controller
                         'payload' => json_encode([
                             'order' => [
                                 'id'       => $order_id,
-                                'code'     => FnbOrders::find($order_id)->fo_order_code,
-                                'type'     => FnbOrders::find($order_id)->fo_order_type,
+                                'code'     => $order->fo_order_code,
+                                'type'     => $order->fo_order_type,
                                 'datetime' => now(),
                             ],
                             'items' => [[
@@ -527,12 +480,7 @@ class FnbOrderController extends Controller
 
                     foreach ($ingredients as $ing) {
                         $product_id = $ing->in_product_id;
-                        $product_qty = ($ing->in_stock_quantity ?? 0);
-
-                        if (!isset($product_quantities[$product_id])) {
-                            $product_quantities[$product_id] = 0;
-                        }
-                        $product_quantities[$product_id] += $product_qty;
+                        $product_quantities[$product_id] = ($product_quantities[$product_id] ?? 0) + ($ing->in_stock_quantity ?? 0);
                     }
 
                     foreach ($product_quantities as $product_id => $qty_per_item) {
@@ -577,7 +525,6 @@ class FnbOrderController extends Controller
                                 'oi_deleted_by' => $user_id
                             ]);
                     }
-                } else {
                 }
             }
 
@@ -717,8 +664,7 @@ class FnbOrderController extends Controller
             $order_items = $request->input('order_items');
             $order_code = null;
 
-            if (is_array($order_items)) {
-            } else if (is_string($order_items)) {
+            if (is_string($order_items)) {
                 $order_items = json_decode($order_items, true);
             }
 
@@ -798,11 +744,6 @@ class FnbOrderController extends Controller
 
             if ($order_id > 0) {
 
-                // $order_info = FnbOrders::where('fo_id', $order_id)
-                //     ->where('fo_order_type', 'dine_in')
-                //     ->where('fo_payment_status', 'unpaid')
-                //     ->lockForUpdate()
-                //     ->first();
                 $order_info = FnbOrders::where('fo_id', $order_id)
                     ->where('fo_is_deleted', 0)
                     ->lockForUpdate()
@@ -941,7 +882,7 @@ class FnbOrderController extends Controller
                 $item->oi_item_id = $item_order['item_id'];
                 $item->oi_quantity = $item_order['quantity'];
                 $item->oi_unit_price = $item_order['unit_price'] ?? $item_order['price'];
-                $item->oi_item_discount = isset($item_order['discount']) ? $item_order['discount'] : 0;
+                $item->oi_item_discount = $item_order['discount'] ?? 0;
 
                 // keep old status if already sent
                 $item->oi_kitchen_status = $alreadySent
@@ -993,7 +934,7 @@ class FnbOrderController extends Controller
                     $item->oi_station_id = (int) $menuItem->mi_kitchen_station_id;
                 }
 
-                $item->oi_notes = isset($item_order['notes']) ? $item_order['notes'] : "";
+                $item->oi_notes = $item_order['notes'] ?? "";
                 $item->oi_currency_id = $display_currency_id;
                 $item->save();
 
@@ -1050,8 +991,6 @@ class FnbOrderController extends Controller
 
             $lst_order_items = FnbOrderItems::where('oi_order_id', $fo_id)->get();
 
-
-
             $payment_type_info      = PaymentTypes::find(2);
             $pt_payment_account     = $payment_type_info->pt_payment_account;
 
@@ -1071,31 +1010,22 @@ class FnbOrderController extends Controller
             $TransactionMovement->tm_debit              = $total;
             $TransactionMovement->tm_credit             = 0;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
             $TransactionMovement->save();
-
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $customer_info->ic_account_number ?? 0;
             $TransactionMovement->tm_sub_ledger_account = $customer_info->ic_account_number ?? 0;
-            // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
             $TransactionMovement->tm_debit              = 0;
-            // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
             $TransactionMovement->save();
-
 
             $TransactionMovement = new TransactionMovements();
             $TransactionMovement->fk_tran_id            = $at_id;
             $TransactionMovement->tm_ledger_account     = $pt_payment_account;
             $TransactionMovement->tm_sub_ledger_account = $pt_payment_account;
-            // $TransactionMovement->tm_ledger_label       = $invoice_info->bi_invoice_code;
             $TransactionMovement->tm_debit              = 0;
-            // $TransactionMovement->tm_credit             = $invoice_info->bi_total_price;
             $TransactionMovement->tm_creation_date      = date("Y-m-d");
-            // $TransactionMovement->tm_currency_id        = $invoice_info->bi_invoice_currency;
             $TransactionMovement->save();
 
             $trans_mov = new TransactionMovements();
@@ -1103,10 +1033,8 @@ class FnbOrderController extends Controller
             $trans_mov->tm_ledger_account       = 701;
             $trans_mov->tm_sub_ledger_account   = 701;
             $trans_mov->tm_debit                = 0;
-            // $trans_mov->tm_credit               = $invoice_info->bi_total_price;
             $trans_mov->tm_creation_date        = date('Y-m-d');
-            $trans_mov->tm_transaction_date        = date('Y-m-d');
-            // $trans_mov->tm_currency_id          = $invoice_info->bi_invoice_currency;
+            $trans_mov->tm_transaction_date     = date('Y-m-d');
             $trans_mov->tm_ledger_label         = "Credit Purchasing for Stock ";
             $trans_mov->save();
 
@@ -1212,24 +1140,6 @@ class FnbOrderController extends Controller
                     'modifiers'  => $mods,
                 ];
             }
-
-            $display_currency_code = $request->input('currency_display_code');
-            $display_rate          = (float) $request->input('currency_display_rate', 1);
-
-            $currency = null;
-
-            if ($display_currency_id) {
-                $currency = Currency::find($display_currency_id);
-            }
-
-            if (!$currency && $display_currency_code) {
-                $currency = Currency::where('cc_currency_code', $display_currency_code)->first();
-            }
-
-            if (!$currency) {
-                $currency = Currency::find($order_info->fo_currency_id); // fallback only
-            }
-
 
             $data = array(
                 "company_info" => $company_info,

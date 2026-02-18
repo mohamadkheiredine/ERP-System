@@ -33,6 +33,8 @@ Route::post('/request/api/getprofileinfo', 'Api\UsersController@GetUserInfo');
 Route::post('/request/api/saveprofileinfo', 'Api\UsersController@SetmyprofileInfo');
 Route::post('/request/api/changeprofilepassword', 'Api\UsersController@ChangeprofilePassword');
 Route::get('/request/api/getlistusers', 'Api\UsersController@GetListUsers');
+Route::post('/request/api/saveuser', 'Api\UsersController@SaveUser');
+Route::delete('/request/api/deleteuser', 'Api\UsersController@DeleteUser');
 
 
 Route::get('/request/api/getteammembers', 'Api\UsersController@GetTeamMembers');

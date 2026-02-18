@@ -621,4 +621,138 @@ class UsersController extends Controller
         $result_array['lst_users']       = $users_array;
         return Response()->json($result_array);
     }
+
+    public function SaveUser(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash  = $request->input('g_hash');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+
+            return Response()->json($result_array);
+        }
+
+        $id = $request->input('id');
+        $fk_role_id = $request->input('fk_role_id');
+        $u_username = $request->input('u_username');
+        $password = $request->input('password');
+        $u_fullname = $request->input('u_fullname');
+        $u_email = $request->input('u_email');
+        $u_phone = $request->input('u_phone');
+        $u_mobile = $request->input('u_mobile');
+        $fk_company_id = $request->input('fk_company_id');
+        $fk_warehouse_id = $request->input('fk_warehouse_id');
+        $u_lang_id = $request->input('u_lang_id');
+        $u_user_type = $request->input('u_user_type');
+        $u_gender = $request->input('u_gender');
+        $u_date_birth = $request->input('u_date_birth');
+        $u_address = $request->input('u_address');
+        $u_is_active = $request->has('u_is_active') ? 1 : 0;
+        $u_job_title_id = $request->input('u_job_title_id');
+        $u_job_role_id = $request->input('u_job_role_id');
+
+        $image_data = null;
+
+        if ($request->hasFile('u_profile_pic')) {
+
+            $UsersManager = new UsersManager();
+
+            $upload = $UsersManager->UploadAvatarUsers($id);
+
+            if ($upload['is_error'] == 0) {
+                $image_data = $upload['data'];
+            }
+        }
+
+        if ($id != null) {
+            $user = Users::find($id);
+        } else {
+            $user = new Users();
+            $user->u_is_deleted = 0;
+        }
+
+        $user->fk_role_id = $fk_role_id;
+        $user->u_username = $u_username;
+        $user->u_fullname = $u_fullname;
+        $user->u_email = $u_email;
+        $user->u_phone = $u_phone;
+        $user->u_mobile = $u_mobile;
+        $user->fk_company_id = $fk_company_id;
+        $user->fk_warehouse_id = $fk_warehouse_id;
+        $user->u_lang_id = $u_lang_id;
+        $user->u_user_type = $u_user_type;
+        $user->u_gender = $u_gender;
+        $user->u_date_birth = $u_date_birth;
+        $user->u_address = $u_address;
+        $user->u_is_active = $u_is_active;
+        $user->u_job_title_id = $u_job_title_id;
+        $user->u_job_role_id = $u_job_role_id;
+
+        if ($password != null && strlen($password) > 0) {
+
+            $user->password = Hash::make($password);
+
+            $user->u_last_password_change = now();
+        }
+
+        if ($image_data != null) {
+            $user->u_avatar_base_src   = $image_data['u_avatar_base_src'];
+            $user->u_avatar_filename   = $image_data['u_avatar_filename'];
+            $user->u_avatar_extentions = $image_data['u_avatar_extentions'];
+        }
+        $user->updated_at = now();
+
+        $user->save();
+
+        $result_array['is_error'] = 0;
+        $result_array['error_msg'] = 'User saved successfully';
+
+        return Response()->json($result_array);
+    }
+
+    public function DeleteUser(Request $request)
+    {
+        $g_hash   = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $id   = $request->input('id');
+
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $user = Users::find($id);
+        if (!$user) {
+            return response()->json([
+                'is_error' => 1,
+                'error_msg' => 'user not found'
+            ]);
+        }
+
+        $user->u_is_deleted = 1;
+        $user->u_deleted_by = $user_id;
+        $user->save();
+
+        return response()->json([
+            'is_error' => 0,
+            'error_msg' => 'user deleted successfully'
+        ]);
+    }
 }
