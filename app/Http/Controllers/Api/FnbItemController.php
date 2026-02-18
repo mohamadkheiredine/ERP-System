@@ -241,6 +241,7 @@ class FnbItemController extends Controller
             $ingredients_array[$index] = [
                 'in_id'              => $ing->in_id,
                 'in_ingredient_name' => $ing->in_ingredient_name,
+                'in_ingredient_code' => $ing->in_ingredient_code,
                 'in_product_id'      => $ing->in_product_id,
                 'product_name'       => $ing->Product ? $ing->Product->p_product_name : '',
                 'in_stock_quantity'  => $ing->in_stock_quantity,
@@ -279,6 +280,7 @@ class FnbItemController extends Controller
         $in_id = $request->input('in_id');
         $item_id = $request->input('item_id');
         $in_ingredient_name = $request->input('in_ingredient_name');
+        $in_ingredient_code = $request->input('in_ingredient_code');
         $in_product_id = $request->input('in_product_id');
         $in_stock_quantity = $request->input('in_stock_quantity');
         $in_unit_of_measure = $request->input('in_unit_of_measure');
@@ -311,6 +313,7 @@ class FnbItemController extends Controller
         }
 
         $ingredient->in_ingredient_name = $in_ingredient_name;
+        $ingredient->in_ingredient_code = $in_ingredient_code;
         $ingredient->in_product_id = $in_product_id;
         $ingredient->in_stock_quantity = $in_stock_quantity;
         $ingredient->in_unit_of_measure = $in_unit_of_measure;
