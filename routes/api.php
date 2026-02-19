@@ -33,8 +33,19 @@ Route::post('/request/api/getprofileinfo', 'Api\UsersController@GetUserInfo');
 Route::post('/request/api/saveprofileinfo', 'Api\UsersController@SetmyprofileInfo');
 Route::post('/request/api/changeprofilepassword', 'Api\UsersController@ChangeprofilePassword');
 Route::get('/request/api/getlistusers', 'Api\UsersController@GetListUsers');
+Route::get('/request/api/getusersformdata', 'Api\UsersController@GetUsersFormData');
+Route::get('/request/api/getusereditdata', 'Api\UsersController@GetUserEditData');
+Route::get('/request/api/lists/roles', 'Api\UsersController@GetListRoles');
+Route::get('/request/api/lists/usertypes', 'Api\UsersController@GetListUserTypes');
+Route::get('/request/api/lists/companies', 'Api\UsersController@GetListCompanies');
+Route::get('/request/api/lists/langs', 'Api\UsersController@GetListLangs');
+Route::get('/request/api/lists/jobtitles', 'Api\UsersController@GetListJobTitles');
+Route::get('/request/api/lists/jobroles', 'Api\UsersController@GetListJobRoles');
+Route::get('/request/api/lists/departments', 'Api\UsersController@GetListDepartments');
+Route::get('/request/api/lists/warehouses', 'Api\UsersController@GetListWarehouses');
+Route::get('/request/api/lists/employmenttypes', 'Api\UsersController@GetListEmploymentTypes');
+Route::get('/request/api/lists/paymenttypes', 'Api\UsersController@GetListPaymentTypes');
 Route::post('/request/api/saveuser', 'Api\UsersController@SaveUser');
-Route::delete('/request/api/deleteuser', 'Api\UsersController@DeleteUser');
 
 
 Route::get('/request/api/getteammembers', 'Api\UsersController@GetTeamMembers');

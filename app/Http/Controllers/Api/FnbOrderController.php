@@ -654,6 +654,29 @@ class FnbOrderController extends Controller
                 }
             }
 
+            // Update customer loyalty wallet based on item quantity deltas
+            if ($order && $order->fo_customer_id) {
+                $loyalty_customer = Customers::find($order->fo_customer_id);
+                if ($loyalty_customer) {
+                    $loyalty_delta = 0;
+                    foreach ($all_item_ids as $item_id) {
+                        $old_qty = $old_items_quantities[$item_id] ?? 0;
+                        $new_qty = $new_items_quantity[$item_id] ?? 0;
+                        $delta = $new_qty - $old_qty;
+                        if ($delta !== 0) {
+                            $loyalty_menu_item = FnbMenuItem::find($item_id);
+                            if ($loyalty_menu_item && $loyalty_menu_item->mi_loyalty_points > 0) {
+                                $loyalty_delta += $loyalty_menu_item->mi_loyalty_points * $delta;
+                            }
+                        }
+                    }
+                    if ($loyalty_delta !== 0) {
+                        $loyalty_customer->ic_loyalty_wallet = max(0, ($loyalty_customer->ic_loyalty_wallet ?? 0) + $loyalty_delta);
+                        $loyalty_customer->save();
+                    }
+                }
+            }
+
             return response()->json([
                 'is_error' => 0,
                 'message' => 'Order edited successfully',
@@ -1107,6 +1130,24 @@ class FnbOrderController extends Controller
                 }
             }
 
+
+            // Update customer loyalty wallet for the created order
+            if ($order_info->fo_customer_id) {
+                $loyalty_customer = Customers::find($order_info->fo_customer_id);
+                if ($loyalty_customer) {
+                    $total_loyalty_points = 0;
+                    foreach ($order_items as $item_order) {
+                        $loyalty_menu_item = FnbMenuItem::find($item_order['item_id']);
+                        if ($loyalty_menu_item && $loyalty_menu_item->mi_loyalty_points > 0) {
+                            $total_loyalty_points += $loyalty_menu_item->mi_loyalty_points * (int) $item_order['quantity'];
+                        }
+                    }
+                    if ($total_loyalty_points > 0) {
+                        $loyalty_customer->ic_loyalty_wallet = ($loyalty_customer->ic_loyalty_wallet ?? 0) + $total_loyalty_points;
+                        $loyalty_customer->save();
+                    }
+                }
+            }
 
             // Build $final_items from ALL order_items (frontend payload) for the receipt
             $final_items = [];

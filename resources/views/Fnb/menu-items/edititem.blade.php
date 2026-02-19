@@ -218,6 +218,12 @@
                             <input type="number" name="mi_max_order_quantity" id="MI_MAX_ORDER_QUANTITY"
                                 class="form-control" value="{{ $item_info->mi_max_order_quantity }}" />
                         </div>
+
+                        <div class="col-md-3">
+                            <label>Loyalty Points</label>
+                            <input type="number" name="mi_loyalty_points" id="MI_LOYALTY_POINTS"
+                                class="form-control" min="0" value="{{ $item_info->mi_loyalty_points ?? 0 }}" />
+                        </div>
                     </div>
 
                     {{-- SWITCHES --}}

@@ -236,6 +236,14 @@
                                     class="form-control" />
                             </div>
                         </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Loyalty Points</label>
+                                <input type="number" name="mi_loyalty_points" id="MI_LOYALTY_POINTS"
+                                    class="form-control" min="0" value="0" />
+                            </div>
+                        </div>
                     </div>
 
 

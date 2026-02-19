@@ -78,6 +78,10 @@ fnb_items_module = {
                     required: true,
                     min: 1,
                 },
+                mi_loyalty_points: {
+                    digits: true,
+                    min: 0,
+                },
             },
 
             messages: {
@@ -94,6 +98,10 @@ fnb_items_module = {
                 },
                 mi_currency_id: "Please select a currency",
                 mi_category_id: "Please select a category",
+                mi_loyalty_points: {
+                    digits: "Loyalty points must be a whole number",
+                    min: "Loyalty points cannot be negative",
+                },
             },
 
             errorPlacement: function (error, element) {

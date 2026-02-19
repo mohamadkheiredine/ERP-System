@@ -127,6 +127,7 @@ class FnbItemsController extends Controller
         $mi_is_spicy = $request->has('mi_is_spicy') ? 1 : 0;
         $mi_is_active = $request->has('fi_is_active') ? 1 : 0;
         $mi_kitchen_station_id = $request->input('mi_kitchen_station_id');
+        $mi_loyalty_points = (int) $request->input('mi_loyalty_points', 0);
 
         $image_data = null;
         if ($request->hasFile('mi_avatar_pic')) {
@@ -163,6 +164,7 @@ class FnbItemsController extends Controller
         $item->mi_is_spicy = $mi_is_spicy;
         $item->mi_is_active = $mi_is_active;
         $item->mi_kitchen_station_id = $mi_kitchen_station_id;
+        $item->mi_loyalty_points = $mi_loyalty_points;
 
         if ($image_data != null) {
             $item->mi_image_base_src  = $image_data['mi_image_base_src'];

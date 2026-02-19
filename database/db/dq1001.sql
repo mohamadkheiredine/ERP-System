@@ -825,3 +825,10 @@ FOREIGN KEY (fl_store_id)
 REFERENCES pos_stores(ps_id)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
+
+
+ALTER TABLE fnb_menu_items
+ADD COLUMN mi_loyalty_points INT(11) NOT NULL DEFAULT 0 AFTER mi_cost_price;
+
+ALTER TABLE inventory_customers
+CHANGE COLUMN ic_loyality_point ic_loyalty_wallet INT(11) NOT NULL DEFAULT 0;
