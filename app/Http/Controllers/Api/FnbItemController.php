@@ -73,6 +73,7 @@ class FnbItemController extends Controller
                 'mi_image' => $item->mi_image_file_name,
                 'mi_item_description' => $item->mi_item_description,
                 'mi_loyalty_points' => (int) ($item->mi_loyalty_points ?? 0),
+                'mi_kitchen_station_id' => (int) ($item->mi_kitchen_station_id ?? 0),
             ];
         }
 

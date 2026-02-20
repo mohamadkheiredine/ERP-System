@@ -726,7 +726,7 @@ ALTER TABLE `billing_invoices`
     ADD COLUMN `bi_is_returned` TINYINT NULL DEFAULT 0 AFTER `bi_invoice_items_type`;
 
 
-CREATE TABLE fnb_waste_stock (
+CREATE TABLE inventory_waste_stock (
     ws_id            MEDIUMINT AUTO_INCREMENT PRIMARY KEY,
 
     fk_product_id    INT NOT NULL DEFAULT 0,
@@ -832,3 +832,4 @@ ADD COLUMN mi_loyalty_points INT(11) NOT NULL DEFAULT 0 AFTER mi_cost_price;
 
 ALTER TABLE inventory_customers
 CHANGE COLUMN ic_loyality_point ic_loyalty_wallet INT(11) NOT NULL DEFAULT 0;
+

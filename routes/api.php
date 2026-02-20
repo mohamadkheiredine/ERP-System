@@ -136,6 +136,7 @@ Route::get('/api/export/sales-orders', 'Api\OrdersController@ExportSalesOrders')
 
 
 Route::get('api/shift/getopencurrencies', 'Api\FnbShiftController@GetOpenCurrencies');
+Route::get('api/shift/getterminals', 'Api\FnbShiftController@GetTerminalsByStore');
 
 
 
