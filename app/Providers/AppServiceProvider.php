@@ -26,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \URL::forceRootUrl(config('app.url'));
+
         Passport::loadKeysFrom(app_path('secrets/oauth'));
 
 

@@ -67,6 +67,8 @@ use League\Csv\Writer;
 use App\library\CustomersManager;
 use App\models\FnB\FnbPosShift;
 use App\models\FnB\SalesPosShift;
+use App\models\Sales\Terminals;
+use App\models\Sales\StoreEmployees;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -1081,34 +1083,68 @@ class OrdersController extends Controller
         // get from to date based on daterange
 
         switch ($date_range) {
-            case 1: //today's order
+            case 1:
                 {
-                    $date_from = date("Y-m-d 00:00:00");
-                    $date_to = date("Y-m-d 23:59:59");
+                    $shiftDates = null;
+                    $storeEmployee = StoreEmployees::where('se_employee_id', $user_id)->first();
+                    if ($storeEmployee) {
+                        $terminal = Terminals::where('pt_store_id', $storeEmployee->se_store_id)
+                            ->where('pt_is_deleted', 0)
+                            ->where('pt_is_active', 1)
+                            ->first();
+                        if ($terminal) {
+                            $openShift = FnbPosShift::where('ps_terminal_id', $terminal->pt_id)
+                                ->where('ps_status', 'OPEN')
+                                ->first();
+                            if ($openShift) {
+                                $shiftDates = [$openShift->ps_opened_at, date("Y-m-d H:i:s")];
+                            } else {
+                                $lastShift = FnbPosShift::where('ps_terminal_id', $terminal->pt_id)
+                                    ->where('ps_status', 'CLOSED')
+                                    ->orderBy('ps_closed_at', 'DESC')
+                                    ->first();
+                                if ($lastShift) {
+                                    $shiftDates = [$lastShift->ps_opened_at, $lastShift->ps_closed_at];
+                                }
+                            }
+                        }
+                    }
+                    if ($shiftDates) {
+                        $date_from = $shiftDates[0];
+                        $date_to   = $shiftDates[1];
+                    } else {
+                        $date_from = date("Y-m-d 00:00:00");
+                        $date_to   = date("Y-m-d 23:59:59");
+                    }
                 }
                 break;
-            case 2: //yesterday's order
+            case 2:
                 {
                     $date_from = date("Y-m-d 00:00:00", strtotime('yesterday'));
                     $date_to = date("Y-m-d 23:59:59", strtotime('yesterday'));
                 }
                 break;
-            case 3: //last week's order
+            case 3:
                 {
                     $date_from = date("Y-m-d 00:00:00", strtotime('-7 day'));
-                    $date_to = date("Y-m-d 23:59:59", strtotime('Today'));
+                    $date_to   = date("Y-m-d 23:59:59", strtotime('yesterday'));
                 }
                 break;
-            case 4: //last week's order
+            case 4:
                 {
                     $date_from = date("Y-m-d 00:00:00", strtotime('-30 day'));
-                    $date_to = date("Y-m-d 23:59:59", strtotime('Today'));
+                    $date_to   = date("Y-m-d 23:59:59", strtotime('yesterday'));
                 }
                 break;
-            case 5: // custom date range
+            case 5:
                 {
-                    $date_from = date("Y-m-d 00:00:00", strtotime($date_from));
-                    $date_to = date("Y-m-d 23:59:59", strtotime($date_to));
+                    if (empty($date_from) || empty($date_to)) {
+                        $date_from = date("Y-m-d 00:00:00");
+                        $date_to   = date("Y-m-d 23:59:59");
+                    } else {
+                        $date_from = date("Y-m-d 00:00:00", strtotime($date_from));
+                        $date_to   = date("Y-m-d 23:59:59", strtotime($date_to));
+                    }
                 }
                 break;
         }
@@ -1203,38 +1239,40 @@ class OrdersController extends Controller
         }
 
 
-
-        // get from to date based on daterange
-
         switch ($date_range) {
-            case 1: //today's order
+            case 1:
                 {
                     $date_from = date("Y-m-d");
                     $date_to = date("Y-m-d");
                 }
                 break;
-            case 2: //yesterday's order
+            case 2:
                 {
                     $date_from = date("Y-m-d", strtotime('yesterday'));
                     $date_to = date("Y-m-d", strtotime('yesterday'));
                 }
                 break;
-            case 3: //last week's order
+            case 3:
                 {
                     $date_from = date("Y-m-d", strtotime('-7 day'));
-                    $date_to = date("Y-m-d", strtotime('Today'));
+                    $date_to   = date("Y-m-d", strtotime('yesterday'));
                 }
                 break;
-            case 4: //last week's order
+            case 4:
                 {
                     $date_from = date("Y-m-d", strtotime('-30 day'));
-                    $date_to = date("Y-m-d", strtotime('Today'));
+                    $date_to   = date("Y-m-d", strtotime('yesterday'));
                 }
                 break;
-            case 5: // custom date range
+            case 5:
                 {
-                    $date_from = date("Y-m-d", strtotime($date_from));
-                    $date_to = date("Y-m-d", strtotime($date_to));
+                    if (empty($date_from) || empty($date_to)) {
+                        $date_from = date("Y-m-d");
+                        $date_to   = date("Y-m-d");
+                    } else {
+                        $date_from = date("Y-m-d", strtotime($date_from));
+                        $date_to   = date("Y-m-d", strtotime($date_to));
+                    }
                 }
                 break;
         }

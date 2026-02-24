@@ -1,6 +1,9 @@
 <?php
+use Illuminate\Support\Facades\Route;
+
+
 Route::post('/request/license/savelicenseinfo','IndexController@GenerateLicenseFile');
-Route::post('/request/login','Auth\LoginController@Login');
+Route::post('/request/login','Auth\LoginController@Login')->name('request.login');
 
 Route::post('ajaxsaveConfiguration', 'Utilities\ConfigurationController@SaveConfiguration');
 

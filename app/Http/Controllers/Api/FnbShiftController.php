@@ -12,9 +12,41 @@ use App\models\FnB\FnbOrders;
 use App\models\FnB\FnbSessionFields;
 use App\models\Sales\Terminals;
 use App\models\Sales\StoreEmployees;
+use App\models\Sales\Orders;
 
 class FnbShiftController extends Controller
 {
+    /**
+     * Find the active terminal for a user's store.
+     * If the store exists but has no terminal yet, a default one is
+     * created automatically so the cashier is never blocked.
+     * Returns null only when the user is not assigned to any store.
+     */
+    private function getTerminalForUser(int $user_id): ?Terminals
+    {
+        $storeEmployee = StoreEmployees::where('se_employee_id', $user_id)->first();
+        if (!$storeEmployee) {
+            return null;
+        }
+
+        $terminal = Terminals::where('pt_store_id', $storeEmployee->se_store_id)
+            ->where('pt_is_deleted', 0)
+            ->where('pt_is_active', 1)
+            ->first();
+
+        if (!$terminal) {
+            $terminal                   = new Terminals();
+            $terminal->pt_store_id      = $storeEmployee->se_store_id;
+            $terminal->pt_terminal_name = 'POS Terminal';
+            $terminal->pt_description   = 'Default terminal (auto-created)';
+            $terminal->pt_is_active     = 1;
+            $terminal->pt_is_deleted    = 0;
+            $terminal->save();
+        }
+
+        return $terminal;
+    }
+
     public function OpenShift(Request $request)
     {
         $g_hash     = $request->input('g_hash');
@@ -39,18 +71,12 @@ class FnbShiftController extends Controller
             return Response()->json($result_array);
         }
 
-        $storeEmployee = StoreEmployees::where('se_employee_id', $user_id)->first();
-        $terminal = $storeEmployee
-            ? Terminals::where('pt_store_id', $storeEmployee->se_store_id)
-                ->where('pt_is_deleted', 0)
-                ->where('pt_is_active', 1)
-                ->first()
-            : null;
+        $terminal = $this->getTerminalForUser((int) $user_id);
 
         if (!$terminal) {
             return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'No terminal found. Please create a terminal for this store at /stores/terminals'
+                'is_error'  => 1,
+                'error_msg' => 'This user is not assigned to any store. Please assign the user to a store first.'
             ]);
         }
 
@@ -140,18 +166,12 @@ class FnbShiftController extends Controller
             return Response()->json($result_array);
         }
 
-        $storeEmployee = StoreEmployees::where('se_employee_id', $user_id)->first();
-        $terminal = $storeEmployee
-            ? Terminals::where('pt_store_id', $storeEmployee->se_store_id)
-                ->where('pt_is_deleted', 0)
-                ->where('pt_is_active', 1)
-                ->first()
-            : null;
+        $terminal = $this->getTerminalForUser((int) $user_id);
 
         if (!$terminal) {
             return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'No terminal found. Please create a terminal for this store at /stores/terminals'
+                'is_error'  => 1,
+                'error_msg' => 'This user is not assigned to any store. Please assign the user to a store first.'
             ]);
         }
 
@@ -193,9 +213,9 @@ class FnbShiftController extends Controller
             $total_difference += $difference;
         }
 
-        $shift->ps_closed_at = now();
-        $shift->ps_status    = 'CLOSED';
-        $shift->ps_notes     = $notes;
+        $shift->ps_closed_at  = now();
+        $shift->ps_status     = 'CLOSED';
+        $shift->ps_notes      = $notes;
         $shift->ps_difference = $total_difference;
         $shift->save();
 
@@ -235,18 +255,12 @@ class FnbShiftController extends Controller
             ]);
         }
 
-        $storeEmployee = StoreEmployees::where('se_employee_id', $user_id)->first();
-        $terminal = $storeEmployee
-            ? Terminals::where('pt_store_id', $storeEmployee->se_store_id)
-                ->where('pt_is_deleted', 0)
-                ->where('pt_is_active', 1)
-                ->first()
-            : null;
+        $terminal = $this->getTerminalForUser((int) $user_id);
 
         if (!$terminal) {
             return response()->json([
-                'is_error' => 1,
-                'error_msg' => 'No terminal found. Please create a terminal for this store at /stores/terminals'
+                'is_error'  => 1,
+                'error_msg' => 'This user is not assigned to any store. Please assign the user to a store first.'
             ]);
         }
 
@@ -272,16 +286,14 @@ class FnbShiftController extends Controller
             ]);
         }
 
-        $orders = FnbOrders::whereIn('fo_payment_status', ['paid', 'partial'])
-            ->whereBetween('fo_order_datetime', [
-                $shift->ps_opened_at,
-                now()
-            ])
+        // Calculate expected values from sales orders (retail POS) within this shift window
+        $salesOrders = Orders::whereSoIsDeleted(0)
+            ->whereBetween('so_order_date', [$shift->ps_opened_at, now()])
             ->get();
 
-        $expectedByCurrency = $orders
-            ->groupBy('fo_currency_id')
-            ->map(fn($items) => $items->sum('fo_paid_amount'));
+        $expectedByCurrency = $salesOrders
+            ->groupBy('so_order_currency')
+            ->map(fn($items) => $items->sum('so_total_cost'));
 
         $currencies = Currency::whereIn(
             'cc_id',

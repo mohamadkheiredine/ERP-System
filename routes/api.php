@@ -138,6 +138,10 @@ Route::get('/api/export/sales-orders', 'Api\OrdersController@ExportSalesOrders')
 Route::get('api/shift/getopencurrencies', 'Api\FnbShiftController@GetOpenCurrencies');
 Route::get('api/shift/getterminals', 'Api\FnbShiftController@GetTerminalsByStore');
 
+Route::get('api/retailshift/getopencurrencies', 'Api\RetailPosShiftController@GetOpenCurrencies');
+Route::post('api/retailshift/openshift', 'Api\RetailPosShiftController@OpenShift');
+Route::post('api/retailshift/closeshift', 'Api\RetailPosShiftController@CloseShift');
+
 
 
 Route::post('/request/api/exportorderstoexcel', 'Api\OrdersController@ExportListOrdersToExcel');

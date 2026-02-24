@@ -10,6 +10,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', 'IndexController@index')->name('login');
 Route::get('/installation', 'IndexController@installation');
 Route::get('/generatelicense', 'IndexController@GenerateLicense');
