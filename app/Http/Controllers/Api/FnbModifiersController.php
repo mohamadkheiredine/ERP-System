@@ -79,4 +79,72 @@ class FnbModifiersController extends Controller
             'data' => $modifiers_array
         ]);
     }
+
+    public function SaveItemModifier(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $fk_menu_item_id = $request->input('fk_menu_item_id');
+        $fk_modifier_id  = $request->input('fk_modifier_id');
+        $im_override_cost = $request->input('im_override_cost');
+
+        $item_modifier_info = new FnbMenuItemModifier();
+        $item_modifier_info->fk_menu_item_id  = $fk_menu_item_id;
+        $item_modifier_info->fk_modifier_id   = $fk_modifier_id;
+        $item_modifier_info->im_override_cost = $im_override_cost;
+        $item_modifier_info->save();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Modifier saved';
+        $result_array['im_id']     = $item_modifier_info->im_id;
+
+        return Response()->json($result_array);
+    }
+
+    public function DeleteItemModifier(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $im_id   = $request->input('im_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $item_modifier_info = FnbMenuItemModifier::find($im_id);
+
+        if (!$item_modifier_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'Modifier not found']);
+        }
+
+        $item_modifier_info->im_is_deleted = 1;
+        $item_modifier_info->im_deleted_by = $user_id;
+        $item_modifier_info->save();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Modifier removed';
+
+        return Response()->json($result_array);
+    }
 }

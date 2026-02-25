@@ -208,11 +208,17 @@ Route::get('/api/inventory/getlistunits', 'Api\FnbItemController@GetListUnits');
 Route::post('/api/inventory/deleteingredient', 'Api\FnbItemController@DeleteIngredient');
 Route::post('/api/inventory/updateitemdescription', 'Api\FnbItemController@UpdateItemDescription');
 Route::get('/api/inventory/printrecipepdf', 'Api\FnbItemController@PrintRecipePdf');
+Route::post('/api/inventory/savemenuitemfrompos', 'Api\FnbItemController@SaveMenuItemFromPos');
+Route::post('/api/inventory/deletemenuitem', 'Api\FnbItemController@DeleteMenuItem');
 Route::get('/api/inventory/getlistoforders', 'Api\FnbOrderController@GetListOfOrders');
 Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetListModifiers');
 Route::get('/api/inventory/getlistmodifiersperitem', 'Api\FnbModifiersController@GetModifiersPerItem');
+Route::post('/api/inventory/saveitemmodifier', 'Api\FnbModifiersController@SaveItemModifier');
+Route::post('/api/inventory/deleteitemmodifier', 'Api\FnbModifiersController@DeleteItemModifier');
 Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');
+Route::get('/api/inventory/getwarehouses', 'Api\ProductsController@GetWarehouses');
+Route::post('/api/inventory/transferstock', 'Api\ProductsController@TransferStock');
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
 
 Route::get('/api/allowedcurrencies/getallowedcurrencies', 'Api\PosAllowedCurrenciesController@GetAllowedCurrencies');

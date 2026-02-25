@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use App\models\Users\Users;
 use App\models\FnB\FnbMenuItem;
 use App\Models\FnB\FnbIngredients;
+use App\Models\FnB\FnbMenuItemModifier;
 use App\models\System\Units;
 use App\Models\System\Companies;
 use App\models\System\Currency;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Config;
+use Illuminate\Support\Facades\File;
 
 class FnbItemController extends Controller
 {
@@ -46,6 +49,17 @@ class FnbItemController extends Controller
 
         $lst_fnb_items = $item_cond->get();
 
+        // Batch-load modifier counts (single query instead of N+1)
+        $item_ids = $lst_fnb_items->pluck('mi_id')->toArray();
+        $modifier_counts = [];
+        if (!empty($item_ids)) {
+            $modifier_counts = FnbMenuItemModifier::where('im_is_deleted', 0)
+                ->whereIn('fk_menu_item_id', $item_ids)
+                ->selectRaw('fk_menu_item_id, count(*) as cnt')
+                ->groupBy('fk_menu_item_id')
+                ->pluck('cnt', 'fk_menu_item_id')
+                ->toArray();
+        }
 
         $items_array = array();
         foreach ($lst_fnb_items as $index => $item) {
@@ -55,25 +69,38 @@ class FnbItemController extends Controller
                 $unit_label = $unit ? $unit->su_unit_label : '';
             }
 
+            $image_src_url = null;
+            if (strlen((string) $item->mi_image_base_src) > 0) {
+                $image_src_url = url('/') . "/" . Config::get('constants.PRODUCTS_PATH') . $item->mi_image_base_src . $item->mi_image_file_name . "." . $item->mi_image_extension;
+            }
+
             $items_array[$index] = [
-                'mi_id' => $item->mi_id,
-                'mi_item_name' => $item->mi_item_name,
-                'mi_category_id' => $item->mi_category_id,
-                'category_name' => $item->Category ? $item->Category->mc_category_name : "",
-                'mi_base_price' => $item->mi_base_price,
-                'mi_cost_price' => $item->mi_cost_price,
-                'currency_code' => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
-                'cc_id' => $item->mi_currency_id,
-                'mi_unit_id' => $item->mi_unit_id,
-                'unit_label' => $unit_label,
-                'mi_is_available' => $item->mi_is_available,
-                'mi_is_spicy' => $item->mi_is_spicy,
-                'mi_is_vegetarian' => $item->mi_is_vegetarian,
-                'mi_barcode' => $item->mi_barcode,
-                'mi_image' => $item->mi_image_file_name,
-                'mi_item_description' => $item->mi_item_description,
-                'mi_loyalty_points' => (int) ($item->mi_loyalty_points ?? 0),
-                'mi_kitchen_station_id' => (int) ($item->mi_kitchen_station_id ?? 0),
+                'mi_id'                 => $item->mi_id,
+                'mi_item_name'          => $item->mi_item_name,
+                'mi_category_id'        => $item->mi_category_id,
+                'category_name'         => $item->Category ? $item->Category->mc_category_name : "",
+                'mi_base_price'         => $item->mi_base_price,
+                'mi_cost_price'         => $item->mi_cost_price,
+                'currency_code'         => $item->Currency ? $item->Currency->cc_currency_code : "GNF",
+                'cc_id'                 => $item->mi_currency_id,
+                'mi_unit_id'            => $item->mi_unit_id,
+                'unit_label'            => $unit_label,
+                'mi_is_available'       => $item->mi_is_available,
+                'mi_is_spicy'           => $item->mi_is_spicy,
+                'mi_is_vegetarian'      => $item->mi_is_vegetarian,
+                'mi_barcode'            => $item->mi_barcode,
+                'mi_sku_code'           => $item->mi_sku_code,
+                'mi_tax_percentage'     => $item->mi_tax_percentage,
+                'mi_calories'           => $item->mi_calories,
+                'mi_image'              => $image_src_url,
+                'mi_item_description'   => $item->mi_item_description,
+                'mi_loyalty_points'              => (int) ($item->mi_loyalty_points ?? 0),
+                'mi_kitchen_station_id'          => (int) ($item->mi_kitchen_station_id ?? 0),
+                'mi_preparation_time_minutes'    => (int) ($item->mi_preparation_time_minutes ?? 0),
+                'mi_pos_order_display'           => (int) ($item->mi_pos_order_display ?? 1),
+                'mi_max_order_quantity'          => (int) ($item->mi_max_order_quantity ?? 0),
+                'mi_is_active'                   => (int) ($item->mi_is_active ?? 0),
+                'mi_modifier_count'              => (int) ($modifier_counts[$item->mi_id] ?? 0),
             ];
         }
 
@@ -544,5 +571,174 @@ class FnbItemController extends Controller
         }
 
         return $pdf->stream($fileName);
+    }
+
+    /**
+     * Save menu item from POS (supports image upload via multipart/form-data).
+     * Mirrors the ERP web saveItem logic without session dependency.
+     * @author Mohammed kheiredine
+     */
+    public function SaveMenuItemFromPos(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+        if (!$user_info) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $mi_id                      = $request->input('mi_id');
+        $mi_item_name               = $request->input('mi_item_name');
+        $mi_item_description        = $request->input('mi_item_description');
+        $mi_barcode                 = $request->input('mi_barcode');
+        $mi_sku_code                = $request->input('mi_sku_code');
+        $mi_base_price              = $request->input('mi_base_price', 0);
+        $mi_cost_price              = $request->input('mi_cost_price', 0);
+        $mi_currency_id             = $request->input('mi_currency_id');
+        $mi_category_id             = $request->input('mi_category_id');
+        $mi_tax_percentage          = $request->input('mi_tax_percentage', 0);
+        $mi_calories                = $request->input('mi_calories', 0);
+        $mi_is_available            = (int) $request->input('mi_is_available', 0);
+        $mi_is_vegetarian           = (int) $request->input('mi_is_vegetarian', 0);
+        $mi_is_spicy                = (int) $request->input('mi_is_spicy', 0);
+        $mi_unit_id                 = $request->input('mi_unit_id');
+        $mi_kitchen_station_id      = $request->input('mi_kitchen_station_id');
+        $mi_loyalty_points               = (int) $request->input('mi_loyalty_points', 0);
+        $mi_preparation_time_minutes     = $request->input('mi_preparation_time_minutes', 0);
+        $mi_pos_order_display            = $request->input('mi_pos_order_display', 1);
+        $mi_max_order_quantity           = $request->input('mi_max_order_quantity', 0);
+        $mi_is_active                    = (int) $request->input('mi_is_active', 0);
+
+        $remove_image = $request->input('remove_image');
+
+        if ($mi_id != null) {
+            $item_info = FnbMenuItem::find($mi_id);
+            if (!$item_info) {
+                return response()->json(['is_error' => 1, 'error_msg' => 'Item not found']);
+            }
+        } else {
+            $item_info = new FnbMenuItem();
+            $item_info->mi_created_by = $user_id;
+        }
+
+        $item_info->mi_item_name          = $mi_item_name;
+        $item_info->mi_item_description   = $mi_item_description;
+        $item_info->mi_barcode            = $mi_barcode;
+        $item_info->mi_sku_code           = $mi_sku_code;
+        $item_info->mi_base_price         = $mi_base_price;
+        $item_info->mi_cost_price         = $mi_cost_price;
+        $item_info->mi_currency_id        = $mi_currency_id;
+        $item_info->mi_category_id        = $mi_category_id;
+        $item_info->mi_tax_percentage     = $mi_tax_percentage;
+        $item_info->mi_calories           = $mi_calories;
+        $item_info->mi_is_available       = $mi_is_available;
+        $item_info->mi_is_vegetarian      = $mi_is_vegetarian;
+        $item_info->mi_is_spicy           = $mi_is_spicy;
+        $item_info->mi_unit_id            = $mi_unit_id;
+        $item_info->mi_kitchen_station_id = $mi_kitchen_station_id;
+        $item_info->mi_loyalty_points            = $mi_loyalty_points;
+        $item_info->mi_preparation_time_minutes  = $mi_preparation_time_minutes;
+        $item_info->mi_pos_order_display         = $mi_pos_order_display;
+        $item_info->mi_max_order_quantity        = $mi_max_order_quantity;
+        $item_info->mi_is_active                 = $mi_is_active;
+        $item_info->mi_updated_by                = $user_id;
+
+        if ($remove_image == 1 && $mi_id != null) {
+            $base = $item_info->mi_image_base_src;
+            $name = $item_info->mi_image_file_name;
+            $ext  = $item_info->mi_image_extension;
+
+            if (strlen((string)$base) > 0 && strlen((string)$name) > 0) {
+                $old_path = public_path() . "/" . Config::get("constants.PRODUCTS_PATH") . $base . $name . "." . $ext;
+                if (file_exists($old_path)) {
+                    unlink($old_path);
+                }
+            }
+
+            $item_info->mi_image_base_src  = null;
+            $item_info->mi_image_file_name = null;
+            $item_info->mi_image_extension = null;
+        }
+
+        if ($request->hasFile('mi_avatar_pic')) {
+            // Delete old image if editing
+            if ($mi_id != null) {
+                $base = $item_info->mi_image_base_src;
+                $name = $item_info->mi_image_file_name;
+                $ext  = $item_info->mi_image_extension;
+                if (strlen((string) $base) > 0 && strlen((string) $name) > 0) {
+                    $old_path = public_path() . "/" . Config::get("constants.PRODUCTS_PATH") . $base . $name . "." . $ext;
+                    if (file_exists($old_path)) {
+                        unlink($old_path);
+                    }
+                }
+            }
+
+            $file      = $request->file('mi_avatar_pic');
+            $base_dir  = date("Y/m/d/");
+            $directory = public_path() . "/" . Config::get("constants.PRODUCTS_PATH") . $base_dir;
+
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0777, true);
+            }
+
+            $ext      = $file->getClientOriginalExtension();
+            $new_name = md5(time()) . "_" . rand(1000, 999999);
+            $file->move($directory, $new_name . "." . $ext);
+
+            $item_info->mi_image_base_src  = $base_dir;
+            $item_info->mi_image_file_name = $new_name;
+            $item_info->mi_image_extension = $ext;
+        }
+
+        $item_info->save();
+
+        return response()->json([
+            'is_error'  => 0,
+            'error_msg' => 'Menu item saved successfully',
+            'mi_id'     => $item_info->mi_id,
+        ]);
+    }
+
+    /**
+     * Soft-delete a menu item from POS.
+     * @author Mohammed kheiredine
+     */
+    public function DeleteMenuItem(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $mi_id   = $request->input('mi_id');
+
+        $user_info = Users::find($user_id);
+        if (!$user_info) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'User not found']);
+        }
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+
+        if ($c_hash != $g_hash) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'hash sequence is not valid !!']);
+        }
+
+        $item_info = FnbMenuItem::find($mi_id);
+        if (!$item_info) {
+            return response()->json(['is_error' => 1, 'error_msg' => 'Item not found']);
+        }
+
+        $item_info->mi_is_deleted = 1;
+        $item_info->mi_deleted_by = $user_id;
+        $item_info->save();
+
+        return response()->json(['is_error' => 0, 'error_msg' => 'Item deleted successfully']);
     }
 }

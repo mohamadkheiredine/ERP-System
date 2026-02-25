@@ -92,6 +92,7 @@ class FnbOrderController extends Controller
                 $stock->is_stock_label = 'NEGATIVE STOCK AUTO-GENERATED';
                 $stock->is_created_by = session('user_id') ?? 0;
                 $stock->is_creation_date = now();
+                $stock->save();
 
                 return;
             }

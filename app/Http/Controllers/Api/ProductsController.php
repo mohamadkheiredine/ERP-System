@@ -56,6 +56,8 @@ use App\models\Sales\StoreWarehouses;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Maatwebsite\Excel\Facades\Excel;
 use App\library\WasteExport;
+use App\models\Inventory\StockMovementItems;
+use App\models\Inventory\WareHouseMovement;
 
 
 
@@ -1727,5 +1729,217 @@ class ProductsController extends Controller
             new WasteExport($data),
             'waste_report.xlsx'
         );
+    }
+
+    /**
+     *
+     * @author Mohamad Kheiredine
+     */
+    public function GetWarehouses(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $g_hash  = $request->input('g_hash');
+
+        $result = [];
+
+        $user_info = Users::find($user_id);
+        if (!$user_info) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'User not found.';
+            return response()->json($result);
+        }
+
+        $c_hash = hash('sha256', "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567");
+        if ($c_hash !== $g_hash) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Invalid session.';
+            return response()->json($result);
+        }
+
+        $warehouses = WareHouses::where('w_is_deleted', 0)
+            ->orderBy('w_warehouse_name', 'asc')
+            ->get(['w_id', 'w_warehouse_name']);
+
+        $result['is_error']   = 0;
+        $result['warehouses'] = $warehouses->map(fn($w) => [
+            'id'   => $w->w_id,
+            'name' => $w->w_warehouse_name,
+        ])->values();
+
+        return response()->json($result);
+    }
+
+    /**
+     *
+     * Transfers qty from a specific stock batch (from_stock_id) to another warehouse.
+     *
+     * cases handled:
+     *  1 qty <= 0                            → error
+     *  2 from_stock_id not found             → error
+     *  3 to_warehouse_id not found           → error
+     *  4 source and destination same         → error
+     *  5 qty > source batch quantity         → error
+     *  6 partial transfer (qty < source qty) → reduce source row, create dest row
+     *  7 full transfer (qty == source qty)   → zero out source row, create dest row
+     * @author Mohammed kheiredine
+     */
+    public function TransferStock(Request $request)
+    {
+        $user_id         = $request->input('user_id');
+        $g_hash          = $request->input('g_hash');
+        $from_stock_id   = $request->input('from_stock_id');
+        $to_warehouse_id = $request->input('to_warehouse_id');
+        $qty             = $request->input('qty', 0);
+        $notes           = $request->input('notes', '');
+
+        $result = [];
+
+        $user_info = Users::find($user_id);
+        if (!$user_info) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'User not found.';
+            return response()->json($result);
+        }
+
+        $c_hash = hash('sha256', "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567");
+        if ($c_hash !== $g_hash) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Invalid session.';
+            return response()->json($result);
+        }
+
+        if ($qty <= 0) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Transfer quantity must be greater than zero.';
+            return response()->json($result);
+        }
+
+        $source_stock = Stocks::find($from_stock_id);
+        if (!$source_stock) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Source stock batch not found.';
+            return response()->json($result);
+        }
+
+        $dest_warehouse = WareHouses::find($to_warehouse_id);
+        if (!$dest_warehouse) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Destination warehouse not found.';
+            return response()->json($result);
+        }
+
+        if ($source_stock->fk_warehouse_id === $to_warehouse_id) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Source and destination warehouse must be different.';
+            return response()->json($result);
+        }
+
+        if ($qty > (float) $source_stock->is_quanity) {
+            $result['is_error']      = 1;
+            $result['error_message'] = 'Transfer quantity exceeds available stock in this batch.';
+            return response()->json($result);
+        }
+
+        // Transfer
+        DB::transaction(function () use (
+            $source_stock, $dest_warehouse, $qty, $notes, $user_id
+        ) {
+            $product_id        = $source_stock->fk_product_id;
+            $from_warehouse_id = $source_stock->fk_warehouse_id;
+            $to_warehouse_id   = $dest_warehouse->w_id;
+            $product           = Products::find($product_id);
+            $src_warehouse     = WareHouses::find($from_warehouse_id);
+
+            // Generate transfer code
+            // Generate transfer code directly — ProductManager::GenerateStockTransferCode()
+            // uses session('company_id') which is unavailable in API context (no session).
+            $count_mov     = StockMovements::where('sm_is_deleted', 0)->count();
+            $transfer_code = 'TRF' . sprintf('%05d', $count_mov + 1);
+
+            $product_name = $product ? $product->p_product_name : "Product #{$product_id}";
+            $src_name     = $src_warehouse ? $src_warehouse->w_warehouse_name : "WH#{$from_warehouse_id}";
+            $dest_name    = $dest_warehouse->w_warehouse_name;
+            $cost_price   = $product ? $product->p_product_cost_price : 0;
+            $currency_id  = $product ? $product->p_product_currency : null;
+
+            // 1 Reduce source stock row
+            $source_stock->is_quanity = $source_stock->is_quanity - $qty;
+            $source_stock->save();
+
+            // 2 create new stock row in destination warehouse (preserving lot info)
+            $dest_stock                                = new Stocks();
+            $dest_stock->fk_product_id                 = $product_id;
+            $dest_stock->fk_warehouse_id               = $to_warehouse_id;
+            $dest_stock->is_quanity                    = $qty;
+            $dest_stock->is_stock_label                = $notes ?: "Transfer from {$src_name} via {$transfer_code}";
+            $dest_stock->is_created_by                 = $user_id;
+            $dest_stock->is_stock_lot_person_in_charge = $user_id;
+            $dest_stock->is_creation_date              = date('Y-m-d H:i:s');
+            $dest_stock->is_price_item                 = $source_stock->is_price_item;
+            $dest_stock->is_price_stock                = $source_stock->is_price_item * $qty;
+            $dest_stock->is_price_currency             = $source_stock->is_price_currency;
+            $dest_stock->is_stock_currency             = $source_stock->is_price_currency;
+            $dest_stock->is_stock_exchange_rate        = $source_stock->is_stock_exchange_rate;
+            $dest_stock->is_selling_price              = $source_stock->is_selling_price;
+            $dest_stock->is_wholesale_price            = $source_stock->is_wholesale_price;
+            $dest_stock->is_vendor_price               = $source_stock->is_vendor_price;
+            $dest_stock->is_supplier_id                = $source_stock->is_supplier_id;
+            $dest_stock->is_stock_unit                 = $source_stock->is_stock_unit;
+            $dest_stock->is_trans_id                   = $source_stock->is_trans_id;
+            $dest_stock->is_mov_id                     = $source_stock->is_mov_id;
+            // New unique UID for this stock entry in the destination warehouse
+            $dest_stock->is_stock_uid                  = $transfer_code . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
+            $dest_stock->save();
+
+            // 3 create stock movement header
+            $movement                       = new StockMovements();
+            $movement->sm_transfer_code     = $transfer_code;
+            $movement->fk_warehouse_from    = $from_warehouse_id;
+            $movement->fk_warehouse_to      = $to_warehouse_id;
+            $movement->sm_date_movement     = date('Y-m-d H:i:s');
+            $movement->sm_movement_label    = "FnB Transfer: {$product_name}";
+            $movement->sm_transfer_description = $notes ?: "Transfer {$qty} of {$product_name} from {$src_name} to {$dest_name}";
+            $movement->sm_created_by        = $user_id;
+            $movement->sm_stock_quantity    = $qty;
+            $movement->sm_stock_total_price = $cost_price * $qty;
+            $movement->sm_is_deleted        = 0;
+            $movement->save();
+
+            // 4 create stock movement item detail
+            $movement_item                       = new StockMovementItems();
+            $movement_item->mp_movement_id       = $movement->sm_id;
+            $movement_item->mp_product_id        = $product_id;
+            $movement_item->mp_label             = "Transfer {$product_name}";
+            $movement_item->mp_item_notes        = $notes;
+            $movement_item->mp_movement_quantity = $qty;
+            $movement_item->mp_movement_cost     = $cost_price * $qty;
+            $movement_item->mp_currency_id       = $currency_id;
+            $movement_item->mp_is_deleted        = 0;
+            $movement_item->save();
+
+            // 5 Warehouse movement — outbound (source)
+            $wm_out                        = new WareHouseMovement();
+            $wm_out->wm_warehouse_id       = $from_warehouse_id;
+            $wm_out->wm_product_id         = $product_id;
+            $wm_out->wm_quantity           = -1 * $qty;
+            $wm_out->wm_action_date        = date('Y-m-d');
+            $wm_out->wm_action_type        = 'TRANSFER';
+            $wm_out->wm_action_description = "Transfer {$qty} of {$product_name} from {$src_name} to {$dest_name} via {$transfer_code}";
+            $wm_out->save();
+
+            // 5 Warehouse movement — inbound (destination)
+            $wm_in                        = new WareHouseMovement();
+            $wm_in->wm_warehouse_id       = $to_warehouse_id;
+            $wm_in->wm_product_id         = $product_id;
+            $wm_in->wm_quantity           = $qty;
+            $wm_in->wm_action_date        = date('Y-m-d');
+            $wm_in->wm_action_type        = 'TRANSFER';
+            $wm_in->wm_action_description = "Received {$qty} of {$product_name} from {$src_name} via {$transfer_code}";
+            $wm_in->save();
+        });
+
+        $result['is_error']      = 0;
+        $result['error_message'] = 'Transfer completed successfully.';
+        return response()->json($result);
     }
 }
