@@ -574,8 +574,6 @@ class FnbItemController extends Controller
     }
 
     /**
-     * Save menu item from POS (supports image upload via multipart/form-data).
-     * Mirrors the ERP web saveItem logic without session dependency.
      * @author Mohammed kheiredine
      */
     public function SaveMenuItemFromPos(Request $request)
