@@ -256,6 +256,13 @@ class OrdersController extends Controller
         if ($order_id != 0)
             $order_info = Orders::find($order_id);
 
+        $payment_type_map = [
+            'cash'   => PaymentTypes::PAYMENT_CASH_ID,
+            'card'   => PaymentTypes::PAYMENT_CREDIT_CARD_ID,
+            'credit' => PaymentTypes::PAYMENT_CASH_ID,
+        ];
+        $mapped_payment_type = $payment_type_map[$payment_type] ?? PaymentTypes::PAYMENT_CASH_ID;
+
         if ($order_id == 0) {
             $order_info->so_order_code       = $so_order_code;
             $order_info->so_order_barcode    = $so_order_barcode;
@@ -266,7 +273,6 @@ class OrdersController extends Controller
             $order_info->so_vendor_id        = $vendor_id;
             $order_info->so_creation_date    = $creation_date;
             $order_info->so_product_type     = 1;
-            $order_info->so_payment_type     = 1;
             $order_info->so_order_label      = $so_order_label;
             $order_info->so_order_note       = "";
             $order_info->so_order_date       = $full_date;
@@ -285,6 +291,7 @@ class OrdersController extends Controller
         $order_info->so_order_currency   = $company_currency;
         $order_info->so_order_customer   = $customer_id;
         $order_info->so_delivery_fees   = $deliveryFee;
+        $order_info->so_payment_type     = $mapped_payment_type;
 
         $order_info->save();
 
@@ -1147,6 +1154,13 @@ class OrdersController extends Controller
                     }
                 }
                 break;
+            case 6:
+                {
+                    // Today: full calendar day 00:00:00 → 23:59:59
+                    $date_from = date("Y-m-d 00:00:00");
+                    $date_to   = date("Y-m-d 23:59:59");
+                }
+                break;
         }
 
 
@@ -1273,6 +1287,13 @@ class OrdersController extends Controller
                         $date_from = date("Y-m-d", strtotime($date_from));
                         $date_to   = date("Y-m-d", strtotime($date_to));
                     }
+                }
+                break;
+            case 6:
+                {
+                    // Today: full calendar day
+                    $date_from = date("Y-m-d");
+                    $date_to   = date("Y-m-d");
                 }
                 break;
         }
