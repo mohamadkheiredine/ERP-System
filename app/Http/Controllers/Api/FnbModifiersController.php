@@ -32,10 +32,18 @@ class FnbModifiersController extends Controller
 
         $modifiers_array = [];
         foreach ($lst_modifiers as $index => $modifier_info) {
-            $modifiers_array[$index]['m_id']   = $modifier_info->m_id;
-            $modifiers_array[$index]['m_modifier_name'] = $modifier_info->m_modifier_name;
-            $modifiers_array[$index]['m_price_modifier'] = $modifier_info->m_price_modifier;
-            $modifiers_array[$index]['m_quantity'] = $modifier_info->m_quantity;
+            $modifiers_array[$index]['m_id']                   = $modifier_info->m_id;
+            $modifiers_array[$index]['m_modifier_name']        = $modifier_info->m_modifier_name;
+            $modifiers_array[$index]['m_modifier_description'] = $modifier_info->m_modifier_description ?? '';
+            $modifiers_array[$index]['m_item_id']              = $modifier_info->m_item_id;
+            $modifiers_array[$index]['m_unit_id']              = $modifier_info->m_unit_id;
+            $modifiers_array[$index]['m_currency_id']          = $modifier_info->m_currency_id;
+            $modifiers_array[$index]['m_quantity']             = $modifier_info->m_quantity;
+            $modifiers_array[$index]['m_cost_modifier']        = $modifier_info->m_cost_modifier;
+            $modifiers_array[$index]['m_price_modifier']       = $modifier_info->m_price_modifier;
+            $modifiers_array[$index]['m_is_active']            = $modifier_info->m_is_active;
+            $modifiers_array[$index]['m_is_required']          = $modifier_info->m_is_required;
+            $modifiers_array[$index]['m_is_single']            = $modifier_info->m_is_single;
         }
 
         $result_array['is_error'] = 0;
@@ -144,6 +152,95 @@ class FnbModifiersController extends Controller
 
         $result_array['is_error']  = 0;
         $result_array['error_msg'] = 'Modifier removed';
+
+        return Response()->json($result_array);
+    }
+
+    public function SaveModifier(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $m_id                   = $request->input('m_id');
+        $m_modifier_name        = $request->input('m_modifier_name');
+        $m_modifier_description = $request->input('m_modifier_description');
+        $m_item_id              = $request->input('m_item_id');
+        $m_unit_id              = $request->input('m_unit_id');
+        $m_currency_id          = $request->input('m_currency_id');
+        $m_quantity             = $request->input('m_quantity');
+        $m_cost_modifier        = $request->input('m_cost_modifier');
+        $m_price_modifier       = $request->input('m_price_modifier');
+        $m_is_active            = $request->input('m_is_active') ? 1 : 0;
+        $m_is_required          = $request->input('m_is_required') ? 1 : 0;
+        $m_is_single            = $request->input('m_is_single') ? 1 : 0;
+
+        $modifier_info = new Modifier();
+        if ($m_id != null) {
+            $modifier_info = Modifier::find($m_id);
+        }
+
+        $modifier_info->m_modifier_name        = $m_modifier_name;
+        $modifier_info->m_item_id              = $m_item_id;
+        $modifier_info->m_modifier_description = $m_modifier_description;
+        $modifier_info->m_unit_id              = $m_unit_id;
+        $modifier_info->m_currency_id          = $m_currency_id;
+        $modifier_info->m_quantity             = $m_quantity;
+        $modifier_info->m_cost_modifier        = $m_cost_modifier;
+        $modifier_info->m_price_modifier       = $m_price_modifier;
+        $modifier_info->m_is_active            = $m_is_active;
+        $modifier_info->m_is_required          = $m_is_required;
+        $modifier_info->m_is_single            = $m_is_single;
+        $modifier_info->save();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Modifier saved';
+        $result_array['m_id']      = $modifier_info->m_id;
+
+        return Response()->json($result_array);
+    }
+
+    public function DeleteModifier(Request $request)
+    {
+        $g_hash  = $request->input('g_hash');
+        $user_id = $request->input('user_id');
+        $m_id    = $request->input('m_id');
+
+        $user_info = Users::find($user_id);
+
+        $c_hash = "POS567" . $user_info->u_username . $user_info->u_fullname . $user_info->u_email . "POS567";
+        $c_hash = hash('sha256', $c_hash);
+        $result_array = array();
+
+        if ($c_hash != $g_hash) {
+            $result_array['is_error'] = 1;
+            $result_array['error_msg'] = 'hash sequence is not valid !!';
+            return Response()->json($result_array);
+        }
+
+        $modifier_info = Modifier::find($m_id);
+
+        if (!$modifier_info) {
+            return Response()->json(['is_error' => 1, 'error_msg' => 'Modifier not found']);
+        }
+
+        $modifier_info->m_is_deleted = 1;
+        $modifier_info->m_deleted_by = $user_id;
+        $modifier_info->save();
+
+        $result_array['is_error']  = 0;
+        $result_array['error_msg'] = 'Modifier deleted';
 
         return Response()->json($result_array);
     }

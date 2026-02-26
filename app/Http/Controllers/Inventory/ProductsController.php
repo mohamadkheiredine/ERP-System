@@ -472,6 +472,14 @@ class ProductsController extends Controller
           $fk_zone_id                   = $request->input("fk_zone_id");
           $fk_floor_id                  = $request->input("fk_floor_id");
 
+          if (empty($p_product_name)) {
+              return Response()->json(['is_error' => 1, 'error_msg' => 'Product name is required.']);
+          }
+
+          if (empty($fk_warehouse_id)) {
+              return Response()->json(['is_error' => 1, 'error_msg' => 'Warehouse is required. Please select a warehouse for this product.']);
+          }
+
           $ProductInfo  = new Products();
           $ProductManager_obj = new ProductManager();
           if($p_id > 0)

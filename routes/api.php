@@ -215,11 +215,15 @@ Route::get('/api/inventory/getlistmodifiers', 'Api\FnbModifiersController@GetLis
 Route::get('/api/inventory/getlistmodifiersperitem', 'Api\FnbModifiersController@GetModifiersPerItem');
 Route::post('/api/inventory/saveitemmodifier', 'Api\FnbModifiersController@SaveItemModifier');
 Route::post('/api/inventory/deleteitemmodifier', 'Api\FnbModifiersController@DeleteItemModifier');
+Route::post('/api/inventory/savemodifier', 'Api\FnbModifiersController@SaveModifier');
+Route::delete('/api/inventory/deletemodifier', 'Api\FnbModifiersController@DeleteModifier');
 Route::get('/api/inventory/getlisttables', 'Api\FnbTablesController@GetListTables');
 Route::get('/api/inventory/getlistkitchenstatuses', 'Api\FnbKitchenController@GetListKitchenOrderStatus');
 Route::get('/api/inventory/getwarehouses', 'Api\ProductsController@GetWarehouses');
 Route::post('/api/inventory/transferstock', 'Api\ProductsController@TransferStock');
 Route::get('/api/fnborders/getlastitemid', 'Api\FnbController@GetLastItemId');
+
+Route::get('/api/services/getlistservicecategories', 'Api\ServicesController@GetListServiceCategories');
 
 Route::get('/api/allowedcurrencies/getallowedcurrencies', 'Api\PosAllowedCurrenciesController@GetAllowedCurrencies');
 Route::put('/api/allowedcurrencies/savecurrencyrate', 'Api\PosAllowedCurrenciesController@SaveCurrencyRate');

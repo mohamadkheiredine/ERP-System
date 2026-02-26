@@ -1190,6 +1190,9 @@ products_module = {
                 fk_pc_id : {
                     required: true
                 },
+                fk_warehouse_id : {
+                    required: true
+                },
                 p_product_quantity : {
                     number:true
                 },
@@ -1339,6 +1342,9 @@ products_module = {
                fk_pc_id : {
                  required: true
 	           },
+               fk_warehouse_id : {
+                 required: true
+               },
 	           p_product_quantity : {
                  number:true
 	           },
